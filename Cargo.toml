@@ -1,0 +1,17 @@
+[package]
+name = "mirl"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+rand = "0.8"
+crossterm = "0.28"
+minifb = "0.27.0"
+image = "0.25.5"
+num-traits = "0.2"
+serde = "1.0"
+serde_json = "1.0"
+
+[lib]
+name = "your_library_name"
+path = "src/lib.rs"
