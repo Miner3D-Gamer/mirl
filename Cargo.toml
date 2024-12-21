@@ -2,6 +2,11 @@
 name = "mirl"
 version = "0.1.0"
 edition = "2021"
+authors = ["Miner3D"]
+rust-version = "1.60.0"
+description = "Miners Rust Lib - A collection of ever growing functions and structs"
+license = "MIT"
+keywords = ["miner3d", "no_not_use"]
 
 [dependencies]
 rand = "0.8"
