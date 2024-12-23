@@ -1,6 +1,6 @@
 use std::collections::VecDeque;
 
-struct FixedSizeQueue<T> {
+pub struct FixedSizeQueue<T> {
     deque: VecDeque<T>,
     max_size: usize,
 }
