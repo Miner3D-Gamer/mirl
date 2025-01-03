@@ -47,4 +47,6 @@ pub fn to_num(s: &str) -> i32 {
     }
 
     return s.parse::<i32>().expect("Failed to parse integer");
+}pub fn radians(angle_degrees: f64) -> f64 {
+    angle_degrees * 0.017453292519943295 //PI / 180.0
 }

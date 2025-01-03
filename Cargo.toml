@@ -9,13 +9,29 @@ license = "MIT"
 keywords = ["miner3d", "do_not_use"]
 
 [dependencies]
-rand = "0.8"
+# console
 crossterm = "0.28"
-minifb = "0.27.0"
+
+# graphics & render
 image = "0.25.5"
+
+# math
 num-traits = "0.2"
-serde = "1.0"
-serde_json = "1.0"
+
+# system
+[target.'cfg(target_os = "windows")'.dependencies]
+windows = { version = "0.48", features = [
+    "Win32_Foundation",
+    "Win32_Graphics_Gdi",
+    "Win32_UI_WindowsAndMessaging"
+]}
+winapi = { version = "0.3", features = ["winuser", "wingdi"] }
+
+# Unused
+# serde = "1.0"
+# serde_json = "1.0"
+# rand = "0.8"
+#minifb = "0.27.0"
 
 [lib]
 name = "mirl"

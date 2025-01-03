@@ -3,6 +3,10 @@ use crate::math::range;
 pub fn rgb_to_u32(r: u8, g: u8, b: u8) -> u32 {
     (r as u32) << 16 | (g as u32) << 8 | (b as u32)
 }
+pub fn u32_to_rgba(color: u32) -> image::Rgba<u8> {
+    let (r, g, b) = u32_to_rgb(color);
+    image::Rgba([r, g, b, 255])
+}
 
 pub fn u32_to_rgb(color: u32) -> (u8, u8, u8) {
     let r = ((color >> 16) & 0xFF) as u8;
@@ -14,10 +18,24 @@ pub fn rgba_to_u32(rgba: image::Rgba<u8>) -> u32 {
     let [r, g, b, _a] = rgba.0; // _a is the alpha channel, which is not used in this case
     (r as u32) << 16 | (g as u32) << 8 | (b as u32)
 }
+pub fn rgb_to_rgba(r: u8, g: u8, b: u8) -> image::Rgba<u8> {
+    image::Rgba([r, g, b, 255])
+}
 pub fn create_empty_image(width: u32, height: u32) -> DynamicImage {
     image::DynamicImage::new_rgba8(width, height)
 }
 use image::GenericImage;
+
+pub fn vec_to_img(image: Vec<u32>, width: u32, height: u32) -> DynamicImage {
+    let mut img = create_empty_image(width, height);
+    for y in 0..height {
+        for x in 0..width {
+            let color = image[(y * width + x) as usize];
+            img.put_pixel(x as u32, y as u32, u32_to_rgba(color));
+        }
+    }
+    img
+}
 
 pub fn draw_texture_into_image(
     image: &mut DynamicImage,
