@@ -90,3 +90,23 @@ pub fn load_image(file_path: &str) -> image::DynamicImage {
         Err(e) => panic!("Failed to load image: {}", e),
     }
 }
+
+pub fn get_sub_vec_of_vec(
+    vec: &Vec<u32>,
+    width: u32,
+    cutout_x: u32,
+    cutout_y: u32,
+    cutout_width: u32,
+    cutout_height: u32,
+) -> Vec<u32> {
+    let mut sub_vec: Vec<u32> = Vec::new();
+
+    for y in cutout_y..cutout_y + cutout_height {
+        for x in cutout_x..cutout_x + cutout_width {
+            let index = (y * width + x) as usize;
+            sub_vec.push(vec[index]);
+        }
+    }
+    return sub_vec;
+    
+}

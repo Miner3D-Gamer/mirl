@@ -35,4 +35,4 @@ winapi = { version = "0.3", features = ["winuser", "wingdi"] }
 
 [lib]
 name = "mirl"
-path = "src/__init__.rs"
+path = "src/lib.rs"

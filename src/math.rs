@@ -50,3 +50,7 @@ pub fn to_num(s: &str) -> i32 {
 }pub fn radians(angle_degrees: f64) -> f64 {
     angle_degrees * 0.017453292519943295 //PI / 180.0
 }
+fn normalize_vector(x: f32, y: f32, z: f32) -> (f32, f32, f32) {
+    let v = (x * x + y * y + z * z).abs().sqrt();
+    return (x / v, y / v, z / v);
+}

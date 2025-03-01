@@ -1,3 +1,5 @@
+extern crate winapi;
+
 use winapi::um::winuser::{GetSystemMetrics, SM_CXSCREEN, SM_CYSCREEN};
 
 use windows::{
@@ -251,4 +253,7 @@ pub fn get_desktop_pixel_color(x: i32, y: i32) -> u32 {
             Err(_) => 0,
         }
     }
+}
+pub fn get_title_bar_height() -> i32 {
+    unsafe { GetSystemMetrics(4) }
 }
