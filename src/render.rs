@@ -1,13 +1,18 @@
-use crate::graphics::rgba_to_u32;
+use crate::graphics::{rgb_to_u32, rgba_to_u32, u32_to_rgb};
 use crate::math::{abs, radians, range, sign, top_clamp};
 use image::{self, GenericImageView};
 use std::mem;
 
-pub fn rotate_x_vertex_3d(angle_degrees: f64, rotation_center: Point3D, vertex: &mut Vertex3D) {
+pub fn rotate_x_vertex_3d(
+    angle_degrees: f64,
+    rotation_center: Point3D,
+    vertex: &mut Vertex3D,
+) {
     let angle_radians = radians(angle_degrees);
     let cos_a = angle_radians.cos();
     let sin_a = angle_radians.sin();
-    let (cx, cy, cz) = (rotation_center.x, rotation_center.y, rotation_center.z);
+    let (cx, cy, cz) =
+        (rotation_center.x, rotation_center.y, rotation_center.z);
 
     // Adjust the vertex relative to the rotation center
     let x = vertex.x - cx;
@@ -23,27 +28,80 @@ pub fn rotate_x_vertex_3d(angle_degrees: f64, rotation_center: Point3D, vertex: 
     vertex.y = new_y + cy;
     vertex.z = new_z + cz;
 }
-pub fn rotate_x_polygon_3d(angle_degrees: f64, rotation_center: Point3D, polygon: &mut Polygon) {
-    rotate_x_vertex_3d(angle_degrees, rotation_center.clone(), &mut polygon.point1);
-    rotate_x_vertex_3d(angle_degrees, rotation_center.clone(), &mut polygon.point2);
-    rotate_x_vertex_3d(angle_degrees, rotation_center.clone(), &mut polygon.point3);
+pub fn rotate_x_polygon_3d(
+    angle_degrees: f64,
+    rotation_center: Point3D,
+    polygon: &mut Polygon,
+) {
+    rotate_x_vertex_3d(
+        angle_degrees,
+        rotation_center.clone(),
+        &mut polygon.point1,
+    );
+    rotate_x_vertex_3d(
+        angle_degrees,
+        rotation_center.clone(),
+        &mut polygon.point2,
+    );
+    rotate_x_vertex_3d(
+        angle_degrees,
+        rotation_center.clone(),
+        &mut polygon.point3,
+    );
 }
-pub fn rotate_y_polygon_3d(angle_degrees: f64, rotation_center: Point3D, polygon: &mut Polygon) {
-    rotate_y_vertex_3d(angle_degrees, rotation_center.clone(), &mut polygon.point1);
-    rotate_y_vertex_3d(angle_degrees, rotation_center.clone(), &mut polygon.point2);
-    rotate_y_vertex_3d(angle_degrees, rotation_center.clone(), &mut polygon.point3);
+pub fn rotate_y_polygon_3d(
+    angle_degrees: f64,
+    rotation_center: Point3D,
+    polygon: &mut Polygon,
+) {
+    rotate_y_vertex_3d(
+        angle_degrees,
+        rotation_center.clone(),
+        &mut polygon.point1,
+    );
+    rotate_y_vertex_3d(
+        angle_degrees,
+        rotation_center.clone(),
+        &mut polygon.point2,
+    );
+    rotate_y_vertex_3d(
+        angle_degrees,
+        rotation_center.clone(),
+        &mut polygon.point3,
+    );
 }
-pub fn rotate_z_polygon_3d(angle_degrees: f64, rotation_center: Point3D, polygon: &mut Polygon) {
-    rotate_z_vertex_3d(angle_degrees, rotation_center.clone(), &mut polygon.point1);
-    rotate_z_vertex_3d(angle_degrees, rotation_center.clone(), &mut polygon.point2);
-    rotate_z_vertex_3d(angle_degrees, rotation_center.clone(), &mut polygon.point3);
+pub fn rotate_z_polygon_3d(
+    angle_degrees: f64,
+    rotation_center: Point3D,
+    polygon: &mut Polygon,
+) {
+    rotate_z_vertex_3d(
+        angle_degrees,
+        rotation_center.clone(),
+        &mut polygon.point1,
+    );
+    rotate_z_vertex_3d(
+        angle_degrees,
+        rotation_center.clone(),
+        &mut polygon.point2,
+    );
+    rotate_z_vertex_3d(
+        angle_degrees,
+        rotation_center.clone(),
+        &mut polygon.point3,
+    );
 }
 
-pub fn rotate_y_vertex_3d(angle_degrees: f64, rotation_center: Point3D, vertex: &mut Vertex3D) {
+pub fn rotate_y_vertex_3d(
+    angle_degrees: f64,
+    rotation_center: Point3D,
+    vertex: &mut Vertex3D,
+) {
     let angle_radians = radians(angle_degrees);
     let cos_a = angle_radians.cos();
     let sin_a = angle_radians.sin();
-    let (cx, cy, cz) = (rotation_center.x, rotation_center.y, rotation_center.z);
+    let (cx, cy, cz) =
+        (rotation_center.x, rotation_center.y, rotation_center.z);
 
     // Adjust the vertex relative to the rotation center
     let x = vertex.x - cx;
@@ -60,11 +118,16 @@ pub fn rotate_y_vertex_3d(angle_degrees: f64, rotation_center: Point3D, vertex: 
     vertex.z = new_z + cz;
 }
 
-pub fn rotate_z_vertex_3d(angle_degrees: f64, rotation_center: Point3D, vertex: &mut Vertex3D) {
+pub fn rotate_z_vertex_3d(
+    angle_degrees: f64,
+    rotation_center: Point3D,
+    vertex: &mut Vertex3D,
+) {
     let angle_radians = radians(angle_degrees);
     let cos_a = angle_radians.cos();
     let sin_a = angle_radians.sin();
-    let (cx, cy, cz) = (rotation_center.x, rotation_center.y, rotation_center.z);
+    let (cx, cy, cz) =
+        (rotation_center.x, rotation_center.y, rotation_center.z);
 
     // Adjust the vertex relative to the rotation center
     let x = vertex.x - cx;
@@ -166,7 +229,8 @@ pub fn uv_interpolate(
     if start_y == end_y {
         return start_val;
     }
-    return start_val + (end_val - start_val) * (target_y - start_y) / (end_y - start_y);
+    return start_val
+        + (end_val - start_val) * (target_y - start_y) / (end_y - start_y);
 }
 pub fn draw_triangle(
     buffer: &mut Vec<u32>,
@@ -209,23 +273,51 @@ pub fn draw_triangle(
 
     for y in range(y1, y3 + 1) {
         if y < y2 {
-            x_start = uv_interpolate(y as f32, y1 as f32, x1 as f32, y2 as f32, x2 as f32);
-            x_end = uv_interpolate(y as f32 as f32, y1 as f32, x1 as f32, y3 as f32, x3 as f32);
+            x_start = uv_interpolate(
+                y as f32, y1 as f32, x1 as f32, y2 as f32, x2 as f32,
+            );
+            x_end = uv_interpolate(
+                y as f32 as f32,
+                y1 as f32,
+                x1 as f32,
+                y3 as f32,
+                x3 as f32,
+            );
 
-            u_start = uv_interpolate(y as f32, y1 as f32, u1 as f32, y2 as f32, u2 as f32);
-            u_end = uv_interpolate(y as f32, y1 as f32, u1 as f32, y3 as f32, u3 as f32);
+            u_start = uv_interpolate(
+                y as f32, y1 as f32, u1 as f32, y2 as f32, u2 as f32,
+            );
+            u_end = uv_interpolate(
+                y as f32, y1 as f32, u1 as f32, y3 as f32, u3 as f32,
+            );
 
-            v_start = uv_interpolate(y as f32, y1 as f32, v1 as f32, y2 as f32, v2 as f32);
-            v_end = uv_interpolate(y as f32, y1 as f32, v1 as f32, y3 as f32, v3 as f32);
+            v_start = uv_interpolate(
+                y as f32, y1 as f32, v1 as f32, y2 as f32, v2 as f32,
+            );
+            v_end = uv_interpolate(
+                y as f32, y1 as f32, v1 as f32, y3 as f32, v3 as f32,
+            );
         } else {
-            x_start = uv_interpolate(y as f32, y2 as f32, x2 as f32, y3 as f32, x3 as f32);
-            x_end = uv_interpolate(y as f32, y1 as f32, x1 as f32, y3 as f32, x3 as f32);
+            x_start = uv_interpolate(
+                y as f32, y2 as f32, x2 as f32, y3 as f32, x3 as f32,
+            );
+            x_end = uv_interpolate(
+                y as f32, y1 as f32, x1 as f32, y3 as f32, x3 as f32,
+            );
 
-            u_start = uv_interpolate(y as f32, y2 as f32, u2 as f32, y3 as f32, u3 as f32);
-            u_end = uv_interpolate(y as f32, y1 as f32, u1 as f32, y3 as f32, u3 as f32);
+            u_start = uv_interpolate(
+                y as f32, y2 as f32, u2 as f32, y3 as f32, u3 as f32,
+            );
+            u_end = uv_interpolate(
+                y as f32, y1 as f32, u1 as f32, y3 as f32, u3 as f32,
+            );
 
-            v_start = uv_interpolate(y as f32, y2 as f32, v2 as f32, y3 as f32, v3 as f32);
-            v_end = uv_interpolate(y as f32, y1 as f32, v1 as f32, y3 as f32, v3 as f32);
+            v_start = uv_interpolate(
+                y as f32, y2 as f32, v2 as f32, y3 as f32, v3 as f32,
+            );
+            v_end = uv_interpolate(
+                y as f32, y1 as f32, v1 as f32, y3 as f32, v3 as f32,
+            );
         }
         if x_start > x_end {
             mem::swap(&mut x_start, &mut x_end);
@@ -270,9 +362,12 @@ pub fn draw_polygon3d(
     polygon: Polygon,
     texture: &image::DynamicImage,
 ) {
-    let (point1_position_x, point1_position_y) = vertex_3d_to_2d(&polygon.point1, width, height);
-    let (point2_position_x, point2_position_y) = vertex_3d_to_2d(&polygon.point2, width, height);
-    let (point3_position_x, point3_position_y) = vertex_3d_to_2d(&polygon.point3, width, height);
+    let (point1_position_x, point1_position_y) =
+        vertex_3d_to_2d(&polygon.point1, width, height);
+    let (point2_position_x, point2_position_y) =
+        vertex_3d_to_2d(&polygon.point2, width, height);
+    let (point3_position_x, point3_position_y) =
+        vertex_3d_to_2d(&polygon.point3, width, height);
     // print("Points1");
     // print(point1_position_x.to_string().as_str());
     // print(point1_position_y.to_string().as_str());
@@ -333,7 +428,11 @@ pub struct Point2D {
     pub x: f64,
     pub y: f64,
 }
-pub fn vertex_3d_to_2d(vertex: &Vertex3D, width: usize, height: usize) -> (u16, u16) {
+pub fn vertex_3d_to_2d(
+    vertex: &Vertex3D,
+    width: usize,
+    height: usize,
+) -> (u16, u16) {
     //return (vertex.x as u16, vertex.y as u16);
     let half_width = (width / 2) as f64;
     let half_height = (height / 2) as f64;
@@ -366,18 +465,23 @@ pub fn draw_image(
     let start_x = texture_x.max(0) as u32;
     let start_y = texture_y.max(0) as u32;
     let end_x = (texture_x + texture_width as isize).min(width as isize) as u32;
-    let end_y = (texture_y + texture_height as isize).min(height as isize) as u32;
+    let end_y =
+        (texture_y + texture_height as isize).min(height as isize) as u32;
 
     for x in start_x..end_x {
-        let texture_uv_x = ((x as isize - texture_x) as f32 / texture_width as f32) * safe_width;
+        let texture_uv_x = ((x as isize - texture_x) as f32
+            / texture_width as f32)
+            * safe_width;
         for y in start_y..end_y {
-            let texture_uv_y =
-                ((y as isize - texture_y) as f32 / texture_height as f32) * safe_height;
+            let texture_uv_y = ((y as isize - texture_y) as f32
+                / texture_height as f32)
+                * safe_height;
 
             let clamped_uv_x = texture_uv_x.min(safe_width).max(0.0);
             let clamped_uv_y = texture_uv_y.min(safe_height).max(0.0);
 
-            let pixel = texture.get_pixel(clamped_uv_x as u32, clamped_uv_y as u32);
+            let pixel =
+                texture.get_pixel(clamped_uv_x as u32, clamped_uv_y as u32);
 
             set_pixel(
                 buffer,
@@ -388,5 +492,24 @@ pub fn draw_image(
                 rgba_to_u32(pixel),
             );
         }
+    }
+}
+
+pub struct Pixel {
+    pub r: u8,
+    pub g: u8,
+    pub b: u8,
+}
+
+pub fn pixel_to_u32(pixel: Pixel) -> u32 {
+    rgb_to_u32(pixel.r, pixel.g, pixel.b)
+}
+
+pub fn u32_to_pixel(color: u32) -> Pixel {
+    let (r, g, b) = u32_to_rgb(color);
+    Pixel {
+        r,
+        g,
+        b,
     }
 }

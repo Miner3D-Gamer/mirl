@@ -3,14 +3,12 @@
 // Miners Rust Lib
 // Mirl (Mirl sounded better than Mrl)
 
-pub mod time;
 pub mod console;
-pub mod misc;
 pub mod graphics;
 pub mod math;
+pub mod misc;
+pub mod time;
 //pub mod dictionary;
 pub mod lists;
 pub mod render;
 pub mod system;
-
-

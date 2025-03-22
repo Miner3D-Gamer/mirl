@@ -58,14 +58,19 @@ pub fn draw_texture_into_image(
         for y in range(texture_y, texture_y + texture_height) {
             let texture_uv_y = ((y - texture_y) as f32 / scaling_y) as u32;
 
-            if texture_uv_x < texture.width() && texture_uv_y < texture.height() {
+            if texture_uv_x < texture.width() && texture_uv_y < texture.height()
+            {
                 let pixel = texture.get_pixel(texture_uv_x, texture_uv_y);
                 image.put_pixel(x as u32, y as u32, pixel);
             }
         }
     }
 }
-pub fn set_image_size(image: DynamicImage, width: u32, height: u32) -> DynamicImage {
+pub fn set_image_size(
+    image: DynamicImage,
+    width: u32,
+    height: u32,
+) -> DynamicImage {
     //not resize, added pixels by new size should be empty
     let mut img = create_empty_image(width, height);
     draw_texture_into_image(
@@ -108,5 +113,4 @@ pub fn get_sub_vec_of_vec(
         }
     }
     return sub_vec;
-    
 }

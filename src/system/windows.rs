@@ -5,10 +5,12 @@ use winapi::um::winuser::{GetSystemMetrics, SM_CXSCREEN, SM_CYSCREEN};
 use windows::{
     Win32::Foundation::RECT,
     Win32::Graphics::Gdi::{
-        BitBlt, CreateCompatibleBitmap, CreateCompatibleDC, DeleteDC, DeleteObject, GetDC,
-        GetPixel, ReleaseDC, SelectObject, SRCCOPY,
+        BitBlt, CreateCompatibleBitmap, CreateCompatibleDC, DeleteDC,
+        DeleteObject, GetDC, GetPixel, ReleaseDC, SelectObject, SRCCOPY,
     },
-    Win32::UI::WindowsAndMessaging::{GetDesktopWindow, GetShellWindow, GetWindowRect},
+    Win32::UI::WindowsAndMessaging::{
+        GetDesktopWindow, GetShellWindow, GetWindowRect,
+    },
 };
 
 pub fn get_screen_resolution() -> (i32, i32) {
@@ -73,8 +75,9 @@ pub fn capture_desktop_screen() -> Option<ScreenCapture> {
         // Get the bitmap data
         let bmi = windows::Win32::Graphics::Gdi::BITMAPINFO {
             bmiHeader: windows::Win32::Graphics::Gdi::BITMAPINFOHEADER {
-                biSize: std::mem::size_of::<windows::Win32::Graphics::Gdi::BITMAPINFOHEADER>()
-                    as u32,
+                biSize: std::mem::size_of::<
+                    windows::Win32::Graphics::Gdi::BITMAPINFOHEADER,
+                >() as u32,
                 biWidth: width,
                 biHeight: -height, // Top-down DIB
                 biPlanes: 1,
@@ -167,8 +170,9 @@ pub fn capture_desktop_background() -> Option<ScreenCapture> {
         // Get the bitmap data
         let bmi = windows::Win32::Graphics::Gdi::BITMAPINFO {
             bmiHeader: windows::Win32::Graphics::Gdi::BITMAPINFOHEADER {
-                biSize: std::mem::size_of::<windows::Win32::Graphics::Gdi::BITMAPINFOHEADER>()
-                    as u32,
+                biSize: std::mem::size_of::<
+                    windows::Win32::Graphics::Gdi::BITMAPINFOHEADER,
+                >() as u32,
                 biWidth: width,
                 biHeight: -height, // Top-down DIB
                 biPlanes: 1,

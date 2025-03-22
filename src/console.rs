@@ -1,5 +1,8 @@
-use crossterm::{cursor, terminal::Clear, terminal::ClearType, ExecutableCommand};
-use std::io::{stdout, BufRead,  Write};
+use crate::render::Pixel;
+use crossterm::{
+    cursor, terminal::Clear, terminal::ClearType, ExecutableCommand,
+};
+use std::io::{stdout, BufRead, Write};
 
 pub fn clear_console() {
     stdout()
@@ -18,7 +21,15 @@ pub fn color_text(msg: &str, r: u8, g: u8, b: u8) -> String {
 pub fn color_background(msg: &str, r: u8, g: u8, b: u8) -> String {
     return format!("\x1b[48;2;{};{};{}m{}\x1b[0m", r, g, b, msg);
 }
-pub fn color(msg: &str, r1: u8, g1: u8, b1: u8, r2: u8, g2: u8, b2: u8) -> String {
+pub fn color(
+    msg: &str,
+    r1: u8,
+    g1: u8,
+    b1: u8,
+    r2: u8,
+    g2: u8,
+    b2: u8,
+) -> String {
     return format!(
         "\x1b[38;2;{};{};{}m\x1b[48;2;{};{};{}m{}\x1b[0m",
         r1, g1, b1, r2, g2, b2, msg
@@ -64,11 +75,6 @@ pub fn get_console_content(max_lines: u64) -> String {
     }
 
     recent_lines.join("\n")
-}
-pub struct Pixel {
-    pub r: u8,
-    pub g: u8,
-    pub b: u8,
 }
 
 pub fn print_color(buffer: Vec<Pixel>) {
