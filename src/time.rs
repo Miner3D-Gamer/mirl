@@ -25,7 +25,7 @@ pub fn get_elapsed_as_ns(time: SystemTime) -> u64 {
 
     match elapsed {
         Ok(duration) => {
-            return duration.as_nanos();
+            return duration.as_nanos() as u64;
         }
         Err(_) => {
             print!("Error while getting time");
@@ -38,7 +38,7 @@ pub fn get_elapsed_as_us(time: SystemTime) -> u64 {
 
     match elapsed {
         Ok(duration) => {
-            return duration.as_micros();
+            return duration.as_micros() as u64;
         }
         Err(_) => {
             print!("Error while getting time");
