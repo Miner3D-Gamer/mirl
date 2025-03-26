@@ -4,7 +4,7 @@ version = "0.1.5"
 edition = "2021"
 authors = ["Miner3D"]
 rust-version = "1.60.0"
-description = "Miners Rust Lib - A collection of ever growing functions and structs"
+description = "Miners Rust Lib - A collection of ever growing functions and structs. Compatibility: Windows (Full), Linux (Unknown), MacOS (Not fully)"
 license = "MIT"
 keywords = ["miner3d", "do_not_use"]
 
@@ -26,6 +26,9 @@ windows = { version = "0.48", features = [
     "Win32_UI_WindowsAndMessaging",
 ] }
 winapi = { version = "0.3", features = ["winuser", "wingdi"] }
+
+[target.'cfg(target_os = "linux")'.dependencies]
+x11 = "2.18.0"
 
 # Unused
 # serde = "1.0"

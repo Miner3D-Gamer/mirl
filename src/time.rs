@@ -1,5 +1,9 @@
 use std::time::{Duration, SystemTime};
 
+const NANOS_PER_SEC: u64 = 1_000_000_000;
+const MICROS_PER_SEC: u64 = 1_000_000;
+const MILLIS_PER_SEC: u64 = 1_000;
+
 pub fn sleep_sec(ms: u64) {
     std::thread::sleep(Duration::from_secs(ms));
 }
@@ -16,7 +20,7 @@ pub fn get_time() -> SystemTime {
     let time = std::time::SystemTime::now();
     return time;
 }
-pub fn get_elapsed_as_ns(time: SystemTime) -> u128 {
+pub fn get_elapsed_as_ns(time: SystemTime) -> u64 {
     let elapsed = time.elapsed();
 
     match elapsed {
@@ -29,7 +33,7 @@ pub fn get_elapsed_as_ns(time: SystemTime) -> u128 {
         }
     }
 }
-pub fn get_elapsed_as_us(time: SystemTime) -> u128 {
+pub fn get_elapsed_as_us(time: SystemTime) -> u64 {
     let elapsed = time.elapsed();
 
     match elapsed {
@@ -43,14 +47,14 @@ pub fn get_elapsed_as_us(time: SystemTime) -> u128 {
     }
 }
 
-pub fn wait_for_fps_ns(fps: u128, delta_time: u128) {
+pub fn wait_for_fps_ns(fps: u64, delta_time: u64) {
     let target_frame_time = 1_000_000_000 / fps; // Time for one frame at the target FPS
     if delta_time < target_frame_time {
         let sleep_time = target_frame_time - delta_time;
         sleep_ns(sleep_time as u64);
     }
 }
-pub fn wait_for_fps_us(fps: u128, delta_time: u128) {
+pub fn wait_for_fps_us(fps: u64, delta_time: u64) {
     let target_frame_time = 1_000_000 / fps; // Time for one frame at the target FPS
     if delta_time < target_frame_time {
         let sleep_time = target_frame_time - delta_time;

@@ -1,12 +1,20 @@
 extern crate winapi;
+use crate::system::ScreenImage;
 
 use winapi::um::winuser::{GetSystemMetrics, SM_CXSCREEN, SM_CYSCREEN};
 
 use windows::{
     Win32::Foundation::RECT,
     Win32::Graphics::Gdi::{
-        BitBlt, CreateCompatibleBitmap, CreateCompatibleDC, DeleteDC,
-        DeleteObject, GetDC, GetPixel, ReleaseDC, SelectObject, SRCCOPY,
+        BitBlt,
+        CreateCompatibleBitmap,
+        CreateCompatibleDC,
+        DeleteDC,
+        DeleteObject,
+        GetDC,
+        ReleaseDC,
+        SelectObject,
+        SRCCOPY, //GetPixel
     },
     Win32::UI::WindowsAndMessaging::{
         GetDesktopWindow, GetShellWindow, GetWindowRect,
@@ -18,12 +26,7 @@ pub fn get_screen_resolution() -> (i32, i32) {
     let height = unsafe { GetSystemMetrics(SM_CYSCREEN) };
     (width, height)
 }
-pub struct ScreenCapture {
-    pub width: i32,
-    pub height: i32,
-    pub pixels: Vec<u32>,
-}
-pub fn capture_desktop_screen() -> Option<ScreenCapture> {
+pub fn capture_screen() -> Option<ScreenImage> {
     unsafe {
         // Get the desktop window handle
         let desktop_hwnd = GetDesktopWindow();
@@ -112,14 +115,14 @@ pub fn capture_desktop_screen() -> Option<ScreenCapture> {
             return None;
         }
 
-        Some(ScreenCapture {
+        Some(ScreenImage {
             width,
             height,
             pixels,
         })
     }
 }
-pub fn capture_desktop_background() -> Option<ScreenCapture> {
+pub fn capture_desktop_background() -> Option<ScreenImage> {
     unsafe {
         // Get the shell window handle (desktop background + icons)
         let shell_hwnd = GetShellWindow();
@@ -207,57 +210,57 @@ pub fn capture_desktop_background() -> Option<ScreenCapture> {
             return None;
         }
 
-        Some(ScreenCapture {
+        Some(ScreenImage {
             width,
             height,
             pixels,
         })
     }
 }
-pub fn get_desktop_pixel_color(x: i32, y: i32) -> u32 {
-    unsafe {
-        // Get the desktop window handle directly
-        let desktop_hwnd = GetDesktopWindow();
-        if desktop_hwnd.0 == 0 {
-            return 0;
-        }
+// pub fn get_desktop_pixel_color(x: i32, y: i32) -> u32 {
+//     unsafe {
+//         // Get the desktop window handle directly
+//         let desktop_hwnd = GetDesktopWindow();
+//         if desktop_hwnd.0 == 0 {
+//             return 0;
+//         }
 
-        // Get the device context for the desktop window
-        let hdc = GetDC(desktop_hwnd);
-        if hdc.is_invalid() {
-            return 0;
-        }
+//         // Get the device context for the desktop window
+//         let hdc = GetDC(desktop_hwnd);
+//         if hdc.is_invalid() {
+//             return 0;
+//         }
 
-        // Make sure we release the DC even if getting the pixel fails
-        let result = std::panic::catch_unwind(|| {
-            let pixel_color = GetPixel(hdc, x, y).0;
-            if pixel_color == u32::MAX {
-                return Err(windows::core::Error::new(
-                    windows::core::HRESULT(0),
-                    "Failed to get pixel color".into(),
-                ));
-            }
-            return Ok(pixel_color);
-            // // Convert to u32 first, then perform the bitwise operations
-            // let color_u32: u32 = pixel_color;
+//         // Make sure we release the DC even if getting the pixel fails
+//         let result = std::panic::catch_unwind(|| {
+//             let pixel_color = GetPixel(hdc, x, y).0;
+//             if pixel_color == u32::MAX {
+//                 return Err(windows::core::Error::new(
+//                     windows::core::HRESULT(0),
+//                     "Failed to get pixel color".into(),
+//                 ));
+//             }
+//             return Ok(pixel_color);
+//             // // Convert to u32 first, then perform the bitwise operations
+//             // let color_u32: u32 = pixel_color;
 
-            // Ok(PixelColor {
-            //     r: (color_u32 & 0xFF) as u8,
-            //     g: ((color_u32 >> 8) & 0xFF) as u8,
-            //     b: ((color_u32 >> 16) & 0xFF) as u8,
-            // })
-        });
+//             // Ok(PixelColor {
+//             //     r: (color_u32 & 0xFF) as u8,
+//             //     g: ((color_u32 >> 8) & 0xFF) as u8,
+//             //     b: ((color_u32 >> 16) & 0xFF) as u8,
+//             // })
+//         });
 
-        // Always release the DC
-        ReleaseDC(desktop_hwnd, hdc);
+//         // Always release the DC
+//         ReleaseDC(desktop_hwnd, hdc);
 
-        match result {
-            Ok(Ok(color)) => color,
-            Ok(Err(_e)) => 0,
-            Err(_) => 0,
-        }
-    }
-}
+//         match result {
+//             Ok(Ok(color)) => color,
+//             Ok(Err(_e)) => 0,
+//             Err(_) => 0,
+//         }
+//     }
+// }
 pub fn get_title_bar_height() -> i32 {
     unsafe { GetSystemMetrics(4) }
 }
