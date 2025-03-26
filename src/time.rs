@@ -1,8 +1,8 @@
 use std::time::{Duration, SystemTime};
 
-const NANOS_PER_SEC: u64 = 1_000_000_000;
-const MICROS_PER_SEC: u64 = 1_000_000;
-const MILLIS_PER_SEC: u64 = 1_000;
+pub const NANOS_PER_SEC: u64 = 1_000_000_000;
+pub const MICROS_PER_SEC: u64 = 1_000_000;
+pub const MILLIS_PER_SEC: u64 = 1_000;
 
 pub fn sleep_sec(ms: u64) {
     std::thread::sleep(Duration::from_secs(ms));

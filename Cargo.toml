@@ -1,6 +1,6 @@
 [package]
 name = "mirl"
-version = "0.1.6"
+version = "0.1.7"
 edition = "2021"
 authors = ["Miner3D"]
 rust-version = "1.60.0"
