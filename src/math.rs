@@ -23,16 +23,16 @@ pub fn top_clamp(val: u16, max: u16) -> u16 {
     return val;
 }
 
-use num_traits::{PrimInt, ToPrimitive};
+// use num_traits::{PrimInt, ToPrimitive};
 
-pub fn range<T>(start: T, end: T) -> Vec<T>
-where
-    T: PrimInt + ToPrimitive,
-{
-    (start.to_u64().unwrap()..=end.to_u64().unwrap())
-        .map(|i| T::from(i).unwrap())
-        .collect()
-}
+// pub fn range<T>(start: T, end: T) -> Vec<T>
+// where
+//     T: PrimInt + ToPrimitive,
+// {
+//     (start.to_u64().unwrap()..=end.to_u64().unwrap())
+//         .map(|i| T::from(i).unwrap())
+//         .collect()
+// }
 pub fn is_number(s: &str) -> bool {
     s.chars().all(|c| c.is_digit(10))
 }
