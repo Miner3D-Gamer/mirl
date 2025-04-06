@@ -274,8 +274,28 @@ pub fn vertex_3d_to_2d(
 }
 
 #[inline(always)]
-pub fn clear_screen(width: usize, height: usize) -> Vec<u32> {
+pub fn get_empty_buffer(width: usize, height: usize) -> Vec<u32> {
     return vec![0; width * height];
+}
+#[inline(always)]
+pub fn clear_screen(pointer: *mut u32, total_size: usize) {
+    unsafe {
+        std::ptr::write_bytes(pointer, 0, total_size);
+    }
+}
+pub fn color_screen(
+    pointer: *mut u32,
+    width: usize,
+    height: usize,
+    color: u32,
+) {
+    for y in 0..height {
+        for x in 0..width {
+            unsafe {
+                *pointer.offset((y * width + x) as isize) = color;
+            }
+        }
+    }
 }
 
 pub struct Pixel {
