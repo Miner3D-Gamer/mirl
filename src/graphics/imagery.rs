@@ -1,3 +1,4 @@
+use crate::graphics::u32_to_rgb;
 use image::{self, DynamicImage, GenericImageView};
 
 pub fn u32_to_rgba(color: u32) -> image::Rgba<u8> {
