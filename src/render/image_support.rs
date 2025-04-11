@@ -1,6 +1,6 @@
 use crate::graphics::{rgb_to_u32, rgba_to_u32, u32_to_rgb};
 use crate::math::{abs, radians, sign, top_clamp};
-use crate::render::{set_pixel, uv_interpolate, vertex_3d_to_2d};
+use crate::render::{set_pixel, uv_interpolate, vertex_3d_to_2d, Polygon};
 use std::mem;
 
 use image::{self, GenericImageView};
