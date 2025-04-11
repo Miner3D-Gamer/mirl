@@ -1,5 +1,6 @@
 use crate::graphics::{rgb_to_u32, rgba_to_u32, u32_to_rgb};
-use crate::math::{abs, radians, range, sign, top_clamp};
+use crate::math::{abs, radians, sign, top_clamp};
+use crate::render::{set_pixel, uv_interpolate, vertex_3d_to_2d};
 use std::mem;
 
 use image::{self, GenericImageView};
@@ -42,7 +43,7 @@ pub fn draw_triangle(
     let mut tex_y;
     let mut color;
 
-    for y in range(y1, y3 + 1) {
+    for y in y1..y3 + 1 {
         if y < y2 {
             x_start = uv_interpolate(
                 y as f32, y1 as f32, x1 as f32, y2 as f32, x2 as f32,
@@ -95,7 +96,7 @@ pub fn draw_triangle(
             mem::swap(&mut u_start, &mut u_end);
             mem::swap(&mut v_start, &mut v_end);
         }
-        for x in range(x_start.floor() as u16, (x_end.floor() + 1.0) as u16) {
+        for x in x_start.floor() as u16..(x_end.floor() + 1.0) as u16 {
             if x_start != x_end {
                 temp = (x as f32 - x_start) / (x_end - x_start)
             } else {
