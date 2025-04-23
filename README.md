@@ -1,8 +1,14 @@
 # Mirl
 
-## A library ranging from >math to >graphics to >rendering to >rust extensions (Simple function that should be built into rust for built-in types)
+A library ranging from
 
-Hi there
+- math to >graphics to
+
+- rendering to
+
+- rust extensions (Simple function that should be built into rust for built-in types)
+
+### Hi there
 
 What brought you to this place?
 
