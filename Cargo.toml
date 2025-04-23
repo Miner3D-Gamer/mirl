@@ -1,13 +1,16 @@
 [package]
+# Info
 name = "mirl"
-version = "0.1.14"
-edition = "2021"
-authors = ["Miner3D"]
+version = "0.2.0"
+description = "Miners Rust Lib - A collection of ever growing and changing functions and structs. Compatibility: Windows (Full), Linux/MacOS/Web (Unknown)"
+# Compiler
 rust-version = "1.60.0"
-description = "Miners Rust Lib - A collection of ever growing functions and structs. Compatibility: Windows (Full), Linux (Unknown), MacOS (Not fully)"
+edition = "2021"
+# Credit/Misc
 license = "MIT"
+authors = ["Miner3D"]
 keywords = ["miner3d", "do_not_use"]
-#git = "https://github.com/Miner3D-Gamer/mirl"
+repository = "https://github.com/Miner3D-Gamer/mirl"
 
 [dependencies]
 fontdue = "0.9.3"
@@ -19,6 +22,11 @@ enigo = "0.1.3"
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 crossterm = "0.28"
 minifb = "0.28.0"
+
+# pixels = "0.13"
+# winit = "0.29"
+# log = "0.4"
+# env_logger = "0.10"
 
 # graphics & render
 image = { version = "0.25.6", optional = true }
