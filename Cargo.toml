@@ -10,9 +10,15 @@ keywords = ["miner3d", "do_not_use"]
 #git = "https://github.com/Miner3D-Gamer/mirl"
 
 [dependencies]
+fontdue = "0.9.3"
+once_cell = "1.18.0"
+ico = "0.3.0"
+enigo = "0.1.3"
+
 # console
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 crossterm = "0.28"
+minifb = "0.28.0"
 
 # graphics & render
 image = { version = "0.25.6", optional = true }

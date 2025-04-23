@@ -9,7 +9,9 @@ pub mod math;
 pub mod misc;
 pub mod time;
 //pub mod dictionary;
+pub mod extensions;
 pub mod lists;
+pub mod platform;
 pub mod render;
 
 #[cfg(not(target_arch = "wasm32"))]

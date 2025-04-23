@@ -1,8 +1,5 @@
-pub fn concatenate<T: AsRef<str>>(input1: T, input2: T) -> String {
-    let str1 = input1.as_ref();
-    let str2 = input2.as_ref();
-    format!("{}{}", str1, str2)
+pub fn concatenate<A: AsRef<str>, B: AsRef<str>>(a: A, b: B) -> String {
+    let mut result = String::from(a.as_ref());
+    result.push_str(b.as_ref());
+    return result;
 }
-// pub fn concatenate2(input1: &str, input2: &str) -> String {
-//     format!("{}{}", input1, input2)
-// }

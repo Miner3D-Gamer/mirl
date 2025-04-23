@@ -1,5 +1,6 @@
+use crate::extensions::*;
 use crate::graphics::{rgb_to_u32, u32_to_rgb};
-use crate::math::{abs, radians, sign};
+use crate::math::radians;
 
 pub fn rotate_x_vertex_3d(
     angle_degrees: f64,
@@ -142,68 +143,8 @@ pub fn rotate_z_vertex_3d(
     vertex.z = z + cz;
 }
 
-pub fn draw_line(
-    buffer: &mut Vec<u32>,
-    width: usize,
-    height: usize,
-    x1: usize,
-    y1: usize,
-    x2: usize,
-    y2: usize,
-    color: u32,
-) {
-    let mut start_x = x1 as i16;
-    let mut start_y = y1 as i16;
-    let end_x = x2 as i16;
-    let end_y = y2 as i16;
-
-    let difference_x: i16 = end_x - start_x;
-    let difference_y: i16 = end_y - start_y;
-    let sign_x = sign(difference_x as i64) as i16;
-    let sign_y = sign(difference_y as i64) as i16;
-    let abs_difference_x: i16 = abs(difference_x as i64) as i16;
-    let abs_difference_y: i16 = abs(difference_y as i64) as i16;
-    if abs_difference_x > abs_difference_y {
-        let mut error: i16 = abs_difference_x / 2;
-        while start_x != end_x {
-            start_x += sign_x;
-            error -= abs_difference_y;
-            if error < 0 {
-                start_y += sign_y;
-                error += abs_difference_x;
-            }
-            set_pixel(
-                buffer,
-                width,
-                height,
-                start_x as usize,
-                start_y as usize,
-                color,
-            );
-        }
-    } else {
-        let mut error: i16 = abs_difference_y / 2;
-        while start_y != end_y {
-            start_y += sign_y;
-            error -= abs_difference_x;
-            if error < 0 {
-                start_x += sign_x;
-                error += abs_difference_y;
-            }
-            set_pixel(
-                buffer,
-                width,
-                height,
-                start_x as usize,
-                start_y as usize,
-                color,
-            );
-        }
-    }
-}
-
-pub fn set_pixel(
-    buffer: &mut Vec<u32>,
+pub fn set_pixel_safe(
+    buffer: *mut u32,
     width: usize,
     height: usize,
     x: usize,
@@ -213,8 +154,20 @@ pub fn set_pixel(
     if x >= width || y >= height {
         return;
     }
-    let position = y * width + x;
-    buffer[position] = color;
+    unsafe {
+        *buffer.add(y * width + x) = color;
+    }
+}
+pub fn set_pixel_unsafe(
+    buffer: *mut u32,
+    width: usize,
+    x: usize,
+    y: usize,
+    color: u32,
+) {
+    unsafe {
+        *buffer.add(y * width + x) = color;
+    }
 }
 
 pub fn uv_interpolate(
@@ -233,17 +186,17 @@ pub fn uv_interpolate(
 
 #[derive(Copy, Clone)]
 pub struct Polygon {
-    point1: Vertex3D,
-    point2: Vertex3D,
-    point3: Vertex3D,
+    pub point1: Vertex3D,
+    pub point2: Vertex3D,
+    pub point3: Vertex3D,
 }
 #[derive(Copy, Clone)]
 pub struct Vertex3D {
-    x: f64,
-    y: f64,
-    z: f64,
-    u: f32,
-    v: f32,
+    pub x: f64,
+    pub y: f64,
+    pub z: f64,
+    pub u: f32,
+    pub v: f32,
 }
 #[derive(Copy, Clone)]
 pub struct Point3D {
@@ -321,3 +274,319 @@ pub fn u32_to_pixel(color: u32) -> Pixel {
 pub mod image_support;
 #[cfg(feature = "imagery")]
 pub use image_support::*;
+
+#[inline]
+fn round_float_key(value: f32) -> (i32, i32) {
+    let multiplier = 10.0_f32.powi(4);
+    let rounded_int_x = (value * multiplier).round() as i32;
+    let rounded_int_y = (value * multiplier).fract() as i32;
+    (rounded_int_x, rounded_int_y)
+}
+
+use std::collections::HashMap;
+use std::sync::RwLock;
+
+static GLYPH_CACHE: once_cell::sync::Lazy<
+    RwLock<HashMap<(char, (i32, i32)), (fontdue::Metrics, Vec<u8>)>>,
+> = once_cell::sync::Lazy::new(|| RwLock::new(HashMap::new()));
+
+#[inline]
+fn get_glyph_cache(
+) -> &'static RwLock<HashMap<(char, (i32, i32)), (fontdue::Metrics, Vec<u8>)>> {
+    &GLYPH_CACHE
+}
+
+use fontdue::Font;
+pub trait RenderSettings {
+    #[inline]
+    fn draw_pixel(
+        &self,
+        buffer: *mut u32,
+        width: usize,
+        _height: usize,
+        x: usize,
+        y: usize,
+        color: u32,
+    ) {
+        unsafe {
+            *buffer.add(y * width + x) = color;
+        }
+    }
+    #[inline]
+    fn draw_text(
+        &self,
+        buffer: *mut u32,
+        width: usize,
+        height: usize,
+        text: &str,
+        x: usize,
+        y: usize,
+        color: u32,
+        size: f32,
+        font: &Font,
+    ) {
+        let mut pen_x = x;
+        let pen_y = y;
+        let font_metrics = font.horizontal_line_metrics(size).unwrap();
+        let ascent = font_metrics.ascent as usize;
+
+        let rounded_size_key = round_float_key(size);
+
+        for ch in text.chars() {
+            // Try to get the glyph from cache first
+            let cached_glyph = {
+                let cache = get_glyph_cache().read().unwrap();
+                cache.get(&(ch, rounded_size_key)).cloned()
+            };
+
+            // If not in cache, rasterize and insert
+            let (metrics, bitmap) = cached_glyph.unwrap_or_else(|| {
+                let rasterized = font.rasterize(ch, size);
+
+                // Insert into cache
+                let mut cache_mut = get_glyph_cache().write().unwrap();
+                cache_mut.insert((ch, rounded_size_key), rasterized.clone());
+
+                rasterized
+            });
+
+            let offset_y = ascent.saturating_sub(metrics.height);
+            let w = metrics.width;
+            let h = metrics.height;
+            let advance_x = metrics.advance_width as usize;
+
+            for gy in 0..h {
+                let py = pen_y + gy + offset_y;
+                if py >= height {
+                    continue;
+                }
+
+                let row_start = gy * w;
+                for gx in 0..w {
+                    let px = pen_x + gx;
+                    if px >= width {
+                        continue;
+                    }
+
+                    if bitmap[row_start + gx] > 0 {
+                        self.draw_pixel(buffer, width, height, px, py, color);
+                    }
+                }
+            }
+            pen_x += advance_x;
+        }
+    }
+    #[inline]
+    fn draw_circle(
+        &self,
+        buffer: *mut u32,
+        width: usize,
+        height: usize,
+        pos_x: usize,
+        pos_y: usize,
+        radius: isize,
+        color: u32,
+    ) {
+        let mut x = 0;
+        let mut y = 0 - radius;
+        let mut p = -radius;
+
+        while (x) < (-y) {
+            if p > 0 {
+                y += 1;
+                p += 2 * (x + y) + 1
+            } else {
+                p += 2 * x + 1
+            }
+            let temp_x = x as usize;
+            let temp_y = y as usize;
+            self.draw_pixel(
+                buffer,
+                width,
+                height,
+                pos_x + temp_x,
+                pos_y + temp_y,
+                color,
+            );
+            self.draw_pixel(
+                buffer,
+                width,
+                height,
+                pos_x - temp_x,
+                pos_y + temp_y,
+                color,
+            );
+            self.draw_pixel(
+                buffer,
+                width,
+                height,
+                pos_x + temp_x,
+                pos_y - temp_y,
+                color,
+            );
+            self.draw_pixel(
+                buffer,
+                width,
+                height,
+                pos_x - temp_x,
+                pos_y - temp_y,
+                color,
+            );
+            self.draw_pixel(
+                buffer,
+                width,
+                height,
+                pos_x + temp_y,
+                pos_y + temp_x,
+                color,
+            );
+            self.draw_pixel(
+                buffer,
+                width,
+                height,
+                pos_x + temp_y,
+                pos_y - temp_x,
+                color,
+            );
+            self.draw_pixel(
+                buffer,
+                width,
+                height,
+                pos_x - temp_y,
+                pos_y + temp_x,
+                color,
+            );
+            self.draw_pixel(
+                buffer,
+                width,
+                height,
+                pos_x - temp_y,
+                pos_y - temp_x,
+                color,
+            );
+
+            x += 1
+        }
+    }
+    #[inline]
+    fn adjust_brightness(&self, color: u32, x: i32) -> u32 {
+        // Extract color components
+        let r = ((color >> 16) & 0xFF) as i32;
+        let g = ((color >> 8) & 0xFF) as i32;
+        let b = (color & 0xFF) as i32;
+
+        // Calculate new values with clamping
+        let r_new = (r + x).clamp(0, 255) as u32;
+        let g_new = (g + x).clamp(0, 255) as u32;
+        let b_new = (b + x).clamp(0, 255) as u32;
+
+        // Recombine into a single color value
+        (r_new << 16) | (g_new << 8) | b_new
+    }
+    #[inline]
+    fn desaturate(&self, color: u32, amount: f32) -> u32 {
+        // Extract color components
+        let r = ((color >> 16) & 0xFF) as f32;
+        let g = ((color >> 8) & 0xFF) as f32;
+        let b = (color & 0xFF) as f32;
+
+        // Compute grayscale (luminance approximation)
+        let gray = 0.299 * r + 0.587 * g + 0.114 * b;
+
+        // Interpolate between color and gray based on amount (0.0 to 1.0)
+        let r_new =
+            ((r * (1.0 - amount)) + (gray * amount)).clamp(0.0, 255.0) as u32;
+        let g_new =
+            ((g * (1.0 - amount)) + (gray * amount)).clamp(0.0, 255.0) as u32;
+        let b_new =
+            ((b * (1.0 - amount)) + (gray * amount)).clamp(0.0, 255.0) as u32;
+
+        // Recombine
+        (r_new << 16) | (g_new << 8) | b_new
+    }
+    #[inline]
+    fn get_pixel(
+        buffer: &Vec<u32>,
+        width: &isize,
+        height: &isize,
+        x: isize,
+        y: isize,
+    ) -> u32 {
+        if x < 0 || y < 0 {
+            return 0;
+        }
+        if x >= *width || y >= *height {
+            return 0;
+        }
+        let index = y * width + x;
+        return buffer[index as usize];
+    }
+
+    fn draw_line(
+        &self,
+        buffer: *mut u32,
+        width: usize,
+        height: usize,
+        x1: usize,
+        y1: usize,
+        x2: usize,
+        y2: usize,
+        color: u32,
+    ) {
+        let mut start_x = x1 as i16;
+        let mut start_y = y1 as i16;
+        let end_x = x2 as i16;
+        let end_y = y2 as i16;
+
+        let difference_x: i16 = end_x - start_x;
+        let difference_y: i16 = end_y - start_y;
+        let sign_x = difference_x.sign();
+        let sign_y = difference_y.sign();
+        let abs_difference_x: i16 = difference_x.abs();
+        let abs_difference_y: i16 = difference_y.abs();
+        if abs_difference_x > abs_difference_y {
+            let mut error: i16 = abs_difference_x / 2;
+            while start_x != end_x {
+                start_x += sign_x;
+                error -= abs_difference_y;
+                if error < 0 {
+                    start_y += sign_y;
+                    error += abs_difference_x;
+                }
+                self.draw_pixel(
+                    buffer,
+                    width,
+                    height,
+                    start_x as usize,
+                    start_y as usize,
+                    color,
+                );
+            }
+        } else {
+            let mut error: i16 = abs_difference_y / 2;
+            while start_y != end_y {
+                start_y += sign_y;
+                error -= abs_difference_x;
+                if error < 0 {
+                    start_x += sign_x;
+                    error += abs_difference_y;
+                }
+                self.draw_pixel(
+                    buffer,
+                    width,
+                    height,
+                    start_x as usize,
+                    start_y as usize,
+                    color,
+                );
+            }
+        }
+    }
+}
+
+pub mod fancy;
+pub use fancy::RenderSettingsPretty;
+
+pub mod fast;
+
+pub use fast::RenderSettingsFast;
