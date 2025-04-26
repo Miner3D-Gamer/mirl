@@ -5,6 +5,13 @@ use crate::render::RenderSettings;
 use crate::render::{get_glyph_cache, round_float_key};
 
 pub struct RenderSettingsPretty {}
+
+impl RenderSettingsPretty {
+    pub fn new() -> Self {
+        return RenderSettingsPretty {};
+    }
+}
+
 impl RenderSettings for RenderSettingsPretty {
     #[inline]
     fn draw_pixel(
