@@ -231,12 +231,12 @@ pub fn get_empty_buffer(width: usize, height: usize) -> Vec<u32> {
     return vec![0; width * height];
 }
 #[inline(always)]
-pub fn clear_screen(pointer: *mut u32, total_size: usize) {
+pub fn clear_buffer(pointer: *mut u32, total_size: usize) {
     unsafe {
         std::ptr::write_bytes(pointer, 0, total_size);
     }
 }
-pub fn color_screen(
+pub fn color_buffer(
     pointer: *mut u32,
     width: usize,
     height: usize,
