@@ -227,8 +227,8 @@ pub fn vertex_3d_to_2d(
 }
 
 #[inline(always)]
-pub fn get_empty_buffer(width: usize, height: usize) -> Vec<u32> {
-    return vec![0; width * height];
+pub fn get_empty_buffer(total_size: usize) -> Vec<u32> {
+    return vec![0; total_size];
 }
 #[inline(always)]
 pub fn clear_buffer(pointer: *mut u32, total_size: usize) {
