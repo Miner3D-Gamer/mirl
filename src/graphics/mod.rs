@@ -4,6 +4,10 @@ pub fn rgb_to_u32(r: u8, g: u8, b: u8) -> u32 {
 }
 
 #[inline]
+pub fn rgba_to_u32(r: u8, g: u8, b: u8, a: u8) -> u32 {
+    (a as u32) << 24 | (r as u32) << 16 | (g as u32) << 8 | b as u32
+}
+#[inline]
 pub fn u32_to_rgb(color: u32) -> (u8, u8, u8) {
     let r = ((color >> 16) & 0xFF) as u8;
     let g = ((color >> 8) & 0xFF) as u8;
@@ -159,7 +163,11 @@ pub enum BrightnessModel {
 }
 #[inline]
 
-pub fn adjust_brightness(color: u32, x: i32, model: BrightnessModel) -> u32 {
+pub fn adjust_brightness_based_on_human_eye(
+    color: u32,
+    x: i32,
+    model: BrightnessModel,
+) -> u32 {
     match model {
         BrightnessModel::LinearWeighted => {
             // Extract color components
@@ -231,4 +239,60 @@ pub fn shift_color_u32(color: u32, hue_shift: f32) -> u32 {
     let (r_new, g_new, b_new) = shift_color_rgb(r, g, b, hue_shift);
 
     (a << 24) | (r_new << 16) | (g_new << 8) | b_new
+}
+
+#[inline]
+fn adjust_brightness_fast(color: u32, x: i32) -> u32 {
+    // Extract color components
+    let r = ((color >> 16) & 0xFF) as i32;
+    let g = ((color >> 8) & 0xFF) as i32;
+    let b = (color & 0xFF) as i32;
+
+    // Calculate new values with clamping
+    let r_new = (r + x).clamp(0, 255) as u32;
+    let g_new = (g + x).clamp(0, 255) as u32;
+    let b_new = (b + x).clamp(0, 255) as u32;
+
+    // Recombine into a single color value
+    (r_new << 16) | (g_new << 8) | b_new
+}
+#[inline]
+fn desaturate_fast(color: u32, amount: f32) -> u32 {
+    // Extract color components
+    let r = ((color >> 16) & 0xFF) as f32;
+    let g = ((color >> 8) & 0xFF) as f32;
+    let b = (color & 0xFF) as f32;
+
+    // Compute grayscale (luminance approximation)
+    let gray = 0.299 * r + 0.587 * g + 0.114 * b;
+
+    // Interpolate between color and gray based on amount (0.0 to 1.0)
+    let r_new =
+        ((r * (1.0 - amount)) + (gray * amount)).clamp(0.0, 255.0) as u32;
+    let g_new =
+        ((g * (1.0 - amount)) + (gray * amount)).clamp(0.0, 255.0) as u32;
+    let b_new =
+        ((b * (1.0 - amount)) + (gray * amount)).clamp(0.0, 255.0) as u32;
+
+    // Recombine
+    (r_new << 16) | (g_new << 8) | b_new
+}
+
+pub struct Pixel {
+    pub r: u8,
+    pub g: u8,
+    pub b: u8,
+}
+
+pub fn pixel_to_u32(pixel: Pixel) -> u32 {
+    rgb_to_u32(pixel.r, pixel.g, pixel.b)
+}
+
+pub fn u32_to_pixel(color: u32) -> Pixel {
+    let (r, g, b) = u32_to_rgb(color);
+    Pixel {
+        r,
+        g,
+        b,
+    }
 }

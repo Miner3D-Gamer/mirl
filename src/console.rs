@@ -1,4 +1,4 @@
-use crate::render::Pixel;
+use crate::graphics::Pixel;
 use crossterm::{
     cursor, terminal::Clear, terminal::ClearType, ExecutableCommand,
 };

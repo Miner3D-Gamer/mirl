@@ -12,8 +12,11 @@ pub struct NativeFramework {
     mouse: enigo::Enigo,
 }
 
-impl NativeFramework {
-    pub fn new(width: usize, height: usize, title: &str) -> Self {
+impl FrameworkCore for NativeFramework {
+    fn new(buffer: &Buffer, title: &str) -> Self {
+        let width = buffer.width;
+        let height = buffer.height;
+
         let mut window =
             Window::new(title, width, height, WindowOptions::default())
                 .unwrap();
@@ -35,9 +38,6 @@ impl NativeFramework {
             mouse: enigo::Enigo::new(),
         }
     }
-}
-
-impl FrameworkCore for NativeFramework {
     #[inline]
     fn update(&mut self, buffer: &[u32]) {
         self.window
@@ -239,6 +239,8 @@ impl NativeFileSystem {
     }
 }
 use std::io::Read;
+
+use super::Buffer;
 
 impl FileSystem for NativeFileSystem {
     fn get_file_contents(

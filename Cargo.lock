@@ -873,6 +873,7 @@ dependencies = [
  "minifb",
  "num-traits",
  "once_cell",
+ "paste",
  "winapi",
  "windows 0.48.0",
  "x11",

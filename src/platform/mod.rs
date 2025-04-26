@@ -6,6 +6,7 @@ pub trait Framework: FrameworkCore + FrameworkExtended {}
 impl<T: FrameworkCore + FrameworkExtended> Framework for T {}
 
 pub trait FrameworkCore {
+    fn new(buffer: &Buffer, title: &str) -> Self;
     fn update(&mut self, buffer: &[u32]);
     fn is_open(&self) -> bool;
     fn get_mouse_position(&self) -> Option<(f32, f32)>;
@@ -22,6 +23,7 @@ pub trait FrameworkExtended {
     fn set_always_ontop(&mut self, always_ontop: bool);
     fn set_position(&mut self, x: isize, y: isize);
     fn get_position(&self) -> (isize, isize);
+    /// Width/Height should be something like 32x32 or 48x48
     fn set_icon(&mut self, buffer: &[u32], width: u32, height: u32);
     fn set_cursor_style(&mut self, style: CursorStyle);
     fn get_mouse_scroll(&self) -> Option<(f32, f32)>;
@@ -249,3 +251,52 @@ pub mod minifb;
 // Import everything from the correct module
 #[cfg(not(target_arch = "wasm32"))]
 pub use minifb::*;
+
+pub struct Buffer {
+    pub buffer: Box<[u32]>,
+    pub pointer: *mut u32,
+    pub width: usize,
+    pub height: usize,
+    pub total_size: usize,
+}
+
+impl Buffer {
+    pub fn new(width: usize, height: usize) -> Self {
+        let total_size = width * height;
+        let mut buffer = vec![0u32; total_size].into_boxed_slice();
+        let buffer_pointer = buffer.as_mut_ptr();
+        Self {
+            buffer,
+            pointer: buffer_pointer,
+            width,
+            height,
+            total_size,
+        }
+    }
+    #[inline(always)]
+    pub fn clear(&self) {
+        unsafe {
+            std::ptr::write_bytes(self.pointer, 0, self.total_size);
+        }
+    }
+    pub fn color_buffer(&self, color: u32) {
+        for y in 0..self.height {
+            for x in 0..self.width {
+                unsafe {
+                    *self.pointer.offset((y * self.width + x) as isize) = color;
+                }
+            }
+        }
+    }
+}
+
+use std::ops::Deref;
+
+// Automatically convert the usage of Buffer to Buffer.buffer
+impl Deref for Buffer {
+    type Target = [u32];
+
+    fn deref(&self) -> &Self::Target {
+        &self.buffer
+    }
+}
