@@ -16,22 +16,6 @@ macro_rules! impl_sign {
 }
 
 impl_sign!(i8, i16, i32, i64, i128, isize, f32, f64);
-pub trait IsNumber {
-    /// Returns true if the string is a number
-    fn is_number(&self) -> bool;
-}
-
-impl IsNumber for &str {
-    fn is_number(&self) -> bool {
-        self.chars().all(|c| c.is_ascii_digit())
-    }
-}
-
-impl IsNumber for String {
-    fn is_number(&self) -> bool {
-        self.chars().all(|c| c.is_ascii_digit())
-    }
-}
 
 pub fn get_sub_vec_of_vec<T: Copy>(
     vec: &Vec<T>,
@@ -54,3 +38,6 @@ pub fn get_sub_vec_of_vec<T: Copy>(
 
 mod tuple;
 pub use tuple::*;
+
+mod string;
+pub use string::*;
