@@ -19,7 +19,7 @@ impl_sign!(i8, i16, i32, i64, i128, isize, f32, f64);
 
 use std::convert::TryFrom;
 
-fn from_u8<T: TryFrom<u8>>(value: u8) -> T {
+pub fn from_u8<T: TryFrom<u8>>(value: u8) -> T {
     T::try_from(value).ok().expect("constant u8 conversion failed")
 }
 

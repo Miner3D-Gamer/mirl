@@ -25,7 +25,11 @@ impl<T> FixedSizeQueue<T> {
     }
 }
 
-fn add_item_to_max_sized_list<T>(list: &mut Vec<T>, max_size: usize, item: T) {
+pub fn add_item_to_max_sized_list<T>(
+    list: &mut Vec<T>,
+    max_size: usize,
+    item: T,
+) {
     list.push(item);
     if list.len() < max_size {
         return;

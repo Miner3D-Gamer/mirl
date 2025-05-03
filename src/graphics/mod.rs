@@ -242,7 +242,7 @@ pub fn shift_color_u32(color: u32, hue_shift: f32) -> u32 {
 }
 
 #[inline]
-fn adjust_brightness_fast(color: u32, x: i32) -> u32 {
+pub fn adjust_brightness_fast(color: u32, x: i32) -> u32 {
     // Extract color components
     let r = ((color >> 16) & 0xFF) as i32;
     let g = ((color >> 8) & 0xFF) as i32;
@@ -257,7 +257,7 @@ fn adjust_brightness_fast(color: u32, x: i32) -> u32 {
     (r_new << 16) | (g_new << 8) | b_new
 }
 #[inline]
-fn desaturate_fast(color: u32, amount: f32) -> u32 {
+pub fn desaturate_fast(color: u32, amount: f32) -> u32 {
     // Extract color components
     let r = ((color >> 16) & 0xFF) as f32;
     let g = ((color >> 8) & 0xFF) as f32;

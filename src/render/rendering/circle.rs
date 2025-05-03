@@ -43,7 +43,6 @@ pub fn draw_circle_fast(
 }
 
 #[inline(always)]
-
 fn draw_circle_impl(
     buffer: &Buffer,
     pos_x: usize,
