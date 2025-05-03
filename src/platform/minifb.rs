@@ -7,6 +7,7 @@ use enigo::{self, MouseControllable};
 
 use crate::platform::{file_data::FileData, CursorStyle, FileSystem, Time};
 
+use ico::{IconDir, IconDirEntry, IconImage, ResourceType};
 pub struct NativeFramework {
     window: Window,
     mouse: enigo::Enigo,
@@ -210,8 +211,6 @@ pub const fn from_micros_u128(micros: u128) -> std::time::Duration {
     std::time::Duration::new(secs, nanos)
 }
 fn encode_to_ico_format(buffer: &[u32], width: u32, height: u32) -> Vec<u8> {
-    use ico::{IconDir, IconDirEntry, IconImage, ResourceType};
-
     // Create a new icon directory
     let mut icon_dir = IconDir::new(ResourceType::Icon);
 
