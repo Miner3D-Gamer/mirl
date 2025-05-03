@@ -1,15 +1,15 @@
 use crate::graphics::u32_to_rgb;
 use image::{self, DynamicImage, GenericImageView};
 
-pub fn u32_to_rgba(color: u32) -> image::Rgba<u8> {
+pub fn u32_to_image_rgba(color: u32) -> image::Rgba<u8> {
     let (r, g, b) = u32_to_rgb(color);
     image::Rgba([r, g, b, 255])
 }
-pub fn rgba_to_u32(rgba: image::Rgba<u8>) -> u32 {
+pub fn image_rgba_to_u32(rgba: image::Rgba<u8>) -> u32 {
     let [r, g, b, _a] = rgba.0; // _a is the alpha channel, which is not used in this case
     (r as u32) << 16 | (g as u32) << 8 | (b as u32)
 }
-pub fn rgb_to_rgba(r: u8, g: u8, b: u8) -> image::Rgba<u8> {
+pub fn rgb_to_image_rgba(r: u8, g: u8, b: u8) -> image::Rgba<u8> {
     image::Rgba([r, g, b, 255])
 }
 pub fn create_empty_image(width: u32, height: u32) -> DynamicImage {
@@ -22,7 +22,7 @@ pub fn vec_to_img(image: Vec<u32>, width: u32, height: u32) -> DynamicImage {
     for y in 0..height {
         for x in 0..width {
             let color = image[(y * width + x) as usize];
-            img.put_pixel(x as u32, y as u32, u32_to_rgba(color));
+            img.put_pixel(x as u32, y as u32, u32_to_image_rgba(color));
         }
     }
     img

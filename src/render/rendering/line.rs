@@ -2,6 +2,23 @@ use super::{draw_pixel_safe, draw_pixel_unsafe, DrawPixelFunction};
 use crate::extensions::*;
 use crate::platform::Buffer;
 
+pub fn draw_line_switch(
+    buffer: &Buffer,
+    x1: usize,
+    y1: usize,
+    x2: usize,
+    y2: usize,
+    color: u32,
+    thickness: isize,
+    fast: bool,
+) {
+    if fast {
+        draw_line_fast(buffer, x1, y1, x2, y2, color, thickness);
+    } else {
+        draw_line(buffer, x1, y1, x2, y2, color, thickness);
+    }
+}
+
 #[inline]
 pub fn draw_line(
     buffer: &Buffer,

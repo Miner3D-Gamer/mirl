@@ -16,6 +16,7 @@ pub trait FrameworkCore {
     fn log<T: std::fmt::Debug>(&self, t: T);
     fn get_time(&self) -> Box<dyn Time>;
     fn sleep(&self, time: u64);
+    fn sample_fps(&mut self) -> u64;
 }
 pub trait FrameworkExtended {
     fn set_title(&mut self, title: &str);

@@ -2,6 +2,22 @@ use super::{draw_pixel_safe, draw_pixel_unsafe, DrawPixelFunction};
 use crate::platform::Buffer;
 
 #[inline]
+pub fn draw_circle_outline_switched(
+    buffer: &Buffer,
+    pos_x: usize,
+    pos_y: usize,
+    radius: isize,
+    color: u32,
+    fast: bool,
+) {
+    if fast {
+        draw_circle_outline_fast(buffer, pos_x, pos_y, radius, color);
+    } else {
+        draw_circle_outline(buffer, pos_x, pos_y, radius, color);
+    }
+}
+
+#[inline]
 /// Draws a circle outline
 pub fn draw_circle_outline(
     buffer: &Buffer,

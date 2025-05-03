@@ -10,6 +10,7 @@ use crate::platform::{file_data::FileData, CursorStyle, FileSystem, Time};
 pub struct NativeFramework {
     window: Window,
     mouse: enigo::Enigo,
+    time: NativeTime,
 }
 
 impl FrameworkCore for NativeFramework {
@@ -36,6 +37,7 @@ impl FrameworkCore for NativeFramework {
         Self {
             window,
             mouse: enigo::Enigo::new(),
+            time: NativeTime::new(),
         }
     }
     #[inline]
@@ -52,6 +54,13 @@ impl FrameworkCore for NativeFramework {
     #[inline]
     fn is_open(&self) -> bool {
         self.window.is_open()
+    }
+
+    #[inline]
+    fn sample_fps(&mut self) -> u64 {
+        let deltatime = self.time.time.elapsed().as_millis() as u64;
+        self.time.time = std::time::Instant::now();
+        deltatime
     }
 
     #[inline]
@@ -180,6 +189,13 @@ impl FrameworkExtended for NativeFramework {
 
 pub struct NativeTime {
     time: std::time::Instant,
+}
+impl NativeTime {
+    fn new() -> Self {
+        Self {
+            time: std::time::Instant::now(),
+        }
+    }
 }
 impl Time for NativeTime {
     fn get_elapsed_time(&self) -> u64 {

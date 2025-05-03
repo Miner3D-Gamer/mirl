@@ -47,7 +47,7 @@ impl FileData {
         for y in 0..height {
             for x in 0..width {
                 let pixel = rgba_img.get_pixel(x, y);
-                new.push(mirl::graphics::rgba_to_u32(*pixel));
+                new.push(crate::graphics::image_rgba_to_u32(*pixel));
             }
         }
 

@@ -21,6 +21,32 @@ fn round_float_key(value: f32) -> (i32, i32) {
     (rounded_int_x, rounded_int_y)
 }
 
+pub fn draw_text_switch(
+    buffer: &Buffer,
+    text: &str,
+    x: usize,
+    y: usize,
+    color: u32,
+    size: f32,
+    font: &fontdue::Font,
+    aliased: bool,
+    fast: bool,
+) {
+    if aliased {
+        if fast {
+            draw_text_aliased_fast(buffer, text, x, y, color, size, font);
+        } else {
+            draw_text_aliased(buffer, text, x, y, color, size, font);
+        }
+    } else {
+        if fast {
+            draw_text_antialiased_fast(buffer, text, x, y, color, size, font);
+        } else {
+            draw_text_antialiased(buffer, text, x, y, color, size, font);
+        }
+    }
+}
+
 #[inline]
 pub fn draw_text_aliased(
     buffer: &Buffer,
