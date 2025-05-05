@@ -301,3 +301,6 @@ impl Deref for Buffer {
         &self.buffer
     }
 }
+
+#[cfg(target_os = "windows")]
+pub mod cursors;
