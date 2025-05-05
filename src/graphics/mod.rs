@@ -224,7 +224,12 @@ pub fn shift_color_rgb(r: u8, g: u8, b: u8, hue_shift: f32) -> (u8, u8, u8) {
     hsl_to_rgb_u32(new_h, new_s, new_l)
 }
 
-fn shift_hue_rgb(r: u8, g: u8, b: u8, hue_shift_degrees: f32) -> (u8, u8, u8) {
+pub fn shift_hue_rgb(
+    r: u8,
+    g: u8,
+    b: u8,
+    hue_shift_degrees: f32,
+) -> (u8, u8, u8) {
     // Convert to floating point RGB
     let mut hsv = rgb_to_hsl(r, g, b);
 
@@ -235,7 +240,7 @@ fn shift_hue_rgb(r: u8, g: u8, b: u8, hue_shift_degrees: f32) -> (u8, u8, u8) {
     let (r, g, b) = hsl_to_rgb_u32(hsv.0, hsv.1, hsv.2);
     (r, g, b)
 }
-fn shift_hue_u32(color: u32, hue_shift: f32) -> u32 {
+pub fn shift_hue_u32(color: u32, hue_shift: f32) -> u32 {
     let (r, g, b) = u32_to_rgb(color);
     let (r, g, b) = shift_hue_rgb(r, g, b, hue_shift);
     return rgb_to_u32(r, g, b);
