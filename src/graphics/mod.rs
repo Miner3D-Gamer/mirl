@@ -43,14 +43,14 @@ pub fn adjust_brightness_hsl(color: u32, x: i32) -> u32 {
     let g = (color >> 8) & 0xFF;
     let b = color & 0xFF;
 
-    let (h, s, l) = rgb_to_hsl(r, g, b);
+    let (h, s, l) = rgb_to_hsl(r as u8, g as u8, b as u8);
 
     // Adjust lightness in HSL space (most perceptually accurate)
     let l_new = (l + x as f32).clamp(0.0, 100.0);
 
     let (r_new, g_new, b_new) = hsl_to_rgb_u32(h, s, l_new);
 
-    (a << 24) | (r_new << 16) | (g_new << 8) | b_new
+    (a << 24) | ((r_new as u32) << 16) | ((g_new as u32) << 8) | b_new as u32
 }
 #[inline]
 pub fn hsl_to_rgb_f32(h: f32, s: f32, l: f32) -> (f32, f32, f32) {
@@ -72,7 +72,7 @@ pub fn hsl_to_rgb_f32(h: f32, s: f32, l: f32) -> (f32, f32, f32) {
 }
 
 #[inline]
-pub fn rgb_to_hsl(r: u32, g: u32, b: u32) -> (f32, f32, f32) {
+pub fn rgb_to_hsl(r: u8, g: u8, b: u8) -> (f32, f32, f32) {
     let r_norm = r as f32 / 255.0;
     let g_norm = g as f32 / 255.0;
     let b_norm = b as f32 / 255.0;
@@ -108,13 +108,13 @@ pub fn rgb_to_hsl(r: u32, g: u32, b: u32) -> (f32, f32, f32) {
 
 #[inline]
 
-pub fn hsl_to_rgb_u32(h: f32, s: f32, l: f32) -> (u32, u32, u32) {
+pub fn hsl_to_rgb_u32(h: f32, s: f32, l: f32) -> (u8, u8, u8) {
     let h_norm = h / 360.0;
     let s_norm = s / 100.0;
     let l_norm = l / 100.0;
 
     if s_norm < 0.0001 {
-        let gray = (l_norm * 255.0).round() as u32;
+        let gray = (l_norm * 255.0).round() as u8;
         return (gray, gray, gray);
     }
 
@@ -149,9 +149,9 @@ pub fn hsl_to_rgb_u32(h: f32, s: f32, l: f32) -> (u32, u32, u32) {
     let g = hue_to_rgb(p, q, h_norm);
     let b = hue_to_rgb(p, q, h_norm - 1.0 / 3.0);
 
-    let r_8bit = (r * 255.0).round() as u32;
-    let g_8bit = (g * 255.0).round() as u32;
-    let b_8bit = (b * 255.0).round() as u32;
+    let r_8bit = (r * 255.0).round() as u8;
+    let g_8bit = (g * 255.0).round() as u8;
+    let b_8bit = (b * 255.0).round() as u8;
 
     (r_8bit, g_8bit, b_8bit)
 }
@@ -194,12 +194,7 @@ pub fn adjust_brightness_based_on_human_eye(
 }
 
 #[inline]
-pub fn shift_color_rgb(
-    r: u32,
-    g: u32,
-    b: u32,
-    hue_shift: f32,
-) -> (u32, u32, u32) {
+pub fn shift_color_rgb(r: u8, g: u8, b: u8, hue_shift: f32) -> (u8, u8, u8) {
     let (h, s, l) = rgb_to_hsl(r, g, b);
 
     let new_h = (h + hue_shift) % 360.0;
@@ -229,6 +224,22 @@ pub fn shift_color_rgb(
     hsl_to_rgb_u32(new_h, new_s, new_l)
 }
 
+fn shift_hue_rgb(r: u8, g: u8, b: u8, hue_shift_degrees: f32) -> (u8, u8, u8) {
+    // Convert to floating point RGB
+    let mut hsv = rgb_to_hsl(r, g, b);
+
+    // Shift hue
+    hsv.0 = (hsv.0 + hue_shift_degrees) % 360.0;
+
+    // Convert back to integer RGB
+    let (r, g, b) = hsl_to_rgb_u32(hsv.0, hsv.1, hsv.2);
+    (r, g, b)
+}
+fn shift_hue_u32(color: u32, hue_shift: f32) -> u32 {
+    let (r, g, b) = u32_to_rgb(color);
+    let (r, g, b) = shift_hue_rgb(r, g, b, hue_shift);
+    return rgb_to_u32(r, g, b);
+}
 #[inline]
 pub fn shift_color_u32(color: u32, hue_shift: f32) -> u32 {
     let a = (color >> 24) & 0xFF;
@@ -236,9 +247,10 @@ pub fn shift_color_u32(color: u32, hue_shift: f32) -> u32 {
     let g = (color >> 8) & 0xFF;
     let b = color & 0xFF;
 
-    let (r_new, g_new, b_new) = shift_color_rgb(r, g, b, hue_shift);
+    let (r_new, g_new, b_new) =
+        shift_color_rgb(r as u8, g as u8, b as u8, hue_shift);
 
-    (a << 24) | (r_new << 16) | (g_new << 8) | b_new
+    (a << 24) | ((r_new as u32) << 16) | ((g_new as u32) << 8) | b_new as u32
 }
 
 #[inline]
