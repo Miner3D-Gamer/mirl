@@ -12,8 +12,14 @@ authors = ["Miner3D"]
 keywords = ["miner3d", "do_not_use"]
 repository = "https://github.com/Miner3D-Gamer/mirl"
 # Keep cursor files when uploading
-include = ["src/platform/cursors/svg/*.svg"]
-
+include = [
+    "Cargo.toml",
+    "README.md",
+    "LICENSE*",
+    "src/**",
+    "src/platform/cursors/svg/*.svg",
+]
+exclude = ["**/_*", "**/*.py"]
 
 [dependencies]
 once_cell = ">=1.4"
