@@ -2,8 +2,12 @@ mod file_data;
 
 use crate::platform::file_data::FileData;
 
-pub trait Framework: FrameworkCore + FrameworkExtended {}
-impl<T: FrameworkCore + FrameworkExtended> Framework for T {}
+// Stitch together the traits for basic framework
+pub trait BasicFramework: FrameworkCore + FrameworkExtended {}
+impl<T: FrameworkCore + FrameworkExtended> BasicFramework for T {}
+// Stitch together the traits for extended framework
+pub trait Framework: BasicFramework + FrameworkControl {}
+impl<T: BasicFramework + FrameworkControl> Framework for T {}
 
 pub trait FrameworkCore {
     fn new(buffer: &Buffer, title: &str) -> Self;
@@ -21,19 +25,23 @@ pub trait FrameworkCore {
 pub trait FrameworkExtended {
     fn set_title(&mut self, title: &str);
     fn set_target_fps(&mut self, fps: usize);
-    fn set_always_ontop(&mut self, always_ontop: bool);
-    fn set_position(&mut self, x: isize, y: isize);
     fn get_position(&self) -> (isize, isize);
     /// Width/Height should be something like 32x32 or 48x48
     fn set_icon(&mut self, buffer: &[u32], width: u32, height: u32);
-    fn set_cursor_style(&mut self, style: CursorStyle);
+    fn set_cursor_style(&mut self, style: &Cursor);
     fn get_mouse_scroll(&self) -> Option<(f32, f32)>;
 }
-impl dyn FrameworkExtended {
+pub trait FrameworkControl: FrameworkExtended {
     fn move_window(&mut self, x: isize, y: isize) {
         let current = self.get_position();
         self.set_position(current.0 + x, current.1 + y);
     }
+    fn set_always_ontop(&mut self, always_ontop: bool);
+    fn set_position(&mut self, x: isize, y: isize);
+    fn set_size(&mut self, buffer: &Buffer);
+    fn minimize(&mut self);
+    fn maximize(&mut self);
+    fn restore(&mut self);
 }
 
 pub trait Time {
@@ -43,13 +51,49 @@ pub trait Time {
 
 pub enum CursorStyle {
     Default,   // Pointer
-    Insertion, // Ibeam
     Crosshair, // Cross
     OpenHand,
     ClosedHand,
-    ResizeHorizontal,
-    ResizeVertical,
-    ResizeAll,
+
+    Alias,
+    AllScroll,
+    BottomLeftCorner,
+    BottomRightCorner,
+    BottomSide,
+    Cell,
+    CenterPtr,
+    ColResize,
+    ColorPicker,
+    ContextMenu,
+    Copy,
+    ClosedHandNoDrop,
+    DownArrow,
+    Draft,
+    Fleur,
+    Help,
+    LeftArrow,
+    LeftSide,
+    NoDrop,
+    NotAllowed,
+    Pencil,
+    Pirate,
+    Pointer,
+    RightArrow,
+    RightPtr,
+    RightSide,
+    RowResize,
+    SizeBDiag,
+    SizeFDiag,
+    SizeHor,
+    SizeVer,
+    Text,
+    TopLeftCorner,
+    TopRightCorner,
+    TopSide,
+    UpArrow,
+    VerticalText,
+    ZoomIn,
+    ZoomOut,
 }
 
 pub trait FileSystem {
@@ -249,6 +293,7 @@ pub enum KeyCode {
 #[cfg(not(target_arch = "wasm32"))]
 pub mod minifb;
 
+use cursors::Cursor;
 // Import everything from the correct module
 #[cfg(not(target_arch = "wasm32"))]
 pub use minifb::*;
@@ -302,5 +347,9 @@ impl Deref for Buffer {
     }
 }
 
-#[cfg(target_os = "windows")]
 pub mod cursors;
+
+pub mod file_system;
+
+#[cfg(target_os = "windows")]
+mod other;

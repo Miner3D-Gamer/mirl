@@ -159,25 +159,25 @@
     <g
        id="g1885"
        transform="matrix(0.33828257,0,0,0.33828257,-12.422677,677.70102)"
-       style="fill:#ffba00;fill-opacity:1">
+       style="fill:#{};fill-opacity:1">
       <path
          id="path1875"
-         style="opacity:1;fill:#ffba00;fill-opacity:1;stroke-width:2.98558"
+         style="opacity:1;fill:#{};fill-opacity:1;stroke-width:2.98558"
          d="m 56.827754,1030.3884 12.999981,-8.5 13.000017,8.5 -13.000017,8.5 z"
          sodipodi:nodetypes="ccccc" />
       <g
          id="g1881"
          transform="translate(24.571723)"
-         style="fill:#ffba00;fill-opacity:1">
+         style="fill:#{};fill-opacity:1">
         <rect
-           style="fill:#ffba00;fill-opacity:1;stroke-width:3.1048"
+           style="fill:#{};fill-opacity:1;stroke-width:3.1048"
            id="rect1877"
            width="13"
            height="13"
            x="32.256031"
            y="1030.3884" />
         <rect
-           style="fill:#ffba00;fill-opacity:1;stroke-width:3.1048"
+           style="fill:#{};fill-opacity:1;stroke-width:3.1048"
            id="rect1879"
            width="13"
            height="13"
@@ -186,32 +186,32 @@
       </g>
       <path
          id="path1883"
-         style="opacity:1;fill:#ffba00;fill-opacity:1;stroke-width:2.98558"
+         style="opacity:1;fill:#{};fill-opacity:1;stroke-width:2.98558"
          d="m 56.827754,1043.3884 12.999981,8.5 13.000017,-8.5 -13.000017,-8.5 z"
          sodipodi:nodetypes="ccccc" />
     </g>
     <g
        id="g1897"
        transform="matrix(0.33828257,0,0,0.33828257,-2.82035,677.70102)"
-       style="fill:#ffba00;fill-opacity:1">
+       style="fill:#{};fill-opacity:1">
       <path
          id="path1887"
-         style="opacity:1;fill:#ffba00;fill-opacity:1;stroke-width:2.98558"
+         style="opacity:1;fill:#{};fill-opacity:1;stroke-width:2.98558"
          d="m 56.827754,1030.3884 12.999981,-8.5 13.000017,8.5 -13.000017,8.5 z"
          sodipodi:nodetypes="ccccc" />
       <g
          id="g1893"
          transform="translate(24.571723)"
-         style="fill:#ffba00;fill-opacity:1">
+         style="fill:#{};fill-opacity:1">
         <rect
-           style="fill:#ffba00;fill-opacity:1;stroke-width:3.1048"
+           style="fill:#{};fill-opacity:1;stroke-width:3.1048"
            id="rect1889"
            width="13"
            height="13"
            x="32.256031"
            y="1030.3884" />
         <rect
-           style="fill:#ffba00;fill-opacity:1;stroke-width:3.1048"
+           style="fill:#{};fill-opacity:1;stroke-width:3.1048"
            id="rect1891"
            width="13"
            height="13"
@@ -220,7 +220,7 @@
       </g>
       <path
          id="path1895"
-         style="opacity:1;fill:#ffba00;fill-opacity:1;stroke-width:2.98558"
+         style="opacity:1;fill:#{};fill-opacity:1;stroke-width:2.98558"
          d="m 56.827754,1043.3884 12.999981,8.5 13.000017,-8.5 -13.000017,-8.5 z"
          sodipodi:nodetypes="ccccc" />
     </g>

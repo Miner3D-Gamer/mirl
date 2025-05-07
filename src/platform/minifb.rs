@@ -5,9 +5,12 @@ use minifb::{Window, WindowOptions};
 
 use enigo::{self, MouseControllable};
 
-use crate::platform::{file_data::FileData, CursorStyle, FileSystem, Time};
+use crate::platform::Time;
 
 use ico::{IconDir, IconDirEntry, IconImage, ResourceType};
+
+use super::{cursors::Cursor, Buffer, FrameworkControl};
+
 pub struct NativeFramework {
     window: Window,
     mouse: enigo::Enigo,
@@ -112,14 +115,6 @@ impl FrameworkExtended for NativeFramework {
         self.window.set_target_fps(fps);
     }
     #[inline]
-    fn set_always_ontop(&mut self, always_ontop: bool) {
-        self.window.topmost(always_ontop);
-    }
-    #[inline]
-    fn set_position(&mut self, x: isize, y: isize) {
-        self.window.set_position(x, y);
-    }
-    #[inline]
     fn get_position(&self) -> (isize, isize) {
         self.window.get_position()
     }
@@ -177,14 +172,42 @@ impl FrameworkExtended for NativeFramework {
         }
     }
     #[inline]
-    fn set_cursor_style(&mut self, style: CursorStyle) {
-        self.window.set_cursor_style(map_cursor_style(style));
+    fn set_cursor_style(&mut self, style: &Cursor) {
+        super::cursors::use_cursor(style);
         self.mouse.mouse_move_relative(0, 1);
         self.mouse.mouse_move_relative(0, -1);
     }
     #[inline]
     fn get_mouse_scroll(&self) -> Option<(f32, f32)> {
         self.window.get_scroll_wheel()
+    }
+}
+
+#[cfg(target_os = "windows")]
+impl FrameworkControl for NativeFramework {
+    #[inline]
+    fn set_always_ontop(&mut self, always_ontop: bool) {
+        self.window.topmost(always_ontop);
+    }
+    #[inline]
+    fn set_position(&mut self, x: isize, y: isize) {
+        self.window.set_position(x, y);
+    }
+    fn maximize(&mut self) {
+        super::other::maximize(&self.window);
+    }
+    fn minimize(&mut self) {
+        super::other::minimize(&self.window);
+    }
+    fn restore(&mut self) {
+        super::other::restore(&self.window);
+    }
+    fn set_size(&mut self, buffer: &Buffer) {
+        super::other::resize(
+            &self.window,
+            buffer.width as i32,
+            buffer.height as i32,
+        );
     }
 }
 
@@ -247,82 +270,20 @@ fn encode_to_ico_format(buffer: &[u32], width: u32, height: u32) -> Vec<u8> {
 
     ico_data
 }
-pub struct NativeFileSystem {}
-impl NativeFileSystem {
-    pub fn new() -> Self {
-        Self {}
-    }
-}
-use std::io::Read;
-
-use super::Buffer;
-
-impl FileSystem for NativeFileSystem {
-    fn get_file_contents(
-        &self,
-        path: &str,
-    ) -> Result<FileData, Box<dyn std::error::Error>> {
-        let mut file = std::fs::File::open(path)?;
-
-        let mut buffer = Vec::new();
-        file.read_to_end(&mut buffer)?;
-
-        Ok(FileData::from_bytes(buffer))
-    }
-
-    fn write_to_file(&self, path: &str, contents: &str) {
-        std::fs::write(path, contents).expect("Failed to write file");
-    }
-    fn get_files_in_folder(&self, path: &str) -> Vec<String> {
-        let mut files = Vec::new();
-        if let Ok(entries) = std::fs::read_dir(path) {
-            for entry in entries.filter_map(Result::ok) {
-                let entry_path = entry.path();
-                if entry_path.is_file() {
-                    if let Some(file_name) = entry_path.file_name() {
-                        files.push(file_name.to_string_lossy().to_string());
-                    }
-                }
-            }
-        }
-        return files;
-    }
-
-    fn get_folders_in_folder(&self, path: &str) -> Vec<String> {
-        let mut folders = Vec::new();
-        if let Ok(entries) = std::fs::read_dir(path) {
-            for entry in entries.filter_map(Result::ok) {
-                let entry_path = entry.path();
-                if entry_path.is_dir() {
-                    if let Some(folder_name) = entry_path.file_name() {
-                        folders.push(folder_name.to_string_lossy().to_string());
-                    }
-                }
-            }
-        }
-        return folders;
-    }
-    fn join(&self, path1: &str, path2: &str) -> String {
-        return format!("{}/{}", path1, path2);
-    }
-    fn does_file_exist(&self, path: &str) -> bool {
-        std::fs::metadata(path).is_ok()
-    }
-}
 
 // Compile-time key mapping function
-const fn map_cursor_style(style: CursorStyle) -> minifb::CursorStyle {
-    match style {
-        CursorStyle::Default => minifb::CursorStyle::Arrow,
-        CursorStyle::ClosedHand => minifb::CursorStyle::ClosedHand,
-        CursorStyle::OpenHand => minifb::CursorStyle::OpenHand,
-        CursorStyle::Insertion => minifb::CursorStyle::Ibeam,
-        CursorStyle::Crosshair => minifb::CursorStyle::Crosshair,
-        CursorStyle::ResizeHorizontal => minifb::CursorStyle::ResizeLeftRight,
-        CursorStyle::ResizeVertical => minifb::CursorStyle::ResizeUpDown,
-        CursorStyle::ResizeAll => minifb::CursorStyle::ResizeAll,
-    }
-}
+// const fn map_cursor_style(style: CursorStyle) -> minifb::CursorStyle {
+//     match style {
+//         CursorStyle::Default => minifb::CursorStyle::Arrow,
+//         CursorStyle::ClosedHand => minifb::CursorStyle::ClosedHand,
+//         CursorStyle::OpenHand => minifb::CursorStyle::OpenHand,
+//         CursorStyle::Insertion => minifb::CursorStyle::Ibeam,
+//         CursorStyle::Crosshair => minifb::CursorStyle::Crosshair,
+//         CursorStyle::ResizeHorizontal => minifb::CursorStyle::ResizeLeftRight,
+//         CursorStyle::ResizeVertical => minifb::CursorStyle::ResizeUpDown,
+//         CursorStyle::ResizeAll => minifb::CursorStyle::ResizeAll,
+//     }
+// }
 const fn map_mouse(button: MouseButton) -> minifb::MouseButton {
     match button {
         MouseButton::Left => minifb::MouseButton::Left,

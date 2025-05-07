@@ -187,7 +187,7 @@
      cy="23.462225"
      r="6.5" />
   <circle
-     style="opacity:1;fill:#ffb900;fill-opacity:1;stroke-width:4.125"
+     style="opacity:1;fill:#{};fill-opacity:1;stroke-width:4.125"
      id="path1044"
      cx="21.5005"
      cy="23.453756"
@@ -227,7 +227,7 @@
          id="g919"
          transform="translate(7.3111176,3.5925632)">
         <rect
-           style="opacity:1;fill:#ffb900;fill-opacity:1;stroke:#151515;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           style="opacity:1;fill:#{};fill-opacity:1;stroke:#151515;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
            id="rect913"
            width="5.9014645"
            height="5.9014645"

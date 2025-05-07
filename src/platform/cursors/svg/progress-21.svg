@@ -325,7 +325,7 @@
              width="5.9015002"
              height="5.9015002"
              ry="1.5599999"
-             fill="#ffb900"
+             fill="#{}"
              id="rect11" />
           <path
              d="m -16.518,3.5623 c -1.3281,0.34386 -1.5174,1.7343 -1.5174,2.9271 v 10.598 c 0,0 -0.1777,1.938 1.6763,1.9666 1.854,0.02857 2.7706,-3.5325 4.261,-3.7533 1.4903,-0.22089 3.7119,1.2971 4.9462,0.20193 0.63915,-0.56706 1.0022,-1.4689 0.20123,-2.5554 -0.67077,-0.90989 -6.2602,-7.3864 -6.2602,-7.3864 -1.6933,-1.8294 -2.4563,-2.1644 -3.3071,-1.9987 z"
@@ -347,25 +347,25 @@
   <g
      id="g1921"
      transform="matrix(0.19330432,0,0,0.19330432,4.0149498,-177.02121)"
-     style="fill:#ffba00;fill-opacity:1">
+     style="fill:#{};fill-opacity:1">
     <path
        id="path1911"
-       style="opacity:1;fill:#ffba00;fill-opacity:1;stroke-width:2.98558"
+       style="opacity:1;fill:#{};fill-opacity:1;stroke-width:2.98558"
        d="m 56.827754,1030.3884 12.999981,-8.5 13.000017,8.5 -13.000017,8.5 z"
        sodipodi:nodetypes="ccccc" />
     <g
        id="g1917"
        transform="translate(24.571723)"
-       style="fill:#ffba00;fill-opacity:1">
+       style="fill:#{};fill-opacity:1">
       <rect
-         style="fill:#ffba00;fill-opacity:1;stroke-width:3.1048"
+         style="fill:#{};fill-opacity:1;stroke-width:3.1048"
          id="rect1913"
          width="13"
          height="13"
          x="32.256031"
          y="1030.3884" />
       <rect
-         style="fill:#ffba00;fill-opacity:1;stroke-width:3.1048"
+         style="fill:#{};fill-opacity:1;stroke-width:3.1048"
          id="rect1915"
          width="13"
          height="13"
@@ -374,7 +374,7 @@
     </g>
     <path
        id="path1919"
-       style="opacity:1;fill:#ffba00;fill-opacity:1;stroke-width:2.98558"
+       style="opacity:1;fill:#{};fill-opacity:1;stroke-width:2.98558"
        d="m 56.827754,1043.3884 12.999981,8.5 13.000017,-8.5 -13.000017,-8.5 z"
        sodipodi:nodetypes="ccccc" />
   </g>

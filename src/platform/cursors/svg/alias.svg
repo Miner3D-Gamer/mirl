@@ -194,7 +194,7 @@
          id="g919"
          transform="translate(7.3111176,3.5925632)">
         <rect
-           style="opacity:1;fill:#ffb900;fill-opacity:1;stroke:#151515;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           style="opacity:1;fill:#{};fill-opacity:1;stroke:#151515;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
            id="rect913"
            width="5.9014645"
            height="5.9014645"
@@ -220,7 +220,7 @@
        cy="34.500023"
        r="6.4999752" />
     <circle
-       style="fill:#ffb900;fill-opacity:1;stroke:none;stroke-width:1.83333;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="fill:#{};fill-opacity:1;stroke:none;stroke-width:1.83333;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="path1019"
        cx="36"
        cy="34.5"

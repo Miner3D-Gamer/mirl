@@ -14,6 +14,14 @@ pub fn u32_to_rgb(color: u32) -> (u8, u8, u8) {
     let b = (color & 0xFF) as u8;
     (r, g, b)
 }
+#[inline]
+pub fn u32_to_rgba(color: u32) -> (u8, u8, u8, u8) {
+    let a = ((color >> 24) & 0xFF) as u8;
+    let r = ((color >> 16) & 0xFF) as u8;
+    let g = ((color >> 8) & 0xFF) as u8;
+    let b = (color & 0xFF) as u8;
+    (r, g, b, a)
+}
 
 #[cfg(feature = "imagery")]
 pub mod imagery;
@@ -295,21 +303,97 @@ pub fn desaturate_fast(color: u32, amount: f32) -> u32 {
     (r_new << 16) | (g_new << 8) | b_new
 }
 
-pub struct Pixel {
-    pub r: u8,
-    pub g: u8,
-    pub b: u8,
+pub fn rasterize_svg(
+    svg_data: &[u8],
+    width: u32,
+    height: u32,
+) -> resvg::tiny_skia::Pixmap {
+    let opt = resvg::usvg::Options::default();
+    let fontdb = usvg::fontdb::Database::new();
+
+    let rtree = resvg::usvg::Tree::from_data(&svg_data, &opt, &fontdb).unwrap();
+
+    // Create a pixmap with desired size (from SVG's size)
+    let mut pixmap = resvg::tiny_skia::Pixmap::new(width, height)
+        .ok_or("Failed to create pixmap")
+        .unwrap();
+
+    // Render the SVG
+    resvg::render(&rtree, usvg::Transform::default(), &mut pixmap.as_mut());
+
+    return pixmap;
 }
 
-pub fn pixel_to_u32(pixel: Pixel) -> u32 {
-    rgb_to_u32(pixel.r, pixel.g, pixel.b)
-}
-
-pub fn u32_to_pixel(color: u32) -> Pixel {
-    let (r, g, b) = u32_to_rgb(color);
-    Pixel {
-        r,
-        g,
-        b,
+pub fn pixmap_to_raw_image(pixmap: &resvg::tiny_skia::Pixmap) -> RawImage {
+    let mut data = Vec::new();
+    for y in 0..pixmap.height() {
+        for x in 0..pixmap.width() {
+            let color = pixmap.pixel(x, y).unwrap();
+            data.push(rgba_to_u32(
+                color.red(),
+                color.green(),
+                color.blue(),
+                color.alpha(),
+            ));
+        }
     }
+    RawImage::new(data, pixmap.width() as usize, pixmap.height() as usize)
+}
+
+pub struct RawImage {
+    pub data: Vec<u32>,
+    pub width: usize,
+    pub height: usize,
+}
+
+impl RawImage {
+    fn new(data: Vec<u32>, width: usize, height: usize) -> Self {
+        Self {
+            data,
+            width,
+            height,
+        }
+    }
+}
+
+mod pixel;
+pub use pixel::*;
+
+pub fn u32_to_hex(color: u32) -> String {
+    format!(
+        "{:02x}{:02x}{:02x}{:02x}",
+        color >> 24,
+        (color >> 16) & 0xFF,
+        (color >> 8) & 0xFF,
+        color & 0xFF
+    )
+}
+
+pub fn hex_to_u32(hex: &str) -> u32 {
+    let r = u8::from_str_radix(&hex[0..2], 16).unwrap();
+    let g = u8::from_str_radix(&hex[2..4], 16).unwrap();
+    let b = u8::from_str_radix(&hex[4..6], 16).unwrap();
+    let a = u8::from_str_radix(&hex[6..8], 16).unwrap();
+    (a as u32) << 24 | (r as u32) << 16 | (g as u32) << 8 | b as u32
+}
+pub fn hex_to_rgba(hex: &str) -> (u8, u8, u8, u8) {
+    let r = u8::from_str_radix(&hex[0..2], 16).unwrap();
+    let g = u8::from_str_radix(&hex[2..4], 16).unwrap();
+    let b = u8::from_str_radix(&hex[4..6], 16).unwrap();
+    let a = u8::from_str_radix(&hex[6..8], 16).unwrap();
+    (r, g, b, a)
+}
+
+pub fn hex_to_rgb(hex: &str) -> (u8, u8, u8) {
+    let r = u8::from_str_radix(&hex[0..2], 16).unwrap();
+    let g = u8::from_str_radix(&hex[2..4], 16).unwrap();
+    let b = u8::from_str_radix(&hex[4..6], 16).unwrap();
+    (r, g, b)
+}
+
+pub fn rgb_to_hex(r: u8, g: u8, b: u8) -> String {
+    format!("{:02x}{:02x}{:02x}", r, g, b)
+}
+pub fn rgba_to_hex(r: u8, g: u8, b: u8, a: u8) -> String {
+    format!("{:02x}{:02x}{:02x}{:02x}", r, g, b, a)
 }

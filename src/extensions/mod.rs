@@ -17,6 +17,7 @@ macro_rules! impl_sign {
 
 impl_sign!(i8, i16, i32, i64, i128, isize, f32, f64);
 
+use core::f32;
 use std::convert::TryFrom;
 
 pub fn from_u8<T: TryFrom<u8>>(value: u8) -> T {
@@ -73,3 +74,16 @@ pub use tuple::*;
 
 mod string;
 pub use string::*;
+
+mod u4;
+pub use u4::*;
+
+mod u2;
+pub use u2::*;
+
+mod u1;
+pub use u1::*;
+
+mod small_u_support;
+#[allow(unused_imports)]
+pub use small_u_support::*;
