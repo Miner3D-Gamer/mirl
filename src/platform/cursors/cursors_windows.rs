@@ -661,8 +661,9 @@ fn load_cursor(
         hotspot_y,
         &image_data,
     ));
+    let temp = load_cursor_file(&file_path);
     delete_temp_file(&file_path).unwrap();
-    return load_cursor_file(&file_path);
+    return temp;
 }
 
 // fn load_base_cursor(

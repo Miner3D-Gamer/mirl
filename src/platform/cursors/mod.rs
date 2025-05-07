@@ -53,8 +53,8 @@ pub struct Cursors {
     pub copy: Cursor,
     pub crosshair: Cursor,
     pub default: Cursor,
-    pub dnd_move: Cursor,
-    pub dnd_no_drop: Cursor,
+    pub closed_hand: Cursor,
+    pub closed_hand_no_drop: Cursor,
     pub down_arrow: Cursor,
     pub draft: Cursor,
     pub fleur: Cursor,
@@ -218,7 +218,7 @@ impl Cursors {
                 secondary_color,
                 include_str!("./svg/crosshair.svg").to_string(),
             ),
-            dnd_move: load_base_cursor_with_file(
+            closed_hand: load_base_cursor_with_file(
                 BaseCursor {
                     hot_spot_x: 16,
                     hot_spot_y: 16,
@@ -228,7 +228,7 @@ impl Cursors {
                 secondary_color,
                 include_str!("./svg/closed-hand.svg").to_string(),
             ),
-            dnd_no_drop: load_base_cursor_with_file(
+            closed_hand_no_drop: load_base_cursor_with_file(
                 BaseCursor {
                     hot_spot_x: 16,
                     hot_spot_y: 16,

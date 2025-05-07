@@ -1,7 +1,7 @@
 [package]
 # Info
 name = "mirl"
-version = "1.0.0"
+version = "1.0.1"
 description = "Miners Rust Lib - A collection of ever growing and changing functions and structs. Compatibility: Windows (Full), Linux (Partial), MacOS (Barely), Web (Unknown)"
 # Compiler
 rust-version = "1.60.0"
