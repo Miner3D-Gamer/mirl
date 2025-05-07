@@ -654,13 +654,16 @@ fn load_cursor(
     hotspot_y: u16,
 ) -> HCURSOR {
     let size = cursor_resolution(size);
-    let (file_path, _file) = create_temp_file(create_cursor(
+    let (file_path, temp_file) = create_temp_file(create_cursor(
         size,
         size,
         hotspot_x,
         hotspot_y,
         &image_data,
-    ));
+    ))
+    .unwrap();
+    let _ = temp_file.keep();
+
     let temp = load_cursor_file(&file_path);
     delete_temp_file(&file_path).unwrap();
     return temp;
@@ -847,15 +850,25 @@ fn get_cursor_path(name: &str) -> String {
     return path.to_str().unwrap().to_string();
 }
 
-fn create_temp_file(cursor_data: Vec<u8>) -> (String, std::fs::File) {
-    let mut file = tempfile::NamedTempFile::new().unwrap();
+fn create_temp_file(
+    cursor_data: Vec<u8>,
+) -> std::io::Result<(String, tempfile::NamedTempFile)> {
+    let mut file = tempfile::NamedTempFile::new()?;
+    file.write_all(&cursor_data)?;
 
-    let _ = file.write_all(&cursor_data);
-    let path = file.path().to_str().unwrap().to_string();
-    //let path_bytes = Vec::from(path.as_bytes());
-    let file = file.keep().unwrap(); // This makes other parts have access to the file when using the path
+    let path_str = file
+        .path()
+        .to_str()
+        .ok_or_else(|| {
+            std::io::Error::new(
+                std::io::ErrorKind::Other,
+                "Invalid UTF-8 in temp file path",
+            )
+        })?
+        .to_string();
 
-    return (path, file.0);
+    //let (file, _path) = file.keep()?; // Keep returns (File, PathBuf)
+    Ok((path_str, file))
 }
 
 fn delete_temp_file(path: &str) -> std::io::Result<()> {

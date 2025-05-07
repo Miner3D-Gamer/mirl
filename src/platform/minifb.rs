@@ -1,7 +1,6 @@
 use std::str::FromStr;
 
-use crate::platform::{FrameworkCore, FrameworkExtended, KeyCode, MouseButton};
-use minifb::{Window, WindowOptions};
+use crate::platform::{FrameworkExtended, KeyCode, MouseButton};
 
 use enigo::{self, MouseControllable};
 
@@ -9,22 +8,30 @@ use crate::platform::Time;
 
 use ico::{IconDir, IconDirEntry, IconImage, ResourceType};
 
-use super::{cursors::Cursor, Buffer, FrameworkControl};
+use super::{
+    cursors::Cursor, time::NativeTime, Buffer, FrameworkControl, Input, Output,
+    Timing, Window,
+};
 
-pub struct NativeFramework {
-    window: Window,
+pub struct Framework {
+    window: minifb::Window,
     mouse: enigo::Enigo,
     time: NativeTime,
+    cursor: Option<Cursor>,
 }
 
-impl FrameworkCore for NativeFramework {
+impl Window for Framework {
     fn new(buffer: &Buffer, title: &str) -> Self {
         let width = buffer.width;
         let height = buffer.height;
 
-        let mut window =
-            Window::new(title, width, height, WindowOptions::default())
-                .unwrap();
+        let mut window = minifb::Window::new(
+            title,
+            width,
+            height,
+            minifb::WindowOptions::default(),
+        )
+        .unwrap();
 
         let title_bat_height = crate::system::get_title_bar_height();
         let (screen_width, screen_height) =
@@ -42,10 +49,14 @@ impl FrameworkCore for NativeFramework {
             window,
             mouse: enigo::Enigo::new(),
             time: NativeTime::new(),
+            cursor: None,
         }
     }
     #[inline]
     fn update(&mut self, buffer: &[u32]) {
+        if self.cursor.is_some() {
+            super::cursors::use_cursor(self.cursor.as_ref().unwrap());
+        }
         self.window
             .update_with_buffer(
                 buffer,
@@ -59,21 +70,12 @@ impl FrameworkCore for NativeFramework {
     fn is_open(&self) -> bool {
         self.window.is_open()
     }
+}
 
-    #[inline]
-    fn sample_fps(&mut self) -> u64 {
-        let deltatime = self.time.time.elapsed().as_millis() as u64;
-        self.time.time = std::time::Instant::now();
-        deltatime
-    }
-
+impl Input for Framework {
     #[inline]
     fn get_mouse_position(&self) -> Option<(f32, f32)> {
         self.window.get_mouse_pos(minifb::MouseMode::Pass)
-    }
-    #[inline]
-    fn get_size(&self) -> (usize, usize) {
-        self.window.get_size()
     }
     #[inline]
     fn is_key_down(&self, key: KeyCode) -> bool {
@@ -83,17 +85,25 @@ impl FrameworkCore for NativeFramework {
     fn is_mouse_down(&self, button: MouseButton) -> bool {
         self.window.get_mouse_down(map_mouse(button))
     }
+}
+
+impl Output for Framework {
     #[inline]
     fn log<T: std::fmt::Debug>(&self, t: T) {
-        println!("{:#?}", t);
+        super::shared::log(t);
     }
+}
+
+impl Timing for Framework {
     #[inline]
     fn get_time(&self) -> Box<(dyn Time + 'static)> {
-        // Native environment: using SystemTime to get current time
-        let now = std::time::Instant::now();
-        return Box::new(NativeTime {
-            time: now,
-        });
+        super::shared::get_time()
+    }
+    #[inline]
+    fn sample_fps(&mut self) -> u64 {
+        let (time, r) = super::shared::sample_fps(&self.time);
+        self.time = time;
+        return r;
     }
     #[inline]
     fn sleep(&self, time: u64) {
@@ -101,7 +111,7 @@ impl FrameworkCore for NativeFramework {
     }
 }
 
-impl FrameworkExtended for NativeFramework {
+impl FrameworkExtended for Framework {
     #[inline]
     fn set_title(&mut self, title: &str) {
         self.window.set_title(title);
@@ -184,7 +194,7 @@ impl FrameworkExtended for NativeFramework {
 }
 
 #[cfg(target_os = "windows")]
-impl FrameworkControl for NativeFramework {
+impl FrameworkControl for Framework {
     #[inline]
     fn set_always_ontop(&mut self, always_ontop: bool) {
         self.window.topmost(always_ontop);
@@ -193,15 +203,19 @@ impl FrameworkControl for NativeFramework {
     fn set_position(&mut self, x: isize, y: isize) {
         self.window.set_position(x, y);
     }
+    #[inline]
     fn maximize(&mut self) {
         super::other::maximize(&self.window);
     }
+    #[inline]
     fn minimize(&mut self) {
         super::other::minimize(&self.window);
     }
+    #[inline]
     fn restore(&mut self) {
         super::other::restore(&self.window);
     }
+    #[inline]
     fn set_size(&mut self, buffer: &Buffer) {
         super::other::resize(
             &self.window,
@@ -209,30 +223,12 @@ impl FrameworkControl for NativeFramework {
             buffer.height as i32,
         );
     }
-}
-
-pub struct NativeTime {
-    time: std::time::Instant,
-}
-impl NativeTime {
-    fn new() -> Self {
-        Self {
-            time: std::time::Instant::now(),
-        }
+    #[inline]
+    fn get_size(&self) -> (usize, usize) {
+        self.window.get_size()
     }
 }
-impl Time for NativeTime {
-    fn get_elapsed_time(&self) -> u64 {
-        self.time.elapsed().as_millis() as u64
-    }
-}
-pub const fn from_micros_u128(micros: u128) -> std::time::Duration {
-    // We can safely break the u128 into two u64s.
-    let secs = (micros / 1_000_000) as u64; // seconds
-    let nanos = ((micros % 1_000_000) * 1000) as u32; // nanoseconds (from microseconds)
 
-    std::time::Duration::new(secs, nanos)
-}
 fn encode_to_ico_format(buffer: &[u32], width: u32, height: u32) -> Vec<u8> {
     // Create a new icon directory
     let mut icon_dir = IconDir::new(ResourceType::Icon);
@@ -473,7 +469,7 @@ const fn map_key(key: KeyCode) -> minifb::Key {
         KeyCode::Slash => minifb::Key::Slash,
         KeyCode::Grave => minifb::Key::Unknown,
         // Fallback
-        // _ => minifb::Key::Unknown,
+        _ => minifb::Key::Unknown,
     }
 }
 

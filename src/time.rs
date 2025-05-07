@@ -40,3 +40,11 @@ pub fn get_time() -> std::time::Instant {
 //         sleep_us(sleep_time);
 //     }
 // }
+
+pub const fn from_micros_u128(micros: u128) -> std::time::Duration {
+    // We can safely break the u128 into two u64s.
+    let secs = (micros / 1_000_000) as u64; // seconds
+    let nanos = ((micros % 1_000_000) * 1000) as u32; // nanoseconds (from microseconds)
+
+    std::time::Duration::new(secs, nanos)
+}

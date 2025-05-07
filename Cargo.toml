@@ -1,7 +1,7 @@
 [package]
 # Info
 name = "mirl"
-version = "1.0.1"
+version = "1.0.2"
 description = "Miners Rust Lib - A collection of ever growing and changing functions and structs. Compatibility: Windows (Full), Linux (Partial), MacOS (Barely), Web (Unknown)"
 # Compiler
 rust-version = "1.60.0"
@@ -42,10 +42,14 @@ tempfile = "3"
 # console
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 crossterm = ">=0.28"
+# MiniFB
 minifb = ">=0.28.0"
 
-# pixels = "0.13"
-# winit = "0.29"
+# GLFW
+glfw = "0.51.0"
+
+gl = "0.14.0"
+
 # log = "0.4"
 # env_logger = "0.10"
 
