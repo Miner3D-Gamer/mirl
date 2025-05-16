@@ -25,6 +25,7 @@ pub fn u32_to_rgba(color: u32) -> (u8, u8, u8, u8) {
 
 #[cfg(feature = "imagery")]
 pub mod imagery;
+use glfw::PixelImage;
 #[cfg(feature = "imagery")]
 pub use imagery::*;
 
@@ -340,8 +341,26 @@ pub fn pixmap_to_raw_image(pixmap: &resvg::tiny_skia::Pixmap) -> RawImage {
     RawImage::new(data, pixmap.width() as usize, pixmap.height() as usize)
 }
 
+#[inline(always)]
+pub fn raw_image_to_pixel_image(raw_image: &RawImage) -> glfw::PixelImage {
+    return glfw::PixelImage {
+        width: raw_image.width as u32,
+        height: raw_image.height as u32,
+        pixels: argb_list_to_rgba_list(&raw_image.data),
+    };
+}
+#[inline(always)]
+pub fn pixel_image_to_raw_image(pixel_image: &glfw::PixelImage) -> RawImage {
+    return RawImage::new(
+        rgba_list_to_argb_list(&pixel_image.pixels),
+        pixel_image.width as usize,
+        pixel_image.height as usize,
+    );
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct RawImage {
-    pub data: Vec<u32>,
+    pub data: Box<[u32]>,
     pub width: usize,
     pub height: usize,
 }
@@ -349,7 +368,7 @@ pub struct RawImage {
 impl RawImage {
     fn new(data: Vec<u32>, width: usize, height: usize) -> Self {
         Self {
-            data,
+            data: data.into_boxed_slice(),
             width,
             height,
         }
@@ -359,6 +378,7 @@ impl RawImage {
 mod pixel;
 pub use pixel::*;
 
+#[inline(always)]
 pub fn u32_to_hex(color: u32) -> String {
     format!(
         "{:02x}{:02x}{:02x}{:02x}",
@@ -369,6 +389,7 @@ pub fn u32_to_hex(color: u32) -> String {
     )
 }
 
+#[inline(always)]
 pub fn hex_to_u32(hex: &str) -> u32 {
     let r = u8::from_str_radix(&hex[0..2], 16).unwrap();
     let g = u8::from_str_radix(&hex[2..4], 16).unwrap();
@@ -376,6 +397,7 @@ pub fn hex_to_u32(hex: &str) -> u32 {
     let a = u8::from_str_radix(&hex[6..8], 16).unwrap();
     (a as u32) << 24 | (r as u32) << 16 | (g as u32) << 8 | b as u32
 }
+#[inline(always)]
 pub fn hex_to_rgba(hex: &str) -> (u8, u8, u8, u8) {
     let r = u8::from_str_radix(&hex[0..2], 16).unwrap();
     let g = u8::from_str_radix(&hex[2..4], 16).unwrap();
@@ -384,6 +406,7 @@ pub fn hex_to_rgba(hex: &str) -> (u8, u8, u8, u8) {
     (r, g, b, a)
 }
 
+#[inline(always)]
 pub fn hex_to_rgb(hex: &str) -> (u8, u8, u8) {
     let r = u8::from_str_radix(&hex[0..2], 16).unwrap();
     let g = u8::from_str_radix(&hex[2..4], 16).unwrap();
@@ -391,9 +414,75 @@ pub fn hex_to_rgb(hex: &str) -> (u8, u8, u8) {
     (r, g, b)
 }
 
+#[inline(always)]
 pub fn rgb_to_hex(r: u8, g: u8, b: u8) -> String {
     format!("{:02x}{:02x}{:02x}", r, g, b)
 }
+#[inline(always)]
 pub fn rgba_to_hex(r: u8, g: u8, b: u8, a: u8) -> String {
     format!("{:02x}{:02x}{:02x}{:02x}", r, g, b, a)
+}
+
+#[inline(always)]
+pub fn argb_list_to_rgba_list(input: &[u32]) -> Vec<u32> {
+    input
+        .iter()
+        .map(|&argb| {
+            let a = (argb >> 24) & 0xFF;
+            let r = (argb >> 16) & 0xFF;
+            let g = (argb >> 8) & 0xFF;
+            let b = argb & 0xFF;
+            (r as u32)
+                | ((g as u32) << 8)
+                | ((b as u32) << 16)
+                | ((a as u32) << 24)
+            // RGBA layout: 0xRRGGBBAA
+        })
+        .collect()
+}
+pub fn rgba_list_to_argb_list(input: &[u32]) -> Vec<u32> {
+    input
+        .iter()
+        .map(|&rgba| {
+            let r = (rgba >> 16) & 0xFF;
+            let g = (rgba >> 8) & 0xFF;
+            let b = rgba & 0xFF;
+            let a = (rgba >> 24) & 0xFF;
+            (r as u32)
+                | ((g as u32) << 8)
+                | ((b as u32) << 16)
+                | ((a as u32) << 24)
+            // ARGB layout: 0xAARRGGBB
+        })
+        .collect()
+}
+pub struct PixmapWrapper(pub resvg::tiny_skia::Pixmap);
+
+impl From<resvg::tiny_skia::Pixmap> for PixmapWrapper {
+    fn from(pixmap: resvg::tiny_skia::Pixmap) -> Self {
+        PixmapWrapper(pixmap)
+    }
+}
+impl From<PixmapWrapper> for resvg::tiny_skia::Pixmap {
+    fn from(wrapper: PixmapWrapper) -> Self {
+        wrapper.0
+    }
+}
+
+impl From<PixmapWrapper> for glfw::PixelImage {
+    fn from(pixmap: PixmapWrapper) -> Self {
+        raw_image_to_pixel_image(&pixmap_to_raw_image(&pixmap.into()))
+    }
+}
+
+impl From<RawImage> for glfw::PixelImage {
+    fn from(raw_image: RawImage) -> Self {
+        raw_image_to_pixel_image(&raw_image)
+    }
+}
+
+impl From<glfw::PixelImage> for RawImage {
+    fn from(pixel_image: PixelImage) -> Self {
+        pixel_image_to_raw_image(&pixel_image)
+    }
 }

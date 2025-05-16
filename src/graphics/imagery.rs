@@ -1,5 +1,4 @@
 use crate::graphics::u32_to_rgb;
-use std::ops::Deref;
 
 use image::{GenericImage, GenericImageView};
 
