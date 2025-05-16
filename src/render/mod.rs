@@ -225,10 +225,10 @@ pub fn vertex_3d_to_2d(
     return (screen_x as u16, screen_y as u16);
 }
 
-#[cfg(feature = "imagery")]
-pub mod image_support;
-#[cfg(feature = "imagery")]
-pub use image_support::*;
+// #[cfg(feature = "imagery")]
+// mod image_support;
+// #[cfg(feature = "imagery")]
+// pub use image_support::*;
 
 // ---------------------------------------------------------------------
 mod rendering;
