@@ -1,59 +1,7 @@
 mod file_data;
 
 use crate::platform::file_data::FileData;
-
-// Stitch together the traits for basic framework
-pub trait BasicFramework: FrameworkCore + FrameworkExtended {}
-impl<T: FrameworkCore + FrameworkExtended> BasicFramework for T {}
-// Stitch together the traits for extended framework
-pub trait Framework: BasicFramework + FrameworkControl {}
-impl<T: BasicFramework + FrameworkControl> Framework for T {}
-
-pub trait Window {
-    fn new(buffer: &Buffer, title: &str) -> Self;
-    fn update(&mut self, buffer: &[u32]);
-    fn is_open(&self) -> bool;
-    fn clean_up(&self) {}
-}
-
-pub trait Input {
-    fn get_mouse_position(&self) -> Option<(f32, f32)>;
-    fn is_key_down(&self, key: KeyCode) -> bool;
-    fn is_mouse_down(&self, button: MouseButton) -> bool;
-}
-pub trait Output {
-    fn log<T: std::fmt::Debug>(&self, t: T);
-}
-
-pub trait Timing {
-    fn get_time(&self) -> Box<dyn Time>;
-    fn sleep(&self, time: u64);
-    fn sample_fps(&mut self) -> u64;
-}
-pub trait FrameworkCore: Window + Input + Output + Timing {}
-
-pub trait FrameworkExtended {
-    fn set_title(&mut self, title: &str);
-    fn set_target_fps(&mut self, fps: usize);
-    fn get_position(&self) -> (isize, isize);
-    /// Width/Height should be something like 32x32 or 48x48
-    fn set_icon(&mut self, buffer: &[u32], width: u32, height: u32);
-    fn set_cursor_style(&mut self, style: &Cursor);
-    fn get_mouse_scroll(&self) -> Option<(f32, f32)>;
-}
-pub trait FrameworkControl: FrameworkExtended {
-    fn move_window(&mut self, x: isize, y: isize) {
-        let current = self.get_position();
-        self.set_position(current.0 + x, current.1 + y);
-    }
-    fn set_always_ontop(&mut self, always_ontop: bool);
-    fn set_position(&mut self, x: isize, y: isize);
-    fn set_size(&mut self, buffer: &Buffer);
-    fn get_size(&self) -> (usize, usize);
-    fn minimize(&mut self);
-    fn maximize(&mut self);
-    fn restore(&mut self);
-}
+pub mod framework_traits;
 
 pub trait Time {
     /// Get time in milliseconds
@@ -122,6 +70,7 @@ pub enum MouseButton {
     Left,
     Right,
     Middle,
+    Unsupported,
 }
 
 pub enum KeyCode {
@@ -220,7 +169,7 @@ pub enum KeyCode {
     Comma,
     Period,
     Minus,
-    Equals,
+    Equal,
     LeftBracket,
     RightBracket,
     Backslash,
@@ -229,6 +178,7 @@ pub enum KeyCode {
     Tilde,
     Slash,
     Grave,
+    Apostrophe,
 
     // Arrow keys
     Up,
@@ -304,6 +254,13 @@ pub enum KeyCode {
     PrintScreen,
     Pause,
     Application,
+
+    // what
+    F25,
+    KeyPadEqual,
+    World1,
+    World2,
+    Unknown,
 }
 
 // mod file_data;
@@ -313,7 +270,8 @@ pub mod minifb;
 #[cfg(not(target_arch = "wasm32"))]
 pub mod glfw;
 
-use cursors::Cursor;
+pub use cursors::Cursor;
+
 pub struct Buffer {
     pub buffer: Box<[u32]>,
     pub pointer: *mut u32,
@@ -363,12 +321,15 @@ impl Deref for Buffer {
     }
 }
 
-pub mod cursors;
+mod cursors;
 
 pub mod file_system;
 
-#[cfg(target_os = "windows")]
-mod other;
-
 mod shared;
 mod time;
+
+pub fn load_font(path: &str) -> fontdue::Font {
+    let font_data = std::fs::read(path).expect("Failed to read font file");
+    fontdue::Font::from_bytes(font_data, fontdue::FontSettings::default())
+        .expect("Failed to parse font")
+}

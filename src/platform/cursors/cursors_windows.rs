@@ -11,7 +11,7 @@ use windows::{
     Win32::UI::WindowsAndMessaging::*,
 };
 
-use super::{BaseCursor, Cursor};
+use super::{cursor_resolution, BaseCursor, Cursor};
 
 #[derive(Default)]
 pub struct CursorManagerWindows {
@@ -19,10 +19,6 @@ pub struct CursorManagerWindows {
 }
 pub struct CursorWindows {
     pub cursor: HCURSOR,
-}
-fn cursor_resolution(quality: U2) -> u8 {
-    let t: u32 = quality.into();
-    2u8.pow(t + 5)
 }
 
 impl CursorManagerWindows {
@@ -743,13 +739,13 @@ pub fn load_base_cursor_with_file(
         * wanted_size as f64)
         .round() as u16;
 
-    return Cursor::Win(load_cursor(
+    return Cursor::Win(Some(load_cursor(
         //&extract_file_name_without_extension(&cursor.file_path),
         size,
         pixmap_to_raw_image(&image_data),
         adjusted_hotspot_x,
         adjusted_hotspot_y,
-    ));
+    )));
 }
 
 /// Expects .cur file

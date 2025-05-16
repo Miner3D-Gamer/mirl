@@ -1,17 +1,18 @@
 use std::str::FromStr;
 
-use crate::platform::{FrameworkExtended, KeyCode, MouseButton};
+use crate::platform::{KeyCode, MouseButton};
 
 use enigo::{self, MouseControllable};
 
-use crate::platform::Time;
-
 use ico::{IconDir, IconDirEntry, IconImage, ResourceType};
 
-use super::{
-    cursors::Cursor, time::NativeTime, Buffer, FrameworkControl, Input, Output,
-    Timing, Window,
+use super::cursors::load_base_cursor_with_file;
+use super::framework_traits::{
+    Control, ExtendedControl, ExtendedInput, ExtendedTiming, ExtendedWindow,
+    Input, Output, Timing, Window,
 };
+use super::Time;
+use super::{cursors::Cursor, time::NativeTime, Buffer};
 
 pub struct Framework {
     window: minifb::Window,
@@ -55,7 +56,7 @@ impl Window for Framework {
     #[inline]
     fn update(&mut self, buffer: &[u32]) {
         if self.cursor.is_some() {
-            super::cursors::use_cursor(self.cursor.as_ref().unwrap());
+            super::cursors::use_cursor(self.cursor.as_ref().unwrap(), None);
         }
         self.window
             .update_with_buffer(
@@ -74,8 +75,14 @@ impl Window for Framework {
 
 impl Input for Framework {
     #[inline]
-    fn get_mouse_position(&self) -> Option<(f32, f32)> {
-        self.window.get_mouse_pos(minifb::MouseMode::Pass)
+    fn get_mouse_position(&self) -> Option<(f64, f64)> {
+        let t = self.window.get_mouse_pos(minifb::MouseMode::Pass);
+        if t.is_none() {
+            return None;
+        }
+        let (x, y) = t.unwrap();
+
+        return Some((x as f64, y as f64));
     }
     #[inline]
     fn is_key_down(&self, key: KeyCode) -> bool {
@@ -96,7 +103,7 @@ impl Output for Framework {
 
 impl Timing for Framework {
     #[inline]
-    fn get_time(&self) -> Box<(dyn Time + 'static)> {
+    fn get_time(&self) -> Box<dyn Time> {
         super::shared::get_time()
     }
     #[inline]
@@ -107,11 +114,55 @@ impl Timing for Framework {
     }
     #[inline]
     fn sleep(&self, time: u64) {
-        std::thread::sleep(std::time::Duration::from_millis(time));
+        super::shared::sleep(time);
     }
 }
 
-impl FrameworkExtended for Framework {
+impl ExtendedControl for Framework {
+    #[inline]
+    fn set_always_ontop(&mut self, always_ontop: bool) {
+        self.window.topmost(always_ontop);
+    }
+    #[inline]
+    fn maximize(&mut self) {
+        super::shared::maximize(&self.window.get_window_handle());
+    }
+    #[inline]
+    fn minimize(&mut self) {
+        super::shared::minimize(&self.window.get_window_handle());
+    }
+    #[inline]
+    fn restore(&mut self) {
+        super::shared::restore(&self.window.get_window_handle());
+    }
+    fn is_maximized(&self) -> bool {
+        super::shared::is_window_maximized(&self.window.get_window_handle())
+    }
+    fn is_minimized(&self) -> bool {
+        super::shared::is_window_minimized(&self.window.get_window_handle())
+    }
+}
+
+impl ExtendedInput for Framework {
+    #[inline]
+    fn get_mouse_scroll(&self) -> Option<(f64, f64)> {
+        let t = self.window.get_scroll_wheel();
+        if t.is_none() {
+            return None;
+        }
+        let (x, y) = t.unwrap();
+        return Some((x as f64, y as f64));
+    }
+}
+
+impl ExtendedTiming for Framework {
+    #[inline]
+    fn set_target_fps(&mut self, fps: usize) {
+        self.window.set_target_fps(fps);
+    }
+}
+
+impl ExtendedWindow for Framework {
     #[inline]
     fn set_title(&mut self, title: &str) {
         self.window.set_title(title);
@@ -120,14 +171,6 @@ impl FrameworkExtended for Framework {
     // fn wait(&self, time: u64) {
     //     std::thread::sleep(Duration::from_millis(time));
     // }
-    #[inline]
-    fn set_target_fps(&mut self, fps: usize) {
-        self.window.set_target_fps(fps);
-    }
-    #[inline]
-    fn get_position(&self) -> (isize, isize) {
-        self.window.get_position()
-    }
     #[inline]
     fn set_icon(&mut self, buffer: &[u32], width: u32, height: u32) {
         // assert_eq!(
@@ -183,42 +226,31 @@ impl FrameworkExtended for Framework {
     }
     #[inline]
     fn set_cursor_style(&mut self, style: &Cursor) {
-        super::cursors::use_cursor(style);
+        super::cursors::use_cursor(style, None);
         self.mouse.mouse_move_relative(0, 1);
         self.mouse.mouse_move_relative(0, -1);
     }
-    #[inline]
-    fn get_mouse_scroll(&self) -> Option<(f32, f32)> {
-        self.window.get_scroll_wheel()
+    fn load_custom_cursor(
+        &mut self,
+        size: crate::render::U2,
+        main_color: u32,
+        secondary_color: u32,
+    ) -> super::cursors::Cursors {
+        super::cursors::Cursors::load(
+            size,
+            main_color,
+            secondary_color,
+            load_base_cursor_with_file,
+        )
     }
 }
 
 #[cfg(target_os = "windows")]
-impl FrameworkControl for Framework {
-    #[inline]
-    fn set_always_ontop(&mut self, always_ontop: bool) {
-        self.window.topmost(always_ontop);
-    }
-    #[inline]
-    fn set_position(&mut self, x: isize, y: isize) {
-        self.window.set_position(x, y);
-    }
-    #[inline]
-    fn maximize(&mut self) {
-        super::other::maximize(&self.window);
-    }
-    #[inline]
-    fn minimize(&mut self) {
-        super::other::minimize(&self.window);
-    }
-    #[inline]
-    fn restore(&mut self) {
-        super::other::restore(&self.window);
-    }
+impl Control for Framework {
     #[inline]
     fn set_size(&mut self, buffer: &Buffer) {
-        super::other::resize(
-            &self.window,
+        super::shared::resize(
+            &self.window.get_window_handle(),
             buffer.width as i32,
             buffer.height as i32,
         );
@@ -226,6 +258,14 @@ impl FrameworkControl for Framework {
     #[inline]
     fn get_size(&self) -> (usize, usize) {
         self.window.get_size()
+    }
+    #[inline]
+    fn set_position(&mut self, x: isize, y: isize) {
+        self.window.set_position(x, y);
+    }
+    #[inline]
+    fn get_position(&self) -> (isize, isize) {
+        self.window.get_position()
     }
 }
 
@@ -285,6 +325,9 @@ const fn map_mouse(button: MouseButton) -> minifb::MouseButton {
         MouseButton::Left => minifb::MouseButton::Left,
         MouseButton::Right => minifb::MouseButton::Right,
         MouseButton::Middle => minifb::MouseButton::Middle,
+        MouseButton::Unsupported => {
+            panic!("Unsupported mouse button - idk what to do with this");
+        }
     }
 }
 const fn map_key(key: KeyCode) -> minifb::Key {
@@ -393,7 +436,7 @@ const fn map_key(key: KeyCode) -> minifb::Key {
         KeyCode::Comma => minifb::Key::Comma,
         KeyCode::Period => minifb::Key::Period,
         KeyCode::Minus => minifb::Key::Minus,
-        KeyCode::Equals => minifb::Key::Equal,
+        KeyCode::Equal => minifb::Key::Equal,
         KeyCode::LeftBracket => minifb::Key::LeftBracket,
         KeyCode::RightBracket => minifb::Key::RightBracket,
         KeyCode::Backslash => minifb::Key::Backslash,
@@ -471,10 +514,4 @@ const fn map_key(key: KeyCode) -> minifb::Key {
         // Fallback
         _ => minifb::Key::Unknown,
     }
-}
-
-pub fn load_font(path: &str) -> fontdue::Font {
-    let font_data = std::fs::read(path).expect("Failed to read font file");
-    fontdue::Font::from_bytes(font_data, fontdue::FontSettings::default())
-        .expect("Failed to parse font")
 }

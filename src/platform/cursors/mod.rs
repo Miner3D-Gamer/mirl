@@ -1,8 +1,8 @@
 #[cfg(target_os = "windows")]
-use cursors_windows::load_base_cursor_with_file;
+pub use cursors_windows::load_base_cursor_with_file;
 
 use crate::{graphics::RawImage, render::U2};
-
+pub mod cursor_glfw;
 pub trait CursorManager {
     fn load_cursor(
         &mut self,
@@ -24,13 +24,15 @@ pub trait CursorManager {
 #[derive(Debug)]
 pub enum Cursor {
     #[cfg(target_os = "windows")]
-    Win(windows::Win32::UI::WindowsAndMessaging::HCURSOR),
+    Win(Option<windows::Win32::UI::WindowsAndMessaging::HCURSOR>),
 
     #[cfg(target_os = "linux")]
-    X11(u64), // This could be a cursor ID from X11
+    X11(Option<u64>), // This could be a cursor ID from X11
 
     #[cfg(target_os = "macos")]
-    Mac(*mut std::ffi::c_void), // Placeholder for NSCursor or equivalent
+    Mac(Option<*mut std::ffi::c_void>), // Placeholder for NSCursor or equivalent
+
+    Glfw(Option<(RawImage, u32, u32)>),
 }
 pub struct CursorData {
     raw_image_data: Vec<u32>,
@@ -86,7 +88,15 @@ pub struct Cursors {
 }
 
 impl Cursors {
-    pub fn load(size: U2, main_color: u32, secondary_color: u32) -> Self {
+    pub fn load<F>(
+        size: U2,
+        main_color: u32,
+        secondary_color: u32,
+        load_base_cursor_with_file: F,
+    ) -> Self
+    where
+        F: Fn(BaseCursor, U2, u32, u32, String) -> Cursor,
+    {
         Self {
             default: load_base_cursor_with_file(
                 BaseCursor {
@@ -529,23 +539,59 @@ pub struct BaseCursor {
     hot_spot_y: i32,
 }
 
-pub fn use_cursor(cursor: &Cursor) {
+pub fn use_cursor(cursor: &Cursor, glfw_window: Option<&mut glfw::Window>) {
+    if let Some(additional_info) = glfw_window {
+        match cursor {
+            Cursor::Glfw(new_cursor) => {
+                let given = new_cursor.as_ref().unwrap().clone();
+                let pixel = given.0.into();
+                // Debug output for dimensions
+                println!("Cursor dimensions: {} x {}", given.1, given.2);
+
+                // Check if dimensions make sense
+                if given.1 == 0
+                    || given.2 == 0
+                    || given.1 > 1024
+                    || given.2 > 1024
+                {
+                    println!("Error: Invalid cursor dimensions");
+                    return;
+                }
+                let new =
+                    glfw::Cursor::create_from_pixels(pixel, given.1, given.2);
+
+                additional_info.set_cursor(Some(new));
+            }
+            _ => {
+                panic!("Cannot set GLFW cursor -> No cursors provided");
+            }
+        }
+    }
     match cursor {
         #[cfg(target_os = "windows")]
         Cursor::Win(hcursor) => {
-            cursors_windows::set_cursor(*hcursor);
+            let t = hcursor.as_ref().unwrap();
+            cursors_windows::set_cursor(*t);
         }
 
         #[cfg(target_os = "linux")]
         Cursor::X11(xcursor_id) => {
             // Use the X11 cursor ID
-            println!("X11 cursor id: {}", xcursor_id);
+            println!("X11 cursor id: {}", xcursor_id.unwrap());
         }
 
         #[cfg(target_os = "macos")]
         Cursor::Mac(ptr) => {
             // Use macOS cursor pointer (e.g., NSCursor*)
-            println!("macOS cursor pointer: {:?}", ptr);
+            println!("macOS cursor pointer: {:?}", ptr.unwrap());
+        }
+        Cursor::Glfw(_) => {
+            panic!("Cannot set GLFW cursor -> Not a GLFW context");
         }
     }
+}
+
+pub fn cursor_resolution(quality: U2) -> u8 {
+    let t: u32 = quality.into();
+    2u8.pow(t + 5) - 1
 }
