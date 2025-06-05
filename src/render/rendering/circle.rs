@@ -51,10 +51,20 @@ fn draw_circle_impl(
     color: u32,
     draw_pixel: DrawPixelFunction,
 ) {
+    let pos_x = pos_x as isize;
+    let pos_y = pos_y as isize;
+
     for y in -radius..=radius {
-        let dx = (radius * radius - y * y).abs().sqrt() as isize;
+        let dy = y * y;
+        let dx = (radius * radius - dy).abs().sqrt() as isize;
+
         for x in -dx..=dx {
-            draw_pixel(buffer, pos_x + x as usize, pos_y + y as usize, color);
+            let x_pos = pos_x + x;
+            let y_pos = pos_y + y;
+
+            if x_pos >= 0 && y_pos >= 0 {
+                draw_pixel(buffer, x_pos as usize, y_pos as usize, color);
+            }
         }
     }
 }
