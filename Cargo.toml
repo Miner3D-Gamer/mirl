@@ -7,7 +7,7 @@ description = "Miners Rust Lib - A collection of ever growing and changing funct
 rust-version = "1.60.0"
 edition = "2021"
 # Credit/Misc
-license = "MIT"
+license = "GPL-3.0"
 authors = ["Miner3D"]
 keywords = ["miner3d", "do_not_use"]
 repository = "https://github.com/Miner3D-Gamer/mirl"
