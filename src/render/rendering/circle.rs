@@ -12,7 +12,7 @@ pub fn draw_circle_switch(
     fast: bool,
 ) {
     if fast {
-        draw_circle_fast(buffer, pos_x, pos_y, radius, color);
+        draw_circle_unsafe(buffer, pos_x, pos_y, radius, color);
     } else {
         draw_circle(buffer, pos_x, pos_y, radius, color);
     }
@@ -32,7 +32,7 @@ pub fn draw_circle(
 
 #[inline]
 /// Draws a filled circle without bounds checking
-pub fn draw_circle_fast(
+pub fn draw_circle_unsafe(
     buffer: &Buffer,
     pos_x: usize,
     pos_y: usize,

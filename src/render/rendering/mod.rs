@@ -30,7 +30,7 @@ type DrawPixelFunction = fn(&Buffer, usize, usize, u32);
 
 //         // Unsafe (fast) version
 //         paste::paste! {
-//             pub fn [<$fn _fast>]($($arg: $arg_ty),*) {
+//             pub fn [<$fn _unsafe>]($($arg: $arg_ty),*) {
 //                 [<$fn _impl>]($($arg),*, draw_pixel_unsafe);
 //             }
 //         }
@@ -62,8 +62,18 @@ fn get_pixel(buffer: &Buffer, x: usize, y: usize) -> u32 {
         return 0;
     }
     let index = y * buffer.width + x;
-    return buffer.buffer[index];
+    unsafe {
+        return *buffer.pointer.add(index);
+    }
 }
+#[inline(always)]
+fn get_pixel_unsafe(buffer: &Buffer, x: usize, y: usize) -> u32 {
+    let index = y * buffer.width + x;
+    unsafe {
+        return *buffer.pointer.add(index);
+    }
+}
+
 #[inline(always)]
 fn get_pixel_isize(buffer: &Buffer, x: isize, y: isize) -> u32 {
     if x < 0 || y < 0 {
@@ -86,3 +96,5 @@ mod line;
 pub use line::*;
 mod circle;
 pub use circle::*;
+mod rectangle;
+pub use rectangle::*;

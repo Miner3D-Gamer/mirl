@@ -11,7 +11,7 @@ pub fn draw_circle_outline_switched(
     fast: bool,
 ) {
     if fast {
-        draw_circle_outline_fast(buffer, pos_x, pos_y, radius, color);
+        draw_circle_outline_unsafe(buffer, pos_x, pos_y, radius, color);
     } else {
         draw_circle_outline(buffer, pos_x, pos_y, radius, color);
     }
@@ -37,7 +37,7 @@ pub fn draw_circle_outline(
 }
 #[inline]
 /// Draws a circle outline without bounds checking
-pub fn draw_circle_outline_fast(
+pub fn draw_circle_outline_unsafe(
     buffer: &Buffer,
     pos_x: usize,
     pos_y: usize,

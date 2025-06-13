@@ -13,7 +13,7 @@ pub fn draw_line_switch(
     fast: bool,
 ) {
     if fast {
-        draw_line_fast(buffer, x1, y1, x2, y2, color, thickness);
+        draw_line_unsafe(buffer, x1, y1, x2, y2, color, thickness);
     } else {
         draw_line(buffer, x1, y1, x2, y2, color, thickness);
     }
@@ -33,7 +33,7 @@ pub fn draw_line(
 }
 
 #[inline]
-pub fn draw_line_fast(
+pub fn draw_line_unsafe(
     buffer: &Buffer,
     x1: usize,
     y1: usize,
