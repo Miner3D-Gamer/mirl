@@ -74,3 +74,10 @@ pub fn replace_occurences_error(
     }
     result
 }
+
+pub enum CardinalDirections {
+    NORTH,
+    EAST,
+    SOUTH,
+    WEST,
+}
