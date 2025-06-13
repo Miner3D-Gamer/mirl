@@ -32,12 +32,13 @@ enigo = "0.1.3"
 # Macro thingy
 paste = "1.0.15"
 # Rasterize SVG
-resvg = "0.41"
-usvg = "0.41"
+resvg = ">=0.41"
+usvg = ">=0.41"
 # # Make a const value be calculated at compile time
 # lazy_static = "1.4"
 # Create temp files
-tempfile = "3"
+tempfile = ">=3"
+num-traits = "0.2"
 
 # console
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
