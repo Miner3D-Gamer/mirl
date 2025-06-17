@@ -333,3 +333,42 @@ pub fn load_font(path: &str) -> fontdue::Font {
     fontdue::Font::from_bytes(font_data, fontdue::FontSettings::default())
         .expect("Failed to parse font")
 }
+
+// struct Camera {
+//     pub x: f64,
+//     pub y: f64,
+//     pub z: f64,
+//     pub width: isize,
+//     pub height: isize,
+//     half_width: isize,
+//     half_height: isize,
+// }
+// impl Camera {
+//     fn new(buffer: &Buffer) -> Self {
+//         Self {
+//             x: 0.0,
+//             y: 0.0,
+//             z: 1.0,
+//             width: buffer.width as isize,
+//             height: buffer.height as isize,
+//             half_width: buffer.width as isize / 2,
+//             half_height: buffer.height as isize / 2,
+//         }
+//     }
+//     fn get_screen_x(&self, x: isize) -> isize {
+//         if self.z == 0.0 {
+//             return self.half_width as isize;
+//         }
+//         return ((x as f64 + self.x) / self.z) as isize;
+//     }
+//     fn get_screen_y(&self, y: isize) -> isize {
+//         if self.z == 0.0 {
+//             return self.half_height;
+//         }
+//         return ((y as f64 + self.y) / self.z) as isize;
+//     }
+//     fn is_point_visible(&self, x: isize, y: isize) -> bool {
+//         return self.get_screen_x(x) < self.width
+//             && self.get_screen_y(y) < self.height;
+//     }
+// }
