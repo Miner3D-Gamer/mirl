@@ -2,7 +2,6 @@ use std::str::FromStr;
 
 use crate::platform::{KeyCode, MouseButton};
 
-use enigo::{self, MouseControllable};
 
 use ico::{IconDir, IconDirEntry, IconImage, ResourceType};
 
@@ -16,7 +15,6 @@ use super::{cursors::Cursor, time::NativeTime, Buffer};
 
 pub struct Framework {
     window: minifb::Window,
-    mouse: enigo::Enigo,
     time: NativeTime,
     cursor: Option<Cursor>,
 }
@@ -48,7 +46,6 @@ impl Window for Framework {
 
         Self {
             window,
-            mouse: enigo::Enigo::new(),
             time: NativeTime::new(),
             cursor: None,
         }
@@ -227,8 +224,6 @@ impl ExtendedWindow for Framework {
     #[inline]
     fn set_cursor_style(&mut self, style: &Cursor) {
         super::cursors::use_cursor(style, None);
-        self.mouse.mouse_move_relative(0, 1);
-        self.mouse.mouse_move_relative(0, -1);
     }
     fn load_custom_cursor(
         &mut self,

@@ -22,23 +22,21 @@ include = [
 exclude = ["**/_*", "**/*.py"]
 
 [dependencies]
+# Needed for glyph cache
 once_cell = ">=1.4"
 # Font lib
 fontdue = ">=0.9.3"
-# Image lib for .ico
+# Image lib for .ico used in minifb set icon function
 ico = ">=0.3"
-# Keyboard/Mouse control
-enigo = "0.1.3"
-# Macro thingy
-paste = "1.0.15"
+# # Macro thingy
+# paste = "1.0.15"
 # Rasterize SVG
 resvg = ">=0.41"
-usvg = ">=0.41"
+usvg = "0.41"
 # # Make a const value be calculated at compile time
 # lazy_static = "1.4"
 # Create temp files
 tempfile = ">=3"
-num-traits = "0.2"
 
 # console
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
@@ -58,7 +56,7 @@ gl = "0.14.0"
 image = { version = ">=0.25.6", optional = true }
 
 
-# math
+# Used in rendering stretched text
 num-traits = ">=0.2"
 
 # system
