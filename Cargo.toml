@@ -1,7 +1,7 @@
 [package]
 # Info
 name = "mirl"
-version = "1.1.1"
+version = "1.2.0"
 description = "Miners Rust Lib - A collection of ever growing and changing functions and structs. Compatibility: Windows (Full), Linux (Partial), MacOS (Barely), Web (Unknown)"
 # Compiler
 rust-version = "1.60.0"
@@ -24,7 +24,7 @@ exclude = ["**/_*", "**/*.py"]
 [dependencies]
 once_cell = ">=1.4"
 # Font lib
-fontdue = "0.9.3"
+fontdue = ">=0.9.3"
 # Image lib for .ico
 ico = ">=0.3"
 # Keyboard/Mouse control
