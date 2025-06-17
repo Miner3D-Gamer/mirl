@@ -9,6 +9,7 @@ pub mod math;
 pub mod misc;
 pub mod time;
 //pub mod dictionary;
+pub mod directions;
 pub mod extensions;
 pub mod lists;
 pub mod platform;
