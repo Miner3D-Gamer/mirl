@@ -25,7 +25,7 @@ pub fn draw_text_impl(
         // If not in cache, rasterize and insert
         let (metrics, bitmap) = get_character(ch, size, &font);
 
-        let offset_y = ascent - metrics.height;
+        let offset_y = ascent.saturating_sub(metrics.height);
         let w = metrics.width;
         let h = metrics.height;
         let advance_x = metrics.advance_width as usize;
