@@ -310,9 +310,9 @@ pub fn rasterize_svg(
     height: u32,
 ) -> resvg::tiny_skia::Pixmap {
     let opt = resvg::usvg::Options::default();
-    let fontdb = usvg::fontdb::Database::new();
+    //let fontdb = usvg::fontdb::Database::new();
 
-    let rtree = resvg::usvg::Tree::from_data(&svg_data, &opt, &fontdb).unwrap();
+    let rtree = resvg::usvg::Tree::from_data(&svg_data, &opt).unwrap();
 
     // Create a pixmap with desired size (from SVG's size)
     let mut pixmap = resvg::tiny_skia::Pixmap::new(width, height)

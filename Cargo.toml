@@ -31,8 +31,8 @@ ico = ">=0.3"
 # # Macro thingy
 # paste = "1.0.15"
 # Rasterize SVG
-resvg = ">=0.41"
-usvg = "0.41"
+resvg = "0.45.1"
+usvg = "0.45.1"
 # # Make a const value be calculated at compile time
 # lazy_static = "1.4"
 # Create temp files
