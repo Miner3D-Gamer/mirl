@@ -48,26 +48,9 @@ impl_sqrt!(i64);
 impl_sqrt!(i128);
 impl_sqrt!(isize);
 
-pub fn get_sub_vec_of_vec<T: Copy>(
-    vec: &Vec<T>,
-    width: u32,
-    cutout_x: u32,
-    cutout_y: u32,
-    cutout_width: u32,
-    cutout_height: u32,
-) -> Vec<T> {
-    let mut sub_vec: Vec<T> = Vec::new();
-
-    for y in cutout_y..cutout_y + cutout_height {
-        for x in cutout_x..cutout_x + cutout_width {
-            let index = (y * width + x) as usize;
-            sub_vec.push(vec[index]);
-        }
-    }
-    return sub_vec;
-}
-
 mod tuple;
+
+
 use std::i128;
 
 pub use tuple::*;
