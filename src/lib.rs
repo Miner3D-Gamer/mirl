@@ -1,4 +1,4 @@
-#![allow(dead_code)]
+//#![allow(dead_code)]
 
 // enable feature "imagery"
 
@@ -17,5 +17,6 @@ pub mod render;
 
 #[cfg(not(target_arch = "wasm32"))]
 pub mod console;
-#[cfg(not(target_arch = "wasm32"))]
+
+
 pub mod system;

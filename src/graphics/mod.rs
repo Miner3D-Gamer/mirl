@@ -4,6 +4,7 @@ pub fn rgb_to_u32(r: u8, g: u8, b: u8) -> u32 {
 }
 
 #[inline]
+/// Stored in argb format
 pub fn rgba_to_u32(r: u8, g: u8, b: u8, a: u8) -> u32 {
     (a as u32) << 24 | (r as u32) << 16 | (g as u32) << 8 | b as u32
 }

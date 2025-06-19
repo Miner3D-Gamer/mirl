@@ -21,7 +21,7 @@ impl FileSystem for NativeFileSystem {
         Ok(FileData::from_bytes(buffer))
     }
 
-    fn write_to_file(&self, path: &str, contents: &str) {
+    fn write_to_file(&self, path: &str, contents: &[u8]) {
         std::fs::write(path, contents).expect("Failed to write file");
     }
     fn get_files_in_folder(&self, path: &str) -> Vec<String> {

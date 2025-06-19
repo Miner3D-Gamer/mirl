@@ -20,6 +20,7 @@ pub fn log<T: std::fmt::Debug>(t: T) {
     println!("{:#?}", t);
 }
 
+#[derive(Clone, Debug, Copy, PartialEq)]
 pub struct KeyManager {
     // Letters
     a: bool,
@@ -155,8 +156,8 @@ pub struct KeyManager {
 
     // International & special characters
     a_umlaut_ä: bool,
-    ü: bool,
-    ö: bool,
+    u_umlaut_ü: bool,
+    o_umlaut_ö: bool,
     ss: bool,
     â: bool,
     ú: bool,
@@ -167,7 +168,7 @@ pub struct KeyManager {
     œ: bool,
     á: bool,
     ý: bool,
-    ï: bool,
+    i_umlaut_ï: bool,
     ñ: bool,
     ò: bool,
     é: bool,
@@ -212,7 +213,7 @@ pub struct KeyManager {
 }
 
 impl KeyManager {
-    pub fn new() -> Self {
+    pub const fn new() -> Self {
         KeyManager {
             a: false,
             b: false,
@@ -329,8 +330,8 @@ impl KeyManager {
             key_pad_decimal: false,
             key_pad_enter: false,
             a_umlaut_ä: false,
-            ü: false,
-            ö: false,
+            u_umlaut_ü: false,
+            o_umlaut_ö: false,
             ss: false,
             â: false,
             ú: false,
@@ -341,7 +342,7 @@ impl KeyManager {
             œ: false,
             á: false,
             ý: false,
-            ï: false,
+            i_umlaut_ï: false,
             ñ: false,
             ò: false,
             é: false,
@@ -583,7 +584,7 @@ pub const fn map_keycode(keycode: KeyCode, keymanager: &KeyManager) -> bool {
         KeyCode::ARingÅ   => keymanager.å,
         KeyCode::AELigatureÆ   => keymanager.æ,
         KeyCode::OSlashØ   => keymanager.ø,
-        KeyCode::UUmlautÜ   => keymanager.ü,
+        KeyCode::UUmlautÜ   => keymanager.u_umlaut_ü,
         KeyCode::IGraveÌ => keymanager.ì,
         KeyCode::BrowserHome => keymanager.browser_home,
         KeyCode::BrowserRefresh => keymanager.browser_refresh,
@@ -602,11 +603,11 @@ pub const fn map_keycode(keycode: KeyCode, keymanager: &KeyManager) -> bool {
         KeyCode::AAcuteÁ   => keymanager.á,
         KeyCode::ACircumflexÂ   => keymanager.â,
         KeyCode::ICircumflexÎ  => keymanager.î,
-        KeyCode::IUmlautÏ   => keymanager.ï,
+        KeyCode::IUmlautÏ   => keymanager.i_umlaut_ï,
         KeyCode::EthÐ   => keymanager.ð,
         KeyCode::NTildeÑ   => keymanager.ñ,
         KeyCode::OCircumflexÔ     => keymanager.ò,
-        KeyCode::OUmlautÖ   => keymanager.ö,
+        KeyCode::OUmlautÖ   => keymanager.o_umlaut_ö,
         KeyCode::UAcuteÚ   => keymanager.ú,
         KeyCode::YAcuteÝ   => keymanager.ý,
         KeyCode::ThornÞ=> keymanager.þ,
@@ -750,7 +751,7 @@ pub fn set_keycode(keycode: KeyCode, keymanager: &mut KeyManager, value: bool) {
         KeyCode::ARingÅ   => keymanager.å = value,
         KeyCode::AELigatureÆ   => keymanager.æ = value,
         KeyCode::OSlashØ   => keymanager.ø = value,
-        KeyCode::UUmlautÜ   => keymanager.ü = value,
+        KeyCode::UUmlautÜ   => keymanager.u_umlaut_ü = value,
         KeyCode::IGraveÌ   => keymanager.ì = value,
         KeyCode::BrowserHome => keymanager.browser_home = value,
         KeyCode::BrowserRefresh => keymanager.browser_refresh = value,
@@ -769,11 +770,11 @@ pub fn set_keycode(keycode: KeyCode, keymanager: &mut KeyManager, value: bool) {
         KeyCode::AAcuteÁ   => keymanager.á = value,
         KeyCode::ACircumflexÂ   => keymanager.â = value,
         KeyCode::ICircumflexÎ   => keymanager.î = value,
-        KeyCode::IUmlautÏ   => keymanager.ï = value,
+        KeyCode::IUmlautÏ   => keymanager.i_umlaut_ï = value,
         KeyCode::EthÐ   => keymanager.ð = value,
         KeyCode::NTildeÑ   => keymanager.ñ = value,
         KeyCode::OGraveÒ  => keymanager.ò = value,
-        KeyCode::OCircumflexÔ     => keymanager.ö = value,
+        KeyCode::OCircumflexÔ     => keymanager.o_umlaut_ö = value,
         KeyCode::UAcuteÚ   => keymanager.ú = value,
         KeyCode::YAcuteÝ   => keymanager.ý = value,
         KeyCode::ThornÞ=> keymanager.þ = value,
