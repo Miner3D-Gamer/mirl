@@ -100,7 +100,7 @@ pub fn draw_rectangle_angled(
     );
 }
 #[inline]
-fn draw_rectangle_angled_unsafe(
+pub fn draw_rectangle_angled_unsafe(
     buffer: &Buffer,
     pos_x: usize,
     pos_y: usize,

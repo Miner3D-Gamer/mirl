@@ -67,7 +67,7 @@ fn get_pixel(buffer: &Buffer, x: usize, y: usize) -> u32 {
     }
 }
 #[inline(always)]
-fn get_pixel_unsafe(buffer: &Buffer, x: usize, y: usize) -> u32 {
+pub fn get_pixel_unsafe(buffer: &Buffer, x: usize, y: usize) -> u32 {
     let index = y * buffer.width + x;
     unsafe {
         return *buffer.pointer.add(index);
@@ -75,7 +75,7 @@ fn get_pixel_unsafe(buffer: &Buffer, x: usize, y: usize) -> u32 {
 }
 
 #[inline(always)]
-fn get_pixel_isize(buffer: &Buffer, x: isize, y: isize) -> u32 {
+pub fn get_pixel_isize(buffer: &Buffer, x: isize, y: isize) -> u32 {
     if x < 0 || y < 0 {
         return 0;
     }
