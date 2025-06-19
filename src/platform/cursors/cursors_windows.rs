@@ -4,7 +4,7 @@ use crate::{
     },
     render::{StringExtensions, U2},
 };
-use std::collections::HashMap;
+
 use std::io::Write;
 use windows::{
     core::*, //Win32::Foundation::*,
@@ -13,21 +13,21 @@ use windows::{
 
 use super::{cursor_resolution, BaseCursor, Cursor};
 
-#[derive(Default)]
-pub struct CursorManagerWindows {
-    pub cursors: HashMap<String, HCURSOR>,
-}
-pub struct CursorWindows {
-    pub cursor: HCURSOR,
-}
+// #[derive(Default)]
+// pub struct CursorManagerWindows {
+//     pub cursors: HashMap<String, HCURSOR>,
+// }
+// pub struct CursorWindows {
+//     pub cursor: HCURSOR,
+// }
 
-impl CursorManagerWindows {
-    fn new() -> Self {
-        CursorManagerWindows {
-            cursors: HashMap::new(),
-        }
-    }
-}
+// impl CursorManagerWindows {
+//     fn new() -> Self {
+//         CursorManagerWindows {
+//             cursors: HashMap::new(),
+//         }
+//     }
+// }
 
 // impl CursorManager for CursorManagerWindows {
 //     fn get_cursor(&self, name: &str) -> Box<dyn Cursor> {
@@ -835,16 +835,16 @@ fn create_cursor(
 //     hot_spot_y: 0,
 // }];
 
-fn get_cursor_path(name: &str) -> String {
-    let mut path = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-    path.push("src");
-    path.push("platform");
-    path.push("cursors");
-    path.push("svg");
-    path.push(name);
+// fn get_cursor_path(name: &str) -> String {
+//     let mut path = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+//     path.push("src");
+//     path.push("platform");
+//     path.push("cursors");
+//     path.push("svg");
+//     path.push(name);
 
-    return path.to_str().unwrap().to_string();
-}
+//     return path.to_str().unwrap().to_string();
+// }
 
 fn create_temp_file(
     cursor_data: Vec<u8>,

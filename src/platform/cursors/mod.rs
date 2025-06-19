@@ -34,9 +34,9 @@ pub enum Cursor {
 
     Glfw(Option<(RawImage, u32, u32)>),
 }
-pub struct CursorData {
-    raw_image_data: Vec<u32>,
-}
+// pub struct CursorData {
+//     raw_image_data: Vec<u32>,
+// }
 
 #[cfg(target_os = "windows")]
 pub mod cursors_windows;
