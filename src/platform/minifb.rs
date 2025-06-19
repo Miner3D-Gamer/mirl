@@ -2,7 +2,6 @@ use std::str::FromStr;
 
 use crate::platform::{KeyCode, MouseButton};
 
-
 use ico::{IconDir, IconDirEntry, IconImage, ResourceType};
 
 use super::cursors::load_base_cursor_with_file;
@@ -20,7 +19,7 @@ pub struct Framework {
 }
 
 impl Window for Framework {
-    fn new(buffer: &Buffer, title: &str) -> Self {
+    fn new(buffer: &Buffer, title: &str, position: (isize, isize)) -> Self {
         let width = buffer.width;
         let height = buffer.height;
 
@@ -32,17 +31,8 @@ impl Window for Framework {
         )
         .unwrap();
 
-        let title_bat_height = crate::system::get_title_bar_height();
-        let (screen_width, screen_height) =
-            crate::system::get_screen_resolution();
-
         // Set window to be dead centered
-        window.set_position(
-            screen_width as isize / 2 - width as isize / 2,
-            screen_height as isize / 2
-                - height as isize / 2
-                - title_bat_height as isize,
-        );
+        window.set_position(position.0, position.1);
 
         Self {
             window,
@@ -440,29 +430,28 @@ const fn map_key(key: KeyCode) -> minifb::Key {
         KeyCode::Tilde => minifb::Key::Unknown,
 
         // Other letters
-        KeyCode::AUmlautÄ  => minifb::Key::Unknown,
-KeyCode::UUmlautÜ  => minifb::Key::Unknown,
-KeyCode::OUmlautÖ  => minifb::Key::Unknown,
-KeyCode::SS  => minifb::Key::Unknown,
-KeyCode::ACircumflexÂ  => minifb::Key::Unknown,
-KeyCode::UAcuteÚ  => minifb::Key::Unknown,
-KeyCode::OCircumflexÔ  => minifb::Key::Unknown,
-KeyCode::ICircumflexÎ  => minifb::Key::Unknown,
-KeyCode::ECircumflexÊ  => minifb::Key::Unknown,
-KeyCode::EthÐ  => minifb::Key::Unknown,
-KeyCode::OELigatureŒ  => minifb::Key::Unknown,
-KeyCode::AAcuteÁ  => minifb::Key::Unknown,
-KeyCode::YAcuteÝ  => minifb::Key::Unknown,
-KeyCode::IUmlautÏ  => minifb::Key::Unknown,
-KeyCode::NTildeÑ  => minifb::Key::Unknown,
-KeyCode::OGraveÒ  => minifb::Key::Unknown,
-KeyCode::UGraveÙ  => minifb::Key::Unknown,
-KeyCode::ARingÅ  => minifb::Key::Unknown,
-KeyCode::AELigatureÆ  => minifb::Key::Unknown,
-KeyCode::OSlashØ  => minifb::Key::Unknown,
-KeyCode::IGraveÌ  => minifb::Key::Unknown,
-KeyCode::ThornÞ=> minifb::Key::Unknown,
-
+        KeyCode::AUmlautÄ => minifb::Key::Unknown,
+        KeyCode::UUmlautÜ => minifb::Key::Unknown,
+        KeyCode::OUmlautÖ => minifb::Key::Unknown,
+        KeyCode::SS => minifb::Key::Unknown,
+        KeyCode::ACircumflexÂ => minifb::Key::Unknown,
+        KeyCode::UAcuteÚ => minifb::Key::Unknown,
+        KeyCode::OCircumflexÔ => minifb::Key::Unknown,
+        KeyCode::ICircumflexÎ => minifb::Key::Unknown,
+        KeyCode::ECircumflexÊ => minifb::Key::Unknown,
+        KeyCode::EthÐ => minifb::Key::Unknown,
+        KeyCode::OELigatureŒ => minifb::Key::Unknown,
+        KeyCode::AAcuteÁ => minifb::Key::Unknown,
+        KeyCode::YAcuteÝ => minifb::Key::Unknown,
+        KeyCode::IUmlautÏ => minifb::Key::Unknown,
+        KeyCode::NTildeÑ => minifb::Key::Unknown,
+        KeyCode::OGraveÒ => minifb::Key::Unknown,
+        KeyCode::UGraveÙ => minifb::Key::Unknown,
+        KeyCode::ARingÅ => minifb::Key::Unknown,
+        KeyCode::AELigatureÆ => minifb::Key::Unknown,
+        KeyCode::OSlashØ => minifb::Key::Unknown,
+        KeyCode::IGraveÌ => minifb::Key::Unknown,
+        KeyCode::ThornÞ => minifb::Key::Unknown,
 
         // Other
         KeyCode::ScrollLock => minifb::Key::ScrollLock,

@@ -36,7 +36,11 @@ pub static LOG_ERRORS: Option<glfw::ErrorCallback<()>> = Some(glfw::Callback {
 });
 
 impl Window for Framework {
-    fn new(buffer: &super::Buffer, title: &str) -> Self {
+    fn new(
+        buffer: &super::Buffer,
+        title: &str,
+        position: (isize, isize),
+    ) -> Self {
         // Initialize GLFW
         let mut glfw = glfw::init(LOG_ERRORS).unwrap();
         // Configure GLFW
@@ -60,6 +64,12 @@ impl Window for Framework {
         // Make the window's context current
         window.make_current();
         window.set_key_polling(true);
+
+        crate::system::action::set_window_position(
+            get_native_window_handle_from_glfw(&window),
+            position.0 as i32,
+            position.1 as i32,
+        );
 
         // Load OpenGL function pointers
         gl::load_with(|symbol| window.get_proc_address(symbol) as *const _);
@@ -211,7 +221,7 @@ impl Input for Framework {
     fn is_key_down(&self, keycode: super::KeyCode) -> bool {
         self.keyboard_manager.is_key_pressed(keycode)
     }
-    fn is_mouse_down(&self, button: super::MouseButton) -> bool {
+    fn is_mouse_down(&self, button: MouseButton) -> bool {
         self.mouse_manager.is_mouse_button_pressed(button)
     }
 }
@@ -234,29 +244,14 @@ impl Output for Framework {
     }
 }
 
-const fn map_mouse(mouse_button: MouseButton) -> glfw::MouseButton {
-    match mouse_button {
-        MouseButton::Left => glfw::MouseButtonLeft,
-        MouseButton::Right => glfw::MouseButtonRight,
-        MouseButton::Middle => glfw::MouseButtonMiddle,
-        MouseButton::Unsupported => glfw::MouseButton::Button8,
-    }
-}
-
-// use glfw::{CursorImage, Glfw};
-
-// let width = 16;
-// let height = 16;
-// let pixels = vec![255u8; width * height * 4]; // Solid white 16x16 RGBA
-
-// let image = CursorImage {
-//     width: width as u32,
-//     height: height as u32,
-//     pixels,
-// };
-
-// let cursor = glfw.create_cursor(&image, 0, 0);
-// window.set_cursor(Some(&cursor));
+// const fn map_mouse(mouse_button: MouseButton) -> glfw::MouseButton {
+//     match mouse_button {
+//         MouseButton::Left => glfw::MouseButtonLeft,
+//         MouseButton::Right => glfw::MouseButtonRight,
+//         MouseButton::Middle => glfw::MouseButtonMiddle,
+//         MouseButton::Unsupported => glfw::MouseButton::Button8,
+//     }
+// }
 
 impl ExtendedWindow for Framework {
     fn set_title(&mut self, title: &str) {
@@ -353,16 +348,16 @@ fn process_events(window: &mut Framework) {
 
 const fn map_glfw_mouse_button_to_mouse_button(
     button: glfw::MouseButton,
-) -> super::MouseButton {
+) -> MouseButton {
     match button {
-        glfw::MouseButton::Button1 => super::MouseButton::Left,
-        glfw::MouseButton::Button2 => super::MouseButton::Right,
-        glfw::MouseButton::Button3 => super::MouseButton::Middle,
-        glfw::MouseButton::Button4 => super::MouseButton::Unsupported,
-        glfw::MouseButton::Button5 => super::MouseButton::Unsupported,
-        glfw::MouseButton::Button6 => super::MouseButton::Unsupported,
-        glfw::MouseButton::Button7 => super::MouseButton::Unsupported,
-        glfw::MouseButton::Button8 => super::MouseButton::Unsupported,
+        glfw::MouseButton::Button1 => MouseButton::Left,
+        glfw::MouseButton::Button2 => MouseButton::Right,
+        glfw::MouseButton::Button3 => MouseButton::Middle,
+        glfw::MouseButton::Button4 => MouseButton::Unsupported,
+        glfw::MouseButton::Button5 => MouseButton::Unsupported,
+        glfw::MouseButton::Button6 => MouseButton::Unsupported,
+        glfw::MouseButton::Button7 => MouseButton::Unsupported,
+        glfw::MouseButton::Button8 => MouseButton::Unsupported,
     }
 }
 
@@ -672,4 +667,39 @@ unsafe fn update_texture(
         gl::UNSIGNED_BYTE,
         rgba_buffer.as_ptr() as *const std::ffi::c_void,
     );
+}
+
+pub fn get_native_window_handle_from_glfw(
+    window: &glfw::Window,
+) -> raw_window_handle::RawWindowHandle {
+    #[cfg(target_os = "windows")]
+    {
+        let handle = raw_window_handle::Win32WindowHandle::new(
+            std::num::NonZero::new(window.get_win32_window() as isize).unwrap(),
+        );
+        raw_window_handle::RawWindowHandle::Win32(handle)
+    }
+
+    #[cfg(target_os = "macos")]
+    {
+        let mut handle = raw_window_handle::AppKitWindowHandle::empty();
+        handle.ns_view = window.get_cocoa_window();
+        raw_window_handle::RawWindowHandle::AppKit(handle)
+    }
+
+    #[cfg(all(target_os = "linux", not(feature = "wayland")))]
+    {
+        let mut handle = raw_window_handle::XlibWindowHandle::empty();
+        handle.window = window.get_x11_window();
+        handle.display = window.get_x11_display().cast();
+        raw_window_handle::RawWindowHandle::Xlib(handle)
+    }
+
+    #[cfg(all(target_os = "linux", feature = "wayland"))]
+    {
+        let mut handle = raw_window_handle::WaylandWindowHandle::empty();
+        handle.surface = window.get_wayland_window();
+        handle.display = window.get_wayland_display();
+        raw_window_handle::RawWindowHandle::Wayland(handle)
+    }
 }

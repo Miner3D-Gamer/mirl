@@ -26,7 +26,7 @@ impl<T> ExtendedFramework for T where
 }
 
 pub trait Window {
-    fn new(buffer: &Buffer, title: &str) -> Self
+    fn new(buffer: &Buffer, title: &str, position: (isize,isize)) -> Self
     where
         Self: Sized;
 

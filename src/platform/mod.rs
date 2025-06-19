@@ -1,7 +1,6 @@
-mod file_data;
 
-use crate::platform::file_data::FileData;
-pub mod framework_traits;
+
+use crate::{graphics::u32_to_rgba, platform::file_data::FileData};
 
 pub trait Time {
     /// Get time in milliseconds
@@ -60,7 +59,7 @@ pub trait FileSystem {
         &self,
         path: &str,
     ) -> Result<FileData, Box<dyn std::error::Error>>;
-    fn write_to_file(&self, path: &str, contents: &str);
+    fn write_to_file(&self, path: &str, contents: &[u8]);
     fn get_files_in_folder(&self, path: &str) -> Vec<String>;
     fn get_folders_in_folder(&self, path: &str) -> Vec<String>;
     fn join(&self, path1: &str, path2: &str) -> String;
@@ -73,6 +72,7 @@ pub enum MouseButton {
     Unsupported,
 }
 
+#[derive(Debug, Clone,Copy,PartialEq)]
 pub enum KeyCode {
     // Letters
     A,
@@ -263,12 +263,6 @@ pub enum KeyCode {
     Unknown,
 }
 
-// mod file_data;
-#[cfg(not(target_arch = "wasm32"))]
-pub mod minifb;
-
-#[cfg(not(target_arch = "wasm32"))]
-pub mod glfw;
 
 pub use cursors::Cursor;
 
@@ -308,6 +302,28 @@ impl Buffer {
             }
         }
     }
+    pub fn to_u8_rgba(&self) -> Vec<u8> {
+        let mut return_list = Vec::new();
+        for i in &self.buffer {
+            let temp = u32_to_rgba(*i);
+            return_list.push(temp.0);
+            return_list.push(temp.1);
+            return_list.push(temp.2);
+            return_list.push(temp.3);
+        }
+        return return_list;
+    }
+    pub fn to_u8_argb(&self) -> Vec<u8> {
+        let mut return_list = Vec::new();
+        for i in &self.buffer {
+            let temp = u32_to_rgba(*i);
+            return_list.push(temp.3);
+            return_list.push(temp.0);
+            return_list.push(temp.1);
+            return_list.push(temp.2);
+        }
+        return return_list;
+    }
 }
 
 use std::ops::Deref;
@@ -321,18 +337,30 @@ impl Deref for Buffer {
     }
 }
 
-mod cursors;
-
-pub mod file_system;
-
-mod shared;
-mod time;
 
 pub fn load_font(path: &str) -> fontdue::Font {
     let font_data = std::fs::read(path).expect("Failed to read font file");
     fontdue::Font::from_bytes(font_data, fontdue::FontSettings::default())
         .expect("Failed to parse font")
 }
+
+// Windows
+#[cfg(not(target_arch = "wasm32"))]
+pub mod minifb;
+
+#[cfg(not(target_arch = "wasm32"))]
+pub mod glfw;
+
+// Window associates 
+pub mod framework_traits;
+pub mod cursors;
+
+pub mod file_system;
+pub mod file_data;
+
+pub mod shared;
+pub mod time;
+
 
 // struct Camera {
 //     pub x: f64,
@@ -372,3 +400,5 @@ pub fn load_font(path: &str) -> fontdue::Font {
 //             && self.get_screen_y(y) < self.height;
 //     }
 // }
+
+// pub mod keyboard;
