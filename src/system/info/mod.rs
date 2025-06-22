@@ -4,8 +4,9 @@ pub trait Info {
     fn get_free_memory(&self) -> u64;
 }
 pub trait Screen {
-    fn get_title_bar_height() -> i32;
+    fn get_os_menu_height() -> i32;
     fn get_screen_resolution() -> (i32, i32);
+    fn get_taskbar_height() -> i32;
 }
 
 pub trait Battery {
@@ -71,11 +72,23 @@ pub use linux::windows::LinuxInfo as OsInfo;
 use crate::graphics::RawImage;
 
 pub fn get_center_of_screen_for_object(width: i32, height: i32) -> (i32, i32) {
-    let title_bat_height = crate::system::info::OsInfo::get_title_bar_height();
+    let title_bat_height = crate::system::info::OsInfo::get_os_menu_height();
     let (screen_width, screen_height) = OsInfo::get_screen_resolution();
 
     (
         screen_width / 2 - width / 2,
         screen_height / 2 - height / 2 - title_bat_height,
+    )
+}
+
+pub fn get_center_of_screen_of_buffer(
+    buffer: &crate::platform::Buffer,
+) -> (i32, i32) {
+    let title_bat_height = crate::system::info::OsInfo::get_os_menu_height();
+    let (screen_width, screen_height) = OsInfo::get_screen_resolution();
+
+    (
+        screen_width / 2 - buffer.width as i32 / 2,
+        screen_height / 2 - buffer.height as i32 / 2 - title_bat_height,
     )
 }

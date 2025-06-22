@@ -1,5 +1,4 @@
 extern crate winapi;
-use super::ScreenImage;
 
 use winapi::um::winuser::{GetSystemMetrics, SM_CXSCREEN, SM_CYSCREEN};
 use windows::Win32::UI::WindowsAndMessaging::{
@@ -32,12 +31,15 @@ use windows::{
     },
 };
 
+use crate::graphics::RawImage;
+use crate::platform::WindowLevel;
+
 pub fn get_screen_resolution() -> (i32, i32) {
     let width = unsafe { GetSystemMetrics(SM_CXSCREEN) };
     let height = unsafe { GetSystemMetrics(SM_CYSCREEN) };
     (width, height)
 }
-pub fn capture_screen() -> Option<ScreenImage> {
+pub fn capture_screen() -> Option<RawImage> {
     unsafe {
         // Get the desktop window handle
         let desktop_hwnd = GetDesktopWindow();
@@ -125,15 +127,10 @@ pub fn capture_screen() -> Option<ScreenImage> {
         if !result.as_bool() {
             return None;
         }
-
-        Some(ScreenImage {
-            width,
-            height,
-            pixels,
-        })
+        Some(RawImage::new(pixels, width as usize, height as usize))
     }
 }
-pub fn capture_desktop_background() -> Option<ScreenImage> {
+pub fn capture_desktop_background() -> Option<RawImage> {
     unsafe {
         // Get the shell window handle (desktop background + icons)
         let shell_hwnd = GetShellWindow();
@@ -221,27 +218,7 @@ pub fn capture_desktop_background() -> Option<ScreenImage> {
             return None;
         }
 
-        Some(ScreenImage {
-            width,
-            height,
-            pixels,
-        })
-    }
-}
-
-pub fn make_color_transparent(
-    handle: &raw_window_handle::RawWindowHandle,
-    color: (u8, u8, u8),
-) -> bool {
-    match handle {
-        raw_window_handle::RawWindowHandle::Win32(handle) => {
-            make_color_transparent_raw(
-                handle.hwnd.get() as winapi::shared::windef::HWND,
-                color,
-            );
-            true
-        }
-        _ => false,
+        Some(RawImage::new(pixels, width as usize, height as usize))
     }
 }
 
@@ -279,23 +256,6 @@ pub fn get_window_position_raw(
         } else {
             None
         }
-    }
-}
-pub fn set_window_position(
-    handle: raw_window_handle::RawWindowHandle,
-    x: i32,
-    y: i32,
-) -> bool {
-    match handle {
-        raw_window_handle::RawWindowHandle::Win32(handle) => {
-            set_window_position_raw(
-                windows::Win32::Foundation::HWND(handle.hwnd.get()),
-                x,
-                y,
-            );
-            true
-        }
-        _ => false,
     }
 }
 
@@ -572,4 +532,152 @@ pub fn set_z_raw(hwnd: windows::Win32::Foundation::HWND, index: u32) {
 // }
 pub fn get_title_bar_height() -> i32 {
     unsafe { GetSystemMetrics(4) }
+}
+
+// PLEASE HELP WHAT DOES THIS FUNCTION DO??
+
+// #[cfg(target_os = "windows")]
+// fn optimize_large_window(window: &winit::window::Window) {
+//     use winapi::um::winuser::{
+//         SWP_FRAMECHANGED, SWP_NOMOVE, SWP_NOSIZE, SWP_NOZORDER, SetWindowPos,
+//     };
+
+//     if let raw_window_handle::RawWindowHandle::Win32(handle) =
+//         window.raw_window_handle()
+//     {
+//         let hwnd = handle.hwnd as winapi::shared::windef::HWND;
+
+//         unsafe {
+//             // Force window to refresh its layered window properties
+//             SetWindowPos(
+//                 hwnd,
+//                 std::ptr::null_mut(),
+//                 0,
+//                 0,
+//                 0,
+//                 0,
+//                 SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED,
+//             );
+//         }
+//     }
+// }
+use windows::Win32::UI::WindowsAndMessaging::{
+    HWND_BOTTOM, HWND_NOTOPMOST, HWND_TOPMOST, SWP_NOMOVE,
+};
+
+pub fn set_window_level_raw(hwnd: HWND, level: WindowLevel) {
+    let insert_after = match level {
+        WindowLevel::AlwaysOnBottom => HWND_BOTTOM,
+        WindowLevel::Normal => HWND_NOTOPMOST,
+        WindowLevel::AlwaysOnTop => HWND_TOPMOST,
+    };
+
+    unsafe {
+        SetWindowPos(hwnd, insert_after, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+    }
+}
+
+use raw_window_handle::{RawWindowHandle, Win32WindowHandle};
+use winapi::um::winuser::{EnumWindows, GetWindowTextW, IsWindowVisible};
+
+struct WindowSearchData {
+    target_title: String,
+    found_hwnd: Option<winapi::shared::windef::HWND>,
+    exact_match: bool,
+    case_sensitive: bool,
+    include_hidden: bool,
+}
+
+pub fn get_window_id_by_title(
+    title: &str,
+    exact_match: bool,
+    case_sensitive: bool,
+    include_hidden: bool,
+) -> Option<raw_window_handle::RawWindowHandle> {
+    let mut search_data = WindowSearchData {
+        target_title: title.to_string(),
+        found_hwnd: None,
+        exact_match,
+        case_sensitive,
+        include_hidden,
+    };
+
+    unsafe {
+        EnumWindows(
+            Some(enum_windows_proc),
+            &mut search_data as *mut _ as isize,
+        );
+    }
+
+    if let Some(hwnd) = search_data.found_hwnd {
+        let handle = Win32WindowHandle::new(
+            std::num::NonZero::new(hwnd as isize).unwrap(),
+        );
+
+        Some(RawWindowHandle::Win32(handle))
+    } else {
+        None
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_find_notepad() {
+        if let Some(handle) =
+            get_window_id_by_title("Notepad", false, true, false)
+        {
+            println!("Found Notepad window: {:?}", handle);
+        } else {
+            println!("Notepad window not found");
+        }
+    }
+}
+
+unsafe extern "system" fn enum_windows_proc(
+    hwnd: winapi::shared::windef::HWND,
+    lparam: isize,
+) -> i32 {
+    let data = &mut *(lparam as *mut WindowSearchData);
+
+    // Check visibility based on criteria
+    if !data.include_hidden && IsWindowVisible(hwnd) == 0 {
+        return 1; // Continue enumeration
+    }
+
+    // Get window title
+    let mut title_buf = [0u16; 512];
+    let title_len =
+        GetWindowTextW(hwnd, title_buf.as_mut_ptr(), title_buf.len() as i32);
+
+    let title = if title_len > 0 {
+        String::from_utf16_lossy(&title_buf[..title_len as usize])
+    } else {
+        String::new()
+    };
+
+    // Check title match
+    let title_matches = if data.exact_match {
+        if data.case_sensitive {
+            title == data.target_title
+        } else {
+            title.to_lowercase() == data.target_title.to_lowercase()
+        }
+    } else {
+        if data.case_sensitive {
+            title.contains(&data.target_title)
+        } else {
+            title.to_lowercase().contains(&data.target_title.to_lowercase())
+        }
+    };
+
+    if !title_matches {
+        return 1; // Continue enumeration
+    }
+
+    // All criteria matched
+    data.found_hwnd = Some(hwnd);
+    0 // Stop enumeration
 }

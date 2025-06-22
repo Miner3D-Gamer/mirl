@@ -54,9 +54,22 @@ impl Info for WindowsInfo {
     }
 }
 impl Screen for WindowsInfo {
-    fn get_title_bar_height() -> i32 {
+    fn get_os_menu_height() -> i32 {
         unsafe { GetSystemMetrics(4) }
     }
+    fn get_taskbar_height() -> i32 {
+    unsafe {
+        let mut abd: winapi::um::shellapi::APPBARDATA = std::mem::zeroed();
+        abd.cbSize = std::mem::size_of::<winapi::um::shellapi::APPBARDATA>() as u32;
+        abd.hWnd = winapi::um::winuser::GetDesktopWindow();
+        
+        if winapi::um::shellapi::SHAppBarMessage(winapi::um::shellapi::ABM_GETTASKBARPOS, &mut abd) != 0 {
+            (abd.rc.bottom - abd.rc.top) as i32
+        } else {
+            0 // Failed to get taskbar info
+        }
+    }
+}
     fn get_screen_resolution() -> (i32, i32) {
         let width =
             unsafe { GetSystemMetrics(winapi::um::winuser::SM_CXSCREEN) };
