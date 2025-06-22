@@ -1,6 +1,9 @@
-
-
-use crate::{graphics::u32_to_rgba, platform::file_data::FileData};
+use crate::{
+    graphics::{get_alpha_of_u32, u32_to_rgba},
+    platform::file_data::FileData,
+    render::{Tuple2Into, TupleOps},
+    system::info::Screen,
+};
 
 pub trait Time {
     /// Get time in milliseconds
@@ -72,7 +75,7 @@ pub enum MouseButton {
     Unsupported,
 }
 
-#[derive(Debug, Clone,Copy,PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum KeyCode {
     // Letters
     A,
@@ -262,10 +265,89 @@ pub enum KeyCode {
     World2,
     Unknown,
 }
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct WindowSettings {
+    pub borderless: bool,
+    pub title: bool,
+    pub window_level: WindowLevel,
+    pub position: (isize, isize),
+    pub size: (isize, isize),
+    pub resizeable: bool,
+    pub os_menu: bool,
+    pub visible: bool,
+}
+impl WindowSettings {
+    pub fn default() -> Self {
+        let (screen_width, screen_height) =
+            crate::system::info::OsInfo::get_screen_resolution();
 
+        let size = (screen_width as isize, screen_height as isize).div((2, 2));
+        Self {
+            borderless: false,
+            title: true,
+            window_level: WindowLevel::Normal,
+            position: crate::system::info::get_center_of_screen_for_object(
+                size.0 as i32,
+                size.1 as i32,
+            )
+            .tuple_2_into(),
+
+            resizeable: false,
+            os_menu: true,
+            size: size,
+            visible: true,
+        }
+    }
+    pub fn set_visible(&mut self, visible: bool) -> &mut Self {
+        self.visible = visible;
+        self
+    }
+    pub fn set_size(&mut self, size: (isize, isize)) -> &mut Self {
+        self.size = size;
+        self
+    }
+    pub fn set_position(&mut self, position: (isize, isize)) -> &mut Self {
+        self.position = position;
+        self
+    }
+    pub fn set_title(&mut self, title: bool) -> &mut Self {
+        self.title = title;
+        self
+    }
+    pub fn set_borderless(&mut self, borderless: bool) -> &mut Self {
+        self.borderless = borderless;
+        self
+    }
+    pub fn set_window_level(&mut self, window_level: WindowLevel) -> &mut Self {
+        self.window_level = window_level;
+        self
+    }
+    pub fn set_resizeable(&mut self, resizeable: bool) -> &mut Self {
+        self.resizeable = resizeable;
+        self
+    }
+    pub fn set_os_menu(&mut self, os_menu: bool) -> &mut Self {
+        self.os_menu = os_menu;
+        self
+    }
+    pub fn set_position_to_middle_of_screen(&mut self) -> &mut Self {
+        self.position = crate::system::info::get_center_of_screen_for_object(
+            self.size.0 as i32,
+            self.size.1 as i32,
+        ).tuple_2_into();
+        self
+    }
+}
+#[derive(PartialEq, Copy, Clone, Debug)]
+pub enum WindowLevel {
+    AlwaysOnBottom,
+    Normal,
+    AlwaysOnTop,
+}
 
 pub use cursors::Cursor;
 
+#[derive(PartialEq, Clone, Debug)]
 pub struct Buffer {
     pub buffer: Box<[u32]>,
     pub pointer: *mut u32,
@@ -293,15 +375,73 @@ impl Buffer {
             std::ptr::write_bytes(self.pointer, 0, self.total_size);
         }
     }
-    pub fn color_buffer(&self, color: u32) {
-        for y in 0..self.height {
-            for x in 0..self.width {
-                unsafe {
-                    *self.pointer.offset((y * self.width + x) as isize) = color;
+    pub fn clear_buffer_with_color(&self, color: u32) {
+        for idx in 0..self.total_size {
+            unsafe {
+                *self.pointer.add(idx) = color;
+            }
+        }
+    }
+
+    // Wait that doesn't make any sense:
+
+    /// ~10% faster
+    pub fn clear_buffer_with_color_sliced(&self, color: u32) {
+        let slice = unsafe {
+            std::slice::from_raw_parts_mut(self.pointer, self.total_size)
+        };
+        slice.fill(color);
+    }
+    /// ~0-60% faster
+    pub fn clear_buffer_with_color_chunked(&self, color: u32) {
+        const CHUNK_SIZE: usize = 1024; // Tune this value
+
+        let slice = unsafe {
+            std::slice::from_raw_parts_mut(self.pointer, self.total_size)
+        };
+
+        for chunk in slice.chunks_mut(CHUNK_SIZE) {
+            chunk.fill(color);
+        }
+    }
+    pub fn replace_transparent_with_color(&self, color: u32) {
+        for idx in 0..self.total_size {
+            unsafe {
+                if get_alpha_of_u32(*self.pointer.add(idx)) == 0 {
+                    *self.pointer.add(idx) = color;
                 }
             }
         }
     }
+    /// This function is 0-33% faster than replace_transparent_with_color
+    pub fn replace_transparent_with_color_chunked(&mut self, color: u32) {
+        const CHUNK_SIZE: usize = 1024; // Tune based on cache size
+
+        for chunk in self.buffer.chunks_mut(CHUNK_SIZE) {
+            for pixel in chunk {
+                if (*pixel & 0xFF000000) == 0 {
+                    *pixel = color;
+                }
+            }
+        }
+    }
+    // This function is 0-55% faster than replace_transparent_with_color
+    pub fn replace_transparent_with_color_lut(&mut self, color: u32) {
+        // Pre-compute lookup table for all possible alpha values
+        let mut lut = [false; 256];
+        lut[0] = true; // Only alpha 0 is transparent
+
+        unsafe {
+            for idx in 0..self.total_size {
+                let pixel = self.pointer.add(idx);
+                let alpha = (*pixel >> 24) as u8;
+                if lut[alpha as usize] {
+                    *pixel = color;
+                }
+            }
+        }
+    }
+
     pub fn to_u8_rgba(&self) -> Vec<u8> {
         let mut return_list = Vec::new();
         for i in &self.buffer {
@@ -337,7 +477,6 @@ impl Deref for Buffer {
     }
 }
 
-
 pub fn load_font(path: &str) -> fontdue::Font {
     let font_data = std::fs::read(path).expect("Failed to read font file");
     fontdue::Font::from_bytes(font_data, fontdue::FontSettings::default())
@@ -351,16 +490,17 @@ pub mod minifb;
 #[cfg(not(target_arch = "wasm32"))]
 pub mod glfw;
 
-// Window associates 
-pub mod framework_traits;
+// Window associates
 pub mod cursors;
+pub mod framework_traits;
 
-pub mod file_system;
 pub mod file_data;
+pub mod file_system;
 
 pub mod shared;
 pub mod time;
 
+pub mod keyboard;
 
 // struct Camera {
 //     pub x: f64,
@@ -402,3 +542,43 @@ pub mod time;
 // }
 
 // pub mod keyboard;
+
+// A thread safe double buffer
+pub struct DoubleBuffer {
+    front: Buffer,
+    back: Buffer,
+    front_is_back: std::sync::atomic::AtomicBool, // true if front buffer is the "back" buffer
+}
+
+impl DoubleBuffer {
+    pub fn new(width: usize, height: usize) -> Self {
+        Self {
+            front: Buffer::new(width, height),
+            back: Buffer::new(width, height),
+            front_is_back: std::sync::atomic::AtomicBool::new(false),
+        }
+    }
+
+    // Renderer reads from the front buffer
+    pub fn read(&self) -> &Buffer {
+        if self.front_is_back.load(std::sync::atomic::Ordering::Acquire) {
+            &self.back
+        } else {
+            &self.front
+        }
+    }
+
+    // Sim writes to the back buffer, then swaps
+    pub fn write(&mut self, new_data: Buffer) {
+        if self.front_is_back.load(std::sync::atomic::Ordering::Acquire) {
+            self.front = new_data;
+            self.front_is_back
+                .store(false, std::sync::atomic::Ordering::Release);
+        } else {
+            self.back = new_data;
+            self.front_is_back
+                .store(true, std::sync::atomic::Ordering::Release);
+        }
+    }
+}
+//std::thread::yield_now()

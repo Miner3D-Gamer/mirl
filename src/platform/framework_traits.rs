@@ -26,7 +26,7 @@ impl<T> ExtendedFramework for T where
 }
 
 pub trait Window {
-    fn new(buffer: &Buffer, title: &str, position: (isize,isize)) -> Self
+    fn new(buffer: &Buffer, title: &str, position: super::WindowSettings) -> Self
     where
         Self: Sized;
 
@@ -67,6 +67,7 @@ pub trait ExtendedWindow {
         main_color: u32,
         secondary_color: u32,
     ) -> super::cursors::Cursors;
+    fn get_window_handle(&self)->raw_window_handle::RawWindowHandle;
 }
 
 pub trait Control {

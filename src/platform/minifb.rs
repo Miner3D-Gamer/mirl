@@ -1,6 +1,6 @@
 use std::str::FromStr;
 
-use crate::platform::{KeyCode, MouseButton};
+use crate::platform::{KeyCode, MouseButton, WindowLevel};
 
 use ico::{IconDir, IconDirEntry, IconImage, ResourceType};
 
@@ -18,8 +18,30 @@ pub struct Framework {
     cursor: Option<Cursor>,
 }
 
+fn minifb_window_options_from_options(
+    window_options: &super::WindowSettings,
+) -> minifb::WindowOptions {
+    minifb::WindowOptions {
+        borderless: window_options.borderless,
+        title: window_options.title,
+        resize: window_options.resizeable,
+        scale: minifb::Scale::X1,
+        scale_mode: minifb::ScaleMode::Center,
+        topmost: window_options.window_level == WindowLevel::AlwaysOnTop,
+        transparency: false,
+        none: false,
+    }
+}
+
 impl Window for Framework {
-    fn new(buffer: &Buffer, title: &str, position: (isize, isize)) -> Self {
+    /// Settings not accountet for:
+    ///
+    /// visible
+    fn new(
+        buffer: &Buffer,
+        title: &str,
+        settings: super::WindowSettings,
+    ) -> Self {
         let width = buffer.width;
         let height = buffer.height;
 
@@ -27,12 +49,19 @@ impl Window for Framework {
             title,
             width,
             height,
-            minifb::WindowOptions::default(),
+            minifb_window_options_from_options(&settings),
         )
         .unwrap();
 
-        // Set window to be dead centered
-        window.set_position(position.0, position.1);
+        window.set_position(settings.position.0, settings.position.1);
+        crate::system::action::set_window_borderless(
+            &get_native_window_handle_from_minifb(&window),
+            settings.borderless,
+        );
+        crate::system::action::set_window_level(
+            &get_native_window_handle_from_minifb(&window),
+            settings.window_level,
+        );
 
         Self {
             window,
@@ -45,13 +74,8 @@ impl Window for Framework {
         if self.cursor.is_some() {
             super::cursors::use_cursor(self.cursor.as_ref().unwrap(), None);
         }
-        self.window
-            .update_with_buffer(
-                buffer,
-                self.window.get_size().0,
-                self.window.get_size().1,
-            )
-            .unwrap();
+        let s = self.window.get_size();
+        self.window.update_with_buffer(buffer, s.0, s.1).unwrap();
     }
 
     #[inline]
@@ -227,6 +251,45 @@ impl ExtendedWindow for Framework {
             secondary_color,
             load_base_cursor_with_file,
         )
+    }
+    fn get_window_handle(&self) -> raw_window_handle::RawWindowHandle {
+        get_native_window_handle_from_minifb(&self.window)
+    }
+}
+
+fn get_native_window_handle_from_minifb(
+    window: &minifb::Window,
+) -> raw_window_handle::RawWindowHandle {
+    let window_handle = window.get_window_handle();
+
+    #[cfg(target_os = "windows")]
+    {
+        let handle = raw_window_handle::Win32WindowHandle::new(
+            std::num::NonZero::new(window_handle as isize).unwrap(),
+        );
+        raw_window_handle::RawWindowHandle::Win32(handle)
+    }
+    #[cfg(target_os = "macos")]
+    {
+        let mut handle = raw_window_handle::AppKitWindowHandle::empty();
+        handle.ns_view = window_handle;
+        raw_window_handle::RawWindowHandle::AppKit(handle)
+    }
+
+    #[cfg(all(target_os = "linux", not(feature = "wayland")))]
+    {
+        let mut handle = raw_window_handle::XlibWindowHandle::empty();
+        handle.window = window_handle;
+        //handle.display = window.get_x11_display().cast();
+        raw_window_handle::RawWindowHandle::Xlib(handle)
+    }
+
+    #[cfg(all(target_os = "linux", feature = "wayland"))]
+    {
+        let mut handle = raw_window_handle::WaylandWindowHandle::empty();
+        handle.surface = window_handle;
+        //handle.display = window.get_wayland_display();
+        raw_window_handle::RawWindowHandle::Wayland(handle)
     }
 }
 
