@@ -1,3 +1,5 @@
+use std::hash::Hasher;
+
 pub fn concatenate<A: AsRef<str>, B: AsRef<str>>(a: A, b: B) -> String {
     let mut result = String::from(a.as_ref());
     result.push_str(b.as_ref());
@@ -73,4 +75,10 @@ pub fn replace_occurences_error(
         result = replace_first_occurrence_error(&result, target, replacement);
     }
     result
+}
+
+pub fn hash_value<T: std::hash::Hash>(value: &T) -> u64 {
+    let mut s = std::hash::DefaultHasher::new();
+    value.hash(&mut s);
+    s.finish()
 }
