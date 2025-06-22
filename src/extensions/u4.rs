@@ -1,11 +1,60 @@
+use num_traits::{NumCast, ToPrimitive};
+
 use super::U2;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, std::cmp::PartialOrd)]
 pub struct U4 {
     pub b0: bool,
     pub b1: bool,
     pub b2: bool,
     pub b3: bool,
+}
+impl ToPrimitive for U4 {
+    fn to_f32(&self) -> Option<f32> {
+        return Some(self.value().into());
+    }
+    fn to_f64(&self) -> Option<f64> {
+        return Some(self.value().into());
+    }
+    fn to_i128(&self) -> Option<i128> {
+        return Some(self.value().into());
+    }
+    fn to_i16(&self) -> Option<i16> {
+        return Some(self.value().into());
+    }
+    fn to_i32(&self) -> Option<i32> {
+        return Some(self.value().into());
+    }
+    fn to_i64(&self) -> Option<i64> {
+        return Some(self.value().into());
+    }
+    fn to_i8(&self) -> Option<i8> {
+        return Some(self.value().to_i8().unwrap());
+    }
+    fn to_isize(&self) -> Option<isize> {
+        return Some(self.value().into());
+    }
+    fn to_u128(&self) -> Option<u128> {
+        return Some(self.value().into());
+    }
+    fn to_u16(&self) -> Option<u16> {
+        return Some(self.value().into());
+    }
+    fn to_u32(&self) -> Option<u32> {
+        return Some(self.value().into());
+    }
+    fn to_u64(&self) -> Option<u64> {
+        return Some(self.value().into());
+    }
+    fn to_u8(&self) -> Option<u8> {
+        return Some(self.value());
+    }
+}
+
+impl NumCast for U4 {
+    fn from<T: num_traits::ToPrimitive>(n: T) -> Option<Self> {
+        Some(Self::new(n.to_u8().unwrap()))
+    }
 }
 
 impl U4 {
@@ -126,7 +175,7 @@ impl std::ops::Shr<usize> for U4 {
     }
 }
 impl std::ops::Add for U4 {
-    type Output = U4;
+    type Output = Self;
     fn add(self, rhs: U4) -> U4 {
         self.wrapping_add(rhs)
     }
@@ -141,6 +190,12 @@ impl std::ops::Mul for U4 {
     type Output = U4;
     fn mul(self, rhs: U4) -> U4 {
         U4::from_u8_trunc(self.value().wrapping_mul(rhs.value()))
+    }
+}
+impl std::ops::Div for U4 {
+    type Output = U4;
+    fn div(self, rhs: U4) -> U4 {
+        U4::from_u8_trunc(self.value().wrapping_div(rhs.value()))
     }
 }
 #[macro_export]
