@@ -1,21 +1,22 @@
-#[inline]
+
+#[inline(always)]
 pub fn rgb_to_u32(r: u8, g: u8, b: u8) -> u32 {
     (r as u32) << 16 | (g as u32) << 8 | (b as u32)
 }
 
-#[inline]
+#[inline(always)]
 /// Stored in argb format
 pub fn rgba_to_u32(r: u8, g: u8, b: u8, a: u8) -> u32 {
     (a as u32) << 24 | (r as u32) << 16 | (g as u32) << 8 | b as u32
 }
-#[inline]
+#[inline(always)]
 pub fn u32_to_rgb(color: u32) -> (u8, u8, u8) {
     let r = ((color >> 16) & 0xFF) as u8;
     let g = ((color >> 8) & 0xFF) as u8;
     let b = (color & 0xFF) as u8;
     (r, g, b)
 }
-#[inline]
+#[inline(always)]
 pub fn u32_to_rgba(color: u32) -> (u8, u8, u8, u8) {
     let a = ((color >> 24) & 0xFF) as u8;
     let r = ((color >> 16) & 0xFF) as u8;
@@ -23,9 +24,37 @@ pub fn u32_to_rgba(color: u32) -> (u8, u8, u8, u8) {
     let b = (color & 0xFF) as u8;
     (r, g, b, a)
 }
+#[inline(always)]
+pub fn u32_to_argb(color: u32) -> (u8, u8, u8, u8) {
+    let a = ((color >> 24) & 0xFF) as u8;
+    let r = ((color >> 16) & 0xFF) as u8;
+    let g = ((color >> 8) & 0xFF) as u8;
+    let b = (color & 0xFF) as u8;
+    (a, r, g, b)
+}
+
+#[inline(always)]
+pub fn get_alpha_of_u32(color: u32) -> u32 {
+    (color >> 24) & 0xFF
+}
+
+#[inline(always)]
+pub fn get_red_of_u32(color: u32) -> u32 {
+    (color >> 16) & 0xFF
+}
+#[inline(always)]
+pub fn get_green_of_u32(color: u32) -> u32 {
+    (color >> 8) & 0xFF
+}
+#[inline(always)]
+pub fn get_blue_of_u32(color: u32) -> u32 {
+    color & 0xFF
+}
 
 #[cfg(feature = "imagery")]
 pub mod imagery;
+use std::collections::HashSet;
+
 use glfw::PixelImage;
 #[cfg(feature = "imagery")]
 pub use imagery::*;
@@ -367,7 +396,7 @@ pub struct RawImage {
 }
 
 impl RawImage {
-    fn new(data: Vec<u32>, width: usize, height: usize) -> Self {
+    pub fn new(data: Vec<u32>, width: usize, height: usize) -> Self {
         Self {
             data: data.into_boxed_slice(),
             width,
@@ -378,6 +407,8 @@ impl RawImage {
 
 mod pixel;
 pub use pixel::*;
+
+use crate::platform::Buffer;
 
 #[inline(always)]
 pub fn u32_to_hex(color: u32) -> String {
@@ -486,4 +517,60 @@ impl From<glfw::PixelImage> for RawImage {
     fn from(pixel_image: PixelImage) -> Self {
         pixel_image_to_raw_image(&pixel_image)
     }
+}
+
+fn advance_color(r: u8, g: u8, b: u8) -> (u8, u8, u8) {
+    if b == 255 {
+        if g == 255 {
+            if r == 255 {
+                return (0, 0, 0);
+            } else {
+                return (r + 1, g, b);
+            }
+        } else {
+            return (r, g + 1, b);
+        }
+    } else {
+        return (r, g, b + 1);
+    }
+}
+
+/// This is quite expensive
+pub fn get_unused_color(
+    buffer: &[u8],
+    current_color: (u8, u8, u8),
+) -> (u8, u8, u8) {
+    let mut current_color = current_color;
+    let mut unique_colors = HashSet::new();
+    for i in buffer.chunks_exact(4) {
+        if i[0] != 0 {
+            unique_colors.insert((i[1], i[2], i[3]));
+        }
+    }
+    while unique_colors.contains(&current_color) {
+        current_color =
+            advance_color(current_color.0, current_color.1, current_color.2)
+    }
+    current_color
+}
+/// A function specifically designed and optimized to work with the buffer of this lib
+pub fn get_unused_color_of_buffer(
+    buffer: &Buffer,
+    current_color: (u8, u8, u8),
+) -> (u8, u8, u8) {
+    let mut current_color = current_color;
+    let mut unique_colors = HashSet::new();
+    for index in 0..buffer.total_size {
+        unsafe {
+            let i = u32_to_argb(*buffer.pointer.add(index));
+            if i.0 != 0 {
+                unique_colors.insert((i.1, i.2, i.3));
+            }
+        }
+    }
+    while unique_colors.contains(&current_color) {
+        current_color =
+            advance_color(current_color.0, current_color.1, current_color.2)
+    }
+    current_color
 }
