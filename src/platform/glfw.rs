@@ -36,7 +36,7 @@ pub static LOG_ERRORS: Option<glfw::ErrorCallback<()>> = Some(glfw::Callback {
 });
 
 impl Window for Framework {
-    fn new(buffer: &Buffer, title: &str, position: super::WindowSettings) -> Self {
+    fn new(buffer: &Buffer, title: &str, settings: super::WindowSettings) -> Self {
         // Initialize GLFW
         let mut glfw = glfw::init(LOG_ERRORS).unwrap();
         // Configure GLFW
@@ -61,14 +61,10 @@ impl Window for Framework {
         window.make_current();
         window.set_key_polling(true);
 
-        crate::system::action::set_window_position(
-            &get_native_window_handle_from_glfw(&window),
-            position.position.0 as i32,
-            position.position.1 as i32,
-        );
-        crate::system::action::set_window_borderless(&get_native_window_handle_from_glfw(&window), position.borderless);
-        crate::system::action::set_window_position(&get_native_window_handle_from_glfw(&window), position.position.0 as i32, position.position.1 as i32);
-        crate::system::action::set_window_level(&get_native_window_handle_from_glfw(&window), position.window_level);
+        window.set_pos(settings.position.0 as i32, settings.position.1 as i32);
+        crate::system::action::set_window_borderless(&get_native_window_handle_from_glfw(&window), settings.borderless);
+        crate::system::action::set_window_position(&get_native_window_handle_from_glfw(&window), settings.position.0 as i32, settings.position.1 as i32);
+        crate::system::action::set_window_level(&get_native_window_handle_from_glfw(&window), settings.window_level);
 
         // Load OpenGL function pointers
         gl::load_with(|symbol| window.get_proc_address(symbol) as *const _);
