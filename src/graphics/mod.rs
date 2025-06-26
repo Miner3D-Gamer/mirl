@@ -1,4 +1,3 @@
-
 #[inline(always)]
 pub fn rgb_to_u32(r: u8, g: u8, b: u8) -> u32 {
     (r as u32) << 16 | (g as u32) << 8 | (b as u32)
@@ -9,11 +8,21 @@ pub fn rgb_to_u32(r: u8, g: u8, b: u8) -> u32 {
 pub fn rgba_to_u32(r: u8, g: u8, b: u8, a: u8) -> u32 {
     (a as u32) << 24 | (r as u32) << 16 | (g as u32) << 8 | b as u32
 }
+pub fn rgba_u32_to_u32(r: u32, g: u32, b: u32, a: u32) -> u32 {
+    (a) << 24 | (r) << 16 | (g) << 8 | b
+}
 #[inline(always)]
 pub fn u32_to_rgb(color: u32) -> (u8, u8, u8) {
     let r = ((color >> 16) & 0xFF) as u8;
     let g = ((color >> 8) & 0xFF) as u8;
     let b = (color & 0xFF) as u8;
+    (r, g, b)
+}
+#[inline(always)]
+pub fn u32_to_rgb_u32(color: u32) -> (u32, u32, u32) {
+    let r = (color >> 16) & 0xFF;
+    let g = (color >> 8) & 0xFF;
+    let b = color & 0xFF;
     (r, g, b)
 }
 #[inline(always)]
@@ -25,6 +34,14 @@ pub fn u32_to_rgba(color: u32) -> (u8, u8, u8, u8) {
     (r, g, b, a)
 }
 #[inline(always)]
+pub fn u32_to_rgba_u32(color: u32) -> (u32, u32, u32, u32) {
+    let a = (color >> 24) & 0xFF;
+    let r = (color >> 16) & 0xFF;
+    let g = (color >> 8) & 0xFF;
+    let b = color & 0xFF;
+    (r, g, b, a)
+}
+#[inline(always)]
 pub fn u32_to_argb(color: u32) -> (u8, u8, u8, u8) {
     let a = ((color >> 24) & 0xFF) as u8;
     let r = ((color >> 16) & 0xFF) as u8;
@@ -32,25 +49,51 @@ pub fn u32_to_argb(color: u32) -> (u8, u8, u8, u8) {
     let b = (color & 0xFF) as u8;
     (a, r, g, b)
 }
+#[inline(always)]
+pub fn u32_to_argb_u32(color: u32) -> (u32, u32, u32, u32) {
+    let a = (color >> 24) & 0xFF;
+    let r = (color >> 16) & 0xFF;
+    let g = (color >> 8) & 0xFF;
+    let b = color & 0xFF;
+    (a, r, g, b)
+}
 
 #[inline(always)]
-pub fn get_alpha_of_u32(color: u32) -> u32 {
+pub fn get_alpha_of_u32(color: u32) -> u8 {
+    ((color >> 24) & 0xFF) as u8
+}
+
+#[inline(always)]
+pub fn get_red_of_u32(color: u32) -> u8 {
+    ((color >> 16) & 0xFF) as u8
+}
+#[inline(always)]
+pub fn get_green_of_u32(color: u32) -> u8 {
+   ( (color >> 8) & 0xFF) as u8
+}
+#[inline(always)]
+pub fn get_blue_of_u32(color: u32) -> u8 {
+   ( color & 0xFF) as u8
+}
+//
+
+#[inline(always)]
+pub fn get_u32_alpha_of_u32(color: u32) -> u32 {
     (color >> 24) & 0xFF
 }
 
 #[inline(always)]
-pub fn get_red_of_u32(color: u32) -> u32 {
+pub fn get_u32_red_of_u32(color: u32) -> u32 {
     (color >> 16) & 0xFF
 }
 #[inline(always)]
-pub fn get_green_of_u32(color: u32) -> u32 {
+pub fn get_u32_green_of_u32(color: u32) -> u32 {
     (color >> 8) & 0xFF
 }
 #[inline(always)]
-pub fn get_blue_of_u32(color: u32) -> u32 {
+pub fn get_u32_blue_of_u32(color: u32) -> u32 {
     color & 0xFF
 }
-
 #[cfg(feature = "imagery")]
 pub mod imagery;
 use std::collections::HashSet;
@@ -408,7 +451,7 @@ impl RawImage {
 mod pixel;
 pub use pixel::*;
 
-use crate::platform::Buffer;
+use crate::{platform::Buffer, render::Tuple4Into};
 
 #[inline(always)]
 pub fn u32_to_hex(color: u32) -> String {
@@ -519,6 +562,7 @@ impl From<glfw::PixelImage> for RawImage {
     }
 }
 
+#[inline]
 fn advance_color(r: u8, g: u8, b: u8) -> (u8, u8, u8) {
     if b == 255 {
         if g == 255 {
@@ -573,4 +617,121 @@ pub fn get_unused_color_of_buffer(
             advance_color(current_color.0, current_color.1, current_color.2)
     }
     current_color
+}
+
+pub enum InterpolationMode {
+    Nearest,
+    Linear,
+}
+
+pub fn resize_buffer(
+    buffer: &[u32],
+    src_width: usize,
+    src_height: usize,
+    dst_width: usize,
+    dst_height: usize,
+    resize_mode: InterpolationMode,
+) -> Vec<u32> {
+    match resize_mode {
+        InterpolationMode::Nearest => resize_buffer_nearest(
+            buffer, src_width, src_height, dst_width, dst_height,
+        ),
+        InterpolationMode::Linear => resize_buffer_linear(
+            buffer, src_width, src_height, dst_width, dst_height,
+        ),
+    }
+}
+
+pub fn resize_buffer_linear(
+    buffer: &[u32],
+    src_width: usize,
+    src_height: usize,
+    dst_width: usize,
+    dst_height: usize,
+) -> Vec<u32> {
+    let mut result = Vec::with_capacity(dst_width * dst_height);
+
+    let x_ratio = src_width as f32 / dst_width as f32;
+    let y_ratio = src_height as f32 / dst_height as f32;
+
+    for y in 0..dst_height {
+        for x in 0..dst_width {
+            let src_x = x as f32 * x_ratio;
+            let src_y = y as f32 * y_ratio;
+
+            let x1 = src_x.floor() as usize;
+            let y1 = src_y.floor() as usize;
+            let x2 = (x1 + 1).min(src_width - 1);
+            let y2 = (y1 + 1).min(src_height - 1);
+
+            let dx = src_x - x1 as f32;
+            let dy = src_y - y1 as f32;
+
+            let p1 = buffer[y1 * src_width + x1]; // top-left
+            let p2 = buffer[y1 * src_width + x2]; // top-right
+            let p3 = buffer[y2 * src_width + x1]; // bottom-left
+            let p4 = buffer[y2 * src_width + x2]; // bottom-right
+
+            let interpolated = bilinear_interpolate_u32(p1, p2, p3, p4, dx, dy);
+            result.push(interpolated);
+        }
+    }
+
+    result
+}
+
+pub fn bilinear_interpolate_u32(
+    p1: u32,
+    p2: u32,
+    p3: u32,
+    p4: u32,
+    dx: f32,
+    dy: f32,
+) -> u32 {
+    let (r1, g1, b1, a1) = u32_to_rgba(p1).tuple_4_into();
+    let (r2, g2, b2, a2) = u32_to_rgba(p2).tuple_4_into();
+    let (r3, g3, b3, a3) = u32_to_rgba(p3).tuple_4_into();
+    let (r4, g4, b4, a4) = u32_to_rgba(p4).tuple_4_into();
+
+    let interpolate_channel = |c1: f32, c2: f32, c3: f32, c4: f32| -> u8 {
+        let top = c1 * (1.0 - dx) + c2 * dx;
+        let bottom = c3 * (1.0 - dx) + c4 * dx;
+        let result = top * (1.0 - dy) + bottom * dy;
+        result.round().clamp(0.0, 255.0) as u8
+    };
+
+    let r = interpolate_channel(r1, r2, r3, r4);
+    let g = interpolate_channel(g1, g2, g3, g4);
+    let b = interpolate_channel(b1, b2, b3, b4);
+    let a = interpolate_channel(a1, a2, a3, a4);
+
+    ((r as u32) << 24) | ((g as u32) << 16) | ((b as u32) << 8) | (a as u32)
+}
+
+pub fn resize_buffer_nearest(
+    buffer: &[u32],
+    src_width: usize,
+    src_height: usize,
+    dst_width: usize,
+    dst_height: usize,
+) -> Vec<u32> {
+    let mut result = Vec::with_capacity(dst_width * dst_height);
+
+    let x_ratio = src_width as f32 / dst_width as f32;
+    let y_ratio = src_height as f32 / dst_height as f32;
+
+    for y in 0..dst_height {
+        for x in 0..dst_width {
+            let src_x = (x as f32 * x_ratio + 0.5).floor() as usize;
+            let src_y = (y as f32 * y_ratio + 0.5).floor() as usize;
+
+            // Clamp to valid indices
+            let src_x = src_x.min(src_width - 1);
+            let src_y = src_y.min(src_height - 1);
+
+            result.push(buffer[src_y * src_width + src_x]);
+        }
+    }
+
+    result
 }
