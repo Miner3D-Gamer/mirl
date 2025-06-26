@@ -30,3 +30,9 @@ pub fn get_sub_vec_of_vec<T: Copy>(
     }
     return sub_vec;
 }
+
+pub fn combined<T: Clone + Sized>(vec: &Vec<T>, other: T) -> Vec<T> {
+    let mut new_vec = vec.to_vec();
+    new_vec.push(other);
+    new_vec
+}
