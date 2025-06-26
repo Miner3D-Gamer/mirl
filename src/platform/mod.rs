@@ -1,5 +1,7 @@
 use crate::{
-    graphics::{get_alpha_of_u32, u32_to_rgba},
+    graphics::{
+        get_alpha_of_u32, resize_buffer, u32_to_rgba, InterpolationMode,
+    },
     platform::file_data::FileData,
     render::{Tuple2Into, TupleOps},
     system::info::Screen,
@@ -334,7 +336,8 @@ impl WindowSettings {
         self.position = crate::system::info::get_center_of_screen_for_object(
             self.size.0 as i32,
             self.size.1 as i32,
-        ).tuple_2_into();
+        )
+        .tuple_2_into();
         self
     }
 }
@@ -464,6 +467,25 @@ impl Buffer {
         }
         return return_list;
     }
+    /// Creates a new buffer and copies the contents of the current buffer
+    pub fn resize_content(
+        &mut self,
+        width: usize,
+        height: usize,
+        resize_mode: InterpolationMode,
+    ) -> Buffer {
+        let mut new = Buffer::new(width, height);
+        let b = resize_buffer(
+            &self,
+            self.width,
+            self.height,
+            width,
+            height,
+            resize_mode,
+        );
+        new.buffer.copy_from_slice(&b);
+        return new;
+    }
 }
 
 use std::ops::Deref;
@@ -582,3 +604,41 @@ impl DoubleBuffer {
     }
 }
 //std::thread::yield_now()
+#[derive(Clone, Copy, Debug)]
+pub struct ScreenNormalizer {
+    screen_width: f64,
+    screen_height: f64,
+}
+
+impl ScreenNormalizer {
+    pub fn new(screen_width: usize, screen_height: usize) -> Self {
+        ScreenNormalizer {
+            screen_width: screen_width as f64,
+            screen_height: screen_height as f64,
+        }
+    }
+    pub fn percentile_to_x<T: num_traits::Num + num_traits::NumCast>(
+        &self,
+        p: f64,
+    ) -> T {
+        num_traits::NumCast::from(p * self.screen_width).unwrap()
+    }
+    pub fn percentile_to_y<T: num_traits::Num + num_traits::NumCast>(
+        &self,
+        p: f64,
+    ) -> T {
+        num_traits::NumCast::from(p * self.screen_height).unwrap()
+    }
+    pub fn x_to_pertentile<T: num_traits::Num + num_traits::NumCast>(
+        &self,
+        x: T,
+    ) -> f64 {
+        x.to_f64().unwrap() / self.screen_width
+    }
+    pub fn y_to_pertentile<T: num_traits::Num + num_traits::NumCast>(
+        &self,
+        y: T,
+    ) -> f64 {
+        y.to_f64().unwrap() / self.screen_height
+    }
+}
