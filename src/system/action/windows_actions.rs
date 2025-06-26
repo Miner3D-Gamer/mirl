@@ -32,6 +32,7 @@ use windows::{
 };
 
 use crate::graphics::RawImage;
+use crate::lists::combined;
 use crate::platform::WindowLevel;
 
 pub fn get_screen_resolution() -> (i32, i32) {
@@ -582,10 +583,11 @@ use winapi::um::winuser::{EnumWindows, GetWindowTextW, IsWindowVisible};
 
 struct WindowSearchData {
     target_title: String,
-    found_hwnd: Option<winapi::shared::windef::HWND>,
+    found_hwnds: Option<Vec<winapi::shared::windef::HWND>>,
     exact_match: bool,
     case_sensitive: bool,
     include_hidden: bool,
+    just_one: bool,
 }
 
 pub fn get_window_id_by_title(
@@ -593,13 +595,15 @@ pub fn get_window_id_by_title(
     exact_match: bool,
     case_sensitive: bool,
     include_hidden: bool,
-) -> Option<raw_window_handle::RawWindowHandle> {
+    just_one: bool,
+) -> Option<Vec<RawWindowHandle>> {
     let mut search_data = WindowSearchData {
         target_title: title.to_string(),
-        found_hwnd: None,
+        found_hwnds: None,
         exact_match,
         case_sensitive,
         include_hidden,
+        just_one,
     };
 
     unsafe {
@@ -609,12 +613,15 @@ pub fn get_window_id_by_title(
         );
     }
 
-    if let Some(hwnd) = search_data.found_hwnd {
-        let handle = Win32WindowHandle::new(
-            std::num::NonZero::new(hwnd as isize).unwrap(),
-        );
+    if let Some(hwnds) = search_data.found_hwnds {
+        let mut handles = Vec::new();
+        for hwnd in hwnds {
+            handles.push(RawWindowHandle::Win32(Win32WindowHandle::new(
+                std::num::NonZero::new(hwnd as isize).unwrap(),
+            )));
+        }
 
-        Some(RawWindowHandle::Win32(handle))
+        Some(handles)
     } else {
         None
     }
@@ -627,7 +634,7 @@ mod tests {
     #[test]
     fn test_find_notepad() {
         if let Some(handle) =
-            get_window_id_by_title("Notepad", false, true, false)
+            get_window_id_by_title("Notepad", false, true, false, false)
         {
             println!("Found Notepad window: {:?}", handle);
         } else {
@@ -646,38 +653,101 @@ unsafe extern "system" fn enum_windows_proc(
     if !data.include_hidden && IsWindowVisible(hwnd) == 0 {
         return 1; // Continue enumeration
     }
+    if !data.target_title.is_empty() {
+        // Get window title
+        let mut title_buf = [0u16; 512];
+        let title_len = GetWindowTextW(
+            hwnd,
+            title_buf.as_mut_ptr(),
+            title_buf.len() as i32,
+        );
 
-    // Get window title
+        let title = if title_len > 0 {
+            String::from_utf16_lossy(&title_buf[..title_len as usize])
+        } else {
+            String::new()
+        };
+
+        // Check title match
+        let title_matches = if data.exact_match {
+            if data.case_sensitive {
+                title == data.target_title
+            } else {
+                title.to_lowercase() == data.target_title.to_lowercase()
+            }
+        } else {
+            if data.case_sensitive {
+                title.contains(&data.target_title)
+            } else {
+                title.to_lowercase().contains(&data.target_title.to_lowercase())
+            }
+        };
+
+        if !title_matches {
+            return 1; // Continue enumeration
+        }
+    }
+
+    data.found_hwnds =
+        Some(combined(&data.found_hwnds.clone().unwrap_or_default(), hwnd));
+
+    if data.just_one {
+        return 0; // Stop enumeration
+    } else {
+        return 1; // Continue enumeration
+    }
+}
+
+pub fn get_all_windows_raw() -> Vec<HWND> {
+    let mut search_data = WindowSearchData {
+        target_title: "".to_string(),
+        found_hwnds: None,
+        exact_match: false,
+        case_sensitive: false,
+        include_hidden: false,
+        just_one: false,
+    };
+
+    unsafe {
+        EnumWindows(
+            Some(enum_windows_proc),
+            &mut search_data as *mut _ as isize,
+        );
+    }
+    let mut found_windows = Vec::new();
+    for i in search_data.found_hwnds.unwrap_or_default() {
+        found_windows.push(HWND(i as isize));
+    }
+
+    found_windows
+}
+
+pub fn get_window_size_raw(hwnd: HWND) -> Option<(i32, i32)> {
+    unsafe {
+        let mut rect = RECT::default();
+        if GetWindowRect(hwnd, &mut rect).as_bool() {
+            Some((rect.right - rect.left, rect.bottom - rect.top))
+        } else {
+            None
+        }
+    }
+}
+
+pub fn get_title_using_id_raw(hwnd: winapi::shared::windef::HWND) -> String {
     let mut title_buf = [0u16; 512];
-    let title_len =
-        GetWindowTextW(hwnd, title_buf.as_mut_ptr(), title_buf.len() as i32);
+    let title_len;
+    unsafe {
+        title_len = GetWindowTextW(
+            hwnd,
+            title_buf.as_mut_ptr(),
+            title_buf.len() as i32,
+        );
+    }
 
     let title = if title_len > 0 {
         String::from_utf16_lossy(&title_buf[..title_len as usize])
     } else {
         String::new()
     };
-
-    // Check title match
-    let title_matches = if data.exact_match {
-        if data.case_sensitive {
-            title == data.target_title
-        } else {
-            title.to_lowercase() == data.target_title.to_lowercase()
-        }
-    } else {
-        if data.case_sensitive {
-            title.contains(&data.target_title)
-        } else {
-            title.to_lowercase().contains(&data.target_title.to_lowercase())
-        }
-    };
-
-    if !title_matches {
-        return 1; // Continue enumeration
-    }
-
-    // All criteria matched
-    data.found_hwnd = Some(hwnd);
-    0 // Stop enumeration
+    return title;
 }

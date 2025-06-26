@@ -88,6 +88,62 @@ pub fn set_window_level(
         _ => false,
     }
 }
+pub fn get_all_windows() -> Vec<raw_window_handle::RawWindowHandle> {
+    match crate::system::info::OsInfo::get_os_name().as_str() {
+        "windows" => {
+            let windows = windows_actions::get_all_windows_raw();
+            let mut new = Vec::new();
+            for i in windows {
+                new.push(raw_window_handle::RawWindowHandle::Win32(
+                    raw_window_handle::Win32WindowHandle::new(
+                        std::num::NonZero::new(i.0 as isize).unwrap(),
+                    ),
+                ));
+            }
+            new
+        }
+        _ => Vec::new(),
+    }
+}
+
+pub fn get_window_position(
+    handle: &raw_window_handle::RawWindowHandle,
+) -> (i32, i32) {
+    match handle {
+        raw_window_handle::RawWindowHandle::Win32(handle) => {
+            get_window_position_raw(windows::Win32::Foundation::HWND(
+                handle.hwnd.get(),
+            ))
+            .unwrap_or((i32::MIN, i32::MIN))
+        }
+        _ => (i32::MIN, i32::MIN),
+    }
+}
+pub fn get_window_size(
+    handle: &raw_window_handle::RawWindowHandle,
+) -> (i32, i32) {
+    match handle {
+        raw_window_handle::RawWindowHandle::Win32(handle) => {
+            get_window_size_raw(windows::Win32::Foundation::HWND(
+                handle.hwnd.get(),
+            ))
+            .unwrap_or((i32::MIN, i32::MIN))
+        }
+        _ => (i32::MIN, i32::MIN),
+    }
+}
+pub fn get_title_using_id(
+    handle: &raw_window_handle::RawWindowHandle,
+) -> String {
+    match handle {
+        raw_window_handle::RawWindowHandle::Win32(handle) => {
+            get_title_using_id_raw(
+                handle.hwnd.get() as winapi::shared::windef::HWND
+            )
+        }
+        _ => "".into(),
+    }
+}
 
 #[cfg(target_os = "windows")]
 pub mod windows_actions;
@@ -99,4 +155,4 @@ pub mod linux;
 #[cfg(target_os = "linux")]
 pub use linux::*;
 
-use crate::platform::WindowLevel;
+use crate::{platform::WindowLevel, system::info::Info};
