@@ -1,14 +1,17 @@
-use crate::graphics::u32_to_rgb;
+use crate::{
+    graphics::{rgba_to_u32, u32_to_rgba},
+    misc::repeat_data,
+};
 
 use image::{GenericImage, GenericImageView};
 
 pub fn u32_to_image_rgba(color: u32) -> image::Rgba<u8> {
-    let (r, g, b) = u32_to_rgb(color);
-    image::Rgba([r, g, b, 255])
+    let (r, g, b, a) = u32_to_rgba(color);
+    image::Rgba([r, g, b, 255 - a])
 }
 pub fn image_rgba_to_u32(rgba: image::Rgba<u8>) -> u32 {
-    let [r, g, b, _a] = rgba.0; // _a is the alpha channel, which is not used in this case
-    (r as u32) << 16 | (g as u32) << 8 | (b as u32)
+    let [r, g, b, a] = rgba.0;
+    rgba_to_u32(r, g, b, a)
 }
 pub fn rgb_to_image_rgba(r: u8, g: u8, b: u8) -> image::Rgba<u8> {
     image::Rgba([r, g, b, 255])
@@ -129,6 +132,20 @@ pub fn pixmap_to_dynamic_image(
 //     pixmap
 // }
 
+pub fn dynamic_image_to_raw(image: &image::DynamicImage) -> RawImage {
+    let width = image.width() as usize;
+    let height = image.height() as usize;
+
+    let mut img = RawImage::new(repeat_data(0, width * height), width, width);
+    for y in 0..height as usize {
+        for x in 0..width {
+            let color = image.get_pixel(x as u32, y as u32);
+            img.data[y * img.width + x] = image_rgba_to_u32(color);
+        }
+    }
+    img
+}
+
 pub fn raw_image_to_dynamic_image(raw_image: &RawImage) -> image::DynamicImage {
     let mut img =
         create_empty_image(raw_image.width as u32, raw_image.height as u32);
@@ -145,6 +162,11 @@ pub fn raw_image_to_dynamic_image(raw_image: &RawImage) -> image::DynamicImage {
 impl From<RawImage> for image::DynamicImage {
     fn from(bush: RawImage) -> Self {
         raw_image_to_dynamic_image(&bush)
+    }
+}
+impl From<image::DynamicImage> for RawImage {
+    fn from(bush: image::DynamicImage) -> Self {
+        dynamic_image_to_raw(&bush)
     }
 }
 

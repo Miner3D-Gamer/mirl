@@ -69,11 +69,11 @@ pub fn get_red_of_u32(color: u32) -> u8 {
 }
 #[inline(always)]
 pub fn get_green_of_u32(color: u32) -> u8 {
-   ( (color >> 8) & 0xFF) as u8
+    ((color >> 8) & 0xFF) as u8
 }
 #[inline(always)]
 pub fn get_blue_of_u32(color: u32) -> u8 {
-   ( color & 0xFF) as u8
+    (color & 0xFF) as u8
 }
 //
 
@@ -446,12 +446,162 @@ impl RawImage {
             height,
         }
     }
+    pub fn new_empty(width: usize, height: usize) -> Self {
+        Self {
+            data: repeat_data(0, width * height).into(),
+            width: width,
+            height: height,
+        }
+    }
+    pub fn get_pixel(&self, x: usize, y: usize) -> u32 {
+        return self.data[y * self.width + x];
+    }
+    pub fn generate_fallback(
+        width: usize,
+        height: usize,
+        square_size: usize,
+    ) -> Self {
+        let mut data = Vec::with_capacity(width * height);
+
+        let purple = rgb_to_u32(128, 0, 128);
+        let black = rgb_to_u32(0, 0, 0);
+
+        for y in 0..height {
+            for x in 0..width {
+                let square_x = x / square_size;
+                let square_y = y / square_size;
+
+                let color = if (square_x + square_y) % 2 == 0 {
+                    purple
+                } else {
+                    black
+                };
+
+                data.push(color);
+            }
+        }
+
+        Self::new(data, width, height)
+    }
+    pub fn remove_margins(&mut self) {
+        // Remove all margins in one pass to avoid multiple data copies
+        let (top_trim, bottom_trim, left_trim, right_trim) =
+            self.calculate_trims();
+
+        if top_trim > 0 || bottom_trim > 0 || left_trim > 0 || right_trim > 0 {
+            self.apply_trim(top_trim, bottom_trim, left_trim, right_trim);
+        }
+    }
+
+    pub fn calculate_trims(&self) -> (usize, usize, usize, usize) {
+        let mut top_trim = 0;
+        let mut bottom_trim = 0;
+        let mut left_trim = 0;
+        let mut right_trim = 0;
+
+        // Calculate top trim
+        for row in 0..self.height {
+            if self.is_row_transparent(row) {
+                top_trim += 1;
+            } else {
+                break;
+            }
+        }
+
+        // Calculate bottom trim
+        for row in (0..self.height).rev() {
+            if self.is_row_transparent(row) {
+                bottom_trim += 1;
+            } else {
+                break;
+            }
+        }
+
+        // Calculate left trim
+        for col in 0..self.width {
+            if self.is_col_transparent(col) {
+                left_trim += 1;
+            } else {
+                break;
+            }
+        }
+
+        // Calculate right trim
+        for col in (0..self.width).rev() {
+            if self.is_col_transparent(col) {
+                right_trim += 1;
+            } else {
+                break;
+            }
+        }
+
+        (top_trim, bottom_trim, left_trim, right_trim)
+    }
+
+    pub fn is_row_transparent(&self, row: usize) -> bool {
+        let start = row * self.width;
+        let end = start + self.width;
+        self.data[start..end]
+            .iter()
+            .all(|&pixel| get_u32_alpha_of_u32(pixel) == 0)
+    }
+
+    pub fn is_col_transparent(&self, col: usize) -> bool {
+        (0..self.height).all(|row| {
+            get_u32_alpha_of_u32(self.data[row * self.width + col]) == 0
+        })
+    }
+
+    pub fn apply_trim(
+        &mut self,
+        top: usize,
+        bottom: usize,
+        left: usize,
+        right: usize,
+    ) {
+        let new_width = self.width - left - right;
+        let new_height = self.height - top - bottom;
+        let mut new_data = Vec::with_capacity(new_width * new_height);
+
+        for row in top..(self.height - bottom) {
+            let row_start = row * self.width + left;
+            let row_end = row_start + new_width;
+            new_data.extend_from_slice(&self.data[row_start..row_end]);
+        }
+
+        self.data = new_data.into();
+        self.width = new_width;
+        self.height = new_height;
+    }
 }
+
+impl From<Buffer> for RawImage {
+    fn from(p: Buffer) -> Self {
+        RawImage {
+            data: p.buffer,
+            width: p.width,
+            height: p.height,
+        }
+    }
+}
+impl From<RawImage> for Buffer {
+    fn from(p: RawImage) -> Self {
+        let mut buffer = Buffer::new(p.width, p.height);
+        buffer.buffer = p.data;
+        return buffer;
+    }
+}
+
 
 mod pixel;
 pub use pixel::*;
 
-use crate::{platform::Buffer, render::Tuple4Into};
+use crate::{
+    math::interpolate, misc::repeat_data, platform::Buffer, render::Tuple4Into,
+};
+
+#[cfg(feature = "imagery")]
+use crate::platform::FileSystem;
 
 #[inline(always)]
 pub fn u32_to_hex(color: u32) -> String {
@@ -734,4 +884,164 @@ pub fn resize_buffer_nearest(
     }
 
     result
+}
+
+pub fn interpolate_color_rgb_u32(
+    color1: u32,
+    color2: u32,
+    progress: f32,
+) -> u32 {
+    let (r1, g1, b1) = u32_to_rgb_u32(color1);
+    let (r2, g2, b2) = u32_to_rgb_u32(color2);
+    let r = interpolate(r1 as f32, r2 as f32, progress);
+    let g = interpolate(g1 as f32, g2 as f32, progress);
+    let b = interpolate(b1 as f32, b2 as f32, progress);
+    return rgb_to_u32(r as u8, g as u8, b as u8);
+}
+
+/// Enable the "imagery" feature for automatic texture lookup -> Define a filepath for a texture and lazy load it
+/// Enable the "texture_manager_cleanup" feature to gain access to cleanup_unused
+pub struct TextureManager {
+    textures: Vec<Option<RawImage>>,
+    lookup: ahash::AHashMap<String, usize>,
+    freelist: Vec<usize>,
+    #[cfg(feature = "imagery")]
+    texture_lookup: ahash::AHashMap<String, String>,
+    #[cfg(feature = "texture_manager_cleanup")]
+    last_used: Vec<u64>, // frame number when last accessed
+    #[cfg(feature = "texture_manager_cleanup")]
+    current_frame: u64,
+}
+
+impl TextureManager {
+    pub fn new() -> Self {
+        Self {
+            textures: Vec::new(),
+            lookup: ahash::AHashMap::new(),
+            freelist: Vec::new(),
+            #[cfg(feature = "imagery")]
+            texture_lookup: ahash::AHashMap::new(),
+            #[cfg(feature = "texture_manager_cleanup")]
+            last_used: Vec::new(),
+            #[cfg(feature = "texture_manager_cleanup")]
+            current_frame: 0,
+        }
+    }
+
+    #[cfg(feature = "imagery")]
+    pub fn register_texture(&mut self, name: String, file_path: String) {
+        self.texture_lookup.insert(name, file_path);
+    }
+
+    pub fn get(
+        &mut self,
+        name: &str,
+        #[cfg(feature = "imagery")] file_system: &dyn FileSystem,
+    ) -> Option<&RawImage> {
+        #[cfg(feature = "texture_manager_cleanup")]
+        if let Some(&index) = self.lookup.get(name) {
+            if index < self.last_used.len() {
+                self.last_used[index] = self.current_frame;
+            }
+            return self.textures[index].as_ref();
+        }
+
+        // First check if it's already loaded
+        if let Some(&index) = self.lookup.get(name) {
+            return self.textures[index].as_ref();
+        }
+
+        #[cfg(feature = "imagery")]
+        // If not loaded, try to load from file
+        if let Some(file_path) = self.texture_lookup.get(name) {
+            match self.load_texture_from_file(file_path, file_system) {
+                Ok(mut raw_image) => {
+                    raw_image.remove_margins(); // I THINK THIS SHOULD BE CONFIGUREABLE BUT I'M TOO LAZY
+                    self.insert_texture(name.to_string(), raw_image);
+                    if let Some(&index) = self.lookup.get(name) {
+                        return self.textures[index].as_ref();
+                    }
+                }
+                Err(e) => {
+                    eprintln!(
+                        "Failed to load texture '{}' from '{}': {}",
+                        name, file_path, e
+                    );
+                    return None;
+                }
+            }
+        }
+
+        None
+    }
+    #[cfg(feature = "imagery")]
+    pub fn load_texture_from_file(
+        &self,
+        file_path: &str,
+        file_system: &dyn FileSystem,
+    ) -> Result<RawImage, Box<dyn std::error::Error>> {
+        let file = file_system.get_file_contents(file_path)?;
+        let img = file.as_image()?;
+        Ok(img.into())
+    }
+
+    pub fn insert_texture(&mut self, name: String, texture: RawImage) {
+        let index = if let Some(free) = self.freelist.pop() {
+            self.textures[free] = Some(texture);
+            free
+        } else {
+            self.textures.push(Some(texture));
+            self.textures.len() - 1
+        };
+        self.lookup.insert(name, index);
+    }
+
+    pub fn unload_texture(&mut self, name: &str) {
+        if let Some(&index) = self.lookup.get(name) {
+            self.textures[index] = None;
+            self.freelist.push(index);
+            self.lookup.remove(name);
+        }
+    }
+
+    #[cfg(feature = "imagery")]
+    pub fn is_texture_registered(&self, name: &str) -> bool {
+        self.texture_lookup.contains_key(name)
+    }
+
+    #[cfg(feature = "imagery")]
+    pub fn preload_texture(
+        &mut self,
+        name: &str,
+        file_system: &dyn FileSystem,
+    ) -> Result<(), Box<dyn std::error::Error>> {
+        if !self.lookup.contains_key(name) {
+            if let Some(file_path) = self.texture_lookup.get(name) {
+                let raw_image =
+                    self.load_texture_from_file(file_path, file_system)?;
+                self.insert_texture(name.to_string(), raw_image);
+            }
+        }
+        Ok(())
+    }
+    #[cfg(feature = "texture_manager_cleanup")]
+    #[allow(arithmetic_overflow)]
+    pub fn cleanup_unused(&mut self, frames_unused: u64) {
+        let cutoff = self.current_frame.saturating_sub(frames_unused);
+
+        // Collect names to remove (avoid borrowing issues)
+        let to_remove: Vec<String> = self
+            .lookup
+            .iter()
+            .filter(|(_, &index)| {
+                index < self.last_used.len() && self.last_used[index] < cutoff
+            })
+            .map(|(name, _)| name.clone())
+            .collect();
+
+        for name in to_remove {
+            self.unload_texture(&name);
+        }
+        self.current_frame += 1;
+    }
 }
