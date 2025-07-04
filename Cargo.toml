@@ -1,8 +1,8 @@
 [package]
 # Info
 name = "mirl"
-version = "1.5.0"
-description = "Miners Rust Lib - A collection of ever growing and changing functions and structs. Compatibility: Windows (Full), Linux (Partial), MacOS (Barely), Web (Unknown)\n\nOptional Features: \n\t'imagery' - Support for the bulky 'image' library"
+version = "1.6.0"
+description = "Miners Rust Lib - A collection of ever growing and changing functions and structs. Compatibility: Windows (Full), Linux (Partial), MacOS (Barely), Web (Unknown)\n\nOptional Features: \n\t'imagery' - Support for the bulky 'image' library\n\t'texture_manager_cleanup' - Additional clean up functions for more or less automatic texture unloading"
 # Compiler
 rust-version = "1.60.0"
 edition = "2021"
@@ -49,12 +49,11 @@ glfw = "0.51.0"
 
 gl = "0.14.0"
 
+# Other window stuff
 raw-window-handle = "0.6.2"
-#sysinfo = "0.35.2"
 
-# rand = "0.8.5"
-# log = "0.4"
-# env_logger = "0.10"
+# Fast hashing
+ahash = "0.8.12"
 
 # graphics & render
 image = { version = ">=0.25.6", optional = true }
@@ -92,6 +91,7 @@ x11 = ">=2.18.0"
 [features]
 imagery = ["image"]
 wayland = []
+texture_manager_cleanup  = []
 
 [lib]
 name = "mirl"
