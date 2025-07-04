@@ -20,7 +20,6 @@ pub fn normalize_vector(x: f32, y: f32, z: f32) -> (f32, f32, f32) {
     return (x / v, y / v, z / v);
 }
 
-
 use num_traits::NumCast;
 
 use crate::render::{U1, U2, U4};
@@ -80,6 +79,37 @@ impl Number for isize {}
 impl Number for f32 {}
 impl Number for f64 {}
 
-
 pub mod collision;
 pub use collision::*;
+
+// Progress must be between 0 and 1 for this to work as intended most of the times
+pub fn interpolate<
+    T: std::ops::Mul<Output = T>
+        + std::ops::Add<Output = T>
+        + std::ops::Sub<Output = T>
+        + std::ops::Div<Output = T>
+        + Copy
+        + num_traits::One,
+>(
+    start: T,
+    end: T,
+    progress: T,
+) -> T {
+    return start * (T::one() - progress) + end * progress;
+}
+
+pub fn get_center_of_object_for_object<
+    T: std::ops::Div<Output = T> + std::ops::Sub<Output = T> + num_traits::NumCast,
+>(
+    inner_width: T,
+    inner_height: T,
+    outer_width: T,
+    outer_height: T,
+) -> (T, T) {
+    (
+        outer_width.div(num_traits::NumCast::from(2).unwrap())
+            - inner_width.div(num_traits::NumCast::from(2).unwrap()),
+        outer_height.div(num_traits::NumCast::from(2).unwrap())
+            - inner_height.div(num_traits::NumCast::from(2).unwrap()),
+    )
+}
