@@ -271,3 +271,48 @@ macro_rules! impl_u4_float_conversion {
 impl_u4_conversion!(u8, u16, u32, u64, u128, usize);
 impl_u4_conversion!(i8, i16, i32, i64, i128, isize);
 impl_u4_float_conversion!(f32, f64);
+
+impl std::ops::Rem for U4 {
+    type Output = Self;
+
+    fn rem(self, rhs: Self) -> Self::Output {
+        Self::from_u8_trunc(self.value() % rhs.value())
+    }
+}
+impl num_traits::One for U4 {
+    fn is_one(&self) -> bool
+    where
+        Self: PartialEq,
+    {
+        self.value() == 1
+    }
+    fn one() -> Self {
+        Self::from_u8_trunc(1)
+    }
+}
+impl num_traits::Zero for U4 {
+    fn zero() -> Self {
+        Self::from_u8_trunc(0)
+    }
+    fn is_zero(&self) -> bool {
+        self.value() == 0
+    }
+}
+
+impl num_traits::Num for U4 {
+    fn from_str_radix(
+        str: &str,
+        radix: u32,
+    ) -> Result<Self, Self::FromStrRadixErr> {
+        let result = <u8 as num_traits::Num>::from_str_radix(str, radix);
+        if let Ok(r) = result {
+            return Result::Ok(Self::from_u8_trunc(r));
+        } else if let Err(e) = result {
+            return Result::Err(e);
+        } else {
+            panic!("This panic will never hit")
+        }
+    }
+
+    type FromStrRadixErr = ::core::num::ParseIntError;
+}
