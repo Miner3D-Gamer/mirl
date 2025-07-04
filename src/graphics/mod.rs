@@ -98,7 +98,6 @@ pub fn get_u32_blue_of_u32(color: u32) -> u32 {
 pub mod imagery;
 use std::collections::HashSet;
 
-use glfw::PixelImage;
 #[cfg(feature = "imagery")]
 pub use imagery::*;
 
@@ -376,7 +375,7 @@ pub fn desaturate_fast(color: u32, amount: f32) -> u32 {
     // Recombine
     (r_new << 16) | (g_new << 8) | b_new
 }
-
+#[cfg(feature = "resvg")]
 pub fn rasterize_svg(
     svg_data: &[u8],
     width: u32,
@@ -393,11 +392,16 @@ pub fn rasterize_svg(
         .unwrap();
 
     // Render the SVG
-    resvg::render(&rtree, usvg::Transform::default(), &mut pixmap.as_mut());
+    resvg::render(
+        &rtree,
+        resvg::usvg::Transform::default(),
+        &mut pixmap.as_mut(),
+    );
 
     return pixmap;
 }
-
+#[cfg(feature = "resvg")]
+/// To use this function, enable the "svg_support" feature
 pub fn pixmap_to_raw_image(pixmap: &resvg::tiny_skia::Pixmap) -> RawImage {
     let mut data = Vec::new();
     for y in 0..pixmap.height() {
@@ -414,6 +418,9 @@ pub fn pixmap_to_raw_image(pixmap: &resvg::tiny_skia::Pixmap) -> RawImage {
     RawImage::new(data, pixmap.width() as usize, pixmap.height() as usize)
 }
 
+#[cfg(feature = "platform")]
+use glfw::PixelImage;
+#[cfg(feature = "platform")]
 #[inline(always)]
 pub fn raw_image_to_pixel_image(raw_image: &RawImage) -> glfw::PixelImage {
     return glfw::PixelImage {
@@ -422,6 +429,7 @@ pub fn raw_image_to_pixel_image(raw_image: &RawImage) -> glfw::PixelImage {
         pixels: argb_list_to_rgba_list(&raw_image.data),
     };
 }
+#[cfg(feature = "platform")]
 #[inline(always)]
 pub fn pixel_image_to_raw_image(pixel_image: &glfw::PixelImage) -> RawImage {
     return RawImage::new(
@@ -592,16 +600,14 @@ impl From<RawImage> for Buffer {
     }
 }
 
-
 mod pixel;
 pub use pixel::*;
 
+#[cfg(feature = "imagery")]
+use crate::platform::FileSystem;
 use crate::{
     math::interpolate, misc::repeat_data, platform::Buffer, render::Tuple4Into,
 };
-
-#[cfg(feature = "imagery")]
-use crate::platform::FileSystem;
 
 #[inline(always)]
 pub fn u32_to_hex(color: u32) -> String {
@@ -681,31 +687,17 @@ pub fn rgba_list_to_argb_list(input: &[u32]) -> Vec<u32> {
         })
         .collect()
 }
-pub struct PixmapWrapper(pub resvg::tiny_skia::Pixmap);
 
-impl From<resvg::tiny_skia::Pixmap> for PixmapWrapper {
-    fn from(pixmap: resvg::tiny_skia::Pixmap) -> Self {
-        PixmapWrapper(pixmap)
-    }
-}
-impl From<PixmapWrapper> for resvg::tiny_skia::Pixmap {
-    fn from(wrapper: PixmapWrapper) -> Self {
-        wrapper.0
-    }
-}
 
-impl From<PixmapWrapper> for glfw::PixelImage {
-    fn from(pixmap: PixmapWrapper) -> Self {
-        raw_image_to_pixel_image(&pixmap_to_raw_image(&pixmap.into()))
-    }
-}
 
+#[cfg(feature = "platform")]
 impl From<RawImage> for glfw::PixelImage {
     fn from(raw_image: RawImage) -> Self {
         raw_image_to_pixel_image(&raw_image)
     }
 }
 
+#[cfg(feature = "platform")]
 impl From<glfw::PixelImage> for RawImage {
     fn from(pixel_image: PixelImage) -> Self {
         pixel_image_to_raw_image(&pixel_image)

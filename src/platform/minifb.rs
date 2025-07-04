@@ -4,17 +4,21 @@ use crate::platform::{KeyCode, MouseButton, WindowLevel};
 
 use ico::{IconDir, IconDirEntry, IconImage, ResourceType};
 
+#[cfg(feature = "resvg")]
 use super::cursors::load_base_cursor_with_file;
 use super::framework_traits::{
     Control, ExtendedControl, ExtendedInput, ExtendedTiming, ExtendedWindow,
     Input, Output, Timing, Window,
 };
 use super::Time;
-use super::{cursors::Cursor, time::NativeTime, Buffer};
+#[cfg(feature = "resvg")]
+use super::{cursors::Cursor};
+use super::{time::NativeTime, Buffer};
 
 pub struct Framework {
     window: minifb::Window,
     time: NativeTime,
+#[cfg(feature = "resvg")]
     cursor: Option<Cursor>,
 }
 
@@ -66,11 +70,13 @@ impl Window for Framework {
         Self {
             window,
             time: NativeTime::new(),
+#[cfg(feature = "resvg")]
             cursor: None,
         }
     }
     #[inline]
     fn update(&mut self, buffer: &[u32]) {
+#[cfg(feature = "resvg")]
         if self.cursor.is_some() {
             super::cursors::use_cursor(self.cursor.as_ref().unwrap(), None);
         }
@@ -235,10 +241,12 @@ impl ExtendedWindow for Framework {
             self.window.set_icon(icon);
         }
     }
+#[cfg(feature = "resvg")]
     #[inline]
     fn set_cursor_style(&mut self, style: &Cursor) {
         super::cursors::use_cursor(style, None);
     }
+#[cfg(feature = "resvg")]
     fn load_custom_cursor(
         &mut self,
         size: crate::render::U2,

@@ -1,6 +1,8 @@
+#[cfg(feature = "resvg")]
+use super::cursors::Cursor;
+use super::{Buffer, KeyCode, MouseButton, Time};
+#[cfg(feature = "resvg")]
 use crate::render::U2;
-
-use super::{cursors::Cursor, Buffer, KeyCode, MouseButton, Time};
 
 // Most basic of framework functionality
 pub trait Framework: Window + Input + Output + Timing {}
@@ -26,7 +28,11 @@ impl<T> ExtendedFramework for T where
 }
 
 pub trait Window {
-    fn new(buffer: &Buffer, title: &str, position: super::WindowSettings) -> Self
+    fn new(
+        buffer: &Buffer,
+        title: &str,
+        position: super::WindowSettings,
+    ) -> Self
     where
         Self: Sized;
 
@@ -60,14 +66,16 @@ pub trait ExtendedWindow {
     fn set_title(&mut self, title: &str);
     /// Width/Height should be something like 32x32 or 48x48
     fn set_icon(&mut self, buffer: &[u32], width: u32, height: u32);
+    #[cfg(feature = "resvg")]
     fn set_cursor_style(&mut self, style: &Cursor);
+    #[cfg(feature = "resvg")]
     fn load_custom_cursor(
         &mut self,
         size: U2,
         main_color: u32,
         secondary_color: u32,
     ) -> super::cursors::Cursors;
-    fn get_window_handle(&self)->raw_window_handle::RawWindowHandle;
+    fn get_window_handle(&self) -> raw_window_handle::RawWindowHandle;
 }
 
 pub trait Control {

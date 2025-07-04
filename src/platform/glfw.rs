@@ -252,6 +252,8 @@ impl ExtendedWindow for Framework {
     fn set_title(&mut self, title: &str) {
         self.window.set_title(title);
     }
+    
+#[cfg(feature = "resvg")]
     fn set_cursor_style(&mut self, style: &super::Cursor) {
         println!("Setting cursor style");
         super::cursors::use_cursor(style, Some(&mut self.window));
@@ -261,6 +263,7 @@ impl ExtendedWindow for Framework {
     fn set_icon(&mut self, _buffer: &[u32], _width: u32, _height: u32) {
         panic!("Not yet implemented");
     }
+#[cfg(feature = "resvg")]
     fn load_custom_cursor(
         &mut self,
         size: crate::render::U2,

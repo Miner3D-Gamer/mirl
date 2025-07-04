@@ -1,8 +1,8 @@
 [package]
 # Info
 name = "mirl"
-version = "1.6.0"
-description = "Miners Rust Lib - A collection of ever growing and changing functions and structs. Compatibility: Windows (Full), Linux (Partial), MacOS (Barely), Web (Unknown)\n\nOptional Features: \n\t'imagery' - Support for the bulky 'image' library\n\t'texture_manager_cleanup' - Additional clean up functions for more or less automatic texture unloading"
+version = "2.0.0"
+description = "Miners Rust Lib - A collection of ever growing and changing functions and structs. Compatibility: Windows (Full), Linux (Partial), MacOS (Barely), Web (Unknown)\n\nDefault Features (Disable with 'default-features = false'): \n\t'system' - Allows for seamless low level interaction with the os (required by 'platform')\n\t'platform' - Allows for the creation and managing of windows\n\t'texture_manager_cleanup' - Additional clean up functions for more or less automatic texture unloading\n\nAdditional Optional Features:\n\t'imagery' - Support for the bulky 'image' library\n\t'svg_support' - Required for cursor action in the Frameworks"
 # Compiler
 rust-version = "1.60.0"
 edition = "2021"
@@ -30,9 +30,10 @@ fontdue = ">=0.9.3"
 ico = ">=0.3"
 # # Macro thingy
 # paste = "1.0.15"
+
 # Rasterize SVG
-resvg = "0.45.1"
-usvg = "0.45.1"
+resvg = { version = "0.45.1", optional = true }
+
 # # Make a const value be calculated at compile time
 # lazy_static = "1.4"
 # Create temp files
@@ -42,12 +43,12 @@ tempfile = ">=3"
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 crossterm = ">=0.28"
 # MiniFB
-minifb = ">=0.28.0"
+minifb = { "version" = ">=0.28.0", optional = true }
 
 # GLFW
-glfw = "0.51.0"
+glfw = { version = "0.51.0", optional = true }
 
-gl = "0.14.0"
+gl = { version = "0.14.0", optional = true }
 
 # Other window stuff
 raw-window-handle = "0.6.2"
@@ -75,11 +76,15 @@ windows = { version = "0.48", features = [
     "Win32_System_LibraryLoader",
     "Win32_System_Com",
     "Win32_UI_Shell",
-] }
-winapi = { version = "0.3", features = ["winuser", "wingdi", "shellapi",] }
+], optional = true }
+winapi = { version = "0.3", features = [
+    "winuser",
+    "wingdi",
+    "shellapi",
+], optional = true }
 
 [target.'cfg(target_os = "linux")'.dependencies]
-x11 = ">=2.18.0"
+x11 = { "version" = ">=2.18.0", optional = true }
 
 # Unused
 # serde = "1.0"
@@ -89,9 +94,13 @@ x11 = ">=2.18.0"
 
 
 [features]
+default = ["svg_support", "platform", "texture_manager_cleanup"]
 imagery = ["image"]
 wayland = []
-texture_manager_cleanup  = []
+texture_manager_cleanup = []
+svg_support = ["resvg"]
+platform = ["minifb", "glfw", "gl", "system"]
+system = ["x11", "windows", "winapi"]
 
 [lib]
 name = "mirl"

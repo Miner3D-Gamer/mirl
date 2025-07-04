@@ -3,6 +3,9 @@ use crate::{
         get_alpha_of_u32, resize_buffer, u32_to_rgba, InterpolationMode,
     },
     platform::file_data::FileData,
+};
+#[cfg(feature = "system")]
+use crate::{
     render::{Tuple2Into, TupleOps},
     system::info::Screen,
 };
@@ -270,6 +273,7 @@ pub enum KeyCode {
     World2,
     Unknown,
 }
+#[cfg(feature = "system")]
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct WindowSettings {
     pub borderless: bool,
@@ -281,6 +285,7 @@ pub struct WindowSettings {
     pub os_menu: bool,
     pub visible: bool,
 }
+#[cfg(feature = "system")]
 impl WindowSettings {
     pub fn default() -> Self {
         let (screen_width, screen_height) =
@@ -351,6 +356,7 @@ pub enum WindowLevel {
     AlwaysOnTop,
 }
 
+#[cfg(feature = "resvg")]
 pub use cursors::Cursor;
 
 #[derive(PartialEq, Clone, Debug)]
@@ -509,22 +515,28 @@ pub fn load_font(path: &str) -> fontdue::Font {
 }
 
 // Windows
+#[cfg(feature = "platform")]
 #[cfg(not(target_arch = "wasm32"))]
 pub mod minifb;
 
+#[cfg(feature = "platform")]
 #[cfg(not(target_arch = "wasm32"))]
 pub mod glfw;
 
+#[cfg(feature = "resvg")]
 // Window associates
 pub mod cursors;
+#[cfg(feature = "system")]
 pub mod framework_traits;
 
 pub mod file_data;
 pub mod file_system;
 
+#[cfg(feature = "system")]
 pub mod shared;
 pub mod time;
 
+#[cfg(feature = "system")]
 pub mod keyboard;
 
 // struct Camera {

@@ -19,4 +19,5 @@ pub mod render;
 pub mod console;
 
 
+#[cfg(feature = "system")]
 pub mod system;
