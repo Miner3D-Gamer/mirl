@@ -1,5 +1,4 @@
-#[cfg(feature = "imagery")]
-use image::GenericImageView;
+// #[cfg(feature = "imagery")]
 
 pub struct FileData {
     raw_data: Vec<u8>,
@@ -34,24 +33,11 @@ impl FileData {
     #[cfg(feature = "imagery")]
     pub fn as_image(
         &self,
-    ) -> Result<(Vec<u32>, u32, u32), Box<dyn std::error::Error>> {
+    ) -> Result<image::DynamicImage, Box<dyn std::error::Error>> {
         // Decode the raw bytes as an image
         let img = image::load_from_memory(&self.raw_data)?;
 
-        // Get the pixel data
-        let (width, height) = img.dimensions();
-        let rgba_img = img.to_rgba8();
-
-        let mut new = Vec::new();
-
-        for y in 0..height {
-            for x in 0..width {
-                let pixel = rgba_img.get_pixel(x, y);
-                new.push(crate::graphics::image_rgba_to_u32(*pixel));
-            }
-        }
-
-        Ok((new, width, height))
+        Ok(img)
     }
     // Get raw bytes
     pub fn as_bytes(&self) -> &Vec<u8> {

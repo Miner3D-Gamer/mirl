@@ -60,6 +60,9 @@ pub enum CursorStyle {
 }
 
 pub trait FileSystem {
+    fn new(required_files: Vec<String>) -> Self
+    where
+        Self: Sized;
     fn get_file_contents(
         &self,
         path: &str,
