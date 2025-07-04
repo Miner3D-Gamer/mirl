@@ -82,3 +82,6 @@ pub fn hash_value<T: std::hash::Hash>(value: &T) -> u64 {
     value.hash(&mut s);
     s.finish()
 }
+pub fn repeat_data<T: Clone>(data: T, amount: usize) -> Vec<T> {
+    vec![data; amount]
+}

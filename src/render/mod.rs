@@ -142,6 +142,7 @@ pub fn rotate_z_vertex_3d(
     vertex.z = z + cz;
 }
 
+#[inline(always)]
 pub fn set_pixel_safe(
     buffer: *mut u32,
     width: usize,
@@ -169,6 +170,7 @@ pub fn set_pixel_unsafe(
     }
 }
 
+#[inline]
 pub fn uv_interpolate(
     target_y: f32,
     start_y: f32,
@@ -183,13 +185,13 @@ pub fn uv_interpolate(
         + (end_val - start_val) * (target_y - start_y) / (end_y - start_y);
 }
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Polygon {
     pub point1: Vertex3D,
     pub point2: Vertex3D,
     pub point3: Vertex3D,
 }
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Vertex3D {
     pub x: f64,
     pub y: f64,
@@ -197,13 +199,14 @@ pub struct Vertex3D {
     pub u: f32,
     pub v: f32,
 }
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Point3D {
     pub x: f64,
     pub y: f64,
     pub z: f64,
 }
 
+#[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Point2D {
     pub x: f64,
     pub y: f64,
@@ -212,7 +215,7 @@ pub fn vertex_3d_to_2d(
     vertex: &Vertex3D,
     width: usize,
     height: usize,
-) -> (u16, u16) {
+) -> (isize, isize) {
     //return (vertex.x as u16, vertex.y as u16);
     let half_width = (width / 2) as f64;
     let half_height = (height / 2) as f64;
@@ -222,8 +225,19 @@ pub fn vertex_3d_to_2d(
 
     let screen_x = (x - half_width) / z + half_width;
     let screen_y = (y - half_height) / z + half_height;
-    return (screen_x as u16, screen_y as u16);
+    return (screen_x as isize, screen_y as isize);
 }
+
+
+// fn useable(
+//     p: &Vertex3D,
+//     width: usize,
+//     height: usize,
+// ) -> (isize, isize, f32, f32) {
+//     let position = vertex_3d_to_2d(p, width, height);
+
+//     return (position.0, position.1, p.u, p.v);
+// }
 
 // #[cfg(feature = "imagery")]
 // mod image_support;
