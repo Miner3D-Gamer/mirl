@@ -36,3 +36,9 @@ pub fn combined<T: Clone + Sized>(vec: &Vec<T>, other: T) -> Vec<T> {
     new_vec.push(other);
     new_vec
 }
+
+pub fn average<T: num_traits::Num + num_traits::NumCast + Copy>(vec: &Vec<T>) -> T {
+    let sum: T = vec.iter().copied().fold(T::zero(), |a, b| a + b);
+    let len = T::from(vec.len()).unwrap();
+    sum / len
+}
