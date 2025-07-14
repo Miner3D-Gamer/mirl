@@ -2,24 +2,8 @@ use super::{draw_pixel_safe, draw_pixel_unsafe, DrawPixelFunction};
 use crate::extensions::*;
 use crate::platform::Buffer;
 
-pub fn draw_line_switch(
-    buffer: &Buffer,
-    x1: usize,
-    y1: usize,
-    x2: usize,
-    y2: usize,
-    color: u32,
-    thickness: isize,
-    fast: bool,
-) {
-    if fast {
-        draw_line_unsafe(buffer, x1, y1, x2, y2, color, thickness);
-    } else {
-        draw_line(buffer, x1, y1, x2, y2, color, thickness);
-    }
-}
-
-#[inline]
+#[inline(always)]
+/// Draw a simple line using Bresenham's line algorithm
 pub fn draw_line(
     buffer: &Buffer,
     x1: usize,
@@ -28,34 +12,15 @@ pub fn draw_line(
     y2: usize,
     color: u32,
     thickness: isize,
+    safe: bool,
 ) {
-    draw_line_impl(buffer, x1, y1, x2, y2, color, thickness, draw_pixel_safe);
-}
-
-#[inline]
-pub fn draw_line_unsafe(
-    buffer: &Buffer,
-    x1: usize,
-    y1: usize,
-    x2: usize,
-    y2: usize,
-    color: u32,
-    thickness: isize,
-) {
-    draw_line_impl(buffer, x1, y1, x2, y2, color, thickness, draw_pixel_unsafe);
-}
-
-#[inline(always)]
-fn draw_line_impl(
-    buffer: &Buffer,
-    x1: usize,
-    y1: usize,
-    x2: usize,
-    y2: usize,
-    color: u32,
-    thickness: isize,
-    draw_pixel: DrawPixelFunction,
-) {
+    let draw_pixel: DrawPixelFunction = {
+        if safe {
+            draw_pixel_safe
+        } else {
+            draw_pixel_unsafe
+        }
+    };
     let mut start_x = x1 as i16;
     let mut start_y = y1 as i16;
     let end_x = x2 as i16;

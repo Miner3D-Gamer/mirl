@@ -1,8 +1,8 @@
 [package]
 # Info
 name = "mirl"
-version = "2.0.0"
-description = "Miners Rust Lib - A collection of ever growing and changing functions and structs. Compatibility: Windows (Full), Linux (Partial), MacOS (Barely), Web (Unknown)\n\nDefault Features (Disable with 'default-features = false'): \n\t'system' - Allows for seamless low level interaction with the os (required by 'platform')\n\t'platform' - Allows for the creation and managing of windows\n\t'texture_manager_cleanup' - Additional clean up functions for more or less automatic texture unloading\n\nAdditional Optional Features:\n\t'imagery' - Support for the bulky 'image' library\n\t'svg_support' - Required for cursor action in the Frameworks"
+version = "3.0.0"
+description = "Miners Rust Lib - A collection of ever growing and changing functions and structs. Compatibility: Windows (Full), Linux (Partial, does not support 'system' feature), MacOS (Unknown), Web (Unknown)\n\nDefault Features (Disable with 'default-features = false'): \n\t'system' - Allows for seamless low level interaction with the os (required by 'platform')\n\t'platform' - Allows for the creation and managing of windows\n\t'texture_manager_cleanup' - Additional clean up functions for more or less automatic texture unloading\n\nAdditional Optional Features:\n\t'imagery' - Support for the bulky 'image' library\n\t'svg_support' - Required for cursor action in the Frameworks\n\t'all' - A quick way of enabling everything"
 # Compiler
 rust-version = "1.60.0"
 edition = "2021"
@@ -101,6 +101,7 @@ texture_manager_cleanup = []
 svg_support = ["resvg"]
 platform = ["minifb", "glfw", "gl", "system"]
 system = ["x11", "windows", "winapi"]
+all = ["default", "imagery"]
 
 [lib]
 name = "mirl"

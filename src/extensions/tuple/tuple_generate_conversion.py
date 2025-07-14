@@ -1,13 +1,15 @@
 max = 32
 
 
-code = "use num_traits::{Num, NumCast};"
+code = "#![allow(missing_docs)]use num_traits::{Num, NumCast};"
 
 
 get_code_for_trait_length = (
     lambda length: "pub trait Tuple%sInto{fn tuple_%s_into<T:Num+NumCast>(self)->(%s);}"
     % (length, length, ",".join(["T" for _ in range(length)]))
 )
+# Allows the conversion of tuples with a length of %s
+# Convert a tuple of X to a tuple of Y
 
 
 def get_impl_for_trait_length(length):
@@ -47,12 +49,13 @@ where
 final = ""
 final += code
 final += "pub trait Tuple1Into{fn tuple_1_into<T:Num+NumCast>(self)->(T,);}impl<N1>Tuple1Into for(N1,)where N1:Num+NumCast {fn tuple_1_into<T:Num+NumCast>(self)->(T,) {(NumCast::from(self.0).unwrap(),)}}"
-for i in range(1, max+1):
+for i in range(1, max + 1):
     i += 1
     final += get_code_for_trait_length(i)
     final += get_impl_for_trait_length(i)
 
 import os
+
 this = os.path.dirname(os.path.abspath(__file__))
 with open(os.path.join(this, "conversion.rs"), "w") as f:
     f.write(final)

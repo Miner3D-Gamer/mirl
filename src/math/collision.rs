@@ -3,8 +3,9 @@
 //     BottomHigher = true,
 //     BottomLower = false,
 // }
-
+/// When the bottom of the collision is mathematically higher
 pub const BOTTOM_HIGHER: bool = true;
+/// When the top of the collision is mathematically higher
 pub const BOTTOM_LOWER: bool = false;
 
 impl<
@@ -22,6 +23,8 @@ impl<
 //     }
 // }
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+/// A simple Rectangle defining computational limits
+#[allow(missing_docs)]
 pub struct Rectangle<T, const CS: bool> {
     pub x: T,
     pub y: T,
@@ -33,6 +36,7 @@ impl<T, const BOTTOM_HIGHER: bool> Rectangle<T, BOTTOM_HIGHER>
 where
     T: std::ops::Add<Output = T> + PartialOrd + Copy,
 {
+    /// Create a new Rectangle
     pub fn new(x: T, y: T, width: T, height: T) -> Self {
         Self {
             x,
@@ -41,27 +45,32 @@ where
             height,
         }
     }
-
+    /// Get the current x
     pub fn get_x(&self) -> T {
         self.x
     }
+    /// Get the current y
     pub fn get_y(&self) -> T {
         self.y
     }
+    /// Get the current width
     pub fn get_width(&self) -> T {
         self.width
     }
+    ///Get the current height
     pub fn get_height(&self) -> T {
         self.height
     }
-
+    /// Get the x of the left side of this rectangle
     pub fn left(&self) -> T {
         self.get_x()
     }
+    /// Get the x of the right side of this rectangle
 
     pub fn right(&self) -> T {
         self.get_x() + self.get_width()
     }
+    /// Get the y of the top side of this rectangle
 
     pub fn top(&self) -> T {
         if BOTTOM_HIGHER {
@@ -70,6 +79,7 @@ where
             self.get_y()
         }
     }
+    /// Get the y of the bottom side of this rectangle
 
     pub fn bottom(&self) -> T {
         if BOTTOM_HIGHER {
@@ -78,7 +88,7 @@ where
             self.get_y() + self.get_height()
         }
     }
-
+    /// Checks if a point falls within the coordinate range defined by the triangle bounds
     pub fn does_area_contain_point(&self, point: (T, T)) -> bool {
         if BOTTOM_HIGHER {
             point.0 >= self.left()
@@ -93,7 +103,7 @@ where
         }
     }
 }
-
+/// Checks if one triangle fully encompasses anothers
 pub fn does_area_fully_include_other_area<
     T: std::cmp::PartialOrd + std::ops::Add<Output = T> + std::marker::Copy,
     const BOTTOM_HIGHER: bool,
@@ -113,6 +123,7 @@ pub fn does_area_fully_include_other_area<
             && bigger_area.top() <= smaller_area.top();
     }
 }
+/// Checks if 2 rectangles collide anywhere
 pub fn do_areas_intersect<
     T: std::cmp::PartialOrd + Copy + std::ops::Add<Output = T>,
     const CS: bool,

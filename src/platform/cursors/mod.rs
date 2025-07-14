@@ -2,8 +2,11 @@
 pub use cursors_windows::load_base_cursor_with_file;
 
 use crate::{graphics::RawImage, render::U2};
+/// Cursor stuff of glfw bc glfw is a bitch
 pub mod cursor_glfw;
+/// The Cursor Manager provides a way of easily loading cursors based on a RawImage or the default cursors that come with this lib
 pub trait CursorManager {
+    /// Create a Cursor instance using a RawImage
     fn load_cursor(
         &mut self,
         name: &str,
@@ -12,8 +15,9 @@ pub trait CursorManager {
         hotspot_x: u16,
         hotspot_y: u16,
     );
+    /// Get the cursor instance with the specified name
     fn get_cursor(&self, name: &str) -> Cursor;
-
+    /// Load the builtin cursors this lib provides
     fn load_builtin_cursors(
         &mut self,
         size: U2,
@@ -22,72 +26,117 @@ pub trait CursorManager {
     );
 }
 #[derive(Debug)]
+/// Cursor Instance holding the required cursor data to be used somewhere else
 pub enum Cursor {
+    /// Windows
     #[cfg(target_os = "windows")]
     Win(Option<windows::Win32::UI::WindowsAndMessaging::HCURSOR>),
-
+    /// Linux using X11, wayland support will be added later
     #[cfg(target_os = "linux")]
     X11(Option<u64>), // This could be a cursor ID from X11
-
+    /// Mac
     #[cfg(target_os = "macos")]
     Mac(Option<*mut std::ffi::c_void>), // Placeholder for NSCursor or equivalent
-
+    /// glfw lib, cross-platform
     Glfw(Option<(RawImage, u32, u32)>),
 }
 // pub struct CursorData {
 //     raw_image_data: Vec<u32>,
 // }
-
+/// Implementation for cursors on windows
 #[cfg(target_os = "windows")]
 pub mod cursors_windows;
 
+/// Default cursors this lib provides
 pub struct Cursors {
+    /// Default Pointer
     pub alias: Cursor,
+    /// Resize vertically + Resize horizontally
     pub all_scroll: Cursor,
+    /// Arrow pointing to the bottom left ⬋
     pub bottom_left_corner: Cursor,
+    /// Arrow pointing to the bottom right ⬊
     pub bottom_right_corner: Cursor,
+    /// Arrow down with a _ at the end
     pub bottom_side: Cursor,
+    /// A plus shape
     pub cell: Cursor,
-    pub center_ptr: Cursor,
+    /// Default cursor rotated to be vertical
+    pub centered_pointer: Cursor,
+    /// Horizontal resizing
     pub col_resize: Cursor,
+    /// Eyedropper
     pub color_picker: Cursor,
+    /// Default cursor with ≡ attached
     pub context_menu: Cursor,
+    /// Default cursor with a plus
     pub copy: Cursor,
+    /// Cross
     pub crosshair: Cursor,
+    /// Default Pointer
     pub default: Cursor,
+    /// Closed hand
     pub closed_hand: Cursor,
+    /// Closed hand with an 🚫 attached
     pub closed_hand_no_drop: Cursor,
-    pub down_arrow: Cursor,
+    /// Arrow pointing down
+    pub arrow_down: Cursor,
+    /// Tip of an ink pen
     pub draft: Cursor,
+    /// Small pointers in all directions like this: ◄ ►
     pub fleur: Cursor,
+    /// Question mark
     pub help: Cursor,
-    pub left_arrow: Cursor,
-    pub left_side: Cursor,
+    /// Arrow pointing left
+    pub arrow_left: Cursor,
+    /// Arrow left with a stopper |←
+    pub side_left: Cursor,
+    /// Default cursor with a 🚫 attached
     pub no_drop: Cursor,
+    /// "🚫"
     pub not_allowed: Cursor,
+    /// Open hand
     pub open_hand: Cursor,
+    /// A Pencil
     pub pencil: Cursor,
+    /// Skull
     pub pirate: Cursor,
+    /// Hand with pointing index finger
     pub pointer: Cursor,
-    pub right_arrow: Cursor,
-    pub right_ptr: Cursor,
-    pub right_side: Cursor,
-    pub row_resize: Cursor,
-    pub size_bdiag: Cursor,
-    pub size_fdiag: Cursor,
+    /// Arrow pointing right
+    pub arrow_right: Cursor,
+    /// Mirrored version of normal cursor
+    pub mirrored_pointer: Cursor,
+    /// Arrow pointing right with a stopper →|
+    pub side_right: Cursor,
+    /// Resize top right to bottom left
+    pub size_nesw: Cursor,
+    /// Resize top left to bottom right
+    pub size_nwse: Cursor,
+    /// Resize horizontally
     pub size_hor: Cursor,
+    /// Resize vertically
     pub size_ver: Cursor,
+    /// I Beam
     pub text: Cursor,
-    pub top_left_corner: Cursor,
-    pub top_right_corner: Cursor,
-    pub top_side: Cursor,
-    pub up_arrow: Cursor,
+    /// Arrow pointing up top left
+    pub arrow_top_left: Cursor,
+    /// Arrow pointing up top right
+    pub arrow_top_right: Cursor,
+    /// Arrow pointing up with an _ on top
+    pub side_top: Cursor,
+    /// Arrow pointing up
+    pub arrow_up: Cursor,
+    /// I Beam rotated 90°
     pub vertical_text: Cursor,
+    /// Magnifying glass with plus
     pub zoom_in: Cursor,
+    /// Magnifying glass with minus
     pub zoom_out: Cursor,
 }
 
 impl Cursors {
+    /// Load all defaultly supported cursors
     pub fn load<F>(
         size: U2,
         main_color: u32,
@@ -168,7 +217,7 @@ impl Cursors {
                 secondary_color,
                 include_str!("./svg/cell.svg").to_string(),
             ),
-            center_ptr: load_base_cursor_with_file(
+            centered_pointer: load_base_cursor_with_file(
                 BaseCursor {
                     hot_spot_x: 15,
                     hot_spot_y: 7,
@@ -248,7 +297,7 @@ impl Cursors {
                 secondary_color,
                 include_str!("./svg/closed-hand-no-drop.svg").to_string(),
             ),
-            down_arrow: load_base_cursor_with_file(
+            arrow_down: load_base_cursor_with_file(
                 BaseCursor {
                     hot_spot_x: 16,
                     hot_spot_y: 28,
@@ -288,7 +337,7 @@ impl Cursors {
                 secondary_color,
                 include_str!("./svg/help.svg").to_string(),
             ),
-            left_arrow: load_base_cursor_with_file(
+            arrow_left: load_base_cursor_with_file(
                 BaseCursor {
                     hot_spot_x: 4,
                     hot_spot_y: 16,
@@ -298,7 +347,7 @@ impl Cursors {
                 secondary_color,
                 include_str!("./svg/left-arrow.svg").to_string(),
             ),
-            left_side: load_base_cursor_with_file(
+            side_left: load_base_cursor_with_file(
                 BaseCursor {
                     hot_spot_x: 4,
                     hot_spot_y: 16,
@@ -368,7 +417,7 @@ impl Cursors {
                 secondary_color,
                 include_str!("./svg/pointer.svg").to_string(),
             ),
-            right_arrow: load_base_cursor_with_file(
+            arrow_right: load_base_cursor_with_file(
                 BaseCursor {
                     hot_spot_x: 28,
                     hot_spot_y: 16,
@@ -378,7 +427,7 @@ impl Cursors {
                 secondary_color,
                 include_str!("./svg/right-arrow.svg").to_string(),
             ),
-            right_ptr: load_base_cursor_with_file(
+            mirrored_pointer: load_base_cursor_with_file(
                 BaseCursor {
                     hot_spot_x: 28,
                     hot_spot_y: 4,
@@ -388,7 +437,7 @@ impl Cursors {
                 secondary_color,
                 include_str!("./svg/right_ptr.svg").to_string(),
             ),
-            right_side: load_base_cursor_with_file(
+            side_right: load_base_cursor_with_file(
                 BaseCursor {
                     hot_spot_x: 28,
                     hot_spot_y: 16,
@@ -398,7 +447,7 @@ impl Cursors {
                 secondary_color,
                 include_str!("./svg/right_side.svg").to_string(),
             ),
-            row_resize: load_base_cursor_with_file(
+            size_nesw: load_base_cursor_with_file(
                 BaseCursor {
                     hot_spot_x: 16,
                     hot_spot_y: 16,
@@ -406,9 +455,9 @@ impl Cursors {
                 size,
                 main_color,
                 secondary_color,
-                include_str!("./svg/row-resize.svg").to_string(),
+                include_str!("./svg/size_nesw.svg").to_string(),
             ),
-            size_bdiag: load_base_cursor_with_file(
+            size_nwse: load_base_cursor_with_file(
                 BaseCursor {
                     hot_spot_x: 16,
                     hot_spot_y: 16,
@@ -416,17 +465,7 @@ impl Cursors {
                 size,
                 main_color,
                 secondary_color,
-                include_str!("./svg/size_bdiag.svg").to_string(),
-            ),
-            size_fdiag: load_base_cursor_with_file(
-                BaseCursor {
-                    hot_spot_x: 16,
-                    hot_spot_y: 16,
-                },
-                size,
-                main_color,
-                secondary_color,
-                include_str!("./svg/size_fdiag.svg").to_string(),
+                include_str!("./svg/size_nwse.svg").to_string(),
             ),
             size_hor: load_base_cursor_with_file(
                 BaseCursor {
@@ -458,7 +497,7 @@ impl Cursors {
                 secondary_color,
                 include_str!("./svg/text.svg").to_string(),
             ),
-            top_left_corner: load_base_cursor_with_file(
+            arrow_top_left: load_base_cursor_with_file(
                 BaseCursor {
                     hot_spot_x: 9,
                     hot_spot_y: 9,
@@ -468,7 +507,7 @@ impl Cursors {
                 secondary_color,
                 include_str!("./svg/top_left_corner.svg").to_string(),
             ),
-            top_right_corner: load_base_cursor_with_file(
+            arrow_top_right: load_base_cursor_with_file(
                 BaseCursor {
                     hot_spot_x: 21,
                     hot_spot_y: 9,
@@ -478,7 +517,7 @@ impl Cursors {
                 secondary_color,
                 include_str!("./svg/top_right_corner.svg").to_string(),
             ),
-            top_side: load_base_cursor_with_file(
+            side_top: load_base_cursor_with_file(
                 BaseCursor {
                     hot_spot_x: 16,
                     hot_spot_y: 4,
@@ -488,7 +527,7 @@ impl Cursors {
                 secondary_color,
                 include_str!("./svg/top_side.svg").to_string(),
             ),
-            up_arrow: load_base_cursor_with_file(
+            arrow_up: load_base_cursor_with_file(
                 BaseCursor {
                     hot_spot_x: 16,
                     hot_spot_y: 4,
@@ -532,13 +571,14 @@ impl Cursors {
     }
 }
 
+/// Holds information any cursor would need
 pub struct BaseCursor {
     //file_path: &'static str,
     //colors: u8,
     hot_spot_x: i32,
     hot_spot_y: i32,
 }
-
+/// Set the cursor of the current window
 pub fn use_cursor(cursor: &Cursor, glfw_window: Option<&mut glfw::Window>) {
     if let Some(additional_info) = glfw_window {
         match cursor {
@@ -590,8 +630,24 @@ pub fn use_cursor(cursor: &Cursor, glfw_window: Option<&mut glfw::Window>) {
         }
     }
 }
-
+/// Converts the U2 into the actual cursor size, up to 255
 pub fn cursor_resolution(quality: U2) -> u8 {
     let t: u32 = quality.into();
     2u8.pow(t + 5) - 1
+}
+/// Converts a desired resolution into U2
+pub fn resolution_to_quality(resolution: u8) -> Result<U2, &'static str> {
+    let val = resolution as u32 + 1;
+
+    if !val.is_power_of_two() {
+        return Err("Resolution + 1 is not a power of two");
+    }
+
+    let t = val.trailing_zeros().checked_sub(5).ok_or("Resolution too small")?;
+
+    if t > 3 {
+        return Err("Resolution too large");
+    }
+
+    Ok(U2::new(t as u8))
 }

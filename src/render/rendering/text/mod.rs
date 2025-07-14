@@ -1,18 +1,38 @@
-use crate::platform::Buffer;
 use std::collections::HashMap;
 use std::sync::RwLock;
 
+/// Key:
+/// char: Requested letter
+/// (i32, i32): Dimensions
+/// usize: Hash (so multiple fonts can be used at the same time)
+/// 
+/// Data:
+/// fontdue::Metrics: Positioning data
+/// Vec<u8>: Rasterized font data (alpha)
 static GLYPH_CACHE: once_cell::sync::Lazy<
-    RwLock<HashMap<(char, (i32, i32)), (fontdue::Metrics, Vec<u8>)>>,
+    RwLock<HashMap<(char, (i32, i32), usize), (fontdue::Metrics, Vec<u8>)>>,
 > = once_cell::sync::Lazy::new(|| RwLock::new(HashMap::new()));
 
+/// Get a glyph from the cache if it exists
 #[inline(always)]
 pub fn _get_glyph_cache(
-) -> &'static RwLock<HashMap<(char, (i32, i32)), (fontdue::Metrics, Vec<u8>)>> {
+) -> &'static RwLock<HashMap<(char, (i32, i32), usize), (fontdue::Metrics, Vec<u8>)>> {
     &GLYPH_CACHE
 }
+/// Reset the glyph cache
 pub fn _reset_glyph_cache() {
     GLYPH_CACHE.write().unwrap().clear();
+}
+/// Removes a selected glyph from the glyph cache
+pub fn _remove_glyph_from_glyph_cache(glyph: &(char, (i32, i32), usize)) {
+    GLYPH_CACHE.write().unwrap().remove(glyph);
+}
+/// Manually add a glyph to the glyph cache
+pub fn _add_to_glyph_cache(
+    key: (char, (i32, i32), usize),
+    data: (fontdue::Metrics, Vec<u8>),
+) {
+    GLYPH_CACHE.write().unwrap().insert(key, data);
 }
 
 #[inline(always)]
@@ -21,60 +41,6 @@ fn round_float_key(value: f32) -> (i32, i32) {
     let rounded_int_x = (value * multiplier).round() as i32;
     let rounded_int_y = (value * multiplier).fract() as i32;
     (rounded_int_x, rounded_int_y)
-}
-
-pub fn draw_text_switch(
-    buffer: &Buffer,
-    text: &str,
-    x: usize,
-    y: usize,
-    color: u32,
-    size: f32,
-    font: &fontdue::Font,
-    aliased: bool,
-    unsafe_fast: bool,
-    stretch_x: f32,
-    stretch_y: f32,
-) {
-    if stretch_x == 1.0 && stretch_y == 1.0 {
-        if aliased {
-            if unsafe_fast {
-                draw_text_unsafe(buffer, text, x, y, color, size, font);
-            } else {
-                draw_text(buffer, text, x, y, color, size, font);
-            }
-        } else {
-            if unsafe_fast {
-                draw_text_antialiased_unsafe(
-                    buffer, text, x, y, color, size, font,
-                );
-            } else {
-                draw_text_antialiased(buffer, text, x, y, color, size, font);
-            }
-        }
-    } else {
-        if aliased {
-            if unsafe_fast {
-                draw_text_stretched_unsafe(
-                    buffer, text, x, y, color, size, font, stretch_x, stretch_y,
-                );
-            } else {
-                draw_text_stretched(
-                    buffer, text, x, y, color, size, font, stretch_x, stretch_y,
-                );
-            }
-        } else {
-            if unsafe_fast {
-                draw_text_antialiased_stretched_unsafe(
-                    buffer, text, x, y, color, size, font, stretch_x, stretch_y,
-                );
-            } else {
-                draw_text_antialiased_stretched(
-                    buffer, text, x, y, color, size, font, stretch_x, stretch_y,
-                );
-            }
-        }
-    }
 }
 
 mod aliased;
@@ -140,14 +106,12 @@ pub fn get_character(
 
     let x = {
         let cache = _get_glyph_cache().read().unwrap();
-        cache.get(&(ch, rounded_size_key)).cloned()
+        cache.get(&(ch, rounded_size_key, font.file_hash())).cloned()
     }
     .unwrap_or_else(|| {
         let rasterized = font.rasterize(ch, size);
 
-        // Insert into cache
-        let mut cache_mut = _get_glyph_cache().write().unwrap();
-        cache_mut.insert((ch, rounded_size_key), rasterized.clone());
+        _add_to_glyph_cache((ch, rounded_size_key, font.file_hash()), rasterized.clone());
 
         rasterized
     });

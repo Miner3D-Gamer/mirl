@@ -5,8 +5,8 @@ use crate::{
         draw_pixel_safe, draw_pixel_unsafe, rendering::DrawPixelFunction,
     },
 };
-
-pub fn draw_text_impl(
+/// Draw text in the specified font
+pub fn draw_text(
     buffer: &Buffer,
     text: &str,
     x: usize,
@@ -14,7 +14,7 @@ pub fn draw_text_impl(
     color: u32,
     size: f32,
     font: &fontdue::Font,
-    draw_pixel: DrawPixelFunction,
+    safe: bool,
 ) {
     let mut pen_x = x;
     let pen_y = y;
@@ -44,7 +44,11 @@ pub fn draw_text_impl(
                 }
 
                 if bitmap[row_start + gx] > 0 {
-                    draw_pixel(buffer, px, py, color);
+                    if safe {
+                        draw_pixel_safe(buffer, px, py, color)
+                    } else {
+                        draw_pixel_unsafe(buffer, px, py, color)
+                    }
                 }
             }
         }
@@ -52,85 +56,8 @@ pub fn draw_text_impl(
     }
 }
 
-#[inline]
-pub fn draw_text(
-    buffer: &Buffer,
-    text: &str,
-    x: usize,
-    y: usize,
-    color: u32,
-    size: f32,
-    font: &fontdue::Font,
-) {
-    draw_text_impl(buffer, text, x, y, color, size, font, draw_pixel_safe);
-}
-
-#[inline]
-pub fn draw_text_unsafe(
-    buffer: &Buffer,
-    text: &str,
-    x: usize,
-    y: usize,
-    color: u32,
-    size: f32,
-    font: &fontdue::Font,
-) {
-    draw_text_impl(buffer, text, x, y, color, size, font, draw_pixel_unsafe);
-}
-
-#[inline]
-pub fn draw_text_stretched<F: num_traits::Float>(
-    buffer: &Buffer,
-    text: &str,
-    x: usize,
-    y: usize,
-    color: u32,
-    size: f32,
-    font: &fontdue::Font,
-    stretch_x: F,
-    stretch_y: F,
-) {
-    draw_text_stretch_impl(
-        buffer,
-        text,
-        x,
-        y,
-        color,
-        size,
-        font,
-        draw_pixel_safe,
-        stretch_x,
-        stretch_y,
-    );
-}
-
-#[inline]
-pub fn draw_text_stretched_unsafe<F: num_traits::Float>(
-    buffer: &Buffer,
-    text: &str,
-    x: usize,
-    y: usize,
-    color: u32,
-    size: f32,
-    font: &fontdue::Font,
-    stretch_x: F,
-    stretch_y: F,
-) {
-    draw_text_stretch_impl(
-        buffer,
-        text,
-        x,
-        y,
-        color,
-        size,
-        font,
-        draw_pixel_unsafe,
-        stretch_x,
-        stretch_y,
-    );
-}
-
-pub fn draw_text_stretch_impl<F: num_traits::Float>(
+/// Draw text yet stretch the resulting characters
+pub fn draw_text_stretch<F: num_traits::Float>(
     buffer: &Buffer,
     text: &str,
     x: usize,

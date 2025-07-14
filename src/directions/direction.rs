@@ -1,9 +1,14 @@
 use super::RotateDirections;
 
+/// N E S W
 pub enum Directions {
+    /// It's North, what'd you expect?
     North,
+    /// It's East, what'd you expect?
     East,
+    /// It's South, what'd you expect?
     South,
+    /// It's West, what'd you expect?
     West,
 }
 

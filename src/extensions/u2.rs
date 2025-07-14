@@ -2,8 +2,11 @@ use super::U4;
 use num_traits::{NumCast, ToPrimitive};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, std::cmp::PartialOrd)]
+/// A u2... yeah
 pub struct U2 {
+    /// Lower byte
     pub b0: bool,
+    /// Unlower byte
     pub b1: bool,
 }
 impl ToPrimitive for U2 {
@@ -185,6 +188,7 @@ impl std::ops::Div for U2 {
     }
 }
 
+/// Convert a number into a u2
 #[macro_export]
 macro_rules! u2 {
     ($val:expr) => {

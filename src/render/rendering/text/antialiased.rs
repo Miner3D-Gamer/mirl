@@ -6,7 +6,8 @@ use crate::{
         rendering::{get_pixel, DrawPixelFunction},
     },
 };
-fn draw_text_antialiased_impl(
+/// Draw text in the specified font
+pub fn draw_text_antialiased(
     buffer: &Buffer,
     text: &str,
     x: usize,
@@ -14,8 +15,15 @@ fn draw_text_antialiased_impl(
     color: u32,
     size: f32,
     font: &fontdue::Font,
-    draw_pixel: DrawPixelFunction,
+    safe: bool,
 ) {
+    let draw_pixel: DrawPixelFunction = {
+        if safe {
+            draw_pixel_safe
+        } else {
+            draw_pixel_unsafe
+        }
+    };
     let mut pen_x = x;
     let pen_y = y;
 
@@ -95,50 +103,8 @@ fn draw_text_antialiased_impl(
     }
 }
 
-#[inline]
-pub fn draw_text_antialiased(
-    buffer: &Buffer,
-    text: &str,
-    x: usize,
-    y: usize,
-    color: u32,
-    size: f32,
-    font: &fontdue::Font,
-) {
-    draw_text_antialiased_impl(
-        buffer,
-        text,
-        x,
-        y,
-        color,
-        size,
-        font,
-        draw_pixel_safe,
-    );
-}
 
-#[inline]
-pub fn draw_text_antialiased_unsafe(
-    buffer: &Buffer,
-    text: &str,
-    x: usize,
-    y: usize,
-    color: u32,
-    size: f32,
-    font: &fontdue::Font,
-) {
-    draw_text_antialiased_impl(
-        buffer,
-        text,
-        x,
-        y,
-        color,
-        size,
-        font,
-        draw_pixel_unsafe,
-    );
-}
-#[inline]
+/// Draw text yet stretch the resulting characters
 pub fn draw_text_antialiased_stretched<F: num_traits::Float>(
     buffer: &Buffer,
     text: &str,
@@ -149,59 +115,15 @@ pub fn draw_text_antialiased_stretched<F: num_traits::Float>(
     font: &fontdue::Font,
     stretch_x: F,
     stretch_y: F,
+    safe: bool,
 ) {
-    draw_text_antialiased_stretched_impl(
-        buffer,
-        text,
-        x,
-        y,
-        color,
-        size,
-        font,
-        draw_pixel_safe,
-        stretch_x,
-        stretch_y,
-    );
-}
-
-#[inline]
-pub fn draw_text_antialiased_stretched_unsafe<F: num_traits::Float>(
-    buffer: &Buffer,
-    text: &str,
-    x: usize,
-    y: usize,
-    color: u32,
-    size: f32,
-    font: &fontdue::Font,
-    stretch_x: F,
-    stretch_y: F,
-) {
-    draw_text_antialiased_stretched_impl(
-        buffer,
-        text,
-        x,
-        y,
-        color,
-        size,
-        font,
-        draw_pixel_unsafe,
-        stretch_x,
-        stretch_y,
-    );
-}
-
-fn draw_text_antialiased_stretched_impl<F: num_traits::Float>(
-    buffer: &Buffer,
-    text: &str,
-    x: usize,
-    y: usize,
-    color: u32,
-    size: f32,
-    font: &fontdue::Font,
-    draw_pixel: DrawPixelFunction,
-    stretch_x: F,
-    stretch_y: F,
-) {
+    let draw_pixel: DrawPixelFunction = {
+        if safe {
+            draw_pixel_safe
+        } else {
+            draw_pixel_unsafe
+        }
+    };
     let mut pen_x = x;
     let pen_y = y;
     let font_metrics = font.horizontal_line_metrics(size).unwrap();

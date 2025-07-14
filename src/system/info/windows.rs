@@ -1,10 +1,12 @@
 use super::{Battery, Info, Screen};
 use winapi::um::winuser::GetSystemMetrics;
 
+/// Windows struct implementation of the OSInfo trait
 pub struct WindowsInfo {
     //system: sysinfo::System,
 }
 impl WindowsInfo {
+    /// Create a new [WindowsInfo] instance
     pub fn new() -> Self {
         WindowsInfo {
             //system: sysinfo::System::new(),

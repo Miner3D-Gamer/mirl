@@ -1,7 +1,9 @@
 use super::{Directions, ExtendedDirections, RotateDirections, RotatePrecise};
-
+/// A unifier for all real directions
 pub enum AllCardinalDirections {
+    /// N E S W
     Base(Directions),
+    /// NE SE SW NW
     Extended(ExtendedDirections),
 }
 impl RotateDirections for AllCardinalDirections {

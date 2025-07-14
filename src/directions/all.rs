@@ -2,9 +2,13 @@ use super::{
     Directions, ExtendedDirections, RotateDirections, RotatePrecise,
     SpecialDirections,
 };
+/// A unifier to have every direction available
 pub enum AllDirections {
+    /// N E S W
     Base(Directions),
+    /// NE SE SW NW
     Extended(ExtendedDirections),
+    /// No direction
     Special(SpecialDirections),
 }
 impl RotateDirections for AllDirections {

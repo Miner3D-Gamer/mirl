@@ -1,6 +1,7 @@
 pub use crate::extensions::*;
 use crate::math::radians;
 
+/// Rotate a [Vertex3D] around a [Point3D] on the x axis
 pub fn rotate_x_vertex_3d(
     angle_degrees: f64,
     rotation_center: Point3D,
@@ -26,6 +27,7 @@ pub fn rotate_x_vertex_3d(
     vertex.y = new_y + cy;
     vertex.z = new_z + cz;
 }
+/// Rotate a [Polygon] around a [Point3D] on the x axis
 pub fn rotate_x_polygon_3d(
     angle_degrees: f64,
     rotation_center: Point3D,
@@ -47,6 +49,7 @@ pub fn rotate_x_polygon_3d(
         &mut polygon.point3,
     );
 }
+/// Rotate a [Polygon] around a [Point3D] on the y axis
 pub fn rotate_y_polygon_3d(
     angle_degrees: f64,
     rotation_center: Point3D,
@@ -68,6 +71,7 @@ pub fn rotate_y_polygon_3d(
         &mut polygon.point3,
     );
 }
+/// Rotate a [Polygon] around a [Point3D] on the z axis
 pub fn rotate_z_polygon_3d(
     angle_degrees: f64,
     rotation_center: Point3D,
@@ -90,6 +94,7 @@ pub fn rotate_z_polygon_3d(
     );
 }
 
+/// Rotate a [Vertex3D] around a [Point3D] on the y axis
 pub fn rotate_y_vertex_3d(
     angle_degrees: f64,
     rotation_center: Point3D,
@@ -116,6 +121,7 @@ pub fn rotate_y_vertex_3d(
     vertex.z = new_z + cz;
 }
 
+/// Rotate a [Vertex3D] around a [Point3D] on the z axis
 pub fn rotate_z_vertex_3d(
     angle_degrees: f64,
     rotation_center: Point3D,
@@ -141,7 +147,7 @@ pub fn rotate_z_vertex_3d(
     vertex.y = new_y + cy;
     vertex.z = z + cz;
 }
-
+/// Set a pixel color at the specified coordinate while checking if the position is validly in the buffer range
 #[inline(always)]
 pub fn set_pixel_safe(
     buffer: *mut u32,
@@ -158,6 +164,8 @@ pub fn set_pixel_safe(
         *buffer.add(y * width + x) = color;
     }
 }
+/// Set a pixel color at the specified coordinate without checking if the position is validly in the buffer range
+#[inline(always)]
 pub fn set_pixel_unsafe(
     buffer: *mut u32,
     width: usize,
@@ -169,7 +177,7 @@ pub fn set_pixel_unsafe(
         *buffer.add(y * width + x) = color;
     }
 }
-
+/// Interpolate between uv values
 #[inline]
 pub fn uv_interpolate(
     target_y: f32,
@@ -184,33 +192,50 @@ pub fn uv_interpolate(
     return start_val
         + (end_val - start_val) * (target_y - start_y) / (end_y - start_y);
 }
-
+/// A polygon - Created using 3 [Vertex3D]
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Polygon {
+    /// First [Vertex3D]
     pub point1: Vertex3D,
+    /// Second [Vertex3D]
     pub point2: Vertex3D,
+    /// Third [Vertex3D]
     pub point3: Vertex3D,
 }
+/// A 3D point in space with uv coordinates
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Vertex3D {
+    /// X coordinate
     pub x: f64,
+    /// Y coordinate
     pub y: f64,
+    /// X coordinate
     pub z: f64,
+    /// Texture x coordinate
     pub u: f32,
+    /// Texture y coordinate
     pub v: f32,
 }
+/// A 3D point in space without uv coordinates
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Point3D {
+    /// X coordinate
     pub x: f64,
+    /// Y coordinate
     pub y: f64,
+    /// X coordinate
     pub z: f64,
 }
 
+/// A 2D point in space without uv coordinates
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Point2D {
+    /// X coordinate
     pub x: f64,
+    /// Y coordinate
     pub y: f64,
 }
+/// Cast a 3d point into 2d space using a very simple algorithm
 pub fn vertex_3d_to_2d(
     vertex: &Vertex3D,
     width: usize,

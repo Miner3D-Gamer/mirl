@@ -1,17 +1,21 @@
+/// Convert an r b g format into u32 argb format
 #[inline(always)]
 pub fn rgb_to_u32(r: u8, g: u8, b: u8) -> u32 {
     (r as u32) << 16 | (g as u32) << 8 | (b as u32)
 }
 
 #[inline(always)]
-/// Stored in argb format
+/// Convert r g b a in argb format
 pub fn rgba_to_u32(r: u8, g: u8, b: u8, a: u8) -> u32 {
     (a as u32) << 24 | (r as u32) << 16 | (g as u32) << 8 | b as u32
 }
+#[inline(always)]
+/// Convert r g b a into u32 argb
 pub fn rgba_u32_to_u32(r: u32, g: u32, b: u32, a: u32) -> u32 {
     (a) << 24 | (r) << 16 | (g) << 8 | b
 }
 #[inline(always)]
+/// Convert u32 argb to r g b
 pub fn u32_to_rgb(color: u32) -> (u8, u8, u8) {
     let r = ((color >> 16) & 0xFF) as u8;
     let g = ((color >> 8) & 0xFF) as u8;
@@ -19,6 +23,7 @@ pub fn u32_to_rgb(color: u32) -> (u8, u8, u8) {
     (r, g, b)
 }
 #[inline(always)]
+/// Convert u32 argb to r g b
 pub fn u32_to_rgb_u32(color: u32) -> (u32, u32, u32) {
     let r = (color >> 16) & 0xFF;
     let g = (color >> 8) & 0xFF;
@@ -26,6 +31,7 @@ pub fn u32_to_rgb_u32(color: u32) -> (u32, u32, u32) {
     (r, g, b)
 }
 #[inline(always)]
+/// Convert u32 argb to r g b a or u32 rgba to a g b r
 pub fn u32_to_rgba(color: u32) -> (u8, u8, u8, u8) {
     let a = ((color >> 24) & 0xFF) as u8;
     let r = ((color >> 16) & 0xFF) as u8;
@@ -34,6 +40,7 @@ pub fn u32_to_rgba(color: u32) -> (u8, u8, u8, u8) {
     (r, g, b, a)
 }
 #[inline(always)]
+/// Convert u32 argb to r g b a or u32 rgba to a g b r
 pub fn u32_to_rgba_u32(color: u32) -> (u32, u32, u32, u32) {
     let a = (color >> 24) & 0xFF;
     let r = (color >> 16) & 0xFF;
@@ -42,6 +49,7 @@ pub fn u32_to_rgba_u32(color: u32) -> (u32, u32, u32, u32) {
     (r, g, b, a)
 }
 #[inline(always)]
+/// Convert u32 argb to a g b r or u32 rgba to r g b a
 pub fn u32_to_argb(color: u32) -> (u8, u8, u8, u8) {
     let a = ((color >> 24) & 0xFF) as u8;
     let r = ((color >> 16) & 0xFF) as u8;
@@ -50,6 +58,7 @@ pub fn u32_to_argb(color: u32) -> (u8, u8, u8, u8) {
     (a, r, g, b)
 }
 #[inline(always)]
+/// Convert u32 argb to a g b r or u32 rgba to r g b a
 pub fn u32_to_argb_u32(color: u32) -> (u32, u32, u32, u32) {
     let a = (color >> 24) & 0xFF;
     let r = (color >> 16) & 0xFF;
@@ -59,41 +68,50 @@ pub fn u32_to_argb_u32(color: u32) -> (u32, u32, u32, u32) {
 }
 
 #[inline(always)]
+/// Get the alpha of a u32 in argb style, get red rgba style
 pub fn get_alpha_of_u32(color: u32) -> u8 {
     ((color >> 24) & 0xFF) as u8
 }
 
 #[inline(always)]
+/// Get the red of a u32 in argb style, get alpha rgba style
 pub fn get_red_of_u32(color: u32) -> u8 {
     ((color >> 16) & 0xFF) as u8
 }
 #[inline(always)]
+/// Get the green of a u32
 pub fn get_green_of_u32(color: u32) -> u8 {
     ((color >> 8) & 0xFF) as u8
 }
 #[inline(always)]
+/// Get the blue of a u32
 pub fn get_blue_of_u32(color: u32) -> u8 {
     (color & 0xFF) as u8
 }
 //
 
 #[inline(always)]
+/// Get the alpha of a u32 in argb style, get red rgba style
 pub fn get_u32_alpha_of_u32(color: u32) -> u32 {
     (color >> 24) & 0xFF
 }
 
 #[inline(always)]
+/// Get the red of a u32 in argb style, get alpha rgba style
 pub fn get_u32_red_of_u32(color: u32) -> u32 {
     (color >> 16) & 0xFF
 }
 #[inline(always)]
+/// Get the green of a u32
 pub fn get_u32_green_of_u32(color: u32) -> u32 {
     (color >> 8) & 0xFF
 }
 #[inline(always)]
+/// Get the blue of a u32
 pub fn get_u32_blue_of_u32(color: u32) -> u32 {
     color & 0xFF
 }
+/// Image support for mirl
 #[cfg(feature = "imagery")]
 pub mod imagery;
 use std::collections::HashSet;
@@ -102,6 +120,7 @@ use std::collections::HashSet;
 pub use imagery::*;
 
 #[inline]
+/// Get hue of rgb (hsl space)
 pub fn get_hue_of_rgb(r: f32, g: f32, b: f32) -> f32 {
     let max = r.max(g).max(b);
     let min = r.min(g).min(b);
@@ -118,7 +137,8 @@ pub fn get_hue_of_rgb(r: f32, g: f32, b: f32) -> f32 {
 }
 
 #[inline]
-pub fn adjust_brightness_hsl(color: u32, x: i32) -> u32 {
+/// Change the brightness of a hsl space
+pub fn adjust_brightness_hsl_of_rgb(color: u32, change: i32) -> u32 {
     let a = (color >> 24) & 0xFF;
     let r = (color >> 16) & 0xFF;
     let g = (color >> 8) & 0xFF;
@@ -127,13 +147,14 @@ pub fn adjust_brightness_hsl(color: u32, x: i32) -> u32 {
     let (h, s, l) = rgb_to_hsl(r as u8, g as u8, b as u8);
 
     // Adjust lightness in HSL space (most perceptually accurate)
-    let l_new = (l + x as f32).clamp(0.0, 100.0);
+    let l_new = (l + change as f32).clamp(0.0, 100.0);
 
     let (r_new, g_new, b_new) = hsl_to_rgb_u32(h, s, l_new);
 
     (a << 24) | ((r_new as u32) << 16) | ((g_new as u32) << 8) | b_new as u32
 }
 #[inline]
+/// Convert hsl space to rgb space
 pub fn hsl_to_rgb_f32(h: f32, s: f32, l: f32) -> (f32, f32, f32) {
     let c = (1.0 - (2.0 * l - 1.0).abs()) * s;
     let x = c * (1.0 - ((h / 60.0) % 2.0 - 1.0).abs());
@@ -153,6 +174,7 @@ pub fn hsl_to_rgb_f32(h: f32, s: f32, l: f32) -> (f32, f32, f32) {
 }
 
 #[inline]
+/// Convert rgb space to hsl space
 pub fn rgb_to_hsl(r: u8, g: u8, b: u8) -> (f32, f32, f32) {
     let r_norm = r as f32 / 255.0;
     let g_norm = g as f32 / 255.0;
@@ -188,6 +210,7 @@ pub fn rgb_to_hsl(r: u8, g: u8, b: u8) -> (f32, f32, f32) {
 }
 
 #[inline]
+/// Convert hsl space to rgb space
 
 pub fn hsl_to_rgb_u32(h: f32, s: f32, l: f32) -> (u8, u8, u8) {
     let h_norm = h / 360.0;
@@ -239,11 +262,13 @@ pub fn hsl_to_rgb_u32(h: f32, s: f32, l: f32) -> (u8, u8, u8) {
 
 /// Higher-level function that provides both perceptual models
 pub enum BrightnessModel {
-    LinearWeighted, // Uses RGB with perceptual weights
-    HSL,            // Uses HSL color space
+    /// Uses RGB with perceptual weights
+    LinearWeighted,
+    /// Uses HSL color space
+    HSL,
 }
 #[inline]
-
+/// Change the brightness of an rgba color
 pub fn adjust_brightness_based_on_human_eye(
     color: u32,
     x: i32,
@@ -270,11 +295,12 @@ pub fn adjust_brightness_based_on_human_eye(
             // Recombine with alpha
             (a << 24) | (r_new << 16) | (g_new << 8) | b_new
         }
-        BrightnessModel::HSL => adjust_brightness_hsl(color, x),
+        BrightnessModel::HSL => adjust_brightness_hsl_of_rgb(color, x),
     }
 }
 
 #[inline]
+/// Shift the color (hue) of rgb
 pub fn shift_color_rgb(r: u8, g: u8, b: u8, hue_shift: f32) -> (u8, u8, u8) {
     let (h, s, l) = rgb_to_hsl(r, g, b);
 
@@ -305,6 +331,7 @@ pub fn shift_color_rgb(r: u8, g: u8, b: u8, hue_shift: f32) -> (u8, u8, u8) {
     hsl_to_rgb_u32(new_h, new_s, new_l)
 }
 
+/// Shift the hue of rgb, isn't there another function that does the exact same?
 pub fn shift_hue_rgb(
     r: u8,
     g: u8,
@@ -321,12 +348,14 @@ pub fn shift_hue_rgb(
     let (r, g, b) = hsl_to_rgb_u32(hsv.0, hsv.1, hsv.2);
     (r, g, b)
 }
+/// Shift the hue of a rgba u32
 pub fn shift_hue_u32(color: u32, hue_shift: f32) -> u32 {
     let (r, g, b) = u32_to_rgb(color);
     let (r, g, b) = shift_hue_rgb(r, g, b, hue_shift);
     return rgb_to_u32(r, g, b);
 }
 #[inline]
+/// Shift the color of a rgba u32
 pub fn shift_color_u32(color: u32, hue_shift: f32) -> u32 {
     let a = (color >> 24) & 0xFF;
     let r = (color >> 16) & 0xFF;
@@ -340,6 +369,7 @@ pub fn shift_color_u32(color: u32, hue_shift: f32) -> u32 {
 }
 
 #[inline]
+/// Adjust the brightness of a rgba u32 color faster than with the function that does it with with human perception in mind
 pub fn adjust_brightness_fast(color: u32, x: i32) -> u32 {
     // Extract color components
     let r = ((color >> 16) & 0xFF) as i32;
@@ -354,6 +384,7 @@ pub fn adjust_brightness_fast(color: u32, x: i32) -> u32 {
     // Recombine into a single color value
     (r_new << 16) | (g_new << 8) | b_new
 }
+/// Desaturate the current color without caring that much about human vision
 #[inline]
 pub fn desaturate_fast(color: u32, amount: f32) -> u32 {
     // Extract color components
@@ -375,6 +406,7 @@ pub fn desaturate_fast(color: u32, amount: f32) -> u32 {
     // Recombine
     (r_new << 16) | (g_new << 8) | b_new
 }
+/// Rasterize an svg in the desired dimensions
 #[cfg(feature = "resvg")]
 pub fn rasterize_svg(
     svg_data: &[u8],
@@ -384,7 +416,7 @@ pub fn rasterize_svg(
     let opt = resvg::usvg::Options::default();
     //let fontdb = usvg::fontdb::Database::new();
 
-    let rtree = resvg::usvg::Tree::from_data(&svg_data, &opt).unwrap();
+    let tree = resvg::usvg::Tree::from_data(&svg_data, &opt).unwrap();
 
     // Create a pixmap with desired size (from SVG's size)
     let mut pixmap = resvg::tiny_skia::Pixmap::new(width, height)
@@ -393,7 +425,7 @@ pub fn rasterize_svg(
 
     // Render the SVG
     resvg::render(
-        &rtree,
+        &tree,
         resvg::usvg::Transform::default(),
         &mut pixmap.as_mut(),
     );
@@ -421,6 +453,8 @@ pub fn pixmap_to_raw_image(pixmap: &resvg::tiny_skia::Pixmap) -> RawImage {
 #[cfg(feature = "platform")]
 use glfw::PixelImage;
 #[cfg(feature = "platform")]
+
+/// Convert a RawImage into a glfw::PixelImage
 #[inline(always)]
 pub fn raw_image_to_pixel_image(raw_image: &RawImage) -> glfw::PixelImage {
     return glfw::PixelImage {
@@ -429,6 +463,7 @@ pub fn raw_image_to_pixel_image(raw_image: &RawImage) -> glfw::PixelImage {
         pixels: argb_list_to_rgba_list(&raw_image.data),
     };
 }
+/// Convert a glfw::PixelImage into a RawImage
 #[cfg(feature = "platform")]
 #[inline(always)]
 pub fn pixel_image_to_raw_image(pixel_image: &glfw::PixelImage) -> RawImage {
@@ -438,15 +473,20 @@ pub fn pixel_image_to_raw_image(pixel_image: &glfw::PixelImage) -> RawImage {
         pixel_image.height as usize,
     );
 }
-
+/// A RawImage to be accessed without compression
+/// What is the difference between RawImage and Buffer? Buffer has more attributes ig :|
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct RawImage {
+    /// The Raw Data
     pub data: Box<[u32]>,
+    /// The width of the image
     pub width: usize,
+    /// The height of the image
     pub height: usize,
 }
 
 impl RawImage {
+    /// Create a new RawImage with some data, if you want to create an empty image use RawImage::new_empty()
     pub fn new(data: Vec<u32>, width: usize, height: usize) -> Self {
         Self {
             data: data.into_boxed_slice(),
@@ -454,6 +494,7 @@ impl RawImage {
             height,
         }
     }
+    /// Create a new, empty, RawImage instance. If you already have data to fill it with you can use RawImage::new()
     pub fn new_empty(width: usize, height: usize) -> Self {
         Self {
             data: repeat_data(0, width * height).into(),
@@ -461,9 +502,11 @@ impl RawImage {
             height: height,
         }
     }
-    pub fn get_pixel(&self, x: usize, y: usize) -> u32 {
-        return self.data[y * self.width + x];
+    /// Gets the pixel color at the requested 3d coordinates
+    pub fn get_pixel(&self, pos: (usize, usize)) -> u32 {
+        return self.data[pos.1 * self.width + pos.0];
     }
+    /// Generate a error texture with the desired size
     pub fn generate_fallback(
         width: usize,
         height: usize,
@@ -491,6 +534,7 @@ impl RawImage {
 
         Self::new(data, width, height)
     }
+    /// Optimizes the image by removing empty space around the image
     pub fn remove_margins(&mut self) {
         // Remove all margins in one pass to avoid multiple data copies
         let (top_trim, bottom_trim, left_trim, right_trim) =
@@ -500,7 +544,7 @@ impl RawImage {
             self.apply_trim(top_trim, bottom_trim, left_trim, right_trim);
         }
     }
-
+    /// Calculates the empty space around the image
     pub fn calculate_trims(&self) -> (usize, usize, usize, usize) {
         let mut top_trim = 0;
         let mut bottom_trim = 0;
@@ -545,7 +589,7 @@ impl RawImage {
 
         (top_trim, bottom_trim, left_trim, right_trim)
     }
-
+    /// Checks if the requested row only has fully transparent pixels
     pub fn is_row_transparent(&self, row: usize) -> bool {
         let start = row * self.width;
         let end = start + self.width;
@@ -553,13 +597,13 @@ impl RawImage {
             .iter()
             .all(|&pixel| get_u32_alpha_of_u32(pixel) == 0)
     }
-
+    /// Checks if the requested column only has fully transparent pixels
     pub fn is_col_transparent(&self, col: usize) -> bool {
         (0..self.height).all(|row| {
             get_u32_alpha_of_u32(self.data[row * self.width + col]) == 0
         })
     }
-
+    /// Trims the image by the given restrictions
     pub fn apply_trim(
         &mut self,
         top: usize,
@@ -608,7 +652,7 @@ use crate::platform::FileSystem;
 use crate::{
     math::interpolate, misc::repeat_data, platform::Buffer, render::Tuple4Into,
 };
-
+/// Convert u32 argb to hex
 #[inline(always)]
 pub fn u32_to_hex(color: u32) -> String {
     format!(
@@ -620,40 +664,40 @@ pub fn u32_to_hex(color: u32) -> String {
     )
 }
 
+/// Convert hex into u32 argb
 #[inline(always)]
 pub fn hex_to_u32(hex: &str) -> u32 {
+    let a = u8::from_str_radix(&hex[0..2], 16).unwrap();
+    let r = u8::from_str_radix(&hex[2..4], 16).unwrap();
+    let g = u8::from_str_radix(&hex[4..6], 16).unwrap();
+    let b = u8::from_str_radix(&hex[6..8], 16).unwrap();
+    (a as u32) << 24 | (r as u32) << 16 | (g as u32) << 8 | b as u32
+}
+/// Convert hex into u32 rgba
+#[inline(always)]
+pub fn hex_to_u32_rgba(hex: &str) -> u32 {
     let r = u8::from_str_radix(&hex[0..2], 16).unwrap();
     let g = u8::from_str_radix(&hex[2..4], 16).unwrap();
     let b = u8::from_str_radix(&hex[4..6], 16).unwrap();
     let a = u8::from_str_radix(&hex[6..8], 16).unwrap();
     (a as u32) << 24 | (r as u32) << 16 | (g as u32) << 8 | b as u32
 }
+/// Convert hex into u32 rgb
 #[inline(always)]
-pub fn hex_to_rgba(hex: &str) -> (u8, u8, u8, u8) {
-    let r = u8::from_str_radix(&hex[0..2], 16).unwrap();
-    let g = u8::from_str_radix(&hex[2..4], 16).unwrap();
-    let b = u8::from_str_radix(&hex[4..6], 16).unwrap();
-    let a = u8::from_str_radix(&hex[6..8], 16).unwrap();
-    (r, g, b, a)
+pub fn hex_to_u32_rgb(hex: &str) -> u32 {
+    let r = u8::from_str_radix(&hex[2..4], 16).unwrap();
+    let g = u8::from_str_radix(&hex[4..6], 16).unwrap();
+    let b = u8::from_str_radix(&hex[6..8], 16).unwrap();
+    (r as u32) << 16 | (g as u32) << 8 | b as u32
 }
 
-#[inline(always)]
-pub fn hex_to_rgb(hex: &str) -> (u8, u8, u8) {
-    let r = u8::from_str_radix(&hex[0..2], 16).unwrap();
-    let g = u8::from_str_radix(&hex[2..4], 16).unwrap();
-    let b = u8::from_str_radix(&hex[4..6], 16).unwrap();
-    (r, g, b)
-}
-
+/// Converts rgb into hex
 #[inline(always)]
 pub fn rgb_to_hex(r: u8, g: u8, b: u8) -> String {
     format!("{:02x}{:02x}{:02x}", r, g, b)
 }
-#[inline(always)]
-pub fn rgba_to_hex(r: u8, g: u8, b: u8, a: u8) -> String {
-    format!("{:02x}{:02x}{:02x}{:02x}", r, g, b, a)
-}
 
+/// Converts a list of argb to rgba and vice versa
 #[inline(always)]
 pub fn argb_list_to_rgba_list(input: &[u32]) -> Vec<u32> {
     input
@@ -671,6 +715,7 @@ pub fn argb_list_to_rgba_list(input: &[u32]) -> Vec<u32> {
         })
         .collect()
 }
+/// Converts a list of rgba to argb and vice versa
 pub fn rgba_list_to_argb_list(input: &[u32]) -> Vec<u32> {
     input
         .iter()
@@ -687,8 +732,6 @@ pub fn rgba_list_to_argb_list(input: &[u32]) -> Vec<u32> {
         })
         .collect()
 }
-
-
 
 #[cfg(feature = "platform")]
 impl From<RawImage> for glfw::PixelImage {
@@ -760,12 +803,14 @@ pub fn get_unused_color_of_buffer(
     }
     current_color
 }
-
+/// The interpolation mode for tge resizing of a buffer like object
 pub enum InterpolationMode {
+    /// Nearest neighbor - Best for pixel art
     Nearest,
+    /// Linear interpolation - Idk this one always sucks, non pixel art ig
     Linear,
 }
-
+/// Resize a list of u32 to a list of u32s with a different visual size
 pub fn resize_buffer(
     buffer: &[u32],
     src_width: usize,
@@ -783,7 +828,7 @@ pub fn resize_buffer(
         ),
     }
 }
-
+/// Resize u32 list using linear interpolation
 pub fn resize_buffer_linear(
     buffer: &[u32],
     src_width: usize,
@@ -822,6 +867,7 @@ pub fn resize_buffer_linear(
     result
 }
 
+/// Interpolate a u32 rgba based on 4 other u32 rgba
 pub fn bilinear_interpolate_u32(
     p1: u32,
     p2: u32,
@@ -850,6 +896,7 @@ pub fn bilinear_interpolate_u32(
     ((r as u32) << 24) | ((g as u32) << 16) | ((b as u32) << 8) | (a as u32)
 }
 
+/// Resize u32 list using the nearest neighbor
 pub fn resize_buffer_nearest(
     buffer: &[u32],
     src_width: usize,
@@ -877,7 +924,7 @@ pub fn resize_buffer_nearest(
 
     result
 }
-
+/// Interpolate between 2 colors linearly based on a scale of 0 to 1
 pub fn interpolate_color_rgb_u32(
     color1: u32,
     color2: u32,
@@ -896,7 +943,7 @@ pub fn interpolate_color_rgb_u32(
 pub struct TextureManager {
     textures: Vec<Option<RawImage>>,
     lookup: ahash::AHashMap<String, usize>,
-    freelist: Vec<usize>,
+    free_list: Vec<usize>,
     #[cfg(feature = "imagery")]
     texture_lookup: ahash::AHashMap<String, String>,
     #[cfg(feature = "texture_manager_cleanup")]
@@ -906,11 +953,12 @@ pub struct TextureManager {
 }
 
 impl TextureManager {
+    /// Create a texture manager -> Request textures for visual applications
     pub fn new() -> Self {
         Self {
             textures: Vec::new(),
             lookup: ahash::AHashMap::new(),
-            freelist: Vec::new(),
+            free_list: Vec::new(),
             #[cfg(feature = "imagery")]
             texture_lookup: ahash::AHashMap::new(),
             #[cfg(feature = "texture_manager_cleanup")]
@@ -919,16 +967,18 @@ impl TextureManager {
             current_frame: 0,
         }
     }
-
+    /// Registering a texture means being able to lazy load it upon request
     #[cfg(feature = "imagery")]
     pub fn register_texture(&mut self, name: String, file_path: String) {
         self.texture_lookup.insert(name, file_path);
     }
-
+    /// Get a texture -> Enable 'imagery' feature for lazy loading
+    /// Returns None if the requested image cannot be found
     pub fn get(
         &mut self,
         name: &str,
         #[cfg(feature = "imagery")] file_system: &dyn FileSystem,
+        #[cfg(feature = "imagery")] remove_margins: bool,
     ) -> Option<&RawImage> {
         #[cfg(feature = "texture_manager_cleanup")]
         if let Some(&index) = self.lookup.get(name) {
@@ -948,7 +998,9 @@ impl TextureManager {
         if let Some(file_path) = self.texture_lookup.get(name) {
             match self.load_texture_from_file(file_path, file_system) {
                 Ok(mut raw_image) => {
-                    raw_image.remove_margins(); // I THINK THIS SHOULD BE CONFIGUREABLE BUT I'M TOO LAZY
+                    if remove_margins {
+                        raw_image.remove_margins();
+                    }
                     self.insert_texture(name.to_string(), raw_image);
                     if let Some(&index) = self.lookup.get(name) {
                         return self.textures[index].as_ref();
@@ -966,6 +1018,7 @@ impl TextureManager {
 
         None
     }
+    /// Load texture from file to memory
     #[cfg(feature = "imagery")]
     pub fn load_texture_from_file(
         &self,
@@ -976,9 +1029,9 @@ impl TextureManager {
         let img = file.as_image()?;
         Ok(img.into())
     }
-
+    /// Manually insert a texture with a corresponding name into cache
     pub fn insert_texture(&mut self, name: String, texture: RawImage) {
-        let index = if let Some(free) = self.freelist.pop() {
+        let index = if let Some(free) = self.free_list.pop() {
             self.textures[free] = Some(texture);
             free
         } else {
@@ -987,20 +1040,20 @@ impl TextureManager {
         };
         self.lookup.insert(name, index);
     }
-
+    /// Unloads/Deletes the specified image from cache if found
     pub fn unload_texture(&mut self, name: &str) {
         if let Some(&index) = self.lookup.get(name) {
             self.textures[index] = None;
-            self.freelist.push(index);
+            self.free_list.push(index);
             self.lookup.remove(name);
         }
     }
-
+    /// Checks if a an image is already registered for lazy loading
     #[cfg(feature = "imagery")]
     pub fn is_texture_registered(&self, name: &str) -> bool {
         self.texture_lookup.contains_key(name)
     }
-
+    /// Preload registered image instead of letting it lazy load
     #[cfg(feature = "imagery")]
     pub fn preload_texture(
         &mut self,
@@ -1016,9 +1069,13 @@ impl TextureManager {
         }
         Ok(())
     }
+    /// Remove textures that haven't been used in X ticks -> Call .tick() every frame for this to work properly
+    /// Set to 0 if you only ever want the images you need in memory
+    /// Setting it to at least 1 however is recommended
     #[cfg(feature = "texture_manager_cleanup")]
     #[allow(arithmetic_overflow)]
     pub fn cleanup_unused(&mut self, frames_unused: u64) {
+        // This calculation is 100% wrong, future me; Fix it.
         let cutoff = self.current_frame.saturating_sub(frames_unused);
 
         // Collect names to remove (avoid borrowing issues)
@@ -1034,6 +1091,10 @@ impl TextureManager {
         for name in to_remove {
             self.unload_texture(&name);
         }
+    }
+    #[allow(arithmetic_overflow)]
+    /// Tick the texture manager -> Only thing it does is increment a single value, required for .cleanup_unused()
+    pub fn tick(&mut self) {
         self.current_frame += 1;
     }
 }

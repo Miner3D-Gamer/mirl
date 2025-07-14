@@ -1,24 +1,24 @@
 use std::str::FromStr;
 
-use crate::platform::{KeyCode, MouseButton, WindowLevel};
-
 use ico::{IconDir, IconDirEntry, IconImage, ResourceType};
 
 #[cfg(feature = "resvg")]
 use super::cursors::load_base_cursor_with_file;
+#[cfg(feature = "resvg")]
+use super::cursors::Cursor;
 use super::framework_traits::{
     Control, ExtendedControl, ExtendedInput, ExtendedTiming, ExtendedWindow,
     Input, Output, Timing, Window,
 };
 use super::Time;
-#[cfg(feature = "resvg")]
-use super::{cursors::Cursor};
 use super::{time::NativeTime, Buffer};
-
+use crate::platform::{KeyCode, MouseButton, WindowLevel};
+use crate::render::Tuple2Into;
+/// Backend implementation using MiniFB
 pub struct Framework {
     window: minifb::Window,
     time: NativeTime,
-#[cfg(feature = "resvg")]
+    #[cfg(feature = "resvg")]
     cursor: Option<Cursor>,
 }
 
@@ -27,8 +27,8 @@ fn minifb_window_options_from_options(
 ) -> minifb::WindowOptions {
     minifb::WindowOptions {
         borderless: window_options.borderless,
-        title: window_options.title,
-        resize: window_options.resizeable,
+        title: window_options.title_visible,
+        resize: window_options.resizable,
         scale: minifb::Scale::X1,
         scale_mode: minifb::ScaleMode::Center,
         topmost: window_options.window_level == WindowLevel::AlwaysOnTop,
@@ -38,7 +38,7 @@ fn minifb_window_options_from_options(
 }
 
 impl Window for Framework {
-    /// Settings not accountet for:
+    /// Settings not accounted for:
     ///
     /// visible
     fn new(
@@ -70,13 +70,13 @@ impl Window for Framework {
         Self {
             window,
             time: NativeTime::new(),
-#[cfg(feature = "resvg")]
+            #[cfg(feature = "resvg")]
             cursor: None,
         }
     }
     #[inline]
     fn update(&mut self, buffer: &[u32]) {
-#[cfg(feature = "resvg")]
+        #[cfg(feature = "resvg")]
         if self.cursor.is_some() {
             super::cursors::use_cursor(self.cursor.as_ref().unwrap(), None);
         }
@@ -107,7 +107,10 @@ impl Input for Framework {
     }
     #[inline]
     fn is_mouse_down(&self, button: MouseButton) -> bool {
-        self.window.get_mouse_down(map_mouse(button))
+        if let Some(key) = map_mouse(button) {
+            return self.window.get_mouse_down(key);
+        }
+        false
     }
 }
 
@@ -124,21 +127,24 @@ impl Timing for Framework {
         super::shared::get_time()
     }
     #[inline]
-    fn sample_fps(&mut self) -> u64 {
+    fn get_delta_time(&mut self) -> f64 {
         let (time, r) = super::shared::sample_fps(&self.time);
         self.time = time;
         return r;
     }
     #[inline]
-    fn sleep(&self, time: u64) {
+    fn sleep(&self, time: std::time::Duration) {
         super::shared::sleep(time);
     }
 }
 
 impl ExtendedControl for Framework {
     #[inline]
-    fn set_always_ontop(&mut self, always_ontop: bool) {
-        self.window.topmost(always_ontop);
+    fn set_render_layer(&mut self, level: WindowLevel) {
+        crate::system::action::set_window_level(
+            &self.get_window_handle(),
+            level,
+        );
     }
     #[inline]
     fn maximize(&mut self) {
@@ -160,15 +166,19 @@ impl ExtendedControl for Framework {
     }
 }
 
-impl ExtendedInput for Framework {
+impl<MouseManagerScrollAccuracy: num_traits::Float>
+    ExtendedInput<MouseManagerScrollAccuracy> for Framework
+{
     #[inline]
-    fn get_mouse_scroll(&self) -> Option<(f64, f64)> {
+    fn get_mouse_scroll(
+        &self,
+    ) -> Option<(MouseManagerScrollAccuracy, MouseManagerScrollAccuracy)> {
         let t = self.window.get_scroll_wheel();
         if t.is_none() {
             return None;
         }
         let (x, y) = t.unwrap();
-        return Some((x as f64, y as f64));
+        return Some((x, y).tuple_2_into());
     }
 }
 
@@ -241,12 +251,12 @@ impl ExtendedWindow for Framework {
             self.window.set_icon(icon);
         }
     }
-#[cfg(feature = "resvg")]
+    #[cfg(feature = "resvg")]
     #[inline]
     fn set_cursor_style(&mut self, style: &Cursor) {
         super::cursors::use_cursor(style, None);
     }
-#[cfg(feature = "resvg")]
+    #[cfg(feature = "resvg")]
     fn load_custom_cursor(
         &mut self,
         size: crate::render::U2,
@@ -307,8 +317,7 @@ impl Control for Framework {
     fn set_size(&mut self, buffer: &Buffer) {
         super::shared::resize(
             &self.window.get_window_handle(),
-            buffer.width as i32,
-            buffer.height as i32,
+            (buffer.width, buffer.height),
         );
     }
     #[inline]
@@ -376,14 +385,16 @@ fn encode_to_ico_format(buffer: &[u32], width: u32, height: u32) -> Vec<u8> {
 //         CursorStyle::ResizeAll => minifb::CursorStyle::ResizeAll,
 //     }
 // }
-const fn map_mouse(button: MouseButton) -> minifb::MouseButton {
+const fn map_mouse(button: MouseButton) -> Option<minifb::MouseButton> {
     match button {
-        MouseButton::Left => minifb::MouseButton::Left,
-        MouseButton::Right => minifb::MouseButton::Right,
-        MouseButton::Middle => minifb::MouseButton::Middle,
-        MouseButton::Unsupported => {
-            panic!("Unsupported mouse button - idk what to do with this");
-        }
+        MouseButton::Left => Some(minifb::MouseButton::Left),
+        MouseButton::Right => Some(minifb::MouseButton::Right),
+        MouseButton::Middle => Some(minifb::MouseButton::Middle),
+        MouseButton::Extra1 => None,
+        MouseButton::Extra2 => None,
+        MouseButton::Extra3 => None,
+        MouseButton::Extra4 => None,
+        MouseButton::Unsupported => None,
     }
 }
 const fn map_key(key: KeyCode) -> minifb::Key {

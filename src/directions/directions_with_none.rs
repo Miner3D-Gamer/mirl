@@ -1,6 +1,9 @@
 use super::{Directions, RotateDirections, SpecialDirections};
+/// A unifier to have the usual directions as well as the extended version
 pub enum DirectionsWithNone {
+    /// N E S W
     Base(Directions),
+    /// NE SE SW NW
     Special(SpecialDirections),
 }
 impl RotateDirections for DirectionsWithNone {

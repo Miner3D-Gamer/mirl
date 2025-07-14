@@ -1,6 +1,7 @@
 use std::io::Read;
 
 use super::super::{file_data::FileData, FileSystem};
+/// Implementation of FileSystem for Native use only
 pub struct NativeFileSystem {
     exe_path: std::path::PathBuf,
     src_path: std::path::PathBuf,

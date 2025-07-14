@@ -1,4 +1,6 @@
+/// A trait for getting the average X of Y
 pub trait Average<T> {
+    /// Get the average value of X
     fn average(&self) -> T;
 }
 impl<V: num_traits::Num + num_traits::NumCast + Copy> Average<V> for Vec<V> {

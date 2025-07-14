@@ -4,6 +4,7 @@ use crossterm::{
 };
 use std::io::{stdout, BufRead, Write};
 
+/// Clears the currently visible console
 pub fn clear_console() {
     stdout()
         .execute(Clear(ClearType::All))
@@ -11,16 +12,15 @@ pub fn clear_console() {
         .execute(cursor::MoveTo(0, 0))
         .unwrap();
 }
-
-pub fn print(msg: &str) {
-    println!("{}", msg);
-}
+/// Color the given text (requires the console to support the full color range)
 pub fn color_text(msg: &str, r: u8, g: u8, b: u8) -> String {
     return format!("\x1b[38;2;{};{};{}m{}\x1b[0m", r, g, b, msg);
 }
+/// Color the background of the given text (requires the console to support the full color range)
 pub fn color_background(msg: &str, r: u8, g: u8, b: u8) -> String {
     return format!("\x1b[48;2;{};{};{}m{}\x1b[0m", r, g, b, msg);
 }
+/// Color the text and color of the given string (requires the console to support the full color range)
 pub fn color(
     msg: &str,
     r1: u8,
@@ -35,10 +35,12 @@ pub fn color(
         r1, g1, b1, r2, g2, b2, msg
     );
 }
+/// Return the 'clear' all effects marker
 pub fn reset_color() -> String {
     return "\x1b[0m".to_string();
 }
-pub fn clear_lines(n: u16) {
+/// Clear X lines
+pub fn clear_lines(n: usize) {
     let mut stdout = std::io::stdout();
 
     for _ in 0..n {
@@ -51,15 +53,16 @@ pub fn clear_lines(n: u16) {
     // Ensure the commands are flushed to the terminal
     stdout.flush().unwrap();
 }
+/// A python like input function
 pub fn input(msg: &str) -> String {
     let mut input = String::new();
-    print(msg);
+    println!("{msg}");
     std::io::stdin().read_line(&mut input).unwrap();
     input.truncate(input.len() - 1);
     return input;
 }
-
-pub fn get_console_content(max_lines: u64) -> String {
+/// Get the (full) content of the console
+pub fn get_console_content(max_lines: usize) -> Vec<String> {
     let stdin = std::io::stdin();
     let lines = stdin.lock().lines();
 
@@ -74,16 +77,17 @@ pub fn get_console_content(max_lines: u64) -> String {
         }
     }
 
-    recent_lines.join("\n")
+    recent_lines
 }
 
+/// Print the pixel stuct as color
 pub fn print_color(buffer: Vec<Pixel>) {
     for i in 0..buffer.len() {
         print!("{}", color_text("#", buffer[i].r, buffer[i].g, buffer[i].b));
     }
 }
 // "▄"
-
+/// Print an image in console version using a list of Pixel structs
 pub fn print_color_v(buffer: &Vec<Pixel>, width: usize) {
     for i in 0..buffer.len() / 2 {
         print!(

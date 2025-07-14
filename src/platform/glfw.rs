@@ -1,6 +1,6 @@
-use glfw::{Action, Context};
+use std::time::Duration;
 
-use crate::{graphics::argb_list_to_rgba_list, platform::Buffer};
+use glfw::{Action, Context};
 
 use super::{
     framework_traits::{
@@ -10,8 +10,11 @@ use super::{
     time::NativeTime,
     MouseButton, Time,
 };
-
-pub struct Framework {
+#[cfg(target_os = "windows")]
+use crate::platform::WindowLevel;
+use crate::{graphics::argb_list_to_rgba_list, platform::Buffer, render::Tuple2Into};
+/// glfw implementation of Framework
+pub struct Framework<MouseManagerScrollAccuracy: num_traits::Float> {
     glfw: glfw::Glfw,
     width: usize,
     height: usize,
@@ -22,21 +25,27 @@ pub struct Framework {
     vao: u32,
     time: NativeTime,
     keyboard_manager: super::shared::KeyManager,
-    mouse_manager: super::shared::MouseManager,
+    mouse_manager: super::shared::MouseManager<MouseManagerScrollAccuracy>,
     maximized: bool,
     minimized: bool,
 }
-pub fn log_errors(_: glfw::Error, description: String, _: &()) {
+fn log_errors(_: glfw::Error, description: String, _: &()) {
     println!("GLFW Error: {}", description);
 }
 
-pub static LOG_ERRORS: Option<glfw::ErrorCallback<()>> = Some(glfw::Callback {
+static LOG_ERRORS: Option<glfw::ErrorCallback<()>> = Some(glfw::Callback {
     f: log_errors as fn(glfw::Error, String, &()),
     data: (),
 });
 
-impl Window for Framework {
-    fn new(buffer: &Buffer, title: &str, settings: super::WindowSettings) -> Self {
+impl<MouseManagerScrollAccuracy: num_traits::Float> Window
+    for Framework<MouseManagerScrollAccuracy>
+{
+    fn new(
+        buffer: &Buffer,
+        title: &str,
+        settings: super::WindowSettings,
+    ) -> Self {
         // Initialize GLFW
         let mut glfw = glfw::init(LOG_ERRORS).unwrap();
         // Configure GLFW
@@ -62,9 +71,19 @@ impl Window for Framework {
         window.set_key_polling(true);
 
         window.set_pos(settings.position.0 as i32, settings.position.1 as i32);
-        crate::system::action::set_window_borderless(&get_native_window_handle_from_glfw(&window), settings.borderless);
-        crate::system::action::set_window_position(&get_native_window_handle_from_glfw(&window), settings.position.0 as i32, settings.position.1 as i32);
-        crate::system::action::set_window_level(&get_native_window_handle_from_glfw(&window), settings.window_level);
+        crate::system::action::set_window_borderless(
+            &get_native_window_handle_from_glfw(&window),
+            settings.borderless,
+        );
+        crate::system::action::set_window_position(
+            &get_native_window_handle_from_glfw(&window),
+            settings.position.0 as i32,
+            settings.position.1 as i32,
+        );
+        crate::system::action::set_window_level(
+            &get_native_window_handle_from_glfw(&window),
+            settings.window_level,
+        );
 
         // Load OpenGL function pointers
         gl::load_with(|symbol| window.get_proc_address(symbol) as *const _);
@@ -139,30 +158,33 @@ impl Window for Framework {
     }
 }
 
-impl Timing for Framework {
+impl<MouseManagerScrollAccuracy: num_traits::Float> Timing
+    for Framework<MouseManagerScrollAccuracy>
+{
     #[inline]
     fn get_time(&self) -> Box<dyn Time> {
         super::shared::get_time()
     }
     #[inline]
-    fn sample_fps(&mut self) -> u64 {
+    fn get_delta_time(&mut self) -> f64 {
         let (time, r) = super::shared::sample_fps(&self.time);
         self.time = time;
         return r;
     }
     #[inline]
-    fn sleep(&self, time: u64) {
+    fn sleep(&self, time: Duration) {
         super::shared::sleep(time);
     }
 }
 
-#[cfg(target_os = "windows")]
-impl ExtendedControl for Framework {
+impl<MouseManagerScrollAccuracy: num_traits::Float> ExtendedControl
+    for Framework<MouseManagerScrollAccuracy>
+{
     #[inline]
-    fn set_always_ontop(&mut self, always_ontop: bool) {
-        super::shared::always_ontop(
-            &self.window.get_win32_window(),
-            always_ontop,
+    fn set_render_layer(&mut self, level: WindowLevel) {
+        crate::system::action::set_window_level(
+            &self.get_window_handle(),
+            level,
         );
     }
     #[inline]
@@ -187,7 +209,9 @@ impl ExtendedControl for Framework {
     }
 }
 
-impl Control for Framework {
+impl<MouseManagerScrollAccuracy: num_traits::Float> Control
+    for Framework<MouseManagerScrollAccuracy>
+{
     fn get_position(&self) -> (isize, isize) {
         let (x, y) = self.window.get_pos();
         return (x as isize, y as isize);
@@ -204,7 +228,9 @@ impl Control for Framework {
     }
 }
 
-impl Input for Framework {
+impl<MouseManagerScrollAccuracy: num_traits::Float> Input
+    for Framework<MouseManagerScrollAccuracy>
+{
     /// No, you won't get the real position of the mouse, calculate it yourself
     fn get_mouse_position(&self) -> Option<(f64, f64)> {
         let (mouse_x, mouse_y) = self.window.get_cursor_pos();
@@ -220,8 +246,13 @@ impl Input for Framework {
         self.mouse_manager.is_mouse_button_pressed(button)
     }
 }
-impl ExtendedInput for Framework {
-    fn get_mouse_scroll(&self) -> Option<(f64, f64)> {
+impl<MouseManagerScrollAccuracy: num_traits::Float>
+    ExtendedInput<MouseManagerScrollAccuracy>
+    for Framework<MouseManagerScrollAccuracy>
+{
+    fn get_mouse_scroll(
+        &self,
+    ) -> Option<(MouseManagerScrollAccuracy, MouseManagerScrollAccuracy)> {
         Some(self.mouse_manager.get_scroll())
     }
 }
@@ -233,7 +264,9 @@ const fn action_to_bool(action: Action) -> bool {
     }
 }
 
-impl Output for Framework {
+impl<MouseManagerScrollAccuracy: num_traits::Float> Output
+    for Framework<MouseManagerScrollAccuracy>
+{
     fn log<T: std::fmt::Debug>(&self, t: T) {
         super::shared::log(t)
     }
@@ -248,12 +281,14 @@ impl Output for Framework {
 //     }
 // }
 
-impl ExtendedWindow for Framework {
+impl<MouseManagerScrollAccuracy: num_traits::Float> ExtendedWindow
+    for Framework<MouseManagerScrollAccuracy>
+{
     fn set_title(&mut self, title: &str) {
         self.window.set_title(title);
     }
-    
-#[cfg(feature = "resvg")]
+
+    #[cfg(feature = "resvg")]
     fn set_cursor_style(&mut self, style: &super::Cursor) {
         println!("Setting cursor style");
         super::cursors::use_cursor(style, Some(&mut self.window));
@@ -263,7 +298,7 @@ impl ExtendedWindow for Framework {
     fn set_icon(&mut self, _buffer: &[u32], _width: u32, _height: u32) {
         panic!("Not yet implemented");
     }
-#[cfg(feature = "resvg")]
+    #[cfg(feature = "resvg")]
     fn load_custom_cursor(
         &mut self,
         size: crate::render::U2,
@@ -277,7 +312,7 @@ impl ExtendedWindow for Framework {
             super::cursors::cursor_glfw::load_base_cursor_with_file,
         )
     }
-    fn get_window_handle(&self)->raw_window_handle::RawWindowHandle {
+    fn get_window_handle(&self) -> raw_window_handle::RawWindowHandle {
         get_native_window_handle_from_glfw(&self.window)
     }
 }
@@ -310,21 +345,23 @@ const FRAGMENT_SHADER_SOURCE: &str = r#"
     }
 "#;
 
-fn process_events(window: &mut Framework) {
+fn process_events<MouseManagerScrollAccuracy: num_traits::Float>(
+    window: &mut Framework<MouseManagerScrollAccuracy>,
+) {
     let events: &std::sync::mpsc::Receiver<(f64, glfw::WindowEvent)> =
         &window.events;
     window.mouse_manager.reset_scroll();
 
     for (_, event) in glfw::flush_messages(events) {
         match event {
-            glfw::WindowEvent::Key(key, _scancode, action, _mods) => {
+            glfw::WindowEvent::Key(key, _scan_code, action, _mods) => {
                 window.keyboard_manager.set_key_state(
                     map_glfw_key_to_keycode(key),
                     action_to_bool(action),
                 );
             }
             glfw::WindowEvent::Scroll(x, y) => {
-                window.mouse_manager.add_scroll(x, y);
+                window.mouse_manager.add_scroll((x, y).tuple_2_into());
             }
             glfw::WindowEvent::Close => {
                 window.window.set_should_close(true);
@@ -669,7 +706,7 @@ unsafe fn update_texture(
         rgba_buffer.as_ptr() as *const std::ffi::c_void,
     );
 }
-
+/// Get the window handle from glfw
 pub fn get_native_window_handle_from_glfw(
     window: &glfw::Window,
 ) -> raw_window_handle::RawWindowHandle {

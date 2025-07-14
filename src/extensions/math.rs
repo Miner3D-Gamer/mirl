@@ -1,3 +1,4 @@
+/// A trait for numbers to support .sign()
 pub trait Sign {
     /// Returns the sign of the number -> -1, 0, 1
     fn sign(self) -> Self;
@@ -17,14 +18,15 @@ macro_rules! impl_sign {
 
 impl_sign!(i8, i16, i32, i64, i128, isize, f32, f64);
 
-use core::f32;
-use std::convert::TryFrom;
+// use core::f32;
+// use std::convert::TryFrom;
 
-pub fn from_u8<T: TryFrom<u8>>(value: u8) -> T {
-    T::try_from(value).ok().expect("constant u8 conversion failed")
-}
-
+// pub fn from_u8<T: TryFrom<u8>>(value: u8) -> T {
+//     T::try_from(value).ok().expect("constant u8 conversion failed")
+// }
+/// A trait for making numbers support .sqrt()
 pub trait Sqrt {
+    /// Return the square root of a number
     fn sqrt(self) -> Self;
 }
 

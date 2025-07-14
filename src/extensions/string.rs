@@ -1,28 +1,38 @@
+/// More functionality for strings
 pub trait StringExtensions {
+    /// Checks if the string only contains numbers
     fn is_number(&self) -> bool;
+    /// Pads the string on the right
     fn rjust(&self, length: usize, fillchar: Option<char>) -> String;
+    /// Pads the string on the left
     fn ljust(&self, length: usize, fillchar: Option<char>) -> String;
+    /// Pads the string to be in the middle
     fn center(&self, length: usize, fillchar: Option<char>) -> String;
+    /// Converts '\t' into '    '
     fn expandtabs(&self) -> String;
-    fn extract_file_name(&self) -> String;
-    fn extract_file_extension(&self) -> String;
-    fn extract_file_name_without_extension(&self) -> String;
+    // fn extract_file_name(&self) -> String;
+    // fn extract_file_extension(&self) -> String;
+    // fn extract_file_name_without_extension(&self) -> String;
+    /// Replacs the first occurence of X with Y
     fn replace_first_occurrence(
         &self,
         target: &str,
         replacement: &str,
     ) -> String;
+    /// Replacs the first occurence of X with Y but error if there is not occurence of X
     fn replace_first_occurrence_error(
         &self,
         target: &str,
         replacement: &str,
     ) -> String;
+    /// Replacs the all occurence of X with Y
     fn replace_occurences(
         &self,
         target: &str,
         replacement: &str,
         amount: u32,
     ) -> String;
+    /// Replacs the all occurence of X with Y but error if there is not occurence of X
     fn replace_occurences_error(
         &self,
         target: &str,
@@ -63,21 +73,21 @@ impl StringExtensions for str {
     fn expandtabs(&self) -> String {
         self.replace("\t", "    ")
     }
-    fn extract_file_name(&self) -> String {
-        let parts: Vec<&str> = self.split('/').collect();
-        parts[parts.len() - 1].to_string()
-    }
+    // fn extract_file_name(&self) -> String {
+    //     let parts: Vec<&str> = self.split('/').collect();
+    //     parts[parts.len() - 1].to_string()
+    // }
 
-    fn extract_file_extension(&self) -> String {
-        let parts: Vec<&str> = self.split('.').collect();
-        parts[parts.len() - 1].to_string()
-    }
+    // fn extract_file_extension(&self) -> String {
+    //     let parts: Vec<&str> = self.split('.').collect();
+    //     parts[parts.len() - 1].to_string()
+    // }
 
-    fn extract_file_name_without_extension(&self) -> String {
-        let parts: Vec<&str> = self.split('.').collect();
-        let parts: Vec<&str> = parts[0].split('/').collect();
-        parts[parts.len() - 1].to_string()
-    }
+    // fn extract_file_name_without_extension(&self) -> String {
+    //     let parts: Vec<&str> = self.split('.').collect();
+    //     let parts: Vec<&str> = parts[0].split('/').collect();
+    //     parts[parts.len() - 1].to_string()
+    // }
 
     fn replace_first_occurrence(
         &self,

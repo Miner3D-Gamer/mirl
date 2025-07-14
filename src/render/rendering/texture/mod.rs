@@ -2,6 +2,7 @@ use crate::{
     graphics::{get_u32_alpha_of_u32, interpolate_color_rgb_u32, RawImage},
     platform::Buffer,
 };
+/// Draw a RawImage on screen
 pub fn draw_image(
     buffer: &Buffer,
     width: usize,
@@ -40,7 +41,7 @@ pub fn draw_image(
                 texture_uv_y.max(0.0).min((texture.height - 1) as f32);
 
             let pixel =
-                texture.get_pixel(clamped_uv_x as usize, clamped_uv_y as usize);
+                texture.get_pixel((clamped_uv_x as usize, clamped_uv_y as usize));
 
             if transparency {
                 let trans = get_u32_alpha_of_u32(pixel);

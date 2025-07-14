@@ -1,7 +1,7 @@
 use crate::platform::KeyCode;
 use winapi::um::winuser::GetAsyncKeyState;
 
-// Convert Windows VK codes to KeyCode enum
+/// Convert Windows VK codes to KeyCode enum
 pub const fn vk_code_to_keycode(vk_code: u32) -> KeyCode {
     match vk_code {
         // Letters A-Z (0x41-0x5A)
@@ -166,6 +166,7 @@ pub const fn vk_code_to_keycode(vk_code: u32) -> KeyCode {
         _ => KeyCode::Unknown,
     }
 }
+/// Convert a keycode to the windows virtual key equivalent
 pub const fn keycode_to_vk_code(keycode: KeyCode) -> u32 {
     match keycode {
         // Letters A-Z
@@ -331,10 +332,11 @@ pub const fn keycode_to_vk_code(keycode: KeyCode) -> u32 {
         _ => todo!(),
     }
 }
-
+/// Checks if the virtual key is pressed
 pub fn is_key_down_raw(vk_code: u32) -> bool {
     unsafe { (GetAsyncKeyState(vk_code as i32) as u16 & 0x8000) != 0 }
 }
+/// Checks if the key code is pressed (windows)
 pub fn is_key_down(vk_code: KeyCode) -> bool {
     is_key_down_raw(keycode_to_vk_code(vk_code))
 }

@@ -1,12 +1,17 @@
 
 use std::cmp::Ordering;
 
-
+/// Allows for < > >= <= ==
 pub trait TupleCmp<Rhs = Self> {
+    /// <
     fn lt(self, rhs: Rhs) -> bool;
+    /// <=
     fn le(self, rhs: Rhs) -> bool;
+    /// >
     fn gt(self, rhs: Rhs) -> bool;
+    /// >=
     fn ge(self, rhs: Rhs) -> bool;
+    /// ==
     fn cmp(self, rhs: Rhs) -> Ordering;
 }
 macro_rules! impl_helper {

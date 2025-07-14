@@ -706,6 +706,7 @@ fn load_cursor(
 //     );
 // }
 
+/// Load a cursor SVG and replace it's placeholders with actual colors
 pub fn load_base_cursor_with_file(
     cursor: BaseCursor,
     size: U2,
@@ -866,11 +867,11 @@ fn create_temp_file(
     //let (file, _path) = file.keep()?; // Keep returns (File, PathBuf)
     Ok((path_str, file))
 }
-
+/// Delete the file at the given path
 fn delete_temp_file(path: &str) -> std::io::Result<()> {
     return std::fs::remove_file(path); // Removes the file at the given path
 }
-
+/// A windows only function to set the current cursor
 pub fn set_cursor(cursor: HCURSOR) {
     unsafe {
         SetCursor(cursor);

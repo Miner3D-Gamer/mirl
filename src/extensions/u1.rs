@@ -1,5 +1,7 @@
 #[derive(Debug, Clone, Copy, PartialEq, Eq, std::cmp::PartialOrd)]
+/// U1 - Just a fancy bool honestly
 pub struct U1 {
+    /// Yep, that's the bool right there
     pub b0: bool,
 }
 use num_traits::{NumCast, ToPrimitive};
@@ -190,7 +192,7 @@ impl From<U1> for bool {
         val.b0
     }
 }
-
+/// Convert a number into a u1
 #[macro_export]
 macro_rules! u1 {
     ($val:expr) => {

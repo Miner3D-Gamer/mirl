@@ -3,6 +3,8 @@ use num_traits::{NumCast, ToPrimitive};
 use super::U2;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, std::cmp::PartialOrd)]
+/// A custom u4
+#[allow(missing_docs)]
 pub struct U4 {
     pub b0: bool,
     pub b1: bool,
@@ -198,6 +200,7 @@ impl std::ops::Div for U4 {
         U4::from_u8_trunc(self.value().wrapping_div(rhs.value()))
     }
 }
+/// Convert a number into a u4
 #[macro_export]
 macro_rules! u4 {
     ($val:expr) => {

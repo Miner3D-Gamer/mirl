@@ -35,12 +35,12 @@ use crate::graphics::RawImage;
 use crate::lists::combined;
 use crate::platform::WindowLevel;
 
-pub fn get_screen_resolution() -> (i32, i32) {
+pub fn get_screen_resolution_raw() -> (i32, i32) {
     let width = unsafe { GetSystemMetrics(SM_CXSCREEN) };
     let height = unsafe { GetSystemMetrics(SM_CYSCREEN) };
     (width, height)
 }
-pub fn capture_screen() -> Option<RawImage> {
+pub fn capture_screen_raw() -> Option<RawImage> {
     unsafe {
         // Get the desktop window handle
         let desktop_hwnd = GetDesktopWindow();
@@ -131,7 +131,7 @@ pub fn capture_screen() -> Option<RawImage> {
         Some(RawImage::new(pixels, width as usize, height as usize))
     }
 }
-pub fn capture_desktop_background() -> Option<RawImage> {
+pub fn capture_desktop_background_raw() -> Option<RawImage> {
     unsafe {
         // Get the shell window handle (desktop background + icons)
         let shell_hwnd = GetShellWindow();
@@ -410,7 +410,7 @@ pub fn show_in_taskbar_and_alt_tab_raw(hwnd: windows::Win32::Foundation::HWND) {
     }
 }
 
-pub fn set_window_opacity(hwnd: windows::Win32::Foundation::HWND, alpha: u8) {
+pub fn set_window_opacity_raw(hwnd: windows::Win32::Foundation::HWND, alpha: u8) {
     unsafe {
         let ex_style = GetWindowLongW(hwnd, GWL_EXSTYLE) as u32;
         SetWindowLongW(hwnd, GWL_EXSTYLE, (ex_style | WS_EX_LAYERED.0) as i32);
@@ -531,7 +531,7 @@ pub fn set_z_raw(hwnd: windows::Win32::Foundation::HWND, index: u32) {
 //         }
 //     }
 // }
-pub fn get_title_bar_height() -> i32 {
+pub fn get_title_bar_height_raw() -> i32 {
     unsafe { GetSystemMetrics(4) }
 }
 
@@ -645,9 +645,9 @@ mod tests {
 
 unsafe extern "system" fn enum_windows_proc(
     hwnd: winapi::shared::windef::HWND,
-    lparam: isize,
+    long_param: isize,
 ) -> i32 {
-    let data = &mut *(lparam as *mut WindowSearchData);
+    let data = &mut *(long_param as *mut WindowSearchData);
 
     // Check visibility based on criteria
     if !data.include_hidden && IsWindowVisible(hwnd) == 0 {

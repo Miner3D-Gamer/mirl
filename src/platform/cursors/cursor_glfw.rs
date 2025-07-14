@@ -4,7 +4,7 @@ use crate::{
 };
 
 use super::{cursor_resolution, BaseCursor, Cursor};
-
+/// Load a cursor SVG and replace it's placeholders with actual colors
 pub fn load_base_cursor_with_file(
     cursor: BaseCursor,
     size: U2,

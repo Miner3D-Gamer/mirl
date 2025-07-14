@@ -1,3 +1,4 @@
+/// Add item to list without exceeding the speficied maximal size
 pub fn add_item_to_max_sized_list<T>(
     list: &mut Vec<T>,
     max_size: usize,
@@ -12,6 +13,7 @@ pub fn add_item_to_max_sized_list<T>(
         list.remove(0);
     }
 }
+/// Get a 1d cut out from a 1d color list (1d internally, 2d textures)
 pub fn get_sub_vec_of_vec<T: Copy>(
     vec: &Vec<T>,
     width: u32,
@@ -30,13 +32,13 @@ pub fn get_sub_vec_of_vec<T: Copy>(
     }
     return sub_vec;
 }
-
+/// Returns what it would be if T was pushed onto Vec<T>
 pub fn combined<T: Clone + Sized>(vec: &Vec<T>, other: T) -> Vec<T> {
     let mut new_vec = vec.to_vec();
     new_vec.push(other);
     new_vec
 }
-
+/// Get the average value of a list
 pub fn average<T: num_traits::Num + num_traits::NumCast + Copy>(vec: &Vec<T>) -> T {
     let sum: T = vec.iter().copied().fold(T::zero(), |a, b| a + b);
     let len = T::from(vec.len()).unwrap();

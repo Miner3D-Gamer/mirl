@@ -1,4 +1,7 @@
 use super::RotateDirections;
+
+/// NE SE SW NW
+#[allow(missing_docs)]
 pub enum ExtendedDirections {
     NorthEast,
     SouthEast,
