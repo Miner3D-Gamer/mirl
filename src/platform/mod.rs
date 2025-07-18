@@ -141,7 +141,6 @@ pub enum MouseButton {
 }
 use strum_macros::EnumIter;
 
-
 #[derive(Debug, Clone, Copy, PartialEq, EnumIter)]
 /// Key code to be interpreted anywhere
 #[allow(missing_docs)]
@@ -334,6 +333,411 @@ pub enum KeyCode {
     World2,
     Unknown,
 }
+
+impl KeyCode {
+    /// Convert a keycode to a String -> Letters/Numbers return a String while function keys return None
+    pub fn to_user_friendly_string(&self) -> Option<String> {
+        match self {
+            // Letters
+            KeyCode::A => Some("A".to_string()),
+            KeyCode::B => Some("B".to_string()),
+            KeyCode::C => Some("C".to_string()),
+            KeyCode::D => Some("D".to_string()),
+            KeyCode::E => Some("E".to_string()),
+            KeyCode::F => Some("F".to_string()),
+            KeyCode::G => Some("G".to_string()),
+            KeyCode::H => Some("H".to_string()),
+            KeyCode::I => Some("I".to_string()),
+            KeyCode::J => Some("J".to_string()),
+            KeyCode::K => Some("K".to_string()),
+            KeyCode::L => Some("L".to_string()),
+            KeyCode::M => Some("M".to_string()),
+            KeyCode::N => Some("N".to_string()),
+            KeyCode::O => Some("O".to_string()),
+            KeyCode::P => Some("P".to_string()),
+            KeyCode::Q => Some("Q".to_string()),
+            KeyCode::R => Some("R".to_string()),
+            KeyCode::S => Some("S".to_string()),
+            KeyCode::T => Some("T".to_string()),
+            KeyCode::U => Some("U".to_string()),
+            KeyCode::V => Some("V".to_string()),
+            KeyCode::W => Some("W".to_string()),
+            KeyCode::X => Some("X".to_string()),
+            KeyCode::Y => Some("Y".to_string()),
+            KeyCode::Z => Some("Z".to_string()),
+
+            // Numbers
+            KeyCode::Num0 => Some("0".to_string()),
+            KeyCode::Num1 => Some("1".to_string()),
+            KeyCode::Num2 => Some("2".to_string()),
+            KeyCode::Num3 => Some("3".to_string()),
+            KeyCode::Num4 => Some("4".to_string()),
+            KeyCode::Num5 => Some("5".to_string()),
+            KeyCode::Num6 => Some("6".to_string()),
+            KeyCode::Num7 => Some("7".to_string()),
+            KeyCode::Num8 => Some("8".to_string()),
+            KeyCode::Num9 => Some("9".to_string()),
+            KeyCode::KeyPad0 => Some("0".to_string()),
+            KeyCode::KeyPad1 => Some("1".to_string()),
+            KeyCode::KeyPad2 => Some("2".to_string()),
+            KeyCode::KeyPad3 => Some("3".to_string()),
+            KeyCode::KeyPad4 => Some("4".to_string()),
+            KeyCode::KeyPad5 => Some("5".to_string()),
+            KeyCode::KeyPad6 => Some("6".to_string()),
+            KeyCode::KeyPad7 => Some("7".to_string()),
+            KeyCode::KeyPad8 => Some("8".to_string()),
+            KeyCode::KeyPad9 => Some("9".to_string()),
+
+            // Function Keys
+            KeyCode::F1 => None,
+            KeyCode::F2 => None,
+            KeyCode::F3 => None,
+            KeyCode::F4 => None,
+            KeyCode::F5 => None,
+            KeyCode::F6 => None,
+            KeyCode::F7 => None,
+            KeyCode::F8 => None,
+            KeyCode::F9 => None,
+            KeyCode::F10 => None,
+            KeyCode::F11 => None,
+            KeyCode::F12 => None,
+            KeyCode::F13 => None,
+            KeyCode::F14 => None,
+            KeyCode::F15 => None,
+            KeyCode::F16 => None,
+            KeyCode::F17 => None,
+            KeyCode::F18 => None,
+            KeyCode::F19 => None,
+            KeyCode::F20 => None,
+            KeyCode::F21 => None,
+            KeyCode::F22 => None,
+            KeyCode::F23 => None,
+            KeyCode::F24 => None,
+            KeyCode::F25 => None,
+
+            // Modifiers - return None for action keys
+            KeyCode::LeftShift => None,
+            KeyCode::RightShift => None,
+            KeyCode::LeftControl => None,
+            KeyCode::RightControl => None,
+            KeyCode::LeftAlt => None,
+            KeyCode::RightAlt => None,
+            KeyCode::LeftSuper => None,
+            KeyCode::RightSuper => None,
+
+            // Symbols / Punctuation
+            KeyCode::Space => Some(" ".to_string()),
+            KeyCode::Enter => Some("\n".to_string()),
+            KeyCode::Escape => None,
+            KeyCode::Backspace => None,
+            KeyCode::Tab => Some("\t".to_string()),
+            KeyCode::Comma => Some(",".to_string()),
+            KeyCode::Period => Some(".".to_string()),
+            KeyCode::Minus => Some("-".to_string()),
+            KeyCode::Equal => Some("=".to_string()),
+            KeyCode::LeftBracket => Some("[".to_string()),
+            KeyCode::RightBracket => Some("]".to_string()),
+            KeyCode::Backslash => Some("\\".to_string()),
+            KeyCode::Semicolon => Some(";".to_string()),
+            KeyCode::Quote => Some("'".to_string()),
+            KeyCode::Tilde => Some("~".to_string()),
+            KeyCode::Slash => Some("/".to_string()),
+            KeyCode::Grave => Some("`".to_string()),
+            KeyCode::Apostrophe => Some("'".to_string()),
+
+            // Arrow keys - return None for action keys
+            KeyCode::Up => None,
+            KeyCode::Down => None,
+            KeyCode::Left => None,
+            KeyCode::Right => None,
+
+            // Editing keys - return None for action keys
+            KeyCode::Insert => None,
+            KeyCode::Delete => None,
+            KeyCode::Home => None,
+            KeyCode::End => None,
+            KeyCode::PageUp => None,
+            KeyCode::PageDown => None,
+
+            // Lock keys - return None for action keys
+            KeyCode::CapsLock => None,
+            KeyCode::NumLock => None,
+            KeyCode::ScrollLock => None,
+
+            // Keypad operations - return just the symbol
+            KeyCode::KeyPadDivide => Some("/".to_string()),
+            KeyCode::KeyPadMultiply => Some("*".to_string()),
+            KeyCode::KeyPadSubtract => Some("-".to_string()),
+            KeyCode::KeyPadAdd => Some("+".to_string()),
+            KeyCode::KeyPadDecimal => Some(".".to_string()),
+            KeyCode::KeyPadEnter => Some("\n".to_string()),
+            KeyCode::KeyPadEqual => Some("=".to_string()),
+
+            // International & special characters
+            KeyCode::AUmlautÄ => Some("Ä".to_string()),
+            KeyCode::UUmlautÜ => Some("Ü".to_string()),
+            KeyCode::OUmlautÖ => Some("Ö".to_string()),
+            KeyCode::SS => Some("ß".to_string()),
+            KeyCode::ACircumflexÂ => Some("Â".to_string()),
+            KeyCode::UAcuteÚ => Some("Ú".to_string()),
+            KeyCode::OCircumflexÔ => Some("Ô".to_string()),
+            KeyCode::ICircumflexÎ => Some("Î".to_string()),
+            KeyCode::ECircumflexÊ => Some("Ê".to_string()),
+            KeyCode::EthÐ => Some("Ð".to_string()),
+            KeyCode::OELigatureŒ => Some("Œ".to_string()),
+            KeyCode::AAcuteÁ => Some("Á".to_string()),
+            KeyCode::YAcuteÝ => Some("Ý".to_string()),
+            KeyCode::IUmlautÏ => Some("Ï".to_string()),
+            KeyCode::NTildeÑ => Some("Ñ".to_string()),
+            KeyCode::OGraveÒ => Some("Ò".to_string()),
+            KeyCode::UGraveÙ => Some("Ù".to_string()),
+            KeyCode::ARingÅ => Some("Å".to_string()),
+            KeyCode::AELigatureÆ => Some("Æ".to_string()),
+            KeyCode::OSlashØ => Some("Ø".to_string()),
+            KeyCode::IGraveÌ => Some("Ì".to_string()),
+            KeyCode::ThornÞ => Some("Þ".to_string()),
+
+            // Multimedia keys - return None for action keys
+            KeyCode::MediaPlayPause => None,
+            KeyCode::MediaStop => None,
+            KeyCode::MediaNext => None,
+            KeyCode::MediaPrev => None,
+            KeyCode::VolumeUp => None,
+            KeyCode::VolumeDown => None,
+            KeyCode::Mute => None,
+
+            // Browser/OS keys - return None for action keys
+            KeyCode::BrowserBack => None,
+            KeyCode::BrowserForward => None,
+            KeyCode::BrowserRefresh => None,
+            KeyCode::BrowserHome => None,
+            KeyCode::LaunchMail => None,
+            KeyCode::LaunchApp1 => None,
+            KeyCode::LaunchApp2 => None,
+
+            // Platform-specific - return None for action keys
+            KeyCode::Menu => None,
+            KeyCode::PrintScreen => None,
+            KeyCode::Pause => None,
+            KeyCode::Application => None,
+
+            // Special
+            KeyCode::World1 => None,
+            KeyCode::World2 => None,
+            KeyCode::Unknown => None,
+        }
+    }
+    /// Convert the keycode into a string
+    pub fn to_string(&self) -> String {
+        match self {
+            // Letters
+            KeyCode::A => "A".to_string(),
+            KeyCode::B => "B".to_string(),
+            KeyCode::C => "C".to_string(),
+            KeyCode::D => "D".to_string(),
+            KeyCode::E => "E".to_string(),
+            KeyCode::F => "F".to_string(),
+            KeyCode::G => "G".to_string(),
+            KeyCode::H => "H".to_string(),
+            KeyCode::I => "I".to_string(),
+            KeyCode::J => "J".to_string(),
+            KeyCode::K => "K".to_string(),
+            KeyCode::L => "L".to_string(),
+            KeyCode::M => "M".to_string(),
+            KeyCode::N => "N".to_string(),
+            KeyCode::O => "O".to_string(),
+            KeyCode::P => "P".to_string(),
+            KeyCode::Q => "Q".to_string(),
+            KeyCode::R => "R".to_string(),
+            KeyCode::S => "S".to_string(),
+            KeyCode::T => "T".to_string(),
+            KeyCode::U => "U".to_string(),
+            KeyCode::V => "V".to_string(),
+            KeyCode::W => "W".to_string(),
+            KeyCode::X => "X".to_string(),
+            KeyCode::Y => "Y".to_string(),
+            KeyCode::Z => "Z".to_string(),
+
+            // Numbers
+            KeyCode::Num0 => "0".to_string(),
+            KeyCode::Num1 => "1".to_string(),
+            KeyCode::Num2 => "2".to_string(),
+            KeyCode::Num3 => "3".to_string(),
+            KeyCode::Num4 => "4".to_string(),
+            KeyCode::Num5 => "5".to_string(),
+            KeyCode::Num6 => "6".to_string(),
+            KeyCode::Num7 => "7".to_string(),
+            KeyCode::Num8 => "8".to_string(),
+            KeyCode::Num9 => "9".to_string(),
+            KeyCode::KeyPad0 => "KeyPad 0".to_string(),
+            KeyCode::KeyPad1 => "KeyPad 1".to_string(),
+            KeyCode::KeyPad2 => "KeyPad 2".to_string(),
+            KeyCode::KeyPad3 => "KeyPad 3".to_string(),
+            KeyCode::KeyPad4 => "KeyPad 4".to_string(),
+            KeyCode::KeyPad5 => "KeyPad 5".to_string(),
+            KeyCode::KeyPad6 => "KeyPad 6".to_string(),
+            KeyCode::KeyPad7 => "KeyPad 7".to_string(),
+            KeyCode::KeyPad8 => "KeyPad 8".to_string(),
+            KeyCode::KeyPad9 => "KeyPad 9".to_string(),
+
+            // Function Keys
+            KeyCode::F1 => "F1".to_string(),
+            KeyCode::F2 => "F2".to_string(),
+            KeyCode::F3 => "F3".to_string(),
+            KeyCode::F4 => "F4".to_string(),
+            KeyCode::F5 => "F5".to_string(),
+            KeyCode::F6 => "F6".to_string(),
+            KeyCode::F7 => "F7".to_string(),
+            KeyCode::F8 => "F8".to_string(),
+            KeyCode::F9 => "F9".to_string(),
+            KeyCode::F10 => "F10".to_string(),
+            KeyCode::F11 => "F11".to_string(),
+            KeyCode::F12 => "F12".to_string(),
+            KeyCode::F13 => "F13".to_string(),
+            KeyCode::F14 => "F14".to_string(),
+            KeyCode::F15 => "F15".to_string(),
+            KeyCode::F16 => "F16".to_string(),
+            KeyCode::F17 => "F17".to_string(),
+            KeyCode::F18 => "F18".to_string(),
+            KeyCode::F19 => "F19".to_string(),
+            KeyCode::F20 => "F20".to_string(),
+            KeyCode::F21 => "F21".to_string(),
+            KeyCode::F22 => "F22".to_string(),
+            KeyCode::F23 => "F23".to_string(),
+            KeyCode::F24 => "F24".to_string(),
+
+            // Modifiers
+            KeyCode::LeftShift => "Left Shift".to_string(),
+            KeyCode::RightShift => "Right Shift".to_string(),
+            KeyCode::LeftControl => "Left Control".to_string(),
+            KeyCode::RightControl => "Right Control".to_string(),
+            KeyCode::LeftAlt => "Left Alt".to_string(),
+            KeyCode::RightAlt => "Right Alt".to_string(),
+            KeyCode::LeftSuper => "Left Super".to_string(),
+            KeyCode::RightSuper => "Right Super".to_string(),
+
+            // Symbols / Punctuation
+            KeyCode::Space => "Space".to_string(),
+            KeyCode::Enter => "Enter".to_string(),
+            KeyCode::Escape => "Escape".to_string(),
+            KeyCode::Backspace => "Backspace".to_string(),
+            KeyCode::Tab => "Tab".to_string(),
+            KeyCode::Comma => ",".to_string(),
+            KeyCode::Period => ".".to_string(),
+            KeyCode::Minus => "-".to_string(),
+            KeyCode::Equal => "=".to_string(),
+            KeyCode::LeftBracket => "[".to_string(),
+            KeyCode::RightBracket => "]".to_string(),
+            KeyCode::Backslash => "\\".to_string(),
+            KeyCode::Semicolon => ";".to_string(),
+            KeyCode::Quote => "'".to_string(),
+            KeyCode::Tilde => "~".to_string(),
+            KeyCode::Slash => "/".to_string(),
+            KeyCode::Grave => "`".to_string(),
+            KeyCode::Apostrophe => "'".to_string(),
+
+            // Arrow keys
+            KeyCode::Up => "Up".to_string(),
+            KeyCode::Down => "Down".to_string(),
+            KeyCode::Left => "Left".to_string(),
+            KeyCode::Right => "Right".to_string(),
+
+            // Editing keys
+            KeyCode::Insert => "Insert".to_string(),
+            KeyCode::Delete => "Delete".to_string(),
+            KeyCode::Home => "Home".to_string(),
+            KeyCode::End => "End".to_string(),
+            KeyCode::PageUp => "Page Up".to_string(),
+            KeyCode::PageDown => "Page Down".to_string(),
+
+            // Lock keys
+            KeyCode::CapsLock => "Caps Lock".to_string(),
+            KeyCode::NumLock => "Num Lock".to_string(),
+            KeyCode::ScrollLock => "Scroll Lock".to_string(),
+
+            // Keypad operations
+            KeyCode::KeyPadDivide => "KeyPad /".to_string(),
+            KeyCode::KeyPadMultiply => "KeyPad *".to_string(),
+            KeyCode::KeyPadSubtract => "KeyPad -".to_string(),
+            KeyCode::KeyPadAdd => "KeyPad +".to_string(),
+            KeyCode::KeyPadDecimal => "KeyPad .".to_string(),
+            KeyCode::KeyPadEnter => "KeyPad Enter".to_string(),
+
+            // International & special characters
+            KeyCode::AUmlautÄ => "Ä".to_string(),
+            KeyCode::UUmlautÜ => "Ü".to_string(),
+            KeyCode::OUmlautÖ => "Ö".to_string(),
+            KeyCode::SS => "ß".to_string(),
+            KeyCode::ACircumflexÂ => "Â".to_string(),
+            KeyCode::UAcuteÚ => "Ú".to_string(),
+            KeyCode::OCircumflexÔ => "Ô".to_string(),
+            KeyCode::ICircumflexÎ => "Î".to_string(),
+            KeyCode::ECircumflexÊ => "Ê".to_string(),
+            KeyCode::EthÐ => "Ð".to_string(),
+            KeyCode::OELigatureŒ => "Œ".to_string(),
+            KeyCode::AAcuteÁ => "Á".to_string(),
+            KeyCode::YAcuteÝ => "Ý".to_string(),
+            KeyCode::IUmlautÏ => "Ï".to_string(),
+            KeyCode::NTildeÑ => "Ñ".to_string(),
+            KeyCode::OGraveÒ => "Ò".to_string(),
+            KeyCode::UGraveÙ => "Ù".to_string(),
+            KeyCode::ARingÅ => "Å".to_string(),
+            KeyCode::AELigatureÆ => "Æ".to_string(),
+            KeyCode::OSlashØ => "Ø".to_string(),
+            KeyCode::IGraveÌ => "Ì".to_string(),
+            KeyCode::ThornÞ => "Þ".to_string(),
+
+            // Multimedia keys
+            KeyCode::MediaPlayPause => "Media Play/Pause".to_string(),
+            KeyCode::MediaStop => "Media Stop".to_string(),
+            KeyCode::MediaNext => "Media Next".to_string(),
+            KeyCode::MediaPrev => "Media Previous".to_string(),
+            KeyCode::VolumeUp => "Volume Up".to_string(),
+            KeyCode::VolumeDown => "Volume Down".to_string(),
+            KeyCode::Mute => "Mute".to_string(),
+
+            // Browser/OS keys
+            KeyCode::BrowserBack => "Browser Back".to_string(),
+            KeyCode::BrowserForward => "Browser Forward".to_string(),
+            KeyCode::BrowserRefresh => "Browser Refresh".to_string(),
+            KeyCode::BrowserHome => "Browser Home".to_string(),
+            KeyCode::LaunchMail => "Launch Mail".to_string(),
+            KeyCode::LaunchApp1 => "Launch App 1".to_string(),
+            KeyCode::LaunchApp2 => "Launch App 2".to_string(),
+
+            // Platform-specific
+            KeyCode::Menu => "Menu".to_string(),
+            KeyCode::PrintScreen => "Print Screen".to_string(),
+            KeyCode::Pause => "Pause".to_string(),
+            KeyCode::Application => "Application".to_string(),
+
+            // what
+            KeyCode::F25 => "F25".to_string(),
+            KeyCode::KeyPadEqual => "KeyPad =".to_string(),
+            KeyCode::World1 => "World 1".to_string(),
+            KeyCode::World2 => "World 2".to_string(),
+            KeyCode::Unknown => "Unknown".to_string(),
+        }
+    }
+}
+
+/// Convert a list of keycodes into a String and return the ones that weren't convertible
+pub fn keycodes_to_str(keycodes: Vec<KeyCode>) -> (String, Vec<KeyCode>) {
+    let mut functions = Vec::new();
+    let mut output = String::new();
+    for key_code in keycodes {
+        let value = key_code.to_user_friendly_string();
+        if let Some(key) = value {
+            for l in key.chars() {
+                output.push(l)
+            }
+        } else {
+            functions.push(key_code)
+        }
+    }
+    return (output, functions);
+}
+
 #[cfg(feature = "system")]
 #[derive(Debug, Clone, Copy, PartialEq)]
 /// Settings for spawning in a window
