@@ -1,8 +1,9 @@
 extern crate image;
 extern crate x11;
 
-use image::{Rgba, RgbaImage};
 use std::ptr;
+
+use image::{Rgba, RgbaImage};
 use x11::xlib::{
     Display, Window, XDefaultRootWindow, XDestroyImage, XGetGeometry,
     XGetImage, XGetWindowAttributes, XOpenDisplay,

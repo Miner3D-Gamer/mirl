@@ -2,6 +2,9 @@
 pub trait Info {
     /// The name of the os
     fn get_os_name() -> String;
+}
+/// Get memory related info
+pub trait Memory {
     /// The total amount of memory
     fn get_total_memory(&self) -> u64;
     /// The currently remaining amount of memory
@@ -89,12 +92,17 @@ pub use windows::WindowsInfo as OsInfo;
 #[cfg(target_os = "linux")]
 mod linux;
 #[cfg(target_os = "linux")]
-pub use linux::windows::LinuxInfo as OsInfo;
+pub use linux::LinuxInfo as OsInfo;
+#[cfg(target_arch = "wasm32")]
+mod web;
+#[cfg(target_arch = "wasm32")]
+pub use web::WebInfo as OsInfo;
+
 
 // use crate::graphics::RawImage;
 /// Get the xy coordinates of where to put an object with the specified width and height for it to be centered
 pub fn get_center_of_screen_for_object(width: i32, height: i32) -> (i32, i32) {
-    let title_bat_height = crate::system::info::OsInfo::get_os_menu_height();
+    let title_bat_height = OsInfo::get_os_menu_height();
     let (screen_width, screen_height) = OsInfo::get_screen_resolution();
 
     (
@@ -105,9 +113,7 @@ pub fn get_center_of_screen_for_object(width: i32, height: i32) -> (i32, i32) {
 use crate::platform::Buffer;
 
 /// Get the xy coordinates of where to put the window associated with the [Buffer] for it to be centered
-pub fn get_center_of_screen_of_buffer(
-    buffer: &Buffer,
-) -> (i32, i32) {
+pub fn get_center_of_screen_of_buffer(buffer: &Buffer) -> (i32, i32) {
     let title_bat_height = crate::system::info::OsInfo::get_os_menu_height();
     let (screen_width, screen_height) = OsInfo::get_screen_resolution();
 

@@ -452,8 +452,10 @@ pub fn pixmap_to_raw_image(pixmap: &resvg::tiny_skia::Pixmap) -> RawImage {
     RawImage::new(data, pixmap.width() as usize, pixmap.height() as usize)
 }
 
+#[cfg(not(target_arch = "wasm32"))]
 #[cfg(feature = "glfw_backend")]
 use glfw::PixelImage;
+#[cfg(not(target_arch = "wasm32"))]
 #[cfg(feature = "glfw_backend")]
 
 /// Convert a RawImage into a glfw::PixelImage
@@ -467,6 +469,7 @@ pub fn raw_image_to_pixel_image(raw_image: &RawImage) -> glfw::PixelImage {
 }
 /// Convert a glfw::PixelImage into a RawImage
 #[cfg(feature = "glfw_backend")]
+#[cfg(not(target_arch = "wasm32"))]
 #[inline(always)]
 pub fn pixel_image_to_raw_image(pixel_image: &glfw::PixelImage) -> RawImage {
     return RawImage::new(
@@ -733,6 +736,7 @@ pub fn rgba_list_to_argb_list(input: &[u32]) -> Vec<u32> {
         .collect()
 }
 
+#[cfg(not(target_arch = "wasm32"))]
 #[cfg(feature = "glfw_backend")]
 impl From<RawImage> for glfw::PixelImage {
     fn from(raw_image: RawImage) -> Self {
@@ -741,6 +745,7 @@ impl From<RawImage> for glfw::PixelImage {
 }
 
 #[cfg(feature = "glfw_backend")]
+#[cfg(not(target_arch = "wasm32"))]
 impl From<glfw::PixelImage> for RawImage {
     fn from(pixel_image: PixelImage) -> Self {
         pixel_image_to_raw_image(&pixel_image)
@@ -942,10 +947,17 @@ pub fn interpolate_color_rgb_u32(
 /// Enable the "texture_manager_cleanup" feature to gain access to cleanup_unused
 pub struct TextureManager {
     textures: Vec<Option<RawImage>>,
+    #[cfg(not(target_arch = "wasm32"))]
     lookup: ahash::AHashMap<String, usize>,
+    #[cfg(target_arch = "wasm32")]
+    lookup: std::collections::HashMap<String, usize>,
     free_list: Vec<usize>,
+    #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "imagery")]
     texture_lookup: ahash::AHashMap<String, String>,
+    #[cfg(target_arch = "wasm32")]
+    #[cfg(feature = "imagery")]
+    texture_lookup: std::collections::HashMap<String, String>,
     #[cfg(feature = "texture_manager_cleanup")]
     last_used: Vec<u64>, // frame number when last accessed
     #[cfg(feature = "texture_manager_cleanup")]
@@ -957,10 +969,17 @@ impl TextureManager {
     pub fn new() -> Self {
         Self {
             textures: Vec::new(),
+            #[cfg(not(target_arch = "wasm32"))]
             lookup: ahash::AHashMap::new(),
+            #[cfg(target_arch = "wasm32")]
+            lookup: std::collections::HashMap::new(),
             free_list: Vec::new(),
+            #[cfg(not(target_arch = "wasm32"))]
             #[cfg(feature = "imagery")]
             texture_lookup: ahash::AHashMap::new(),
+            #[cfg(target_arch = "wasm32")]
+            #[cfg(feature = "imagery")]
+            texture_lookup: std::collections::HashMap::new(),
             #[cfg(feature = "texture_manager_cleanup")]
             last_used: Vec::new(),
             #[cfg(feature = "texture_manager_cleanup")]

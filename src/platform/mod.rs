@@ -583,10 +583,12 @@ impl Deref for Buffer {
 }
 
 // Windows
+#[cfg(not(target_arch = "wasm32"))]
 #[cfg(feature = "minifb_backend")]
 /// The minifb version of the backend
 pub mod minifb;
 
+#[cfg(not(target_arch = "wasm32"))]
 #[cfg(feature = "glfw_backend")]
 /// The glfw version of the backend
 pub mod glfw;

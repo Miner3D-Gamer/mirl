@@ -1,2 +1,1 @@
-
-pub struct LinuxInfo{}
+pub struct LinuxInfo {}

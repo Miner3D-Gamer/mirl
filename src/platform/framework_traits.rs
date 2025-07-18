@@ -17,22 +17,21 @@ pub trait ExtendedFramework<MouseManagerScrollAccuracy: num_traits::Float>:
     + ExtendedControl
 {
 }
-impl<T, MouseManagerScrollAccuracy: num_traits::Float> ExtendedFramework<MouseManagerScrollAccuracy> for T where
+impl<T, MouseManagerScrollAccuracy: num_traits::Float>
+    ExtendedFramework<MouseManagerScrollAccuracy> for T
+where
     T: Framework
         + ExtendedInput<MouseManagerScrollAccuracy>
         + ExtendedWindow
         + ExtendedTiming
         + Control
-        + ExtendedControl
+        + ExtendedControl,
 {
 }
 /// A window instance with only the most basic of functionality
 pub trait Window {
     /// Create a new window with the desired settings
-    fn new(
-        title: &str,
-        settings: super::WindowSettings,
-    ) -> Self
+    fn new(title: &str, settings: super::WindowSettings) -> Self
     where
         Self: Sized;
     /// Update what the current window displays using a Buffer or \[u32]

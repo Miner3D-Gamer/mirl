@@ -370,7 +370,6 @@ pub type UnitRangeU64 = UniformRange<u64>;
 /// Unit range with u128 storage - 340 undecillion values, go ahead.
 pub type UnitRangeU128 = UniformRange<u128>;
 
-
 /// Unit range with usize storage - platform-dependent precision (32-bit or 64-bit).
 pub type UnitRangeUsize = UniformRange<usize>;
 

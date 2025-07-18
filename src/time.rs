@@ -1,5 +1,3 @@
-
-
 // pub fn wait_for_fps_ns(fps: u64, delta_time: u64) {
 //     let target_frame_time = 1_000_000_000 / fps; // Time for one frame at the target FPS
 //     if delta_time < target_frame_time {

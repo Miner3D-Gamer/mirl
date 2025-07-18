@@ -1,5 +1,6 @@
-use super::{Battery, Info, Screen};
 use winapi::um::winuser::GetSystemMetrics;
+
+use super::{Battery, Info, Screen, Memory};
 
 /// Windows struct implementation of the OSInfo trait
 pub struct WindowsInfo {
@@ -18,8 +19,10 @@ impl Info for WindowsInfo {
     fn get_os_name() -> String {
         "windows".into()
     }
+}
+impl Memory for WindowsInfo {
     fn get_total_memory(&self) -> u64 {
-         unsafe {
+        unsafe {
             let mut mem_status = windows::Win32::System::SystemInformation::MEMORYSTATUSEX::default();
             mem_status.dwLength = std::mem::size_of::<
                 windows::Win32::System::SystemInformation::MEMORYSTATUSEX,
@@ -60,18 +63,23 @@ impl Screen for WindowsInfo {
         unsafe { GetSystemMetrics(4) }
     }
     fn get_taskbar_height() -> i32 {
-    unsafe {
-        let mut abd: winapi::um::shellapi::APPBARDATA = std::mem::zeroed();
-        abd.cbSize = std::mem::size_of::<winapi::um::shellapi::APPBARDATA>() as u32;
-        abd.hWnd = winapi::um::winuser::GetDesktopWindow();
-        
-        if winapi::um::shellapi::SHAppBarMessage(winapi::um::shellapi::ABM_GETTASKBARPOS, &mut abd) != 0 {
-            (abd.rc.bottom - abd.rc.top) as i32
-        } else {
-            0 // Failed to get taskbar info
+        unsafe {
+            let mut abd: winapi::um::shellapi::APPBARDATA = std::mem::zeroed();
+            abd.cbSize =
+                std::mem::size_of::<winapi::um::shellapi::APPBARDATA>() as u32;
+            abd.hWnd = winapi::um::winuser::GetDesktopWindow();
+
+            if winapi::um::shellapi::SHAppBarMessage(
+                winapi::um::shellapi::ABM_GETTASKBARPOS,
+                &mut abd,
+            ) != 0
+            {
+                (abd.rc.bottom - abd.rc.top) as i32
+            } else {
+                0 // Failed to get taskbar info
+            }
         }
     }
-}
     fn get_screen_resolution() -> (i32, i32) {
         let width =
             unsafe { GetSystemMetrics(winapi::um::winuser::SM_CXSCREEN) };

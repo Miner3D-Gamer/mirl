@@ -1,9 +1,9 @@
+use image::{GenericImage, GenericImageView};
+
 use crate::{
     graphics::{rgba_to_u32, u32_to_rgba},
     misc::repeat_data,
 };
-
-use image::{GenericImage, GenericImageView};
 /// Convert a [u32] argb format into an [image::Rgba<u8>]
 pub fn u32_to_image_rgba(color: u32) -> image::Rgba<u8> {
     let (r, g, b, a) = u32_to_rgba(color);
@@ -18,7 +18,7 @@ pub fn image_rgba_to_u32(rgba: image::Rgba<u8>) -> u32 {
 pub fn rgb_to_image_rgba(r: u8, g: u8, b: u8) -> image::Rgba<u8> {
     image::Rgba([r, g, b, 255])
 }
-/// Create a new, empty, [image::DynamicImage] 
+/// Create a new, empty, [image::DynamicImage]
 pub fn create_empty_image(width: u32, height: u32) -> image::DynamicImage {
     image::DynamicImage::new_rgba8(width, height)
 }
@@ -99,6 +99,8 @@ use super::RawImage;
 //         Err(e) => panic!("Failed to load image: {}", e),
 //     }
 // }
+
+#[cfg(feature = "svg_support")]
 /// Converts between [resvg::tiny_skia::Pixmap] and [image::DynamicImage]
 pub fn pixmap_to_dynamic_image(
     ras: &resvg::tiny_skia::Pixmap,

@@ -3,18 +3,18 @@ use std::collections::HashMap;
 use std::sync::RwLock;
 
 /// ### Key:
-/// 
+///
 /// `char`: Requested letter
-/// 
+///
 /// `(i32, i32)`: Dimensions
-/// 
+///
 /// `usize`: Hash (so multiple fonts can be used at the same time)
-/// 
-/// 
+///
+///
 /// ### Data:
-/// 
+///
 /// [`fontdue::Metrics`]: Positioning data
-/// 
+///
 /// `Vec<u8>`: Rasterized font data (alpha)
 static GLYPH_CACHE: once_cell::sync::Lazy<
     RwLock<HashMap<(char, (i32, i32), usize), (fontdue::Metrics, Vec<u8>)>>,
@@ -22,8 +22,9 @@ static GLYPH_CACHE: once_cell::sync::Lazy<
 
 /// Get a glyph from the cache if it exists
 #[inline(always)]
-pub fn _get_glyph_cache(
-) -> &'static RwLock<HashMap<(char, (i32, i32), usize), (fontdue::Metrics, Vec<u8>)>> {
+pub fn _get_glyph_cache() -> &'static RwLock<
+    HashMap<(char, (i32, i32), usize), (fontdue::Metrics, Vec<u8>)>,
+> {
     &GLYPH_CACHE
 }
 /// Reset the glyph cache
@@ -118,7 +119,10 @@ pub fn get_character(
     .unwrap_or_else(|| {
         let rasterized = font.rasterize(ch, size);
 
-        _add_to_glyph_cache((ch, rounded_size_key, font.file_hash()), rasterized.clone());
+        _add_to_glyph_cache(
+            (ch, rounded_size_key, font.file_hash()),
+            rasterized.clone(),
+        );
 
         rasterized
     });

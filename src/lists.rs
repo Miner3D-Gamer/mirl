@@ -1,4 +1,4 @@
-/// Add item to list without exceeding the speficied maximal size
+/// Add item to list without exceeding the specified maximal size
 pub fn add_item_to_max_sized_list<T>(
     list: &mut Vec<T>,
     max_size: usize,
@@ -39,7 +39,9 @@ pub fn combined<T: Clone + Sized>(vec: &Vec<T>, other: T) -> Vec<T> {
     new_vec
 }
 /// Get the average value of a list
-pub fn average<T: num_traits::Num + num_traits::NumCast + Copy>(vec: &Vec<T>) -> T {
+pub fn average<T: num_traits::Num + num_traits::NumCast + Copy>(
+    vec: &Vec<T>,
+) -> T {
     let sum: T = vec.iter().copied().fold(T::zero(), |a, b| a + b);
     let len = T::from(vec.len()).unwrap();
     sum / len

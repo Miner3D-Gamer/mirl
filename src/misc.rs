@@ -5,7 +5,7 @@ pub fn concatenate<A: AsRef<str>, B: AsRef<str>>(a: A, b: B) -> String {
     result.push_str(b.as_ref());
     return result;
 }
-/// Hash a value 
+/// Hash a value
 pub fn hash_value<T: std::hash::Hash>(value: &T) -> u64 {
     let mut s = std::hash::DefaultHasher::new();
     value.hash(&mut s);

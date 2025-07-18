@@ -4,7 +4,13 @@ use winapi::um::winuser::{GetSystemMetrics, SM_CXSCREEN, SM_CYSCREEN};
 use windows::Win32::UI::WindowsAndMessaging::{
     SetWindowPos, SWP_NOSIZE, SWP_NOZORDER,
 };
-
+use windows::{
+    Win32::Foundation::HWND,
+    Win32::UI::WindowsAndMessaging::{
+        GetWindowLongW, SetWindowLongW, GWL_EXSTYLE, WS_EX_LAYERED,
+        WS_EX_TRANSPARENT,
+    },
+};
 use windows::{
     Win32::Foundation::RECT,
     Win32::Graphics::Gdi::{
@@ -20,14 +26,6 @@ use windows::{
     },
     Win32::UI::WindowsAndMessaging::{
         GetDesktopWindow, GetShellWindow, GetWindowRect,
-    },
-};
-
-use windows::{
-    Win32::Foundation::HWND,
-    Win32::UI::WindowsAndMessaging::{
-        GetWindowLongW, SetWindowLongW, GWL_EXSTYLE, WS_EX_LAYERED,
-        WS_EX_TRANSPARENT,
     },
 };
 
@@ -410,7 +408,10 @@ pub fn show_in_taskbar_and_alt_tab_raw(hwnd: windows::Win32::Foundation::HWND) {
     }
 }
 
-pub fn set_window_opacity_raw(hwnd: windows::Win32::Foundation::HWND, alpha: u8) {
+pub fn set_window_opacity_raw(
+    hwnd: windows::Win32::Foundation::HWND,
+    alpha: u8,
+) {
     unsafe {
         let ex_style = GetWindowLongW(hwnd, GWL_EXSTYLE) as u32;
         SetWindowLongW(hwnd, GWL_EXSTYLE, (ex_style | WS_EX_LAYERED.0) as i32);

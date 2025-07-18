@@ -56,9 +56,11 @@ type DrawPixelFunction = fn(&Buffer, usize, usize, u32);
 //     Fast,
 //     Pretty,
 // }
-
+/// Safely get the pixel color of the buffer at the specified x and y, returns 0 if the pixel is out of bounce
+/// For a custom return number use [get_pixel_fallback]
+/// For getting the pixel without bounds checking use [get_pixel_unsafe]
 #[inline(always)]
-fn get_pixel(buffer: &Buffer, x: usize, y: usize) -> u32 {
+pub fn get_pixel(buffer: &Buffer, x: usize, y: usize) -> u32 {
     if x >= buffer.width || y >= buffer.height {
         return 0;
     }
@@ -67,8 +69,24 @@ fn get_pixel(buffer: &Buffer, x: usize, y: usize) -> u32 {
         return *buffer.pointer.add(index);
     }
 }
+/// Safely get the pixel color of the buffer at the specified x and y, returns the fallback input if the pixel is out of bounce
+#[inline(always)]
+pub fn get_pixel_fallback(
+    buffer: &Buffer,
+    x: usize,
+    y: usize,
+    fallback: u32,
+) -> u32 {
+    if x >= buffer.width || y >= buffer.height {
+        return fallback;
+    }
+    let index = y * buffer.width + x;
+    unsafe {
+        return *buffer.pointer.add(index);
+    }
+}
 /// Get the pixel color at a position in a buffer without checking if the pixel is on screen (which will crash the program if it isn't)
-/// The function for getting a pixel safely is [get_pixel_isize]
+/// The function for getting a pixel safely is [get_pixel] or [get_pixel_isize]
 #[inline(always)]
 pub fn get_pixel_unsafe(buffer: &Buffer, x: usize, y: usize) -> u32 {
     let index = y * buffer.width + x;
@@ -113,7 +131,9 @@ pub fn get_pixel_isize_fallback(
 
 mod circle_outline;
 pub use circle_outline::*;
+#[cfg(feature = "font_support")]
 mod text;
+#[cfg(feature = "font_support")]
 pub use text::*;
 mod line;
 pub use line::*;

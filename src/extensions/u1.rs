@@ -257,7 +257,6 @@ impl_u1_conversion!(u8, u16, u32, u64, u128, usize);
 impl_u1_conversion!(i8, i16, i32, i64, i128, isize);
 impl_u1_float_conversion!(f32, f64);
 
-
 impl std::ops::Rem for U1 {
     type Output = Self;
 

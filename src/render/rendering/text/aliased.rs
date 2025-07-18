@@ -110,8 +110,6 @@ pub fn draw_text_stretched<F: num_traits::Float>(
     }
 }
 
-
-
 /// Same as [draw_text] but uses isize for positioning allowing for partially out of bounce text (left and top)
 pub fn draw_text_isize(
     buffer: &Buffer,
@@ -154,7 +152,7 @@ pub fn draw_text_isize(
                     let px_u = px as usize;
                     let py_u = py as usize;
                     let index = py_u * buffer.width + px_u;
-                    
+
                     if safe && index >= buffer.width * buffer.height {
                         continue;
                     }

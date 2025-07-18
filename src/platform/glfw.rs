@@ -11,9 +11,9 @@ use super::{
     MouseButton, Time,
 };
 use crate::extensions::*;
+use crate::graphics::argb_list_to_rgba_list;
 #[cfg(target_os = "windows")]
 use crate::platform::WindowLevel;
-use crate::graphics::argb_list_to_rgba_list;
 /// glfw implementation of Framework
 pub struct Framework<MouseManagerScrollAccuracy: num_traits::Float> {
     glfw: glfw::Glfw,

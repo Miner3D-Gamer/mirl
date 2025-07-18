@@ -1,9 +1,12 @@
+#![allow(unused_variables)] // Anytime this would give a warning is when an os is not supported for which we already have a fallback
+
 /// Culls the given color -> Essentially just a green screen
 pub fn make_color_transparent(
     handle: &raw_window_handle::RawWindowHandle,
     color: (u8, u8, u8),
 ) -> bool {
     match handle {
+        #[cfg(target_os = "windows")]
         raw_window_handle::RawWindowHandle::Win32(handle) => {
             windows_actions::make_color_transparent_raw(
                 handle.hwnd.get() as winapi::shared::windef::HWND,
@@ -21,6 +24,7 @@ pub fn set_window_position(
     y: i32,
 ) -> bool {
     match handle {
+        #[cfg(target_os = "windows")]
         raw_window_handle::RawWindowHandle::Win32(handle) => {
             windows_actions::set_window_position_raw(
                 windows::Win32::Foundation::HWND(handle.hwnd.get()),
@@ -38,6 +42,7 @@ pub fn set_window_borderless(
     boolean: bool,
 ) -> bool {
     match handle {
+        #[cfg(target_os = "windows")]
         raw_window_handle::RawWindowHandle::Win32(handle) => {
             if boolean {
                 windows_actions::make_window_borderless_raw(
@@ -59,6 +64,7 @@ pub fn set_window_hidden_from_taskbar_and_alt_tab(
     boolean: bool,
 ) -> bool {
     match handle {
+        #[cfg(target_os = "windows")]
         raw_window_handle::RawWindowHandle::Win32(handle) => {
             if boolean {
                 windows_actions::hide_from_taskbar_and_alt_tab_raw(
@@ -80,6 +86,7 @@ pub fn set_window_level(
     level: WindowLevel,
 ) -> bool {
     match handle {
+        #[cfg(target_os = "windows")]
         raw_window_handle::RawWindowHandle::Win32(handle) => {
             windows_actions::set_window_level_raw(
                 windows::Win32::Foundation::HWND(handle.hwnd.get()),
@@ -93,6 +100,7 @@ pub fn set_window_level(
 /// Get ALL windows the os allows for
 pub fn get_all_windows() -> Vec<raw_window_handle::RawWindowHandle> {
     match crate::system::info::OsInfo::get_os_name().as_str() {
+        #[cfg(target_os = "windows")]
         "windows" => {
             let windows = windows_actions::get_all_windows_raw();
             let mut new = Vec::new();
@@ -113,6 +121,7 @@ pub fn get_window_position(
     handle: &raw_window_handle::RawWindowHandle,
 ) -> (i32, i32) {
     match handle {
+        #[cfg(target_os = "windows")]
         raw_window_handle::RawWindowHandle::Win32(handle) => {
             windows_actions::get_window_position_raw(
                 windows::Win32::Foundation::HWND(handle.hwnd.get()),
@@ -127,6 +136,7 @@ pub fn get_window_size(
     handle: &raw_window_handle::RawWindowHandle,
 ) -> (i32, i32) {
     match handle {
+        #[cfg(target_os = "windows")]
         raw_window_handle::RawWindowHandle::Win32(handle) => {
             windows_actions::get_window_size_raw(
                 windows::Win32::Foundation::HWND(handle.hwnd.get()),
@@ -141,6 +151,7 @@ pub fn get_title_using_id(
     handle: &raw_window_handle::RawWindowHandle,
 ) -> String {
     match handle {
+        #[cfg(target_os = "windows")]
         raw_window_handle::RawWindowHandle::Win32(handle) => {
             windows_actions::get_title_using_id_raw(
                 handle.hwnd.get() as winapi::shared::windef::HWND
@@ -165,10 +176,7 @@ pub fn get_id_using_title(
         just_one,
     );
 }
-/// Get the screen resolution - What happens if you have multiple monitors? Idk
-pub fn get_screen_resolution() -> (i32, i32) {
-    return get_screen_resolution_raw();
-}
+
 /// Capture the screen with all application - What happens if you have multiple monitors? Idk
 pub fn capture_screen() -> Option<RawImage> {
     return capture_screen_raw();
@@ -183,6 +191,7 @@ pub fn set_click_ability_of_window(
     click_through: bool,
 ) {
     match handle {
+        #[cfg(target_os = "windows")]
         raw_window_handle::RawWindowHandle::Win32(handle) => {
             if click_through {
                 windows_actions::make_window_click_through_raw(
@@ -204,6 +213,7 @@ pub fn set_window_opacity(
     opacity: u8,
 ) -> bool {
     match handle {
+        #[cfg(target_os = "windows")]
         raw_window_handle::RawWindowHandle::Win32(handle) => {
             windows_actions::set_window_opacity_raw(
                 windows::Win32::Foundation::HWND(handle.hwnd.get()),
@@ -218,6 +228,7 @@ pub fn set_window_opacity(
 /// Get the current z ordering of a window
 pub fn get_window_z(handle: &raw_window_handle::RawWindowHandle) -> u32 {
     match handle {
+        #[cfg(target_os = "windows")]
         raw_window_handle::RawWindowHandle::Win32(handle) => {
             windows_actions::get_z_raw(windows::Win32::Foundation::HWND(
                 handle.hwnd.get(),
@@ -227,16 +238,14 @@ pub fn get_window_z(handle: &raw_window_handle::RawWindowHandle) -> u32 {
         _ => u32::MIN,
     }
 }
-/// Get the current z ordering of a window
-pub fn get_task_bar_height() -> i32 {
-    get_title_bar_height_raw()
-}
+
 /// Sets the z ordering of the current window - How does [WindowLevel] affect ordering? No clue.
 pub fn set_window_z(
     handle: &raw_window_handle::RawWindowHandle,
     z: u32,
 ) -> bool {
     match handle {
+        #[cfg(target_os = "windows")]
         raw_window_handle::RawWindowHandle::Win32(handle) => {
             windows_actions::set_z_raw(
                 windows::Win32::Foundation::HWND(handle.hwnd.get()),
@@ -254,6 +263,7 @@ pub fn set_window_z_after(
 ) -> bool {
     // Matching 2 values at the same time feels cursed
     match (handle, after) {
+        #[cfg(target_os = "windows")]
         (
             raw_window_handle::RawWindowHandle::Win32(handle),
             raw_window_handle::RawWindowHandle::Win32(after),
@@ -272,17 +282,21 @@ pub fn set_window_z_after(
 mod windows_actions;
 #[cfg(target_os = "windows")]
 use windows_actions::{
-    capture_desktop_background_raw, capture_screen_raw,
-    get_screen_resolution_raw, get_title_bar_height_raw,
-    get_window_id_by_title,
+    capture_desktop_background_raw, capture_screen_raw, get_window_id_by_title,
 };
 
 #[cfg(target_os = "linux")]
-mod linux;
+mod linux_actions;
 #[cfg(target_os = "linux")]
-use linux::{
-    capture_desktop_background_raw, capture_screen_raw,
-    get_screen_resolution_raw, get_window_id_by_title,
+use linux_actions::{
+    capture_desktop_background_raw, capture_screen_raw, get_window_id_by_title,
+};
+
+#[cfg(target_arch = "wasm32")]
+mod web_actions;
+#[cfg(target_arch = "wasm32")]
+use web_actions::{
+    capture_desktop_background_raw, capture_screen_raw, get_window_id_by_title,
 };
 
 use crate::{graphics::RawImage, platform::WindowLevel, system::info::Info};

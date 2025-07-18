@@ -1,5 +1,6 @@
-use super::U4;
 use num_traits::{NumCast, ToPrimitive};
+
+use super::U4;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, std::cmp::PartialOrd)]
 /// A u2... yeah
@@ -56,7 +57,6 @@ impl NumCast for U2 {
         Some(Self::new(n.to_u8().unwrap()))
     }
 }
-
 
 impl U2 {
     /// Create a U2 from a u8, panicking if value > 3
@@ -254,8 +254,6 @@ macro_rules! impl_u2_float_conversion {
 impl_u2_conversion!(u8, u16, u32, u64, u128, usize);
 impl_u2_conversion!(i8, i16, i32, i64, i128, isize);
 impl_u2_float_conversion!(f32, f64);
-
-
 
 impl std::ops::Rem for U2 {
     type Output = Self;

@@ -1,17 +1,15 @@
-use crate::{
-    graphics::{
-        pixmap_to_raw_image, rasterize_svg, u32_to_hex, u32_to_rgba, RawImage,
-    },
-};
-
-use crate::extensions::*;
 use std::io::Write;
+
 use windows::{
     core::*, //Win32::Foundation::*,
     Win32::UI::WindowsAndMessaging::*,
 };
 
 use super::{cursor_resolution, BaseCursor, Cursor};
+use crate::extensions::*;
+use crate::graphics::{
+    pixmap_to_raw_image, rasterize_svg, u32_to_hex, u32_to_rgba, RawImage,
+};
 
 // #[derive(Default)]
 // pub struct CursorManagerWindows {

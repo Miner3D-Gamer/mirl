@@ -14,12 +14,10 @@ pub fn draw_image(
     texture: &RawImage,
     transparency: bool,
 ) {
-    let start_x = texture_x.max(0) ;
-    let start_y = texture_y.max(0) ;
-    let end_x =
-        (texture_x + result_width as isize).min(width as isize);
-    let end_y =
-        (texture_y + result_height as isize).min(height as isize) ;
+    let start_x = texture_x.max(0);
+    let start_y = texture_y.max(0);
+    let end_x = (texture_x + result_width as isize).min(width as isize);
+    let end_y = (texture_y + result_height as isize).min(height as isize);
 
     for x in start_x..end_x {
         // Calculate which output pixel we're at (0 to result_width-1)
@@ -40,13 +38,15 @@ pub fn draw_image(
             let clamped_uv_y =
                 texture_uv_y.max(0.0).min((texture.height - 1) as f32);
 
-            let pixel =
-                texture.get_pixel((clamped_uv_x as usize, clamped_uv_y as usize));
+            let pixel = texture
+                .get_pixel((clamped_uv_x as usize, clamped_uv_y as usize));
 
             if transparency {
                 let trans = get_u32_alpha_of_u32(pixel);
                 unsafe {
-                    let color_place = buffer.pointer.add(y as usize * buffer.width + x as usize);
+                    let color_place = buffer
+                        .pointer
+                        .add(y as usize * buffer.width + x as usize);
                     let color = interpolate_color_rgb_u32(
                         *color_place,
                         pixel,
@@ -56,7 +56,9 @@ pub fn draw_image(
                 }
             } else {
                 unsafe {
-                    *buffer.pointer.add(y as usize * buffer.width + x as usize) = pixel;
+                    *buffer
+                        .pointer
+                        .add(y as usize * buffer.width + x as usize) = pixel;
                 }
             }
         }

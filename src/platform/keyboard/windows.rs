@@ -1,5 +1,6 @@
-use crate::platform::KeyCode;
 use winapi::um::winuser::GetAsyncKeyState;
+
+use crate::platform::KeyCode;
 
 /// Convert Windows VK codes to KeyCode enum
 pub const fn vk_code_to_keycode(vk_code: u32) -> KeyCode {

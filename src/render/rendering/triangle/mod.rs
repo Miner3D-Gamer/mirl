@@ -1,4 +1,6 @@
-use crate::{graphics::RawImage, platform::Buffer, render::uv_interpolate};
+use crate::{
+    graphics::RawImage, platform::Buffer, render::extra::uv_interpolate,
+};
 /// This sucks, it works but it sucks
 pub fn draw_triangle(
     buffer: &Buffer,

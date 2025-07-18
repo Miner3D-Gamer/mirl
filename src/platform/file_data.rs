@@ -29,6 +29,7 @@ impl FileData {
             i64::from_le_bytes(self.raw_data[0..8].try_into().unwrap());
         Ok(number)
     }
+    #[cfg(feature = "font_support")]
     /// Convert the raw bytes to a [fontdue::Font] if possible
     pub fn as_font(&self) -> Result<fontdue::Font, Box<dyn std::error::Error>> {
         let font = fontdue::Font::from_bytes(

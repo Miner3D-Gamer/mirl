@@ -1,15 +1,19 @@
-use crate::graphics::Pixel;
-use crossterm::{
-    cursor, terminal::Clear, terminal::ClearType, ExecutableCommand,
-};
+// This file is terrible, more TGE lib functions need to be ported over
+
 use std::io::{stdout, BufRead, Write};
+
+use crossterm::ExecutableCommand;
+
+use crate::graphics::Pixel;
 
 /// Clears the currently visible console
 pub fn clear_console() {
     stdout()
-        .execute(Clear(ClearType::All))
+        .execute(crossterm::terminal::Clear(
+            crossterm::terminal::ClearType::All,
+        ))
         .unwrap()
-        .execute(cursor::MoveTo(0, 0))
+        .execute(crossterm::cursor::MoveTo(0, 0))
         .unwrap();
 }
 /// Color the given text (requires the console to support the full color range)
@@ -80,7 +84,7 @@ pub fn get_console_content(max_lines: usize) -> Vec<String> {
     recent_lines
 }
 
-/// Print the pixel stuct as color
+/// Print the pixel struct as color
 pub fn print_color(buffer: Vec<Pixel>) {
     for i in 0..buffer.len() {
         print!("{}", color_text("#", buffer[i].r, buffer[i].g, buffer[i].b));

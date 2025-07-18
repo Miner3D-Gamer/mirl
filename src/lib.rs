@@ -1,6 +1,12 @@
 #![warn(missing_docs)]
-//! Miners Rust Lib
+//! Miners
+//! Rust
+//! Lib
 //! Mirl (Mirl sounded better than Mrl)
+
+
+// #[cfg(all(target_arch = "wasm32", feature="glfw_backend"))]
+// compile_warning!("GLFW does not support wasm!");
 
 /// Stuff related to graphics -> Color manipulation
 /// For rendering use mirl::render
@@ -25,7 +31,6 @@ pub mod platform;
 /// Rendering stuff (on mirl::platform::Buffer)
 /// For color stuff, use mirl::graphics
 pub mod render;
-
 
 /// Terminal stuff
 #[cfg(not(target_arch = "wasm32"))]

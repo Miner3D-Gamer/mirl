@@ -1,7 +1,7 @@
 [package]
 # Info
 name = "mirl"
-version = "3.1.1"
+version = "3.2.0"
 description = "Miners Rust Lib - A collection of ever growing and changing functions and structs. Check the description for compatibility and toggleable features! (Most of the lib is controlled by flags/features)"
 # Compiler
 rust-version = "1.60.0"
@@ -23,38 +23,19 @@ exclude = ["**/_*", "**/*.py"]
 
 [dependencies]
 # Needed for glyph cache
-once_cell = ">=1.4"
+once_cell = { version = ">=1.4", optional = true }
 # Font lib
-fontdue = ">=0.9.3"
+fontdue = { version = ">=0.9.3", optional = true }
 # Image lib for .ico used in minifb set icon function
-ico = ">=0.3"
-# # Macro thingy
-# paste = "1.0.15"
+ico = { version = ">=0.3", optional = true }
 
 # Rasterize SVG
 resvg = { version = "0.45.1", optional = true }
 
-# # Make a const value be calculated at compile time
-# lazy_static = "1.4"
-# Create temp files
-tempfile = ">=3"
-
-# console
-[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-crossterm = ">=0.28"
-# MiniFB
-minifb = { "version" = ">=0.28.0", optional = true }
-
-# GLFW
-glfw = { version = "0.51.0", optional = true }
-
-gl = { version = "0.14.0", optional = true }
 
 # Other window stuff
-raw-window-handle = "0.6.2"
+raw-window-handle = { version = "0.6.2", optional = true }
 
-# Fast hashing
-ahash = "0.8.12"
 
 # graphics & render
 image = { version = ">=0.25.6", optional = true }
@@ -86,11 +67,36 @@ winapi = { version = "0.3", features = [
 [target.'cfg(target_os = "linux")'.dependencies]
 x11 = { "version" = ">=2.18.0", optional = true }
 
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+# console
+crossterm = ">=0.28"
+
+# Fast hashing, used by texture manager
+ahash = "0.8.12"
+
+# Create temp files, used by icon changing function
+tempfile = { version = ">=3", optional = true }
+
+# MiniFB
+minifb = { "version" = ">=0.28.0", optional = true }
+
+# GLFW
+glfw = { version = "0.51.0", optional = true }
+
+gl = { version = "0.14.0", optional = true }
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+wasm-bindgen = "0.2"
+
 # Unused
 # serde = "1.0"
 # serde_json = "1.0"
 # rand = "0.8"
 #minifb = "0.27.0"
+# # Make a const value be calculated at compile time
+# lazy_static = "1.4"
+# # Macro thingy
+# paste = "1.0.15"
 
 
 [features]
@@ -103,15 +109,24 @@ wayland = []
 # Extra cleanup functions for the texture manager
 texture_manager_cleanup = []
 # SVG/resvg support
-svg_support = ["resvg"]
+svg_support = ["resvg", "tempfile"]
 # Enable all available backends
-full_backend_support = ["minifb_backend", "glfw_backend", "svg_support"]
-# Framework backend using minifb
+full_backend_support = [
+    "minifb_backend",
+    "glfw_backend",
+    "svg_support",
+    "ico_support",
+]
+# Framework backend using minifb (NOT COMPATIBLE WITH WEB)
 minifb_backend = ["minifb", "system"]
-# Framework backend using glfw
+# Icon/ico support (e.g. Taskbar)
+ico_support = ["ico"]
+# Framework backend using glfw (NOT COMPATIBLE WITH WEB)
 glfw_backend = ["glfw", "gl", "system"]
 # Low level system interactions
-system = ["x11", "windows", "winapi"]
+system = ["x11", "windows", "winapi", "raw-window-handle"]
+# Font/fontdue support
+font_support = ["fontdue", "once_cell"]
 # Enable all features that add content
 all = ["default", "imagery", "full_backend_support"]
 

@@ -1,4 +1,4 @@
-#[cfg(feature = "system")]
+#[cfg(all(feature = "system", target_os = "windows"))]
 pub use cursors_windows::load_base_cursor_with_file;
 
 use crate::extensions::*;
@@ -582,15 +582,15 @@ pub struct BaseCursor {
     hot_spot_y: i32,
 }
 
-
 /// Set the cursor of the current window
 pub fn use_cursor(
     cursor: &Cursor,
-    #[cfg(feature = "glfw_backend")] glfw_window: Option<&mut glfw::Window>,
-    #[cfg(not(feature = "glfw_backend"))] glfw_window: std::option::Option<
-        NoneOnly,
-    >,
+    #[cfg(all(feature = "glfw_backend", not(target_arch = "wasm32")))]
+    glfw_window: Option<&mut glfw::Window>,
+    #[cfg(not(all(feature = "glfw_backend", not(target_arch = "wasm32"))))]
+    _glfw_window: std::option::Option<NoneOnly>,
 ) {
+    #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "glfw_backend")]
     if let Some(additional_info) = glfw_window {
         match cursor {
