@@ -24,7 +24,7 @@ pub fn normalize_vector<T: num_traits::Float>(x: T, y: T, z: T) -> (T, T, T) {
 
 use num_traits::NumCast;
 
-use crate::render::{U1, U2, U4};
+use crate::extensions::*;
 
 /// A trait for defining a number that does not have fractions
 pub trait WholeNumber: std::cmp::PartialOrd + NumCast {}

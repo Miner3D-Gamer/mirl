@@ -1,7 +1,8 @@
 #[cfg(target_os = "windows")]
 pub use cursors_windows::load_base_cursor_with_file;
 
-use crate::{graphics::RawImage, render::U2};
+use crate::{graphics::RawImage};
+use crate::extensions::*;
 /// Cursor stuff of glfw bc glfw is a bitch
 pub mod cursor_glfw;
 /// The Cursor Manager provides a way of easily loading cursors based on a RawImage or the default cursors that come with this lib

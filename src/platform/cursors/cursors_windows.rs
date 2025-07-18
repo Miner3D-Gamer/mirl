@@ -2,9 +2,9 @@ use crate::{
     graphics::{
         pixmap_to_raw_image, rasterize_svg, u32_to_hex, u32_to_rgba, RawImage,
     },
-    render::{StringExtensions, U2},
 };
 
+use crate::extensions::*;
 use std::io::Write;
 use windows::{
     core::*, //Win32::Foundation::*,
@@ -597,7 +597,7 @@ use super::{cursor_resolution, BaseCursor, Cursor};
 //         for cursor in cursors {
 //             let path = get_cursor_path(&cursor.file_path.to_string());
 //             let svg_data = std::fs::read_to_string(path).unwrap();
-//             // if svg has one {}, inser main_color, if svg has two {}, insert main_color, secondary_color
+//             // if svg has one {}, insert main_color, if svg has two {}, insert main_color, secondary_color
 
 //             let result_svg = svg_data
 //                 .replace_first_occurrence("{}", &u32_to_hex(main_color))
@@ -677,7 +677,7 @@ fn load_cursor(
 
 //     let path = get_cursor_path(&cursor.file_path.to_string());
 //     let svg_data = std::fs::read_to_string(path).unwrap();
-//     // if svg has one {}, inser main_color, if svg has two {}, insert main_color, secondary_color
+//     // if svg has one {}, insert main_color, if svg has two {}, insert main_color, secondary_color
 
 //     let result_svg = svg_data
 //         .replace_first_occurrence("{}", &u32_to_hex(main_color))
@@ -720,7 +720,7 @@ pub fn load_base_cursor_with_file(
 
     //let path = get_cursor_path(&cursor.file_path.to_string());
     //let svg_data = std::fs::read_to_string(path).unwrap();
-    // if svg has one {}, inser main_color, if svg has two {}, insert main_color, secondary_color
+    // if svg has one {}, insert main_color, if svg has two {}, insert main_color, secondary_color
 
     let result_svg = svg_data
         .replace_first_occurrence("{}", &u32_to_hex(main_color))

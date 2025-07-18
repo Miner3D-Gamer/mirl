@@ -1,14 +1,21 @@
+// I despise how much duplicate code is present in the text rendering functions
 use std::collections::HashMap;
 use std::sync::RwLock;
 
-/// Key:
-/// char: Requested letter
-/// (i32, i32): Dimensions
-/// usize: Hash (so multiple fonts can be used at the same time)
+/// ### Key:
 /// 
-/// Data:
-/// fontdue::Metrics: Positioning data
-/// Vec<u8>: Rasterized font data (alpha)
+/// `char`: Requested letter
+/// 
+/// `(i32, i32)`: Dimensions
+/// 
+/// `usize`: Hash (so multiple fonts can be used at the same time)
+/// 
+/// 
+/// ### Data:
+/// 
+/// [`fontdue::Metrics`]: Positioning data
+/// 
+/// `Vec<u8>`: Rasterized font data (alpha)
 static GLYPH_CACHE: once_cell::sync::Lazy<
     RwLock<HashMap<(char, (i32, i32), usize), (fontdue::Metrics, Vec<u8>)>>,
 > = once_cell::sync::Lazy::new(|| RwLock::new(HashMap::new()));

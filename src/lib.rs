@@ -5,7 +5,7 @@
 /// Stuff related to graphics -> Color manipulation
 /// For rendering use mirl::render
 pub mod graphics;
-/// Math and collision foused stuff
+/// Math and collision focused stuff
 pub mod math;
 /// Stuff I didn't know how to categorize -> Expect these functions to be moved in the future
 pub mod misc;

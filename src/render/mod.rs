@@ -1,4 +1,3 @@
-pub use crate::extensions::*;
 use crate::math::radians;
 
 /// Rotate a [Vertex3D] around a [Point3D] on the x axis

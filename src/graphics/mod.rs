@@ -1,3 +1,5 @@
+use crate::extensions::*;
+
 /// Convert an r b g format into u32 argb format
 #[inline(always)]
 pub fn rgb_to_u32(r: u8, g: u8, b: u8) -> u32 {
@@ -649,9 +651,7 @@ pub use pixel::*;
 
 #[cfg(feature = "imagery")]
 use crate::platform::FileSystem;
-use crate::{
-    math::interpolate, misc::repeat_data, platform::Buffer, render::Tuple4Into,
-};
+use crate::{math::interpolate, misc::repeat_data, platform::Buffer};
 /// Convert u32 argb to hex
 #[inline(always)]
 pub fn u32_to_hex(color: u32) -> String {

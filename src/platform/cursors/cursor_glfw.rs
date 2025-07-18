@@ -1,9 +1,6 @@
-use crate::{
-    graphics::{pixmap_to_raw_image, rasterize_svg, u32_to_hex},
-    render::{StringExtensions, U2},
-};
-
 use super::{cursor_resolution, BaseCursor, Cursor};
+use crate::extensions::*;
+use crate::graphics::{pixmap_to_raw_image, rasterize_svg, u32_to_hex};
 /// Load a cursor SVG and replace it's placeholders with actual colors
 pub fn load_base_cursor_with_file(
     cursor: BaseCursor,
@@ -18,7 +15,7 @@ pub fn load_base_cursor_with_file(
 
     //let path = get_cursor_path(&cursor.file_path.to_string());
     //let svg_data = std::fs::read_to_string(path).unwrap();
-    // if svg has one {}, inser main_color, if svg has two {}, insert main_color, secondary_color
+    // if svg has one {}, insert main_color, if svg has two {}, insert main_color, secondary_color
 
     let result_svg = svg_data
         .replace_first_occurrence("{}", &u32_to_hex(main_color))

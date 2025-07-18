@@ -1,5 +1,5 @@
 #[cfg(feature = "system")]
-use crate::render::Tuple2Into;
+use crate::extensions::*;
 use crate::{
     graphics::{
         get_alpha_of_u32, resize_buffer, u32_to_rgba, InterpolationMode,

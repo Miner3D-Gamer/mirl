@@ -2,7 +2,7 @@
 use super::cursors::Cursor;
 use super::{Buffer, KeyCode, MouseButton, Time};
 #[cfg(feature = "resvg")]
-use crate::render::U2;
+use crate::extensions::*;
 
 /// Most basic of framework functionality
 pub trait Framework: Window + Input + Output + Timing {}
@@ -30,7 +30,6 @@ impl<T, MouseManagerScrollAccuracy: num_traits::Float> ExtendedFramework<MouseMa
 pub trait Window {
     /// Create a new window with the desired settings
     fn new(
-        buffer: &Buffer,
         title: &str,
         settings: super::WindowSettings,
     ) -> Self

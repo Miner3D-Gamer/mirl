@@ -10,9 +10,10 @@ use super::{
     time::NativeTime,
     MouseButton, Time,
 };
+use crate::extensions::*;
 #[cfg(target_os = "windows")]
 use crate::platform::WindowLevel;
-use crate::{graphics::argb_list_to_rgba_list, platform::Buffer, render::Tuple2Into};
+use crate::graphics::argb_list_to_rgba_list;
 /// glfw implementation of Framework
 pub struct Framework<MouseManagerScrollAccuracy: num_traits::Float> {
     glfw: glfw::Glfw,
@@ -41,11 +42,7 @@ static LOG_ERRORS: Option<glfw::ErrorCallback<()>> = Some(glfw::Callback {
 impl<MouseManagerScrollAccuracy: num_traits::Float> Window
     for Framework<MouseManagerScrollAccuracy>
 {
-    fn new(
-        buffer: &Buffer,
-        title: &str,
-        settings: super::WindowSettings,
-    ) -> Self {
+    fn new(title: &str, settings: super::WindowSettings) -> Self {
         // Initialize GLFW
         let mut glfw = glfw::init(LOG_ERRORS).unwrap();
         // Configure GLFW
@@ -59,8 +56,8 @@ impl<MouseManagerScrollAccuracy: num_traits::Float> Window
         // Create a windowed mode window and its OpenGL context
         let (mut window, events) = glfw
             .create_window(
-                buffer.width as u32,
-                buffer.height as u32,
+                settings.size.0 as u32,
+                settings.size.1 as u32,
                 title,
                 glfw::WindowMode::Windowed,
             )
@@ -100,8 +97,8 @@ impl<MouseManagerScrollAccuracy: num_traits::Float> Window
             glfw,
             window,
             events,
-            width: buffer.width,
-            height: buffer.height,
+            width: settings.size.0 as usize,
+            height: settings.size.1 as usize,
             shader_program,
             texture,
             vao,
@@ -301,7 +298,7 @@ impl<MouseManagerScrollAccuracy: num_traits::Float> ExtendedWindow
     #[cfg(feature = "resvg")]
     fn load_custom_cursor(
         &mut self,
-        size: crate::render::U2,
+        size: crate::extensions::U2,
         main_color: u32,
         secondary_color: u32,
     ) -> super::cursors::Cursors {

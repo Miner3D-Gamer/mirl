@@ -12,8 +12,8 @@ use super::framework_traits::{
 };
 use super::Time;
 use super::{time::NativeTime, Buffer};
+use crate::extensions::*;
 use crate::platform::{KeyCode, MouseButton, WindowLevel};
-use crate::render::Tuple2Into;
 /// Backend implementation using MiniFB
 pub struct Framework {
     window: minifb::Window,
@@ -41,18 +41,13 @@ impl Window for Framework {
     /// Settings not accounted for:
     ///
     /// visible
-    fn new(
-        buffer: &Buffer,
-        title: &str,
-        settings: super::WindowSettings,
-    ) -> Self {
-        let width = buffer.width;
-        let height = buffer.height;
-
+    fn new(title: &str, settings: super::WindowSettings) -> Self {
+        let width = settings.size.0;
+        let height = settings.size.1;
         let mut window = minifb::Window::new(
             title,
-            width,
-            height,
+            width as usize,
+            height as usize,
             minifb_window_options_from_options(&settings),
         )
         .unwrap();
@@ -259,7 +254,7 @@ impl ExtendedWindow for Framework {
     #[cfg(feature = "resvg")]
     fn load_custom_cursor(
         &mut self,
-        size: crate::render::U2,
+        size: crate::extensions::U2,
         main_color: u32,
         secondary_color: u32,
     ) -> super::cursors::Cursors {
