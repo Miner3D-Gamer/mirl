@@ -168,7 +168,7 @@ pub const fn vk_code_to_keycode(vk_code: u32) -> KeyCode {
     }
 }
 /// Convert a keycode to the windows virtual key equivalent
-pub const fn keycode_to_vk_code(keycode: KeyCode) -> u32 {
+pub fn keycode_to_vk_code(keycode: KeyCode) -> u32 {
     match keycode {
         // Letters A-Z
         KeyCode::A => 0x41,

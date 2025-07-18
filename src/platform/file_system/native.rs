@@ -8,7 +8,7 @@ pub struct NativeFileSystem {
 }
 
 impl FileSystem for NativeFileSystem {
-    fn new(required_files: Vec<String>) -> Self {
+    fn new(required_files: Vec<&'static str>) -> Self {
         let temp = std::env::current_exe().unwrap();
         let exe_path = temp.parent().unwrap();
 

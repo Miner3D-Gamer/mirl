@@ -26,6 +26,8 @@ exclude = ["**/_*", "**/*.py"]
 strum = ">=0.26"
 strum_macros = ">=0.26"
 
+device_query = "4.0.0"
+
 # Needed for glyph cache
 once_cell = { version = ">=1.4", optional = true }
 # Font lib

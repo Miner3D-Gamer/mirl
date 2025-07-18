@@ -8,7 +8,7 @@ impl<V: num_traits::Num + num_traits::NumCast + Copy> Average<V> for Vec<V> {
         crate::lists::average(&self)
     }
 }
-/// A dummy enum to be used as Option<NoneOnly>
+/// A dummy enum to be used as [`Option<NoneOnly>`]
 pub enum NoneOnly {}
 
 mod tuple;

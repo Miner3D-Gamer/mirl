@@ -942,9 +942,10 @@ pub fn interpolate_color_rgb_u32(
     let b = interpolate(b1 as f32, b2 as f32, progress);
     return rgb_to_u32(r as u8, g as u8, b as u8);
 }
-
-/// Enable the "imagery" feature for automatic texture lookup -> Define a filepath for a texture and lazy load it
-/// Enable the "texture_manager_cleanup" feature to gain access to cleanup_unused
+/// Manage textures easily, has extra features when using the `imagery` as well as the `texture_manager_cleanup` flags
+/// Enable the `imagery` feature for automatic texture lookup -> Define a filepath for a texture and lazy load it
+/// 
+/// Enable the `texture_manager_cleanup` feature to gain access to cleanup_unused
 pub struct TextureManager {
     textures: Vec<Option<RawImage>>,
     #[cfg(not(target_arch = "wasm32"))]

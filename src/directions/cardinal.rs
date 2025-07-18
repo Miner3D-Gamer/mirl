@@ -1,5 +1,5 @@
 use super::{Directions, ExtendedDirections, RotateDirections, RotatePrecise};
-/// A unifier for all real directions
+/// N E S W + NE SE SW NW
 pub enum AllCardinalDirections {
     /// N E S W
     Base(Directions),

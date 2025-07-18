@@ -32,7 +32,7 @@ pub fn get_sub_vec_of_vec<T: Copy>(
     }
     return sub_vec;
 }
-/// Returns what it would be if T was pushed onto Vec<T>
+/// Returns what it would be if T was pushed onto [`Vec<T>`]
 pub fn combined<T: Clone + Sized>(vec: &Vec<T>, other: T) -> Vec<T> {
     let mut new_vec = vec.to_vec();
     new_vec.push(other);
@@ -45,4 +45,18 @@ pub fn average<T: num_traits::Num + num_traits::NumCast + Copy>(
     let sum: T = vec.iter().copied().fold(T::zero(), |a, b| a + b);
     let len = T::from(vec.len()).unwrap();
     sum / len
+}
+
+/// Get additions to a list
+pub fn get_difference_new<'a, T: std::cmp::PartialEq>(
+    old: &'a Vec<T>,
+    new: &'a Vec<T>,
+) -> Vec<&'a T> {
+    let mut result = Vec::new();
+    for i in new {
+        if !old.contains(i) {
+            result.push(i)
+        }
+    }
+    return result;
 }

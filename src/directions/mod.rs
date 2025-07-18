@@ -22,7 +22,7 @@ pub trait RotateDirections: Sized {
     }
 }
 
-/// Rotate a direction by precise 45° increments
+/// Rotate a direction by 45° increments
 pub trait RotatePrecise: RotateDirections {
     /// Rotate the direction 45° clockwise
     fn rotate_clockwise_45(&self) -> Self;

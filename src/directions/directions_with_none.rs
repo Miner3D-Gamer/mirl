@@ -1,5 +1,5 @@
 use super::{Directions, RotateDirections, SpecialDirections};
-/// A unifier to have the usual directions as well as the extended version
+/// N E S W + None
 pub enum DirectionsWithNone {
     /// N E S W
     Base(Directions),

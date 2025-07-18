@@ -101,7 +101,7 @@ pub enum CursorStyle {
 /// A trait for a simple file system for possible portability
 pub trait FileSystem {
     /// Create a new file system access-er, files that are not defined in required_files are not guaranteed to exist
-    fn new(required_files: Vec<String>) -> Self
+    fn new(required_files: Vec<&'static str>) -> Self
     where
         Self: Sized;
     /// Get the contents of a file
@@ -722,7 +722,7 @@ impl KeyCode {
 }
 
 /// Convert a list of keycodes into a String and return the ones that weren't convertible
-pub fn keycodes_to_str(keycodes: Vec<KeyCode>) -> (String, Vec<KeyCode>) {
+pub fn keycodes_to_str(keycodes: &Vec<KeyCode>) -> (String, Vec<KeyCode>) {
     let mut functions = Vec::new();
     let mut output = String::new();
     for key_code in keycodes {
@@ -732,7 +732,7 @@ pub fn keycodes_to_str(keycodes: Vec<KeyCode>) -> (String, Vec<KeyCode>) {
                 output.push(l)
             }
         } else {
-            functions.push(key_code)
+            functions.push(*key_code)
         }
     }
     return (output, functions);
@@ -932,7 +932,7 @@ impl Buffer {
             }
         }
     }
-    /// Converts the Vec<u32> to Vec<8> by unpacking the u32 into argb style
+    /// Converts the [`Vec<u32>`] to [`Vec<8>`] by unpacking the u32 into argb style
     pub fn to_u8_argb(&self) -> Vec<u8> {
         let mut return_list = Vec::new();
         for i in &self.buffer {
@@ -944,7 +944,7 @@ impl Buffer {
         }
         return return_list;
     }
-    /// Converts the Vec<u32> to Vec<8> by unpacking the u32 into rgba style
+    /// Converts the `Vec<u32>`] to [`Vec<8>`] by unpacking the u32 into rgba style
     pub fn to_u8_rgba(&self) -> Vec<u8> {
         let mut return_list = Vec::new();
         for i in &self.buffer {

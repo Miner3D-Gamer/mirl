@@ -111,7 +111,7 @@ impl Input for Framework {
 
 impl Output for Framework {
     #[inline]
-    fn log<T: std::fmt::Debug>(&self, t: T) {
+    fn log(&self, t: &dyn std::fmt::Debug) {
         super::shared::log(t);
     }
 }
@@ -176,12 +176,7 @@ impl<MouseManagerScrollAccuracy: num_traits::Float>
         return Some((x, y).tuple_2_into());
     }
     fn get_all_keys_down(&self) -> Vec<KeyCode> {
-        let mut keys = Vec::new();
-        for key in self.window.get_keys() {
-            keys.push(map_minifb_to_keycode(key));
-        }
-
-        return keys;
+        return super::keyboard::get_all_pressed_keys();
     }
 }
 
@@ -388,6 +383,7 @@ fn encode_to_ico_format(buffer: &[u32], width: u32, height: u32) -> Vec<u8> {
 //         CursorStyle::ResizeAll => minifb::CursorStyle::ResizeAll,
 //     }
 // }
+/// Maps mirls MouseButtons to MiniFBs MouseButtons
 const fn map_mouse_button_to_minifb(
     button: MouseButton,
 ) -> Option<minifb::MouseButton> {
@@ -402,7 +398,8 @@ const fn map_mouse_button_to_minifb(
         MouseButton::Unsupported => None,
     }
 }
-const fn map_keycode_to_minifb(key: KeyCode) -> minifb::Key {
+/// Maps mirls KeyCodes to MiniFBs Keycodes
+pub const fn map_keycode_to_minifb(key: KeyCode) -> minifb::Key {
     match key {
         // Letters
         KeyCode::A => minifb::Key::A,
@@ -594,7 +591,8 @@ const fn map_keycode_to_minifb(key: KeyCode) -> minifb::Key {
     }
 }
 
-const fn map_minifb_to_keycode(key: minifb::Key) -> KeyCode {
+/// Maps MiniFBs KeyCodes to mirls Keycodes
+pub const fn map_minifb_to_keycode(key: minifb::Key) -> KeyCode {
     match key {
         // Letters
         minifb::Key::A => KeyCode::A,
