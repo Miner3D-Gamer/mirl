@@ -40,5 +40,8 @@
         "THICKFRAME",
         "TOOLWINDOW",
         "wingdi"
+    ],
+    "rust-analyzer.cargo.features": [
+        "all"
     ]
 }

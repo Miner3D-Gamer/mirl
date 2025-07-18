@@ -389,7 +389,20 @@ impl KeyManager {
     pub fn set_key_state(&mut self, keycode: KeyCode, value: bool) {
         set_keycode(keycode, self, value);
     }
+    /// Get every pressed key (by checking if every single one is pressed)
+    pub fn get_all_pressed_keys(&self) -> Vec<KeyCode> {
+        let mut key_codes = Vec::new();
+        for variant in KeyCode::iter() {
+            if self.is_key_pressed(variant) {
+                key_codes.push(variant)
+            }
+        }
+        return key_codes;
+    }
 }
+
+use strum::IntoEnumIterator;
+
 /// A struct to manage the pressed mouse keys + scroll
 pub struct MouseManager<T: num_traits::Float> {
     scroll_x: T,

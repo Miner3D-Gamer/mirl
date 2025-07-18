@@ -139,8 +139,10 @@ pub enum MouseButton {
     /// You can't expect to be able to expect everything ¯\_(ツ)_/¯
     Unsupported,
 }
+use strum_macros::EnumIter;
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+
+#[derive(Debug, Clone, Copy, PartialEq, EnumIter)]
 /// Key code to be interpreted anywhere
 #[allow(missing_docs)]
 pub enum KeyCode {

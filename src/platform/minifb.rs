@@ -98,11 +98,11 @@ impl Input for Framework {
     }
     #[inline]
     fn is_key_down(&self, key: KeyCode) -> bool {
-        self.window.is_key_down(map_key(key))
+        self.window.is_key_down(map_keycode_to_minifb(key))
     }
     #[inline]
     fn is_mouse_down(&self, button: MouseButton) -> bool {
-        if let Some(key) = map_mouse(button) {
+        if let Some(key) = map_mouse_button_to_minifb(button) {
             return self.window.get_mouse_down(key);
         }
         false
@@ -174,6 +174,14 @@ impl<MouseManagerScrollAccuracy: num_traits::Float>
         }
         let (x, y) = t.unwrap();
         return Some((x, y).tuple_2_into());
+    }
+    fn get_all_keys_down(&self) -> Vec<KeyCode> {
+        let mut keys = Vec::new();
+        for key in self.window.get_keys() {
+            keys.push(map_minifb_to_keycode(key));
+        }
+
+        return keys;
     }
 }
 
@@ -380,7 +388,9 @@ fn encode_to_ico_format(buffer: &[u32], width: u32, height: u32) -> Vec<u8> {
 //         CursorStyle::ResizeAll => minifb::CursorStyle::ResizeAll,
 //     }
 // }
-const fn map_mouse(button: MouseButton) -> Option<minifb::MouseButton> {
+const fn map_mouse_button_to_minifb(
+    button: MouseButton,
+) -> Option<minifb::MouseButton> {
     match button {
         MouseButton::Left => Some(minifb::MouseButton::Left),
         MouseButton::Right => Some(minifb::MouseButton::Right),
@@ -392,7 +402,7 @@ const fn map_mouse(button: MouseButton) -> Option<minifb::MouseButton> {
         MouseButton::Unsupported => None,
     }
 }
-const fn map_key(key: KeyCode) -> minifb::Key {
+const fn map_keycode_to_minifb(key: KeyCode) -> minifb::Key {
     match key {
         // Letters
         KeyCode::A => minifb::Key::A,
@@ -581,5 +591,127 @@ const fn map_key(key: KeyCode) -> minifb::Key {
         KeyCode::Grave => minifb::Key::Unknown,
         // Fallback
         _ => minifb::Key::Unknown,
+    }
+}
+
+const fn map_minifb_to_keycode(key: minifb::Key) -> KeyCode {
+    match key {
+        // Letters
+        minifb::Key::A => KeyCode::A,
+        minifb::Key::B => KeyCode::B,
+        minifb::Key::C => KeyCode::C,
+        minifb::Key::D => KeyCode::D,
+        minifb::Key::E => KeyCode::E,
+        minifb::Key::F => KeyCode::F,
+        minifb::Key::G => KeyCode::G,
+        minifb::Key::H => KeyCode::H,
+        minifb::Key::I => KeyCode::I,
+        minifb::Key::J => KeyCode::J,
+        minifb::Key::K => KeyCode::K,
+        minifb::Key::L => KeyCode::L,
+        minifb::Key::M => KeyCode::M,
+        minifb::Key::N => KeyCode::N,
+        minifb::Key::O => KeyCode::O,
+        minifb::Key::P => KeyCode::P,
+        minifb::Key::Q => KeyCode::Q,
+        minifb::Key::R => KeyCode::R,
+        minifb::Key::S => KeyCode::S,
+        minifb::Key::T => KeyCode::T,
+        minifb::Key::U => KeyCode::U,
+        minifb::Key::V => KeyCode::V,
+        minifb::Key::W => KeyCode::W,
+        minifb::Key::X => KeyCode::X,
+        minifb::Key::Y => KeyCode::Y,
+        minifb::Key::Z => KeyCode::Z,
+
+        // Numbers
+        minifb::Key::Key0 => KeyCode::Num0,
+        minifb::Key::Key1 => KeyCode::Num1,
+        minifb::Key::Key2 => KeyCode::Num2,
+        minifb::Key::Key3 => KeyCode::Num3,
+        minifb::Key::Key4 => KeyCode::Num4,
+        minifb::Key::Key5 => KeyCode::Num5,
+        minifb::Key::Key6 => KeyCode::Num6,
+        minifb::Key::Key7 => KeyCode::Num7,
+        minifb::Key::Key8 => KeyCode::Num8,
+        minifb::Key::Key9 => KeyCode::Num9,
+        minifb::Key::NumPad0 => KeyCode::KeyPad0,
+        minifb::Key::NumPad1 => KeyCode::KeyPad1,
+        minifb::Key::NumPad2 => KeyCode::KeyPad2,
+        minifb::Key::NumPad3 => KeyCode::KeyPad3,
+        minifb::Key::NumPad4 => KeyCode::KeyPad4,
+        minifb::Key::NumPad5 => KeyCode::KeyPad5,
+        minifb::Key::NumPad6 => KeyCode::KeyPad6,
+        minifb::Key::NumPad7 => KeyCode::KeyPad7,
+        minifb::Key::NumPad8 => KeyCode::KeyPad8,
+        minifb::Key::NumPad9 => KeyCode::KeyPad9,
+
+        // Function Keys
+        minifb::Key::F1 => KeyCode::F1,
+        minifb::Key::F2 => KeyCode::F2,
+        minifb::Key::F3 => KeyCode::F3,
+        minifb::Key::F4 => KeyCode::F4,
+        minifb::Key::F5 => KeyCode::F5,
+        minifb::Key::F6 => KeyCode::F6,
+        minifb::Key::F7 => KeyCode::F7,
+        minifb::Key::F8 => KeyCode::F8,
+        minifb::Key::F9 => KeyCode::F9,
+        minifb::Key::F10 => KeyCode::F10,
+        minifb::Key::F11 => KeyCode::F11,
+        minifb::Key::F12 => KeyCode::F12,
+        minifb::Key::F13 => KeyCode::F13,
+        minifb::Key::F14 => KeyCode::F14,
+        minifb::Key::F15 => KeyCode::F15,
+
+        // Modifiers
+        minifb::Key::LeftShift => KeyCode::LeftShift,
+        minifb::Key::RightShift => KeyCode::RightShift,
+        minifb::Key::LeftCtrl => KeyCode::LeftControl,
+        minifb::Key::RightCtrl => KeyCode::RightControl,
+        minifb::Key::LeftAlt => KeyCode::LeftAlt,
+        minifb::Key::RightAlt => KeyCode::RightAlt,
+        minifb::Key::LeftSuper => KeyCode::LeftSuper,
+        minifb::Key::RightSuper => KeyCode::RightSuper,
+
+        // Symbols
+        minifb::Key::Space => KeyCode::Space,
+        minifb::Key::Enter => KeyCode::Enter,
+        minifb::Key::Escape => KeyCode::Escape,
+        minifb::Key::Backspace => KeyCode::Backspace,
+        minifb::Key::Tab => KeyCode::Tab,
+
+        // Arrows
+        minifb::Key::Up => KeyCode::Up,
+        minifb::Key::Down => KeyCode::Down,
+        minifb::Key::Left => KeyCode::Left,
+        minifb::Key::Right => KeyCode::Right,
+
+        // Extras
+        minifb::Key::Comma => KeyCode::Comma,
+        minifb::Key::Period => KeyCode::Period,
+        minifb::Key::Minus => KeyCode::Minus,
+        minifb::Key::Equal => KeyCode::Equal,
+        minifb::Key::LeftBracket => KeyCode::LeftBracket,
+        minifb::Key::RightBracket => KeyCode::RightBracket,
+        minifb::Key::Backslash => KeyCode::Backslash,
+        minifb::Key::Semicolon => KeyCode::Semicolon,
+        minifb::Key::Apostrophe => KeyCode::Quote,
+
+        // Other
+        minifb::Key::ScrollLock => KeyCode::ScrollLock,
+        minifb::Key::CapsLock => KeyCode::CapsLock,
+        minifb::Key::NumLock => KeyCode::NumLock,
+        minifb::Key::Insert => KeyCode::Insert,
+        minifb::Key::Delete => KeyCode::Delete,
+        minifb::Key::Home => KeyCode::Home,
+        minifb::Key::End => KeyCode::End,
+        minifb::Key::PageUp => KeyCode::PageUp,
+        minifb::Key::PageDown => KeyCode::PageDown,
+        minifb::Key::Slash => KeyCode::Slash,
+        minifb::Key::Menu => KeyCode::Menu,
+        minifb::Key::Pause => KeyCode::Pause,
+
+        // Unknown or unmapped
+        _ => KeyCode::Unknown,
     }
 }

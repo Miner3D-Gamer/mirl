@@ -10,7 +10,7 @@ use super::{
     time::NativeTime,
     MouseButton, Time,
 };
-use crate::extensions::*;
+use crate::{extensions::*, platform::KeyCode};
 use crate::graphics::argb_list_to_rgba_list;
 #[cfg(target_os = "windows")]
 use crate::platform::WindowLevel;
@@ -251,6 +251,9 @@ impl<MouseManagerScrollAccuracy: num_traits::Float>
         &self,
     ) -> Option<(MouseManagerScrollAccuracy, MouseManagerScrollAccuracy)> {
         Some(self.mouse_manager.get_scroll())
+    }
+    fn get_all_keys_down(&self) -> Vec<KeyCode> {
+        return self.keyboard_manager.get_all_pressed_keys();
     }
 }
 const fn action_to_bool(action: Action) -> bool {

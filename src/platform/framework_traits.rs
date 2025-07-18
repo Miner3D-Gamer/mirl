@@ -77,6 +77,8 @@ pub trait ExtendedInput<MouseManagerScrollAccuracy: num_traits::Float> {
     fn get_mouse_scroll(
         &self,
     ) -> Option<(MouseManagerScrollAccuracy, MouseManagerScrollAccuracy)>;
+    /// Get all currently pressed keys
+    fn get_all_keys_down(&self) -> Vec<KeyCode>;
 }
 /// More 'advanced' window control
 pub trait ExtendedWindow {

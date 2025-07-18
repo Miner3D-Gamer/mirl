@@ -1,6 +1,5 @@
 extern crate winapi;
 
-use winapi::um::winuser::{GetSystemMetrics, SM_CXSCREEN, SM_CYSCREEN};
 use windows::Win32::UI::WindowsAndMessaging::{
     SetWindowPos, SWP_NOSIZE, SWP_NOZORDER,
 };
@@ -33,11 +32,6 @@ use crate::graphics::RawImage;
 use crate::lists::combined;
 use crate::platform::WindowLevel;
 
-pub fn get_screen_resolution_raw() -> (i32, i32) {
-    let width = unsafe { GetSystemMetrics(SM_CXSCREEN) };
-    let height = unsafe { GetSystemMetrics(SM_CYSCREEN) };
-    (width, height)
-}
 pub fn capture_screen_raw() -> Option<RawImage> {
     unsafe {
         // Get the desktop window handle
@@ -532,10 +526,6 @@ pub fn set_z_raw(hwnd: windows::Win32::Foundation::HWND, index: u32) {
 //         }
 //     }
 // }
-pub fn get_title_bar_height_raw() -> i32 {
-    unsafe { GetSystemMetrics(4) }
-}
-
 // PLEASE HELP WHAT DOES THIS FUNCTION DO??
 
 // #[cfg(target_os = "windows")]
