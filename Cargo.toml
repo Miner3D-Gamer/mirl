@@ -1,8 +1,8 @@
 [package]
 # Info
 name = "mirl"
-version = "3.1.0"
-description = "Miners Rust Lib - A collection of ever growing and changing functions and structs. \nCompatibility: \n\tWindows (Full), \n\tLinux (Partial, does not support 'system' feature), \n\tMacOS (Unknown), \n\tWeb (Unknown)\n\nDefault Features (Disable with 'default-features = false'): \n\t'system' - Allows for seamless low level interaction with the os (required by 'platform')\n\t'platform' - Allows for the creation and managing of windows\n\t'texture_manager_cleanup' - Additional clean up functions for more or less automatic texture unloading\n\nAdditional Optional Features:\n\t'imagery' - Support for the bulky 'image' library\n\t'svg_support' - Required for cursor action in the Frameworks\n\t'all' - A quick way of enabling every feature that adds content"
+version = "3.1.1"
+description = "Miners Rust Lib - A collection of ever growing and changing functions and structs. Check the description for compatibility and toggleable features! (Most of the lib is controlled by flags/features)"
 # Compiler
 rust-version = "1.60.0"
 edition = "2021"
@@ -94,14 +94,26 @@ x11 = { "version" = ">=2.18.0", optional = true }
 
 
 [features]
-default = ["svg_support", "platform", "texture_manager_cleanup"]
+# Features enabled by default
+default = ["texture_manager_cleanup"]
+# Image lib support
 imagery = ["image"]
+# Linux wayland support (Not yet supported)
 wayland = []
+# Extra cleanup functions for the texture manager
 texture_manager_cleanup = []
+# SVG/resvg support
 svg_support = ["resvg"]
-platform = ["minifb", "glfw", "gl", "system"]
+# Enable all available backends
+full_backend_support = ["minifb_backend", "glfw_backend", "svg_support"]
+# Framework backend using minifb
+minifb_backend = ["minifb", "system"]
+# Framework backend using glfw
+glfw_backend = ["glfw", "gl", "system"]
+# Low level system interactions
 system = ["x11", "windows", "winapi"]
-all = ["default", "imagery"]
+# Enable all features that add content
+all = ["default", "imagery", "full_backend_support"]
 
 [lib]
 name = "mirl"

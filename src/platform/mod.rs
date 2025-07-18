@@ -443,7 +443,7 @@ pub enum WindowLevel {
     AlwaysOnTop,
 }
 
-#[cfg(feature = "resvg")]
+#[cfg(all(feature = "resvg", feature = "system"))]
 pub use cursors::Cursor;
 
 /// A raw color buffer to be modified and read quickly
@@ -583,17 +583,15 @@ impl Deref for Buffer {
 }
 
 // Windows
-#[cfg(feature = "platform")]
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(feature = "minifb_backend")]
 /// The minifb version of the backend
 pub mod minifb;
 
-#[cfg(feature = "platform")]
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(feature = "glfw_backend")]
 /// The glfw version of the backend
 pub mod glfw;
 
-#[cfg(feature = "resvg")]
+#[cfg(all(feature = "resvg", feature = "system"))]
 // Window associates
 /// Everything do to with cursors
 pub mod cursors;

@@ -452,9 +452,9 @@ pub fn pixmap_to_raw_image(pixmap: &resvg::tiny_skia::Pixmap) -> RawImage {
     RawImage::new(data, pixmap.width() as usize, pixmap.height() as usize)
 }
 
-#[cfg(feature = "platform")]
+#[cfg(feature = "glfw_backend")]
 use glfw::PixelImage;
-#[cfg(feature = "platform")]
+#[cfg(feature = "glfw_backend")]
 
 /// Convert a RawImage into a glfw::PixelImage
 #[inline(always)]
@@ -466,7 +466,7 @@ pub fn raw_image_to_pixel_image(raw_image: &RawImage) -> glfw::PixelImage {
     };
 }
 /// Convert a glfw::PixelImage into a RawImage
-#[cfg(feature = "platform")]
+#[cfg(feature = "glfw_backend")]
 #[inline(always)]
 pub fn pixel_image_to_raw_image(pixel_image: &glfw::PixelImage) -> RawImage {
     return RawImage::new(
@@ -733,14 +733,14 @@ pub fn rgba_list_to_argb_list(input: &[u32]) -> Vec<u32> {
         .collect()
 }
 
-#[cfg(feature = "platform")]
+#[cfg(feature = "glfw_backend")]
 impl From<RawImage> for glfw::PixelImage {
     fn from(raw_image: RawImage) -> Self {
         raw_image_to_pixel_image(&raw_image)
     }
 }
 
-#[cfg(feature = "platform")]
+#[cfg(feature = "glfw_backend")]
 impl From<glfw::PixelImage> for RawImage {
     fn from(pixel_image: PixelImage) -> Self {
         pixel_image_to_raw_image(&pixel_image)

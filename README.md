@@ -25,14 +25,18 @@
 
 ### Default (disable with `default-features = false`)
 
-- `system` – Low-level OS interaction (required by `platform`)
-- `platform` – Native window creation and management
-- `texture_manager_cleanup` – Adds cleanup logic for 'automatic' texture unloading
+- `texture_manager_cleanup` – Adds extra cleanup logic for 'automatic' texture unloading
 
 ### Optional
 
-- `imagery` – Enables support for the bulky `image` crate
-- `svg_support` – Enables support for `resvg` crate, required by cursor support in framework integration
+- `imagery` – Enables support for the `image` crate for image loading
+- `svg_support` – Enables support for the `resvg` crate (used for SVG rendering, e.g., cursors in framework integration)
+- `wayland` – Placeholder for Wayland support (not yet implemented)
+- `minifb_backend` – Enables the framework backend using `minifb` and low-level system access
+- `glfw_backend` – Enables the framework backend using `glfw`, OpenGL, and low-level system access
+- `system` – Low-level system interaction using platform-specific crates (`x11`, `windows`, `winapi`)
+- `full_backend_support` – Enables both `minifb_backend` and `glfw_backend` along with `svg_support`
+- `all` – Enables all major features including `default`, `imagery`, and `full_backend_support`
 
 ---
 

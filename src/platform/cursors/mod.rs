@@ -1,8 +1,9 @@
-#[cfg(target_os = "windows")]
+#[cfg(feature = "system")]
 pub use cursors_windows::load_base_cursor_with_file;
 
-use crate::{graphics::RawImage};
 use crate::extensions::*;
+use crate::graphics::RawImage;
+
 /// Cursor stuff of glfw bc glfw is a bitch
 pub mod cursor_glfw;
 /// The Cursor Manager provides a way of easily loading cursors based on a RawImage or the default cursors that come with this lib
@@ -26,6 +27,7 @@ pub trait CursorManager {
         secondary_color: u32,
     );
 }
+
 #[derive(Debug)]
 /// Cursor Instance holding the required cursor data to be used somewhere else
 pub enum Cursor {
@@ -579,8 +581,17 @@ pub struct BaseCursor {
     hot_spot_x: i32,
     hot_spot_y: i32,
 }
+
+
 /// Set the cursor of the current window
-pub fn use_cursor(cursor: &Cursor, glfw_window: Option<&mut glfw::Window>) {
+pub fn use_cursor(
+    cursor: &Cursor,
+    #[cfg(feature = "glfw_backend")] glfw_window: Option<&mut glfw::Window>,
+    #[cfg(not(feature = "glfw_backend"))] glfw_window: std::option::Option<
+        NoneOnly,
+    >,
+) {
+    #[cfg(feature = "glfw_backend")]
     if let Some(additional_info) = glfw_window {
         match cursor {
             Cursor::Glfw(new_cursor) => {
@@ -618,19 +629,20 @@ pub fn use_cursor(cursor: &Cursor, glfw_window: Option<&mut glfw::Window>) {
         #[cfg(target_os = "linux")]
         Cursor::X11(xcursor_id) => {
             // Use the X11 cursor ID
-            println!("X11 cursor id: {}", xcursor_id.unwrap());
+            panic!("X11 cursor id: {}", xcursor_id.unwrap());
         }
 
         #[cfg(target_os = "macos")]
         Cursor::Mac(ptr) => {
             // Use macOS cursor pointer (e.g., NSCursor*)
-            println!("macOS cursor pointer: {:?}", ptr.unwrap());
+            panic!("macOS cursor pointer: {:?}", ptr.unwrap());
         }
         Cursor::Glfw(_) => {
             panic!("Cannot set GLFW cursor -> Not a GLFW context");
         }
     }
 }
+
 /// Converts the U2 into the actual cursor size, up to 255
 pub fn cursor_resolution(quality: U2) -> u8 {
     let t: u32 = quality.into();
@@ -644,7 +656,8 @@ pub fn resolution_to_quality(resolution: u8) -> Result<U2, &'static str> {
         return Err("Resolution + 1 is not a power of two");
     }
 
-    let t = val.trailing_zeros().checked_sub(5).ok_or("Resolution too small")?;
+    let t =
+        val.trailing_zeros().checked_sub(5).ok_or("Resolution too small")?;
 
     if t > 3 {
         return Err("Resolution too large");
