@@ -128,3 +128,19 @@ pub fn get_character(
     });
     return x;
 }
+/// Get the length of a string in a font if it was rendered out
+
+pub fn get_length_of_string(
+    string: &str,
+    size: f32,
+    font: &fontdue::Font,
+) -> f32 {
+    let mut total_width = 0.0;
+
+    for ch in string.chars() {
+        let (metrics, _) = get_character(ch, size, font);
+        total_width += metrics.advance_width;
+    }
+
+    total_width
+}

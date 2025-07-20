@@ -177,7 +177,7 @@
 //     );
 // }
 
-// pub fn draw_image(
+// pub fn dbuffer(
 //     buffer: &mut Vec<u32>,
 //     width: usize,
 //     height: usize,

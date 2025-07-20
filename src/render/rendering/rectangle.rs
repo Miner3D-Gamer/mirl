@@ -1,5 +1,5 @@
 use super::{draw_pixel_safe, draw_pixel_unsafe};
-use crate::platform::Buffer;
+use crate::{platform::Buffer, render::rendering::DrawPixelFunction};
 
 /// Draw a simple rectangle
 #[inline]
@@ -24,6 +24,31 @@ pub fn draw_rectangle(
         }
     }
 }
+/// Draw a simple rectangle
+#[inline]
+pub fn execute_at_rectangle(
+    buffer: &Buffer,
+    pos_x: isize,
+    pos_y: isize,
+    width: isize,
+    height: isize,
+    color: u32,
+    safe: bool,
+    function: DrawPixelFunction
+) {
+    for y in pos_y..pos_y + height {
+        for x in pos_x..pos_x + width {
+            if safe {
+                if x > 0 && y > 0 {
+                    function(buffer, x as usize, y as usize, color);
+                }
+            } else {
+                function(buffer, x as usize, y as usize, color);
+            }
+        }
+    }
+}
+
 /// Draw a rotated rectangle
 #[inline]
 pub fn draw_rectangle_angled(

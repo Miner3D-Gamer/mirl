@@ -16,7 +16,7 @@
 //! - [Color Stuff](crate::graphics) - What is rendering without manipulating color?
 //! - [Modular File System](crate::platform::FileSystem) - A custom file system wrapper to support file accessing on both natively and web
 //! - [Rust functionality extension](crate::extensions) with a big focus yet not limited to new tuple functionality
-//! 
+//!
 //! If anyone knows why the result of `cargo docs` is so inconsistent for crate links, please let me know
 
 /// Directional stuff -> NESW, N NE E SE S SW W NW
@@ -53,3 +53,17 @@ pub mod console;
 /// Unified os specific features
 #[cfg(feature = "system")]
 pub mod system;
+
+/// Enables the rust traceback by setting the environment variable `RUST_BACKTRACE` to `1`
+pub fn enable_traceback() {
+    unsafe {
+        std::env::set_var("RUST_BACKTRACE", "1");
+    }
+}
+
+/// Disables the rust traceback by setting the environment variable `RUST_BACKTRACE` to `0`
+pub fn disable_traceback() {
+    unsafe {
+        std::env::set_var("RUST_BACKTRACE", "0");
+    }
+}

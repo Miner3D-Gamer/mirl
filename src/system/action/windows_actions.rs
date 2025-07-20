@@ -28,11 +28,10 @@ use windows::{
     },
 };
 
-use crate::graphics::RawImage;
 use crate::lists::combined;
-use crate::platform::WindowLevel;
+use crate::platform::{Buffer, WindowLevel};
 
-pub fn capture_screen_raw() -> Option<RawImage> {
+pub fn capture_screen_raw() -> Option<Buffer> {
     unsafe {
         // Get the desktop window handle
         let desktop_hwnd = GetDesktopWindow();
@@ -120,10 +119,10 @@ pub fn capture_screen_raw() -> Option<RawImage> {
         if !result.as_bool() {
             return None;
         }
-        Some(RawImage::new(pixels, width as usize, height as usize))
+        Some(Buffer::new(pixels, width as usize, height as usize))
     }
 }
-pub fn capture_desktop_background_raw() -> Option<RawImage> {
+pub fn capture_desktop_background_raw() -> Option<Buffer> {
     unsafe {
         // Get the shell window handle (desktop background + icons)
         let shell_hwnd = GetShellWindow();
@@ -211,7 +210,7 @@ pub fn capture_desktop_background_raw() -> Option<RawImage> {
             return None;
         }
 
-        Some(RawImage::new(pixels, width as usize, height as usize))
+        Some(Buffer::new(pixels, width as usize, height as usize))
     }
 }
 

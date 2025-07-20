@@ -13,6 +13,7 @@ use super::framework_traits::{
 use super::Time;
 use super::{time::NativeTime, Buffer};
 use crate::extensions::*;
+use crate::graphics::u32_to_rgba;
 use crate::platform::{KeyCode, MouseButton, WindowLevel};
 /// Backend implementation using MiniFB
 pub struct Framework {
@@ -319,12 +320,15 @@ impl Control for Framework {
         );
     }
     #[inline]
-    fn get_size(&self) -> (usize, usize) {
-        self.window.get_size()
+    fn get_size(&self) -> (isize, isize) {
+        return crate::system::action::get_window_size(
+            &get_native_window_handle_from_minifb(&self.window),
+        )
+        .tuple_2_into();
     }
     #[inline]
-    fn set_position(&mut self, x: isize, y: isize) {
-        self.window.set_position(x, y);
+    fn set_position(&mut self, xy: (isize, isize)) {
+        self.window.set_position(xy.0, xy.1);
     }
     #[inline]
     fn get_position(&self) -> (isize, isize) {
@@ -342,11 +346,9 @@ fn encode_to_ico_format(buffer: &[u32], width: u32, height: u32) -> Vec<u8> {
 
     for &pixel in buffer {
         // Extract RGBA components from u32
-        let r = ((pixel >> 16) & 0xFF) as u8;
-        let g = ((pixel >> 8) & 0xFF) as u8;
-        let b = (pixel & 0xFF) as u8;
-        let _a = ((pixel >> 24) & 0xFF) as u8; // ALPHA IS NOT READ CORRECTLY -> IT'S ALWAYS 0
-        println!("Fix alpha channel not being read correctly");
+        let (r, g, b, _a) = u32_to_rgba(pixel);
+        // ALPHA IS NOT READ CORRECTLY -> IT'S ALWAYS 0
+        // println!("Fix alpha channel not being read correctly");
 
         // Push as BGRA
         image_data.push(b);

@@ -1,9 +1,9 @@
 use crate::{
-    graphics::{get_u32_alpha_of_u32, interpolate_color_rgb_u32, RawImage},
+    graphics::{get_u32_alpha_of_u32, interpolate_color_rgb_u32},
     platform::Buffer,
 };
-/// Draw a RawImage on screen
-pub fn draw_image(
+/// Draw a Buffer on screen
+pub fn draw_buffer_on_buffer(
     buffer: &Buffer,
     width: usize,
     height: usize,
@@ -11,7 +11,7 @@ pub fn draw_image(
     result_height: usize,
     texture_x: isize,
     texture_y: isize,
-    texture: &RawImage,
+    texture: &Buffer,
     transparency: bool,
 ) {
     let start_x = texture_x.max(0);

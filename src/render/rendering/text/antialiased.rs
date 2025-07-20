@@ -2,8 +2,7 @@ use super::get_character;
 use crate::{
     platform::Buffer,
     render::{
-        draw_pixel_safe, draw_pixel_unsafe,
-        rendering::{get_pixel, DrawPixelFunction},
+        draw_pixel_safe, draw_pixel_unsafe, rendering::DrawPixelFunction,
     },
 };
 /// Draw text in the specified font
@@ -156,8 +155,8 @@ pub fn draw_text_antialiased_stretched<F: num_traits::Float>(
                 let alpha = bitmap[bitmap_index];
 
                 if alpha > 0 {
-                    let bg = get_pixel(buffer, px, py); // Fixed: use px instead of gx
-                                                        // Extract RGBA
+                    let bg = buffer.get_pixel((px, py)); // Fixed: use px instead of gx
+                                                       // Extract RGBA
                     let (br, bg_g, bb, ba) = (
                         (bg >> 24) & 0xFF,
                         (bg >> 16) & 0xFF,
@@ -370,7 +369,7 @@ pub fn draw_text_antialiased_stretched_isize<F: num_traits::Float>(
                         continue;
                     }
 
-                    let bg = get_pixel(buffer, px_u, py_u);
+                    let bg = buffer.get_pixel((px_u, py_u));
                     // Extract RGBA
                     let (br, bg_g, bb, ba) = (
                         (bg >> 24) & 0xFF,

@@ -80,10 +80,7 @@ impl FileSystem for NativeFileSystem {
         return folders;
     }
     fn join(&self, path1: &str, path2: &str) -> String {
-        return std::env::join_paths([path1, path2])
-            .unwrap()
-            .to_string_lossy()
-            .to_string();
+        std::path::Path::new(path1).join(path2).to_string_lossy().to_string()
     }
     fn does_file_exist(&self, path: &str) -> bool {
         std::fs::metadata(&self.exe_path.join(path)).is_ok()

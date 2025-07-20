@@ -178,11 +178,11 @@ pub fn get_id_using_title(
 }
 
 /// Capture the screen with all application - What happens if you have multiple monitors? Idk
-pub fn capture_screen() -> Option<RawImage> {
+pub fn capture_screen() -> Option<Buffer> {
     return capture_screen_raw();
 }
 /// Capture the desktop background without any applications
-pub fn capture_desktop_background() -> Option<RawImage> {
+pub fn capture_desktop_background() -> Option<Buffer> {
     return capture_desktop_background_raw();
 }
 /// Sets if you can click through a window
@@ -299,4 +299,4 @@ use web_actions::{
     capture_desktop_background_raw, capture_screen_raw, get_window_id_by_title,
 };
 
-use crate::{graphics::RawImage, platform::WindowLevel, system::info::Info};
+use crate::{platform::{Buffer, WindowLevel}, system::info::Info};

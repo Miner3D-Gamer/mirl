@@ -53,7 +53,7 @@ pub trait Network {
 // struct ClipboardContents {
 //     pub content_type: u8,
 //     pub text_content: Option<String>,
-//     pub image_content: Option<RawImage>,
+//     pub image_content: Option<Buffer>,
 //     pub audio_content: Option<u8>,
 //     pub list_content: Option<Vec<String>>,
 // }
@@ -74,7 +74,7 @@ pub trait Network {
 //     pub fn get_as_text(&self) -> Option<String> {
 //         self.text_content.clone()
 //     }
-//     pub fn get_as_image(&self) -> Option<RawImage> {
+//     pub fn get_as_image(&self) -> Option<Buffer> {
 //         self.image_content.clone()
 //     }
 //     pub fn get_as_audio(&self) -> Option<u8> {
@@ -99,7 +99,7 @@ mod web;
 pub use web::WebInfo as OsInfo;
 
 
-// use crate::graphics::RawImage;
+// use crate::graphics::Buffer;
 /// Get the xy coordinates of where to put an object with the specified width and height for it to be centered
 pub fn get_center_of_screen_for_object(width: i32, height: i32) -> (i32, i32) {
     let title_bat_height = OsInfo::get_os_menu_height();

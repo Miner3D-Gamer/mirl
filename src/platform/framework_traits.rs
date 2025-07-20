@@ -104,18 +104,18 @@ pub trait ExtendedWindow {
 /// Simple window management
 pub trait Control {
     /// Set the window position relative to its current position
-    fn move_window(&mut self, x: isize, y: isize) {
+    fn move_window(&mut self, xy:(isize, isize)) {
         let current = self.get_position();
-        self.set_position(current.0 + x, current.1 + y);
+        self.set_position((current.0 + xy.0, current.1 + xy.1));
     }
     /// Get the position of the window
     fn get_position(&self) -> (isize, isize);
     /// Set the position of the window
-    fn set_position(&mut self, x: isize, y: isize);
+    fn set_position(&mut self, xy:(isize, isize));
     /// Set the size of the window using the dimensions of a Buffer
     fn set_size(&mut self, buffer: &Buffer);
     /// Get the size of the window
-    fn get_size(&self) -> (usize, usize);
+    fn get_size(&self) -> (isize, isize);
 }
 /// More complex window controls
 pub trait ExtendedControl {

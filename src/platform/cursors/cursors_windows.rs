@@ -7,9 +7,8 @@ use windows::{
 
 use super::{cursor_resolution, BaseCursor, Cursor};
 use crate::extensions::*;
-use crate::graphics::{
-    pixmap_to_raw_image, rasterize_svg, u32_to_hex, u32_to_rgba, RawImage,
-};
+use crate::graphics::{pixmap_to_buffer, rasterize_svg, u32_to_hex, u32_to_rgba};
+use crate::platform::Buffer;
 
 // #[derive(Default)]
 // pub struct CursorManagerWindows {
@@ -620,7 +619,7 @@ use crate::graphics::{
 //             self.load_cursor(
 //                 &extract_file_name_without_extension(&cursor.file_path),
 //                 size,
-//                 pixmap_to_raw_image(&image_data),
+//                 pixmap_to_buffer(&image_data),
 //                 adjusted_hotspot_x,
 //                 adjusted_hotspot_y,
 //             );
@@ -630,7 +629,7 @@ use crate::graphics::{
 //         &mut self,
 //         name: &str,
 //         size: U2,
-//         image_data: RawImage,
+//         image_data: Buffer,
 //         hotspot_x: u16,
 //         hotspot_y: u16,
 //     ) {
@@ -643,11 +642,12 @@ use crate::graphics::{
 
 fn load_cursor(
     size: U2,
-    image_data: RawImage,
+    image_data: Buffer,
     hotspot_x: u16,
     hotspot_y: u16,
 ) -> HCURSOR {
     let size = cursor_resolution(size);
+
     let (file_path, temp_file) = create_temp_file(create_cursor(
         size,
         size,
@@ -698,7 +698,7 @@ fn load_cursor(
 //     return load_cursor(
 //         //&extract_file_name_without_extension(&cursor.file_path),
 //         size,
-//         pixmap_to_raw_image(&image_data),
+//         pixmap_to_buffer(&image_data),
 //         adjusted_hotspot_x,
 //         adjusted_hotspot_y,
 //     );
@@ -712,7 +712,7 @@ pub fn load_base_cursor_with_file(
     secondary_color: u32,
     svg_data: String,
 ) -> Cursor {
-    let expected_size = 24; // WHO TF MAKES THE CURSOR NOT A MULTIPLE OF 16 ???
+    let svg_size = 24; // WHO TF MAKES THE CURSOR NOT A MULTIPLE OF 16 ???
 
     let wanted_size = cursor_resolution(size);
 
@@ -731,17 +731,17 @@ pub fn load_base_cursor_with_file(
     );
 
     // Adjust hotspot because of the psycho who made the cursor not a multiple of 16
-    let adjusted_hotspot_x = ((cursor.hot_spot_x as f64 / expected_size as f64)
+    let adjusted_hotspot_x = ((cursor.hot_spot_x as f64 / svg_size as f64)
         * wanted_size as f64)
         .round() as u16;
-    let adjusted_hotspot_y = ((cursor.hot_spot_y as f64 / expected_size as f64)
+    let adjusted_hotspot_y = ((cursor.hot_spot_y as f64 / svg_size as f64)
         * wanted_size as f64)
         .round() as u16;
 
     return Cursor::Win(Some(load_cursor(
         //&extract_file_name_without_extension(&cursor.file_path),
         size,
-        pixmap_to_raw_image(&image_data),
+        pixmap_to_buffer(&image_data),
         adjusted_hotspot_x,
         adjusted_hotspot_y,
     )));
@@ -764,7 +764,7 @@ fn create_cursor(
     height: u8,
     hotspot_x: u16,
     hotspot_y: u16,
-    rgba: &RawImage,
+    rgba: &Buffer,
 ) -> Vec<u8> {
     let mut buffer: Vec<u8> = Vec::new();
 
@@ -805,7 +805,7 @@ fn create_cursor(
     bmp_data.extend(&(0u32.to_le_bytes())); // Colors used
     bmp_data.extend(&(0u32.to_le_bytes())); // Important colors
 
-    for pixel in rgba.data.iter() {
+    for pixel in rgba.flip_vertically().data.iter() {
         let (r, g, b, a) = u32_to_rgba(*pixel);
         bmp_data.extend(&[b, g, r, a]);
     }

@@ -1,6 +1,4 @@
-use crate::{
-    graphics::RawImage, platform::Buffer, render::extra::uv_interpolate,
-};
+use crate::{platform::Buffer, render::extra::uv_interpolate};
 /// This sucks, it works but it sucks
 pub fn draw_triangle(
     buffer: &Buffer,
@@ -9,7 +7,7 @@ pub fn draw_triangle(
     point1: (isize, isize, f32, f32),
     point2: (isize, isize, f32, f32),
     point3: (isize, isize, f32, f32),
-    texture: &RawImage,
+    texture: &Buffer,
 ) {
     // Sort vertices by Y coordinate
     let mut vertices = [point1, point2, point3];

@@ -10,10 +10,10 @@ use super::{
     time::NativeTime,
     MouseButton, Time,
 };
-use crate::{extensions::*, platform::KeyCode};
 use crate::graphics::argb_list_to_rgba_list;
 #[cfg(target_os = "windows")]
 use crate::platform::WindowLevel;
+use crate::{extensions::*, platform::KeyCode};
 /// glfw implementation of Framework
 pub struct Framework<MouseManagerScrollAccuracy: num_traits::Float> {
     glfw: glfw::Glfw,
@@ -213,15 +213,17 @@ impl<MouseManagerScrollAccuracy: num_traits::Float> Control
         let (x, y) = self.window.get_pos();
         return (x as isize, y as isize);
     }
-    fn get_size(&self) -> (usize, usize) {
-        let (x, y) = self.window.get_size();
-        return (x as usize, y as usize);
+    fn get_size(&self) -> (isize, isize) {
+        return crate::system::action::get_window_size(
+            &get_native_window_handle_from_glfw(&self.window),
+        )
+        .tuple_2_into();
     }
     fn set_size(&mut self, buffer: &super::Buffer) {
         self.window.set_size(buffer.width as i32, buffer.height as i32);
     }
-    fn set_position(&mut self, x: isize, y: isize) {
-        self.window.set_pos(x as i32, y as i32)
+    fn set_position(&mut self, xy: (isize, isize)) {
+        self.window.set_pos(xy.0 as i32, xy.1 as i32)
     }
 }
 
@@ -290,7 +292,7 @@ impl<MouseManagerScrollAccuracy: num_traits::Float> ExtendedWindow
 
     #[cfg(feature = "resvg")]
     fn set_cursor_style(&mut self, style: &super::Cursor) {
-        println!("Setting cursor style");
+        //println!("Setting cursor style");
         super::cursors::use_cursor(style, Some(&mut self.window));
     }
     /// Not yet implemented

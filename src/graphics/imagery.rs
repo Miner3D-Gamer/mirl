@@ -2,7 +2,7 @@ use image::{GenericImage, GenericImageView};
 
 use crate::{
     graphics::{rgba_to_u32, u32_to_rgba},
-    misc::repeat_data,
+    platform::Buffer,
 };
 /// Convert a [u32] argb format into an [image::Rgba<u8>]
 pub fn u32_to_image_rgba(color: u32) -> image::Rgba<u8> {
@@ -87,8 +87,6 @@ pub fn set_image_size(
 }
 // use std::path::Path;
 
-use super::RawImage;
-
 // pub fn load_image(file_path: &str) -> image::DynamicImage {
 //     // Convert the string path to a Path
 //     let path = Path::new(file_path);
@@ -125,12 +123,12 @@ pub fn pixmap_to_dynamic_image(
     }
     img
 }
-/// Converts between [image::DynamicImage] and [RawImage]
-pub fn dynamic_image_to_raw(image: &image::DynamicImage) -> RawImage {
+/// Converts between [image::DynamicImage] and [Buffer]
+pub fn dynamic_image_to_buffer(image: &image::DynamicImage) -> Buffer {
     let width = image.width() as usize;
     let height = image.height() as usize;
 
-    let mut img = RawImage::new(repeat_data(0, width * height), width, width);
+    let mut img = Buffer::new_empty(width, height);
     for y in 0..height as usize {
         for x in 0..width {
             let color = image.get_pixel(x as u32, y as u32);
@@ -140,13 +138,13 @@ pub fn dynamic_image_to_raw(image: &image::DynamicImage) -> RawImage {
     img
 }
 
-/// Converts between [RawImage] and [image::DynamicImage]
-pub fn raw_image_to_dynamic_image(raw_image: &RawImage) -> image::DynamicImage {
+/// Converts between [Buffer] and [image::DynamicImage]
+pub fn buffer_to_dynamic_image(buffer: &Buffer) -> image::DynamicImage {
     let mut img =
-        create_empty_image(raw_image.width as u32, raw_image.height as u32);
-    for y in 0..raw_image.height {
-        for x in 0..raw_image.width {
-            let color = raw_image.data[y * raw_image.width + x];
+        create_empty_image(buffer.width as u32, buffer.height as u32);
+    for y in 0..buffer.height {
+        for x in 0..buffer.width {
+            let color = buffer.data[y * buffer.width + x];
             img.put_pixel(x as u32, y as u32, u32_to_image_rgba(color));
         }
     }
@@ -154,23 +152,23 @@ pub fn raw_image_to_dynamic_image(raw_image: &RawImage) -> image::DynamicImage {
 }
 
 // Make .into() work
-impl From<RawImage> for image::DynamicImage {
-    fn from(bush: RawImage) -> Self {
-        raw_image_to_dynamic_image(&bush)
+impl From<Buffer> for image::DynamicImage {
+    fn from(bush: Buffer) -> Self {
+        buffer_to_dynamic_image(&bush)
     }
 }
-impl From<image::DynamicImage> for RawImage {
+impl From<image::DynamicImage> for Buffer {
     fn from(bush: image::DynamicImage) -> Self {
-        dynamic_image_to_raw(&bush)
+        dynamic_image_to_buffer(&bush)
     }
 }
 
-// Automatically convert RawImage to DynamicImage
-// impl Deref for RawImage {
+// Automatically convert Buffer to DynamicImage
+// impl Deref for Buffer {
 //     type Target = image::DynamicImage;
 
 //     fn deref(&self) -> &Self::Target {
-//         raw_image_to_dynamic_image(&self)
+//         buffer_to_dynamic_image(&self)
 //     }
 // }
 use crate::graphics::pixel::Pixel;

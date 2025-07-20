@@ -1,19 +1,18 @@
 #[cfg(all(feature = "system", target_os = "windows"))]
 pub use cursors_windows::load_base_cursor_with_file;
 
-use crate::extensions::*;
-use crate::graphics::RawImage;
+use crate::{extensions::*, platform::Buffer};
 
 /// Cursor stuff of glfw bc glfw is a bitch
 pub mod cursor_glfw;
-/// The Cursor Manager provides a way of easily loading cursors based on a RawImage or the default cursors that come with this lib
+/// The Cursor Manager provides a way of easily loading cursors based on a Buffer or the default cursors that come with this lib
 pub trait CursorManager {
-    /// Create a Cursor instance using a RawImage
+    /// Create a Cursor instance using a Buffer
     fn load_cursor(
         &mut self,
         name: &str,
         size: U2,
-        image_data: RawImage,
+        image_data: Buffer,
         hotspot_x: u16,
         hotspot_y: u16,
     );
@@ -41,10 +40,10 @@ pub enum Cursor {
     #[cfg(target_os = "macos")]
     Mac(Option<*mut std::ffi::c_void>), // Placeholder for NSCursor or equivalent
     /// glfw lib, cross-platform
-    Glfw(Option<(RawImage, u32, u32)>),
+    Glfw(Option<(Buffer, u32, u32)>),
 }
 // pub struct CursorData {
-//     raw_image_data: Vec<u32>,
+//     buffer_data: Vec<u32>,
 // }
 /// Implementation for cursors on windows
 #[cfg(target_os = "windows")]
@@ -597,8 +596,7 @@ pub fn use_cursor(
             Cursor::Glfw(new_cursor) => {
                 let given = new_cursor.as_ref().unwrap().clone();
                 let pixel = given.0.into();
-                // Debug output for dimensions
-                println!("Cursor dimensions: {} x {}", given.1, given.2);
+                //println!("Cursor dimensions: {} x {}", given.1, given.2);
 
                 // Check if dimensions make sense
                 if given.1 == 0
@@ -646,7 +644,7 @@ pub fn use_cursor(
 /// Converts the U2 into the actual cursor size, up to 255
 pub fn cursor_resolution(quality: U2) -> u8 {
     let t: u32 = quality.into();
-    2u8.pow(t + 5) - 1
+    2u8.pow(t + 5)
 }
 /// Converts a desired resolution into U2
 pub fn resolution_to_quality(resolution: u8) -> Result<U2, &'static str> {

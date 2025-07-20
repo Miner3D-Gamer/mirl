@@ -1,11 +1,6 @@
 #[cfg(feature = "system")]
 use crate::extensions::*;
-use crate::{
-    graphics::{
-        get_alpha_of_u32, resize_buffer, u32_to_rgba, InterpolationMode,
-    },
-    platform::file_data::FileData,
-};
+use crate::platform::file_data::FileData;
 /// Time trait, IDK
 pub trait Time {
     /// Get time in seconds
@@ -852,141 +847,8 @@ pub enum WindowLevel {
 #[cfg(all(feature = "resvg", feature = "system"))]
 pub use cursors::Cursor;
 
-/// A raw color buffer to be modified and read quickly
-#[derive(PartialEq, Clone, Debug)]
-pub struct Buffer {
-    /// Actual color data
-    pub buffer: Box<[u32]>,
-    /// Pointer to the color data
-    pub pointer: *mut u32,
-    /// Width of the buffer
-    pub width: usize,
-    /// Height of the buffer
-    pub height: usize,
-    /// The total size -> width*height
-    pub total_size: usize,
-}
-
-impl Buffer {
-    /// Create a new color
-    pub fn new(width: usize, height: usize) -> Self {
-        let total_size = width * height;
-        let mut buffer = vec![0u32; total_size].into_boxed_slice();
-        let buffer_pointer = buffer.as_mut_ptr();
-        Self {
-            buffer,
-            pointer: buffer_pointer,
-            width,
-            height,
-            total_size,
-        }
-    }
-    /// Replaces all data with zeros very fast
-    #[inline(always)]
-    pub fn clear(&self) {
-        unsafe {
-            std::ptr::write_bytes(self.pointer, 0, self.total_size);
-        }
-    }
-    /// Replaces all data with a flat color
-    /// An alternative function would be [Self::clear_buffer_with_color_sliced] with an approximate, yet not guaranteed, 10% speed increase
-    pub fn clear_buffer_with_color(&self, color: u32) {
-        for idx in 0..self.total_size {
-            unsafe {
-                *self.pointer.add(idx) = color;
-            }
-        }
-    }
-
-    // Wait that doesn't make any sense:
-
-    /// Replaces all data with a flat color
-    /// Not yet been properly tested yet roughly 10% faster than [Self::clear_buffer_with_color]
-    pub fn clear_buffer_with_color_sliced(&self, color: u32) {
-        let slice = unsafe {
-            std::slice::from_raw_parts_mut(self.pointer, self.total_size)
-        };
-        slice.fill(color);
-    }
-    /// Replaces all color with alpha 0 to the given color
-    /// An alternative function would be [Self::replace_transparent_with_color_chunked] with an approximate, yet not guaranteed, 30% speed increase
-    pub fn replace_transparent_with_color(&self, color: u32) {
-        for idx in 0..self.total_size {
-            unsafe {
-                if get_alpha_of_u32(*self.pointer.add(idx)) == 0 {
-                    *self.pointer.add(idx) = color;
-                }
-            }
-        }
-    }
-    /// Replaces all color with alpha 0 to the given color
-    /// Not yet been properly tested yet roughly 0-33% faster than [Self::replace_transparent_with_color]
-    pub fn replace_transparent_with_color_chunked(&mut self, color: u32) {
-        const CHUNK_SIZE: usize = 1024; // Tune based on cache size
-
-        for chunk in self.buffer.chunks_mut(CHUNK_SIZE) {
-            for pixel in chunk {
-                if (*pixel & 0xFF000000) == 0 {
-                    *pixel = color;
-                }
-            }
-        }
-    }
-    /// Converts the [`Vec<u32>`] to [`Vec<8>`] by unpacking the u32 into argb style
-    pub fn to_u8_argb(&self) -> Vec<u8> {
-        let mut return_list = Vec::new();
-        for i in &self.buffer {
-            let temp = u32_to_rgba(*i);
-            return_list.push(temp.0);
-            return_list.push(temp.1);
-            return_list.push(temp.2);
-            return_list.push(temp.3);
-        }
-        return return_list;
-    }
-    /// Converts the `Vec<u32>`] to [`Vec<8>`] by unpacking the u32 into rgba style
-    pub fn to_u8_rgba(&self) -> Vec<u8> {
-        let mut return_list = Vec::new();
-        for i in &self.buffer {
-            let temp = u32_to_rgba(*i);
-            return_list.push(temp.3);
-            return_list.push(temp.1);
-            return_list.push(temp.2);
-            return_list.push(temp.0);
-        }
-        return return_list;
-    }
-    /// Creates a new buffer and copies the contents of the current buffer
-    pub fn resize_content(
-        &mut self,
-        width: usize,
-        height: usize,
-        resize_mode: InterpolationMode,
-    ) -> Buffer {
-        let mut new = Buffer::new(width, height);
-        let b = resize_buffer(
-            &self,
-            self.width,
-            self.height,
-            width,
-            height,
-            resize_mode,
-        );
-        new.buffer.copy_from_slice(&b);
-        return new;
-    }
-}
-
-use std::ops::Deref;
-
-// Automatically convert the usage of Buffer to Buffer.buffer
-impl Deref for Buffer {
-    type Target = [u32];
-
-    fn deref(&self) -> &Self::Target {
-        &self.buffer
-    }
-}
+mod buffer;
+pub use buffer::Buffer;
 
 // Windows
 #[cfg(not(target_arch = "wasm32"))]
@@ -1055,7 +917,7 @@ pub mod keyboard;
 //         }
 //         return ((y as f64 + self.y) / self.z) as isize;
 //     }
-//     fn is_point_visible(&self, x: isize, y: isize) -> bool {
+//     fn is_point_visible(&self, xy: (isize,isize)) -> bool {
 //         return self.get_screen_x(x) < self.width
 //             && self.get_screen_y(y) < self.height;
 //     }
@@ -1074,8 +936,8 @@ impl DoubleBuffer {
     /// Creates a new instance of the double buffer starting out empty
     pub fn new(width: usize, height: usize) -> Self {
         Self {
-            front: Buffer::new(width, height),
-            back: Buffer::new(width, height),
+            front: Buffer::new_empty(width, height),
+            back: Buffer::new_empty(width, height),
             front_is_back: std::sync::atomic::AtomicBool::new(false),
         }
     }

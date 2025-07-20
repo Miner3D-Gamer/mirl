@@ -1,6 +1,6 @@
 use super::{cursor_resolution, BaseCursor, Cursor};
 use crate::extensions::*;
-use crate::graphics::{pixmap_to_raw_image, rasterize_svg, u32_to_hex};
+use crate::graphics::{pixmap_to_buffer, rasterize_svg, u32_to_hex};
 /// Load a cursor SVG and replace it's placeholders with actual colors
 pub fn load_base_cursor_with_file(
     cursor: BaseCursor,
@@ -36,7 +36,7 @@ pub fn load_base_cursor_with_file(
         .round() as u32;
 
     return Cursor::Glfw(Some((
-        pixmap_to_raw_image(&image_data),
+        pixmap_to_buffer(&image_data),
         adjusted_hotspot_x,
         adjusted_hotspot_y,
     )));

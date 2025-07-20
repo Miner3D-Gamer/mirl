@@ -436,7 +436,7 @@ pub fn rasterize_svg(
 }
 #[cfg(feature = "resvg")]
 /// To use this function, enable the "svg_support" feature
-pub fn pixmap_to_raw_image(pixmap: &resvg::tiny_skia::Pixmap) -> RawImage {
+pub fn pixmap_to_buffer(pixmap: &resvg::tiny_skia::Pixmap) -> Buffer {
     let mut data = Vec::new();
     for y in 0..pixmap.height() {
         for x in 0..pixmap.width() {
@@ -449,7 +449,7 @@ pub fn pixmap_to_raw_image(pixmap: &resvg::tiny_skia::Pixmap) -> RawImage {
             ));
         }
     }
-    RawImage::new(data, pixmap.width() as usize, pixmap.height() as usize)
+    Buffer::new(data, pixmap.width() as usize, pixmap.height() as usize)
 }
 
 #[cfg(not(target_arch = "wasm32"))]
@@ -458,203 +458,202 @@ use glfw::PixelImage;
 #[cfg(not(target_arch = "wasm32"))]
 #[cfg(feature = "glfw_backend")]
 
-/// Convert a RawImage into a glfw::PixelImage
+/// Convert a Buffer into a glfw::PixelImage
 #[inline(always)]
-pub fn raw_image_to_pixel_image(raw_image: &RawImage) -> glfw::PixelImage {
+pub fn buffer_to_pixel_image(buffer: &Buffer) -> glfw::PixelImage {
     return glfw::PixelImage {
-        width: raw_image.width as u32,
-        height: raw_image.height as u32,
-        pixels: argb_list_to_rgba_list(&raw_image.data),
+        width: buffer.width as u32,
+        height: buffer.height as u32,
+        pixels: argb_list_to_rgba_list(&buffer.data),
     };
 }
-/// Convert a glfw::PixelImage into a RawImage
+/// Convert a glfw::PixelImage into a Buffer
 #[cfg(feature = "glfw_backend")]
 #[cfg(not(target_arch = "wasm32"))]
 #[inline(always)]
-pub fn pixel_image_to_raw_image(pixel_image: &glfw::PixelImage) -> RawImage {
-    return RawImage::new(
+pub fn pixel_image_to_buffer(pixel_image: &glfw::PixelImage) -> Buffer {
+    return Buffer::new(
         rgba_list_to_argb_list(&pixel_image.pixels),
         pixel_image.width as usize,
         pixel_image.height as usize,
     );
 }
-/// A RawImage to be accessed without compression
-/// What is the difference between RawImage and Buffer? Buffer has more attributes ig :|
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct RawImage {
-    /// The Raw Data
-    pub data: Box<[u32]>,
-    /// The width of the image
-    pub width: usize,
-    /// The height of the image
-    pub height: usize,
-}
+/// A Buffer to be accessed without compression
+/// What is the difference between Buffer and Buffer? Buffer has more attributes ig :|
+// #[derive(Debug, Clone, PartialEq, Eq)]
+// pub struct Buffer {
+//     /// The Raw Data
+//     pub data: Box<[u32]>,
+//     /// The width of the image
+//     pub width: usize,
+//     /// The height of the image
+//     pub height: usize,
+// }
 
-impl RawImage {
-    /// Create a new RawImage with some data, if you want to create an empty image use RawImage::new_empty()
-    pub fn new(data: Vec<u32>, width: usize, height: usize) -> Self {
-        Self {
-            data: data.into_boxed_slice(),
-            width,
-            height,
-        }
-    }
-    /// Create a new, empty, RawImage instance. If you already have data to fill it with you can use RawImage::new()
-    pub fn new_empty(width: usize, height: usize) -> Self {
-        Self {
-            data: repeat_data(0, width * height).into(),
-            width: width,
-            height: height,
-        }
-    }
-    /// Gets the pixel color at the requested 3d coordinates
-    pub fn get_pixel(&self, pos: (usize, usize)) -> u32 {
-        return self.data[pos.1 * self.width + pos.0];
-    }
-    /// Generate a error texture with the desired size
-    pub fn generate_fallback(
-        width: usize,
-        height: usize,
-        square_size: usize,
-    ) -> Self {
-        let mut data = Vec::with_capacity(width * height);
+// impl Buffer {
+//     /// Create a new Buffer with some data, if you want to create an empty image use Buffer::new_empty()
+//     pub fn new(data: Vec<u32>, width: usize, height: usize) -> Self {
+//         Self {
+//             data: data.into_boxed_slice(),
+//             width,
+//             height,
+//         }
+//     }
+//     /// Create a new, empty, Buffer instance. If you already have data to fill it with you can use Buffer::new()
+//     pub fn new_empty(width: usize, height: usize) -> Self {
+//         Self {
+//             data: repeat_data(0, width * height).into(),
+//             width: width,
+//             height: height,
+//         }
+//     }
+//     /// Gets the pixel color at the requested 3d coordinates
+//     pub fn get_pixel(&self, pos: (usize, usize)) -> u32 {
+//         return self.data[pos.1 * self.width + pos.0];
+//     }
+//     /// Generate a error texture with the desired size
+//     pub fn generate_fallback(
+//         width: usize,
+//         height: usize,
+//         square_size: usize,
+//     ) -> Self {
+//         let mut data = Vec::with_capacity(width * height);
 
-        let purple = rgb_to_u32(128, 0, 128);
-        let black = rgb_to_u32(0, 0, 0);
+//         let purple = rgb_to_u32(128, 0, 128);
+//         let black = rgb_to_u32(0, 0, 0);
 
-        for y in 0..height {
-            for x in 0..width {
-                let square_x = x / square_size;
-                let square_y = y / square_size;
+//         for y in 0..height {
+//             for x in 0..width {
+//                 let square_x = x / square_size;
+//                 let square_y = y / square_size;
 
-                let color = if (square_x + square_y) % 2 == 0 {
-                    purple
-                } else {
-                    black
-                };
+//                 let color = if (square_x + square_y) % 2 == 0 {
+//                     purple
+//                 } else {
+//                     black
+//                 };
 
-                data.push(color);
-            }
-        }
+//                 data.push(color);
+//             }
+//         }
 
-        Self::new(data, width, height)
-    }
-    /// Optimizes the image by removing empty space around the image
-    pub fn remove_margins(&mut self) {
-        // Remove all margins in one pass to avoid multiple data copies
-        let (top_trim, bottom_trim, left_trim, right_trim) =
-            self.calculate_trims();
+//         Self::new(data, width, height)
+//     }
+//     /// Optimizes the image by removing empty space around the image
+//     pub fn remove_margins(&mut self) {
+//         // Remove all margins in one pass to avoid multiple data copies
+//         let (top_trim, bottom_trim, left_trim, right_trim) =
+//             self.calculate_trims();
 
-        if top_trim > 0 || bottom_trim > 0 || left_trim > 0 || right_trim > 0 {
-            self.apply_trim(top_trim, bottom_trim, left_trim, right_trim);
-        }
-    }
-    /// Calculates the empty space around the image
-    pub fn calculate_trims(&self) -> (usize, usize, usize, usize) {
-        let mut top_trim = 0;
-        let mut bottom_trim = 0;
-        let mut left_trim = 0;
-        let mut right_trim = 0;
+//         if top_trim > 0 || bottom_trim > 0 || left_trim > 0 || right_trim > 0 {
+//             self.apply_trim(top_trim, bottom_trim, left_trim, right_trim);
+//         }
+//     }
+//     /// Calculates the empty space around the image
+//     pub fn calculate_trims(&self) -> (usize, usize, usize, usize) {
+//         let mut top_trim = 0;
+//         let mut bottom_trim = 0;
+//         let mut left_trim = 0;
+//         let mut right_trim = 0;
 
-        // Calculate top trim
-        for row in 0..self.height {
-            if self.is_row_transparent(row) {
-                top_trim += 1;
-            } else {
-                break;
-            }
-        }
+//         // Calculate top trim
+//         for row in 0..self.height {
+//             if self.is_row_transparent(row) {
+//                 top_trim += 1;
+//             } else {
+//                 break;
+//             }
+//         }
 
-        // Calculate bottom trim
-        for row in (0..self.height).rev() {
-            if self.is_row_transparent(row) {
-                bottom_trim += 1;
-            } else {
-                break;
-            }
-        }
+//         // Calculate bottom trim
+//         for row in (0..self.height).rev() {
+//             if self.is_row_transparent(row) {
+//                 bottom_trim += 1;
+//             } else {
+//                 break;
+//             }
+//         }
 
-        // Calculate left trim
-        for col in 0..self.width {
-            if self.is_col_transparent(col) {
-                left_trim += 1;
-            } else {
-                break;
-            }
-        }
+//         // Calculate left trim
+//         for col in 0..self.width {
+//             if self.is_col_transparent(col) {
+//                 left_trim += 1;
+//             } else {
+//                 break;
+//             }
+//         }
 
-        // Calculate right trim
-        for col in (0..self.width).rev() {
-            if self.is_col_transparent(col) {
-                right_trim += 1;
-            } else {
-                break;
-            }
-        }
+//         // Calculate right trim
+//         for col in (0..self.width).rev() {
+//             if self.is_col_transparent(col) {
+//                 right_trim += 1;
+//             } else {
+//                 break;
+//             }
+//         }
 
-        (top_trim, bottom_trim, left_trim, right_trim)
-    }
-    /// Checks if the requested row only has fully transparent pixels
-    pub fn is_row_transparent(&self, row: usize) -> bool {
-        let start = row * self.width;
-        let end = start + self.width;
-        self.data[start..end]
-            .iter()
-            .all(|&pixel| get_u32_alpha_of_u32(pixel) == 0)
-    }
-    /// Checks if the requested column only has fully transparent pixels
-    pub fn is_col_transparent(&self, col: usize) -> bool {
-        (0..self.height).all(|row| {
-            get_u32_alpha_of_u32(self.data[row * self.width + col]) == 0
-        })
-    }
-    /// Trims the image by the given restrictions
-    pub fn apply_trim(
-        &mut self,
-        top: usize,
-        bottom: usize,
-        left: usize,
-        right: usize,
-    ) {
-        let new_width = self.width - left - right;
-        let new_height = self.height - top - bottom;
-        let mut new_data = Vec::with_capacity(new_width * new_height);
+//         (top_trim, bottom_trim, left_trim, right_trim)
+//     }
+//     /// Checks if the requested row only has fully transparent pixels
+//     pub fn is_row_transparent(&self, row: usize) -> bool {
+//         let start = row * self.width;
+//         let end = start + self.width;
+//         self.data[start..end]
+//             .iter()
+//             .all(|&pixel| get_u32_alpha_of_u32(pixel) == 0)
+//     }
+//     /// Checks if the requested column only has fully transparent pixels
+//     pub fn is_col_transparent(&self, col: usize) -> bool {
+//         (0..self.height).all(|row| {
+//             get_u32_alpha_of_u32(self.data[row * self.width + col]) == 0
+//         })
+//     }
+//     /// Trims the image by the given restrictions
+//     pub fn apply_trim(
+//         &mut self,
+//         top: usize,
+//         bottom: usize,
+//         left: usize,
+//         right: usize,
+//     ) {
+//         let new_width = self.width - left - right;
+//         let new_height = self.height - top - bottom;
+//         let mut new_data = Vec::with_capacity(new_width * new_height);
 
-        for row in top..(self.height - bottom) {
-            let row_start = row * self.width + left;
-            let row_end = row_start + new_width;
-            new_data.extend_from_slice(&self.data[row_start..row_end]);
-        }
+//         for row in top..(self.height - bottom) {
+//             let row_start = row * self.width + left;
+//             let row_end = row_start + new_width;
+//             new_data.extend_from_slice(&self.data[row_start..row_end]);
+//         }
 
-        self.data = new_data.into();
-        self.width = new_width;
-        self.height = new_height;
-    }
-}
+//         self.data = new_data.into();
+//         self.width = new_width;
+//         self.height = new_height;
+//     }
+// }
 
-impl From<Buffer> for RawImage {
-    fn from(p: Buffer) -> Self {
-        RawImage {
-            data: p.buffer,
-            width: p.width,
-            height: p.height,
-        }
-    }
-}
-impl From<RawImage> for Buffer {
-    fn from(p: RawImage) -> Self {
-        let mut buffer = Buffer::new(p.width, p.height);
-        buffer.buffer = p.data;
-        return buffer;
-    }
-}
-
+// impl From<Buffer> for Buffer {
+//     fn from(p: Buffer) -> Self {
+//         Buffer {
+//             data: p.buffer,
+//             width: p.width,
+//             height: p.height,
+//         }
+//     }
+// }
+// impl From<Buffer> for Buffer {
+//     fn from(p: Buffer) -> Self {
+//         let mut buffer = Buffer::new(p.width, p.height);
+//         buffer.buffer = p.data;
+//         return buffer;
+//     }
+// }
 mod pixel;
 pub use pixel::*;
 
 #[cfg(feature = "imagery")]
 use crate::platform::FileSystem;
-use crate::{math::interpolate, misc::repeat_data, platform::Buffer};
+use crate::{math::interpolate, platform::Buffer};
 /// Convert u32 argb to hex
 #[inline(always)]
 pub fn u32_to_hex(color: u32) -> String {
@@ -738,17 +737,17 @@ pub fn rgba_list_to_argb_list(input: &[u32]) -> Vec<u32> {
 
 #[cfg(not(target_arch = "wasm32"))]
 #[cfg(feature = "glfw_backend")]
-impl From<RawImage> for glfw::PixelImage {
-    fn from(raw_image: RawImage) -> Self {
-        raw_image_to_pixel_image(&raw_image)
+impl From<Buffer> for glfw::PixelImage {
+    fn from(buffer: Buffer) -> Self {
+        buffer_to_pixel_image(&buffer)
     }
 }
 
 #[cfg(feature = "glfw_backend")]
 #[cfg(not(target_arch = "wasm32"))]
-impl From<glfw::PixelImage> for RawImage {
+impl From<glfw::PixelImage> for Buffer {
     fn from(pixel_image: PixelImage) -> Self {
-        pixel_image_to_raw_image(&pixel_image)
+        pixel_image_to_buffer(&pixel_image)
     }
 }
 
@@ -942,12 +941,19 @@ pub fn interpolate_color_rgb_u32(
     let b = interpolate(b1 as f32, b2 as f32, progress);
     return rgb_to_u32(r as u8, g as u8, b as u8);
 }
+
+/// Inverts the rgb channels of the given color
+pub fn invert_color(color: u32) -> u32 {
+    let (r, g, b, a) = u32_to_rgba(color);
+    return rgba_to_u32(255 - r, 255 - g, 255 - b, a);
+}
+
 /// Manage textures easily, has extra features when using the `imagery` as well as the `texture_manager_cleanup` flags
 /// Enable the `imagery` feature for automatic texture lookup -> Define a filepath for a texture and lazy load it
-/// 
+///
 /// Enable the `texture_manager_cleanup` feature to gain access to cleanup_unused
 pub struct TextureManager {
-    textures: Vec<Option<RawImage>>,
+    textures: Vec<Option<Buffer>>,
     #[cfg(not(target_arch = "wasm32"))]
     lookup: ahash::AHashMap<String, usize>,
     #[cfg(target_arch = "wasm32")]
@@ -999,7 +1005,7 @@ impl TextureManager {
         name: &str,
         #[cfg(feature = "imagery")] file_system: &dyn FileSystem,
         #[cfg(feature = "imagery")] remove_margins: bool,
-    ) -> Option<&RawImage> {
+    ) -> Option<&Buffer> {
         #[cfg(feature = "texture_manager_cleanup")]
         if let Some(&index) = self.lookup.get(name) {
             if index < self.last_used.len() {
@@ -1017,11 +1023,11 @@ impl TextureManager {
         // If not loaded, try to load from file
         if let Some(file_path) = self.texture_lookup.get(name) {
             match self.load_texture_from_file(file_path, file_system) {
-                Ok(mut raw_image) => {
+                Ok(mut buffer) => {
                     if remove_margins {
-                        raw_image.remove_margins();
+                        buffer.remove_margins();
                     }
-                    self.insert_texture(name.to_string(), raw_image);
+                    self.insert_texture(name.to_string(), buffer);
                     if let Some(&index) = self.lookup.get(name) {
                         return self.textures[index].as_ref();
                     }
@@ -1044,13 +1050,13 @@ impl TextureManager {
         &self,
         file_path: &str,
         file_system: &dyn FileSystem,
-    ) -> Result<RawImage, Box<dyn std::error::Error>> {
+    ) -> Result<Buffer, Box<dyn std::error::Error>> {
         let file = file_system.get_file_contents(file_path)?;
         let img = file.as_image()?;
         Ok(img.into())
     }
     /// Manually insert a texture with a corresponding name into cache
-    pub fn insert_texture(&mut self, name: String, texture: RawImage) {
+    pub fn insert_texture(&mut self, name: String, texture: Buffer) {
         let index = if let Some(free) = self.free_list.pop() {
             self.textures[free] = Some(texture);
             free
@@ -1082,9 +1088,9 @@ impl TextureManager {
     ) -> Result<(), Box<dyn std::error::Error>> {
         if !self.lookup.contains_key(name) {
             if let Some(file_path) = self.texture_lookup.get(name) {
-                let raw_image =
+                let buffer =
                     self.load_texture_from_file(file_path, file_system)?;
-                self.insert_texture(name.to_string(), raw_image);
+                self.insert_texture(name.to_string(), buffer);
             }
         }
         Ok(())

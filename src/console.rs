@@ -16,6 +16,12 @@ pub fn clear_console() {
         .execute(crossterm::cursor::MoveTo(0, 0))
         .unwrap();
 }
+/// Moves the cursor to the top
+pub fn move_to_top() {
+    stdout()
+        .execute(crossterm::cursor::MoveTo(0, 0))
+        .unwrap();
+}
 /// Color the given text (requires the console to support the full color range)
 pub fn color_text(msg: &str, r: u8, g: u8, b: u8) -> String {
     return format!("\x1b[38;2;{};{};{}m{}\x1b[0m", r, g, b, msg);

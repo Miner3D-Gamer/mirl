@@ -56,78 +56,7 @@ type DrawPixelFunction = fn(&Buffer, usize, usize, u32);
 //     Fast,
 //     Pretty,
 // }
-/// Safely get the pixel color of the buffer at the specified x and y, returns 0 if the pixel is out of bounce
-/// For a custom return number use [get_pixel_fallback]
-/// For getting the pixel without bounds checking use [get_pixel_unsafe]
-#[inline(always)]
-pub fn get_pixel(buffer: &Buffer, x: usize, y: usize) -> u32 {
-    if x >= buffer.width || y >= buffer.height {
-        return 0;
-    }
-    let index = y * buffer.width + x;
-    unsafe {
-        return *buffer.pointer.add(index);
-    }
-}
-/// Safely get the pixel color of the buffer at the specified x and y, returns the fallback input if the pixel is out of bounce
-#[inline(always)]
-pub fn get_pixel_fallback(
-    buffer: &Buffer,
-    x: usize,
-    y: usize,
-    fallback: u32,
-) -> u32 {
-    if x >= buffer.width || y >= buffer.height {
-        return fallback;
-    }
-    let index = y * buffer.width + x;
-    unsafe {
-        return *buffer.pointer.add(index);
-    }
-}
-/// Get the pixel color at a position in a buffer without checking if the pixel is on screen (which will crash the program if it isn't)
-/// The function for getting a pixel safely is [get_pixel] or [get_pixel_isize]
-#[inline(always)]
-pub fn get_pixel_unsafe(buffer: &Buffer, x: usize, y: usize) -> u32 {
-    let index = y * buffer.width + x;
-    unsafe {
-        return *buffer.pointer.add(index);
-    }
-}
-/// Get the pixel color at a position in a buffer yet before that check if it is in the range of the buffer
-#[inline(always)]
-pub fn get_pixel_isize(buffer: &Buffer, x: isize, y: isize) -> Option<u32> {
-    if x < 0 || y < 0 {
-        return None;
-    }
-    let _y = y as usize;
-    let _x = x as usize;
-    if _x >= buffer.width || _y >= buffer.height {
-        return None;
-    }
-    let index = _y as usize * buffer.width + _x;
-    return Some(buffer.buffer[index]);
-}
-/// Get the pixel color at a position in a buffer yet before that check if it is in the range of the buffer
-/// Instead of returning None if the result isn't in the buffer, it will return the specified fallback value
-#[inline(always)]
-pub fn get_pixel_isize_fallback(
-    buffer: &Buffer,
-    x: isize,
-    y: isize,
-    fallback: u32,
-) -> u32 {
-    if x < 0 || y < 0 {
-        return fallback;
-    }
-    let _y = y as usize;
-    let _x = x as usize;
-    if _x >= buffer.width || _y >= buffer.height {
-        return fallback;
-    }
-    let index = _y as usize * buffer.width + _x;
-    return buffer.buffer[index];
-}
+
 
 mod circle_outline;
 pub use circle_outline::*;
