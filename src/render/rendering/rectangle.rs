@@ -3,6 +3,7 @@ use crate::{platform::Buffer, render::rendering::DrawPixelFunction};
 
 /// Draw a simple rectangle
 #[inline]
+#[allow(clippy::cast_sign_loss)]
 pub fn draw_rectangle(
     buffer: &Buffer,
     pos_x: isize,
@@ -26,18 +27,20 @@ pub fn draw_rectangle(
 }
 /// Draw a simple rectangle
 #[inline]
+#[allow(clippy::cast_sign_loss)]
+#[allow(clippy::cast_precision_loss)]
+#[allow(clippy::cast_possible_truncation)]
+#[allow(clippy::cast_possible_wrap)]
 pub fn execute_at_rectangle(
     buffer: &Buffer,
-    pos_x: isize,
-    pos_y: isize,
-    width: isize,
-    height: isize,
+    pos: (isize, isize),
+    size: (isize, isize),
     color: u32,
     safe: bool,
-    function: DrawPixelFunction
+    function: DrawPixelFunction,
 ) {
-    for y in pos_y..pos_y + height {
-        for x in pos_x..pos_x + width {
+    for y in pos.1..pos.1 + size.1 {
+        for x in pos.0..pos.0 + size.0 {
             if safe {
                 if x > 0 && y > 0 {
                     function(buffer, x as usize, y as usize, color);
@@ -51,59 +54,64 @@ pub fn execute_at_rectangle(
 
 /// Draw a rotated rectangle
 #[inline]
+#[allow(clippy::cast_sign_loss)]
+#[allow(clippy::cast_precision_loss)]
+#[allow(clippy::cast_possible_truncation)]
+#[allow(clippy::cast_possible_wrap)]
 pub fn draw_rectangle_angled(
     buffer: &Buffer,
-    pos_x: usize,
-    pos_y: usize,
-    width: isize,
-    height: isize,
+    pos: (usize, usize),
+    size: (isize, isize),
     color: u32,
-    anchor_x: f32,
-    anchor_y: f32,
+    anchor_pos: (usize, usize),
     rotation: f32,
     safe: bool,
 ) {
     let cos_theta = rotation.cos();
     let sin_theta = rotation.sin();
 
-    let anchor_x_offset = anchor_x * width as f32;
-    let anchor_y_offset = anchor_y * height as f32;
+    let anchor_x_offset = anchor_pos.0 as f32 * size.0 as f32;
+    let anchor_y_offset = anchor_pos.1 as f32 * size.1 as f32;
 
-    for y in 0..height as usize {
-        for x in 0..width as usize {
+    for y in 0..size.1 as usize {
+        for x in 0..size.0 as usize {
             let rel_x = x as f32 - anchor_x_offset;
             let rel_y = y as f32 - anchor_y_offset;
 
-            let rotated_x = rel_x * cos_theta - rel_y * sin_theta;
-            let rotated_y = rel_x * sin_theta + rel_y * cos_theta;
+            let rotated_x = rel_x.mul_add(cos_theta, -(rel_y * sin_theta));
+            let rotated_y = rel_x.mul_add(sin_theta, rel_y * cos_theta);
 
             let final_x =
-                (pos_x as f32 + rotated_x + anchor_x_offset).round() as isize;
+                (pos.0 as f32 + rotated_x + anchor_x_offset).round() as isize;
             let final_y =
-                (pos_y as f32 + rotated_y + anchor_y_offset).round() as isize;
+                (pos.1 as f32 + rotated_y + anchor_y_offset).round() as isize;
 
-            if final_x >= 0 && final_y >= 0 || true {
-                if safe {
+            if safe {
+                if final_x >= 0 && final_y >= 0 {
                     draw_pixel_safe(
                         buffer,
                         final_x as usize,
                         final_y as usize,
                         color,
                     );
-                } else {
-                    draw_pixel_unsafe(
-                        buffer,
-                        final_x as usize,
-                        final_y as usize,
-                        color,
-                    );
                 }
+            } else {
+                draw_pixel_unsafe(
+                    buffer,
+                    final_x as usize,
+                    final_y as usize,
+                    color,
+                );
             }
         }
     }
 }
 /// Tried to draw a rectangle 4 pixels at the time in the hopes of improving performance
 #[inline]
+#[allow(clippy::cast_sign_loss)]
+#[allow(clippy::cast_precision_loss)]
+#[allow(clippy::cast_possible_truncation)]
+#[allow(clippy::cast_possible_wrap)]
 pub fn draw_rectangle_impl_simd(
     buffer: &Buffer,
     pos_x: isize,
@@ -113,14 +121,13 @@ pub fn draw_rectangle_impl_simd(
     color: u32,
     safe: bool,
 ) {
-    if safe {
-        if pos_x < 0
+    if safe
+        && (pos_x < 0
             || pos_y < 0
             || pos_x + width > buffer.width as isize
-            || pos_y + height > buffer.height as isize
-        {
-            return;
-        }
+            || pos_y + height > buffer.height as isize)
+    {
+        return;
     }
 
     let start_x = pos_x as usize;

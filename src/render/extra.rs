@@ -1,7 +1,7 @@
 // I'm not even gonna pretend I know what any of this means
 
 use crate::math::radians;
-/// Rotate a [Vertex3D] around a [Point3D] on the x axis
+/// Rotate a [`Vertex3D`] around a [`Point3D`] on the x axis
 pub fn rotate_x_vertex_3d(
     angle_degrees: f64,
     rotation_center: Point3D,
@@ -19,82 +19,46 @@ pub fn rotate_x_vertex_3d(
     let z = vertex.z - cz;
 
     // Apply the rotation
-    let new_y = cos_a * (y as f64) - sin_a * (z as f64);
-    let new_z = sin_a * (y as f64) + cos_a * (z as f64);
+    let new_y = cos_a.mul_add(y, -(sin_a * (z)));
+    let new_z = sin_a.mul_add(y, cos_a * (z));
 
     // Adjust the vertex back
     vertex.x = x + cx;
     vertex.y = new_y + cy;
     vertex.z = new_z + cz;
 }
-/// Rotate a [Polygon] around a [Point3D] on the x axis
+/// Rotate a [Polygon] around a [`Point3D`] on the x axis
 pub fn rotate_x_polygon_3d(
     angle_degrees: f64,
     rotation_center: Point3D,
     polygon: &mut Polygon,
 ) {
-    rotate_x_vertex_3d(
-        angle_degrees,
-        rotation_center.clone(),
-        &mut polygon.point1,
-    );
-    rotate_x_vertex_3d(
-        angle_degrees,
-        rotation_center.clone(),
-        &mut polygon.point2,
-    );
-    rotate_x_vertex_3d(
-        angle_degrees,
-        rotation_center.clone(),
-        &mut polygon.point3,
-    );
+    rotate_x_vertex_3d(angle_degrees, rotation_center, &mut polygon.point1);
+    rotate_x_vertex_3d(angle_degrees, rotation_center, &mut polygon.point2);
+    rotate_x_vertex_3d(angle_degrees, rotation_center, &mut polygon.point3);
 }
-/// Rotate a [Polygon] around a [Point3D] on the y axis
+/// Rotate a [Polygon] around a [`Point3D`] on the y axis
 pub fn rotate_y_polygon_3d(
     angle_degrees: f64,
     rotation_center: Point3D,
     polygon: &mut Polygon,
 ) {
-    rotate_y_vertex_3d(
-        angle_degrees,
-        rotation_center.clone(),
-        &mut polygon.point1,
-    );
-    rotate_y_vertex_3d(
-        angle_degrees,
-        rotation_center.clone(),
-        &mut polygon.point2,
-    );
-    rotate_y_vertex_3d(
-        angle_degrees,
-        rotation_center.clone(),
-        &mut polygon.point3,
-    );
+    rotate_y_vertex_3d(angle_degrees, rotation_center, &mut polygon.point1);
+    rotate_y_vertex_3d(angle_degrees, rotation_center, &mut polygon.point2);
+    rotate_y_vertex_3d(angle_degrees, rotation_center, &mut polygon.point3);
 }
-/// Rotate a [Polygon] around a [Point3D] on the z axis
+/// Rotate a [Polygon] around a [`Point3D`] on the z axis
 pub fn rotate_z_polygon_3d(
     angle_degrees: f64,
     rotation_center: Point3D,
     polygon: &mut Polygon,
 ) {
-    rotate_z_vertex_3d(
-        angle_degrees,
-        rotation_center.clone(),
-        &mut polygon.point1,
-    );
-    rotate_z_vertex_3d(
-        angle_degrees,
-        rotation_center.clone(),
-        &mut polygon.point2,
-    );
-    rotate_z_vertex_3d(
-        angle_degrees,
-        rotation_center.clone(),
-        &mut polygon.point3,
-    );
+    rotate_z_vertex_3d(angle_degrees, rotation_center, &mut polygon.point1);
+    rotate_z_vertex_3d(angle_degrees, rotation_center, &mut polygon.point2);
+    rotate_z_vertex_3d(angle_degrees, rotation_center, &mut polygon.point3);
 }
 
-/// Rotate a [Vertex3D] around a [Point3D] on the y axis
+/// Rotate a [`Vertex3D`] around a [`Point3D`] on the y axis
 pub fn rotate_y_vertex_3d(
     angle_degrees: f64,
     rotation_center: Point3D,
@@ -112,8 +76,8 @@ pub fn rotate_y_vertex_3d(
     let z = vertex.z - cz;
 
     // Apply the rotation
-    let new_x = cos_a * (x as f64) + sin_a * (z as f64);
-    let new_z = -sin_a * (x as f64) + cos_a * (z as f64);
+    let new_x = cos_a.mul_add(x, sin_a * (z));
+    let new_z = (-sin_a).mul_add(x, cos_a * (z));
 
     // Adjust the vertex back
     vertex.x = new_x + cx;
@@ -121,7 +85,7 @@ pub fn rotate_y_vertex_3d(
     vertex.z = new_z + cz;
 }
 
-/// Rotate a [Vertex3D] around a [Point3D] on the z axis
+/// Rotate a [`Vertex3D`] around a [`Point3D`] on the z axis
 pub fn rotate_z_vertex_3d(
     angle_degrees: f64,
     rotation_center: Point3D,
@@ -139,8 +103,8 @@ pub fn rotate_z_vertex_3d(
     let z = vertex.z - cz;
 
     // Apply the rotation
-    let new_x = cos_a * (x as f64) - sin_a * (y as f64);
-    let new_y = sin_a * (x as f64) + cos_a * (y as f64);
+    let new_x = cos_a.mul_add(x, -(sin_a * (y)));
+    let new_y = sin_a.mul_add(x, cos_a * (y));
 
     // Adjust the vertex back
     vertex.x = new_x + cx;
@@ -149,6 +113,8 @@ pub fn rotate_z_vertex_3d(
 }
 /// Set a pixel color at the specified coordinate while checking if the position is validly in the buffer range
 #[inline(always)]
+#[allow(clippy::inline_always)]
+#[allow(clippy::not_unsafe_ptr_arg_deref)]
 pub fn set_pixel_safe(
     buffer: *mut u32,
     width: usize,
@@ -166,6 +132,8 @@ pub fn set_pixel_safe(
 }
 /// Set a pixel color at the specified coordinate without checking if the position is validly in the buffer range
 #[inline(always)]
+#[allow(clippy::inline_always)]
+#[allow(clippy::not_unsafe_ptr_arg_deref)]
 pub fn set_pixel_unsafe(
     buffer: *mut u32,
     width: usize,
@@ -179,6 +147,8 @@ pub fn set_pixel_unsafe(
 }
 /// Interpolate between uv values
 #[inline]
+#[must_use]
+#[allow(clippy::float_cmp)]
 pub fn uv_interpolate(
     target_y: f32,
     start_y: f32,
@@ -189,17 +159,16 @@ pub fn uv_interpolate(
     if start_y == end_y {
         return start_val;
     }
-    return start_val
-        + (end_val - start_val) * (target_y - start_y) / (end_y - start_y);
+    start_val + (end_val - start_val) * (target_y - start_y) / (end_y - start_y)
 }
-/// A polygon - Created using 3 [Vertex3D]
+/// A polygon - Created using 3 [`Vertex3D`]
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Polygon {
-    /// First [Vertex3D]
+    /// First [`Vertex3D`]
     pub point1: Vertex3D,
-    /// Second [Vertex3D]
+    /// Second [`Vertex3D`]
     pub point2: Vertex3D,
-    /// Third [Vertex3D]
+    /// Third [`Vertex3D`]
     pub point3: Vertex3D,
 }
 /// A 3D point in space with uv coordinates
@@ -235,6 +204,9 @@ pub struct Point2D {
     /// Y coordinate
     pub y: f64,
 }
+#[must_use]
+#[allow(clippy::cast_precision_loss)]
+#[allow(clippy::cast_possible_truncation)]
 /// Cast a 3d point into 2d space using a very simple algorithm
 pub fn vertex_3d_to_2d(
     vertex: &Vertex3D,
@@ -250,7 +222,7 @@ pub fn vertex_3d_to_2d(
 
     let screen_x = (x - half_width) / z + half_width;
     let screen_y = (y - half_height) / z + half_height;
-    return (screen_x as isize, screen_y as isize);
+    (screen_x as isize, screen_y as isize)
 }
 // fn useable(
 //     p: &Vertex3D,

@@ -8,18 +8,27 @@
 //         .map(|i| T::from(i).unwrap())
 //         .collect()
 // }
+
+#[allow(clippy::unwrap_used)]
 /// Convert angle degrees into angle radians
+///
+/// # Panics
+/// If somehow `T` doesn't support casting from a float this errors
 pub fn radians<T: num_traits::Float>(angle_degrees: T) -> T {
-    angle_degrees * NumCast::from(0.017453292519943295).unwrap() //PI / 180.0
+    angle_degrees * NumCast::from(0.017_453_292_519_943_295).unwrap() //PI / 180.0
 }
+#[allow(clippy::unwrap_used)]
 /// Convert angle radians into angle degrees
+///
+/// # Panics
+/// If somehow `T` doesn't support casting from a float this errors
 pub fn degrees<T: num_traits::Float>(angle_radians: T) -> T {
-    angle_radians * NumCast::from(57.29577951308232).unwrap() //180.0 / PI
+    angle_radians * NumCast::from(57.295_779_513_082_32).unwrap() //180.0 / PI
 }
 /// Sets the length of the vector to 1 changing the direction it's facing
 pub fn normalize_vector<T: num_traits::Float>(x: T, y: T, z: T) -> (T, T, T) {
     let v = (x * x + y * y + z * z).abs().sqrt();
-    return (x / v, y / v, z / v);
+    (x / v, y / v, z / v)
 }
 
 use num_traits::NumCast;
@@ -93,22 +102,24 @@ pub fn interpolate<T: Number + Copy + num_traits::One>(
     end: T,
     progress: T,
 ) -> T {
-    return start * (T::one() - progress) + end * progress;
+    start * (T::one() - progress) + end * progress
 }
 /// Get the position of object A if you wanted to center it in object B
 pub fn get_center_position_of_object_for_object<
-    T: std::ops::Div<Output = T> + std::ops::Sub<Output = T> + num_traits::NumCast,
+    T: std::ops::Div<Output = T>
+        + std::ops::Sub<Output = T>
+        + num_traits::ConstOne
+        + std::ops::Add<Output = T>,
 >(
     inner_width: T,
     inner_height: T,
     outer_width: T,
     outer_height: T,
 ) -> (T, T) {
+    // This is one hell of a way of getting the number 2 for a type
     (
-        outer_width.div(num_traits::NumCast::from(2).unwrap())
-            - inner_width.div(num_traits::NumCast::from(2).unwrap()),
-        outer_height.div(num_traits::NumCast::from(2).unwrap())
-            - inner_height.div(num_traits::NumCast::from(2).unwrap()),
+        outer_width.div(T::ONE + T::ONE) - inner_width.div(T::ONE + T::ONE),
+        outer_height.div(T::ONE + T::ONE) - inner_height.div(T::ONE + T::ONE),
     )
 }
 

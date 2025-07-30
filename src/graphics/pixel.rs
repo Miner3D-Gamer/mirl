@@ -1,6 +1,7 @@
 use super::{rgb_to_u32, u32_to_rgba};
 
 /// A pixel made to be read FAST
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Pixel {
     /// Red channel
     pub r: u8,
@@ -16,7 +17,8 @@ pub struct Pixel {
 
 impl Pixel {
     /// Create a new Pixel instance using rgb values
-    pub fn new_rgb(r: u8, g: u8, b: u8, a: u8) -> Self {
+    #[must_use]
+    pub const fn new_rgb(r: u8, g: u8, b: u8, a: u8) -> Self {
         Self {
             r,
             g,
@@ -26,7 +28,8 @@ impl Pixel {
         }
     }
     /// Create a new Pixel instance using a u32 rgba
-    pub fn new_32(color: u32) -> Self {
+    #[must_use]
+    pub const fn new_32(color: u32) -> Self {
         let (r, g, b, a) = u32_to_rgba(color);
         Self {
             r,

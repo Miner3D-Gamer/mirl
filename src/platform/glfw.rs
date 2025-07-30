@@ -10,11 +10,15 @@ use super::{
     time::NativeTime,
     MouseButton, Time,
 };
-use crate::graphics::argb_list_to_rgba_list;
 #[cfg(target_os = "windows")]
 use crate::platform::WindowLevel;
 use crate::{extensions::*, platform::KeyCode};
+use crate::{
+    graphics::argb_list_to_rgba_list,
+    system::action::{Decoration, Default},
+};
 /// glfw implementation of Framework
+#[derive(Debug)]
 pub struct Framework<MouseManagerScrollAccuracy: num_traits::Float> {
     glfw: glfw::Glfw,
     width: usize,
@@ -35,7 +39,7 @@ fn log_errors(_: glfw::Error, description: String, _: &()) {
 }
 
 static LOG_ERRORS: Option<glfw::ErrorCallback<()>> = Some(glfw::Callback {
-    f: log_errors as fn(glfw::Error, String, &()),
+    f: log_errors,
     data: (),
 });
 
@@ -68,16 +72,16 @@ impl<MouseManagerScrollAccuracy: num_traits::Float> Window
         window.set_key_polling(true);
 
         window.set_pos(settings.position.0 as i32, settings.position.1 as i32);
-        crate::system::action::set_window_borderless(
+        crate::system::OsActions::set_window_borderless(
             &get_native_window_handle_from_glfw(&window),
             settings.borderless,
         );
-        crate::system::action::set_window_position(
+        crate::system::OsActions::set_window_position(
             &get_native_window_handle_from_glfw(&window),
             settings.position.0 as i32,
             settings.position.1 as i32,
         );
-        crate::system::action::set_window_level(
+        crate::system::OsActions::set_window_level(
             &get_native_window_handle_from_glfw(&window),
             settings.window_level,
         );
@@ -179,7 +183,7 @@ impl<MouseManagerScrollAccuracy: num_traits::Float> ExtendedControl
 {
     #[inline]
     fn set_render_layer(&mut self, level: WindowLevel) {
-        crate::system::action::set_window_level(
+        crate::system::OsActions::set_window_level(
             &self.get_window_handle(),
             level,
         );
@@ -214,7 +218,7 @@ impl<MouseManagerScrollAccuracy: num_traits::Float> Control
         return (x as isize, y as isize);
     }
     fn get_size(&self) -> (isize, isize) {
-        return crate::system::action::get_window_size(
+        return crate::system::OsActions::get_window_size(
             &get_native_window_handle_from_glfw(&self.window),
         )
         .tuple_2_into();
@@ -231,11 +235,12 @@ impl<MouseManagerScrollAccuracy: num_traits::Float> Input
     for Framework<MouseManagerScrollAccuracy>
 {
     /// No, you won't get the real position of the mouse, calculate it yourself
-    fn get_mouse_position(&self) -> Option<(f64, f64)> {
-        let (mouse_x, mouse_y) = self.window.get_cursor_pos();
+    fn get_mouse_position(&self) -> Option<(isize, isize)> {
+        let (mouse_x, mouse_y): (isize, isize) =
+            self.window.get_cursor_pos().tuple_2_into();
         let (window_x, window_y) = self.window.get_pos();
-        let relative_x = mouse_x - window_x as f64;
-        let relative_y = mouse_y - window_y as f64;
+        let relative_x = mouse_x - window_x as isize;
+        let relative_y = mouse_y - window_y as isize;
         return Some((relative_x, relative_y));
     }
     fn is_key_down(&self, keycode: super::KeyCode) -> bool {
@@ -293,7 +298,7 @@ impl<MouseManagerScrollAccuracy: num_traits::Float> ExtendedWindow
     #[cfg(feature = "resvg")]
     fn set_cursor_style(&mut self, style: &super::Cursor) {
         //println!("Setting cursor style");
-        super::cursors::use_cursor(style, Some(&mut self.window));
+        super::mouse::use_cursor(style, Some(&mut self.window));
     }
     /// Not yet implemented
     /// #[deprecated(note = "This function is not implemented and should not be used.")]
@@ -306,12 +311,12 @@ impl<MouseManagerScrollAccuracy: num_traits::Float> ExtendedWindow
         size: crate::extensions::U2,
         main_color: u32,
         secondary_color: u32,
-    ) -> super::cursors::Cursors {
-        super::cursors::Cursors::load(
+    ) -> super::mouse::Cursors {
+        super::mouse::Cursors::load(
             size,
             main_color,
             secondary_color,
-            super::cursors::cursor_glfw::load_base_cursor_with_file,
+            super::mouse::cursor_glfw::load_base_cursor_with_file,
         )
     }
     fn get_window_handle(&self) -> raw_window_handle::RawWindowHandle {

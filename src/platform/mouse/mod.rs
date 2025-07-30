@@ -1,7 +1,7 @@
 #[cfg(all(feature = "system", target_os = "windows"))]
 pub use cursors_windows::load_base_cursor_with_file;
 
-use crate::{extensions::*, platform::Buffer};
+use crate::{extensions::*, lists::VariableSizeList, platform::Buffer};
 
 /// Cursor stuff of glfw bc glfw is a bitch
 pub mod cursor_glfw;
@@ -27,21 +27,22 @@ pub trait CursorManager {
     );
 }
 
-#[derive(Debug)]
 /// Cursor Instance holding the required cursor data to be used somewhere else
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Cursor {
     /// Windows
     #[cfg(target_os = "windows")]
-    Win(Option<windows::Win32::UI::WindowsAndMessaging::HCURSOR>),
+    Win(windows::Win32::UI::WindowsAndMessaging::HCURSOR),
     /// Linux using X11, wayland support will be added later
     #[cfg(target_os = "linux")]
-    X11(Option<u64>), // This could be a cursor ID from X11
+    X11(u64), // This could be a cursor ID from X11
     /// Mac
     #[cfg(target_os = "macos")]
-    Mac(Option<*mut std::ffi::c_void>), // Placeholder for NSCursor or equivalent
+    Mac(*mut std::ffi::c_void), // Placeholder for NSCursor or equivalent
     /// glfw lib, cross-platform
-    Glfw(Option<(Buffer, u32, u32)>),
+    Glfw((VariableSizeList<u32>, u32, u32)),
 }
+
 // pub struct CursorData {
 //     buffer_data: Vec<u32>,
 // }
@@ -50,6 +51,7 @@ pub enum Cursor {
 pub mod cursors_windows;
 
 /// Default cursors this lib provides
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Cursors {
     /// Default Pointer
     pub alias: Cursor,
@@ -574,6 +576,7 @@ impl Cursors {
 }
 
 /// Holds information any cursor would need
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct BaseCursor {
     //file_path: &'static str,
     //colors: u8,
@@ -594,8 +597,9 @@ pub fn use_cursor(
     if let Some(additional_info) = glfw_window {
         match cursor {
             Cursor::Glfw(new_cursor) => {
-                let given = new_cursor.as_ref().unwrap().clone();
-                let pixel = given.0.into();
+                let given = new_cursor.clone();
+                let buffer: Buffer = given.0.into();
+                let pixel = buffer.into();
                 //println!("Cursor dimensions: {} x {}", given.1, given.2);
 
                 // Check if dimensions make sense
@@ -619,9 +623,13 @@ pub fn use_cursor(
     }
     match cursor {
         #[cfg(target_os = "windows")]
-        Cursor::Win(hcursor) => {
-            let t = hcursor.as_ref().unwrap();
-            cursors_windows::set_cursor(*t);
+        Cursor::Win(cursor) => {
+            unsafe {
+                // Update the passive cursor provider windows uses
+                cursors_windows::update_cursor(*cursor);
+                // Update currently used cursor (Passive provider only gets checked when mouse moves)
+                cursors_windows::set_cursor(*cursor);
+            }
         }
 
         #[cfg(target_os = "linux")]
@@ -663,3 +671,5 @@ pub fn resolution_to_quality(resolution: u8) -> Result<U2, &'static str> {
 
     Ok(U2::new(t as u8))
 }
+/// Mouse position stuff like raw mouse input
+pub mod position;

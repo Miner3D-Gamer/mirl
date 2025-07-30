@@ -1,34 +1,37 @@
 // #[cfg(feature = "imagery")]
 /// This struct hold the raw data of a file to be converted/used somewhere else
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct FileData {
     raw_data: Vec<u8>,
 }
 
 impl FileData {
+    #[must_use]
     /// Constructor to load data from raw bytes
-    pub fn from_bytes(data: Vec<u8>) -> Self {
-        FileData {
+    pub const fn from_bytes(data: Vec<u8>) -> Self {
+        Self {
             raw_data: data,
         }
     }
-
     /// Convert the raw bytes to a String (if valid UTF-8)
+    ///
+    /// # Errors
+    /// If the data is not in utf8 format
     pub fn as_string(&self) -> Result<String, std::string::FromUtf8Error> {
         String::from_utf8(self.raw_data.clone())
     }
-
-    /// Convert the raw bytes to a Number (assumes data is in a binary format like little-endian)
-    pub fn as_number(&self) -> Result<i64, std::io::Error> {
-        if self.raw_data.len() < 8 {
-            return Err(std::io::Error::new(
-                std::io::ErrorKind::InvalidData,
-                "Not enough data",
-            ));
-        }
-        let number =
-            i64::from_le_bytes(self.raw_data[0..8].try_into().unwrap());
-        Ok(number)
-    }
+    // #[must_use]
+    // /// Convert the raw bytes to a Number (assumes data is in a binary format like little-endian)
+    // pub fn as_number(&self) -> Result<i64, &'static str> {
+    //     if self.raw_data.len() < 8 {
+    //         return Err(
+    //             "Not enough data",
+    //         );
+    //     }
+    //     let number = i64::from_le_bytes(self.raw_data[0..8].try_into()?);
+    //     Ok(number)
+    // }
+    #[must_use]
     #[cfg(feature = "font_support")]
     /// Convert the raw bytes to a [fontdue::Font] if possible
     pub fn as_font(&self) -> Result<fontdue::Font, Box<dyn std::error::Error>> {
@@ -38,6 +41,7 @@ impl FileData {
         )?;
         return Ok(font);
     }
+    #[must_use]
     /// Convert the raw bytes into an image::DynamicImage instance
     #[cfg(feature = "imagery")]
     pub fn as_image(
@@ -48,8 +52,9 @@ impl FileData {
 
         Ok(img)
     }
+    #[must_use]
     /// Get raw bytes
-    pub fn as_bytes(&self) -> &Vec<u8> {
+    pub const fn as_bytes(&self) -> &Vec<u8> {
         &self.raw_data
     }
 }

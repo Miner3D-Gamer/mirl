@@ -2,25 +2,28 @@ use std::str::FromStr;
 
 use ico::{IconDir, IconDirEntry, IconImage, ResourceType};
 
-#[cfg(feature = "resvg")]
-use super::cursors::load_base_cursor_with_file;
-#[cfg(feature = "resvg")]
-use super::cursors::Cursor;
 use super::framework_traits::{
     Control, ExtendedControl, ExtendedInput, ExtendedTiming, ExtendedWindow,
     Input, Output, Timing, Window,
 };
+#[cfg(feature = "resvg")]
+use super::mouse::load_base_cursor_with_file;
+#[cfg(feature = "resvg")]
+use super::mouse::Cursor;
 use super::Time;
 use super::{time::NativeTime, Buffer};
 use crate::extensions::*;
 use crate::graphics::u32_to_rgba;
 use crate::platform::{KeyCode, MouseButton, WindowLevel};
+use crate::system::action::Decoration;
+use crate::system::action::Default;
 /// Backend implementation using MiniFB
+#[derive(Debug)]
 pub struct Framework {
     window: minifb::Window,
     time: NativeTime,
     #[cfg(feature = "resvg")]
-    cursor: Option<Cursor>,
+    cursor_subclassed: bool,
 }
 
 fn minifb_window_options_from_options(
@@ -31,7 +34,7 @@ fn minifb_window_options_from_options(
         title: window_options.title_visible,
         resize: window_options.resizable,
         scale: minifb::Scale::X1,
-        scale_mode: minifb::ScaleMode::Center,
+        scale_mode: minifb::ScaleMode::Stretch,
         topmost: window_options.window_level == WindowLevel::AlwaysOnTop,
         transparency: false,
         none: false,
@@ -54,11 +57,11 @@ impl Window for Framework {
         .unwrap();
 
         window.set_position(settings.position.0, settings.position.1);
-        crate::system::action::set_window_borderless(
+        crate::system::OsActions::set_window_borderless(
             &get_native_window_handle_from_minifb(&window),
             settings.borderless,
         );
-        crate::system::action::set_window_level(
+        crate::system::OsActions::set_window_level(
             &get_native_window_handle_from_minifb(&window),
             settings.window_level,
         );
@@ -67,15 +70,11 @@ impl Window for Framework {
             window,
             time: NativeTime::new(),
             #[cfg(feature = "resvg")]
-            cursor: None,
+            cursor_subclassed: false,
         }
     }
     #[inline]
     fn update(&mut self, buffer: &[u32]) {
-        #[cfg(feature = "resvg")]
-        if self.cursor.is_some() {
-            super::cursors::use_cursor(self.cursor.as_ref().unwrap(), None);
-        }
         let s = self.window.get_size();
         self.window.update_with_buffer(buffer, s.0, s.1).unwrap();
     }
@@ -88,14 +87,12 @@ impl Window for Framework {
 
 impl Input for Framework {
     #[inline]
-    fn get_mouse_position(&self) -> Option<(f64, f64)> {
+    fn get_mouse_position(&self) -> Option<(isize, isize)> {
         let t = self.window.get_mouse_pos(minifb::MouseMode::Pass);
-        if t.is_none() {
-            return None;
+        if let Some(value) = t {
+            return Some(value.tuple_2_into());
         }
-        let (x, y) = t.unwrap();
-
-        return Some((x as f64, y as f64));
+        None
     }
     #[inline]
     fn is_key_down(&self, key: KeyCode) -> bool {
@@ -137,7 +134,7 @@ impl Timing for Framework {
 impl ExtendedControl for Framework {
     #[inline]
     fn set_render_layer(&mut self, level: WindowLevel) {
-        crate::system::action::set_window_level(
+        crate::system::OsActions::set_window_level(
             &self.get_window_handle(),
             level,
         );
@@ -253,7 +250,19 @@ impl ExtendedWindow for Framework {
     #[cfg(feature = "resvg")]
     #[inline]
     fn set_cursor_style(&mut self, style: &Cursor) {
-        super::cursors::use_cursor(style, None);
+        #[cfg(target_os = "windows")]
+        {
+            if !self.cursor_subclassed {
+                unsafe {
+                    super::mouse::cursors_windows::subclass_window(
+                        self.get_window_handle(),
+                        *style,
+                    );
+                }
+                self.cursor_subclassed = true;
+            }
+        }
+        super::mouse::use_cursor(style, None);
     }
     #[cfg(feature = "resvg")]
     fn load_custom_cursor(
@@ -261,8 +270,8 @@ impl ExtendedWindow for Framework {
         size: crate::extensions::U2,
         main_color: u32,
         secondary_color: u32,
-    ) -> super::cursors::Cursors {
-        super::cursors::Cursors::load(
+    ) -> super::mouse::Cursors {
+        super::mouse::Cursors::load(
             size,
             main_color,
             secondary_color,
@@ -321,7 +330,7 @@ impl Control for Framework {
     }
     #[inline]
     fn get_size(&self) -> (isize, isize) {
-        return crate::system::action::get_window_size(
+        return crate::system::OsActions::get_window_size(
             &get_native_window_handle_from_minifb(&self.window),
         )
         .tuple_2_into();

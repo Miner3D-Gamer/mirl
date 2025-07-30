@@ -1,7 +1,7 @@
-use crate::graphics::rgb_to_u32;
-
 use super::Buffer;
+use crate::graphics::rgb_to_u32;
 impl Buffer {
+    #[must_use]
     /// Create a new color
     pub fn new(data: Vec<u32>, width: usize, height: usize) -> Self {
         let total_size = width * height;
@@ -15,6 +15,7 @@ impl Buffer {
             total_size,
         }
     }
+    #[must_use]
     /// Create a new, empty, [Buffer]
     pub fn new_empty(width: usize, height: usize) -> Self {
         let total_size = width * height;
@@ -28,6 +29,7 @@ impl Buffer {
             total_size,
         }
     }
+    #[must_use]
     /// Generate a error texture with the desired size
     pub fn generate_fallback(
         width: usize,

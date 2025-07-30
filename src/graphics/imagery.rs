@@ -110,13 +110,15 @@ pub fn pixmap_to_dynamic_image(
     );
     for x in 0..ras.width() {
         for y in 0..ras.height() {
+            use crate::extensions::Tuple3Into;
+
             let color = ras.pixel(x, y).unwrap();
             let (r, g, b) = crate::graphics::shift_hue_rgb(
                 color.red(),
                 color.green(),
                 color.blue(),
                 50.0,
-            );
+            ).tuple_3_into();
             let pixel = image::Rgba([r, g, b, color.alpha()]);
             img.put_pixel(x, y, pixel);
         }
@@ -129,7 +131,7 @@ pub fn dynamic_image_to_buffer(image: &image::DynamicImage) -> Buffer {
     let height = image.height() as usize;
 
     let mut img = Buffer::new_empty(width, height);
-    for y in 0..height as usize {
+    for y in 0..height {
         for x in 0..width {
             let color = image.get_pixel(x as u32, y as u32);
             img.data[y * img.width + x] = image_rgba_to_u32(color);

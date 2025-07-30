@@ -1,18 +1,23 @@
 max = 32
 
 
-code = "#![allow(missing_docs)]use num_traits::{Num, NumCast};"
+code = "#![allow(missing_docs)]#![allow(clippy::unwrap_used)]#![allow(clippy::type_complexity)]use num_traits::{Num, NumCast};"
 
 
-get_code_for_trait_length = (
-    lambda length: "pub trait Tuple%sInto{fn tuple_%s_into<T:Num+NumCast>(self)->(%s);}"
-    % (length, length, ",".join(["T" for _ in range(length)]))
-)
+def get_code_for_trait_length(length: int):
+    return "pub trait Tuple%sInto{fn tuple_%s_into<%s>(self)->(%s);}" % (
+        length,
+        length,
+        ",".join(["T%s:Num+NumCast" % idx for idx in range(length)]),
+        ",".join(["T%s" % idx for idx in range(length)]),
+    )
+
+
 # Allows the conversion of tuples with a length of %s
 # Convert a tuple of X to a tuple of Y
 
 
-def get_impl_for_trait_length(length):
+def get_impl_for_trait_length(length: int):
     impl = "impl<%s>" % (",".join(["N" + str(i) for i in range(1, length + 1)]))
     for_ = "Tuple%sInto for(%s)" % (
         length,
@@ -21,9 +26,10 @@ def get_impl_for_trait_length(length):
     where = "where %s" % (
         ",".join(["N" + str(i) + ":Num+NumCast" for i in range(1, length + 1)])
     )
-    header = "fn tuple_%s_into<T:Num+NumCast>(self)->(%s)" % (
+    header = "fn tuple_%s_into<%s>(self)->(%s)" % (
         length,
-        ",".join(["T" for _ in range(length)]),
+        ",".join(["T%s:Num+NumCast" % idx for idx in range(length)]),
+        ",".join(["T%s" % idx for idx in range(length)]),
     )
     body = "({})".format(
         ",".join(

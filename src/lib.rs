@@ -1,4 +1,16 @@
 #![warn(missing_docs)]
+#![warn(missing_debug_implementations)]
+#![warn(missing_copy_implementations)]
+#![warn(trivial_casts)]
+#![warn(trivial_numeric_casts)]
+#![warn(unreachable_pub)]
+#![warn(clippy::pedantic)]
+#![warn(clippy::nursery)]
+#![warn(clippy::unwrap_used)]
+#![warn(clippy::expect_used)]
+#![warn(clippy::todo)]
+#![warn(clippy::panic)]
+#![allow(clippy::wildcard_imports)]
 //! Miners
 //! Rust
 //! Lib
@@ -11,21 +23,21 @@
 //! - [Frameworks](crate::platform::framework_traits) - What are they capable of? (for [crate::platform::minifb::Framework](crate::platform::minifb::Framework) or [crate::platform::glfw::Framework](crate::platform::glfw::Framework))
 //! - [Buffer](crate::platform::Buffer) - The central struct many other functions rely on
 //! - [Rendering](crate::render) - Render simple shapes
-//! - [Platform](crate::platform) - Other neat stuff like [crate::platform::KeyCode]/[crate::platform::MouseButton], or [crate::platform::ScreenNormalizer]
+//! - [Platform](crate::platform) - Other neat stuff like [`crate::platform::KeyCode`]/[`crate::platform::MouseButton`], or [`crate::platform::ScreenNormalizer`]
 //! - [System interaction](crate::system::action) - Functions that are untypical for usual applications like moving the window, getting/setting the z position, or hiding a window from the taskbar
-//! - [Color Stuff](crate::graphics) - What is rendering without manipulating color?
-//! - [Modular File System](crate::platform::FileSystem) - A custom file system wrapper to support file accessing on both natively and web
+//! - [Color Stuff](crate::graphics) - What is rendering without color manipulation?
+//! - [Modular File System](crate::platform::FileSystem) - A custom file system wrapper to support file accessing on web and natively
 //! - [Rust functionality extension](crate::extensions) with a big focus yet not limited to new tuple functionality
 //!
 //! If anyone knows why the result of `cargo docs` is so inconsistent for crate links, please let me know
 
 /// Directional stuff -> NESW, N NE E SE S SW W NW
 pub mod directions;
-/// Stuff that should exist by default yet doesn't; use mirl::extensions::*; to import all of 'em
+/// Stuff that should exist by default yet doesn't; use `mirl::extensions::*;` to import all of 'em
 pub mod extensions;
 /// Stuff related to graphics -> Color manipulation
 ///
-/// For rendering use [crate::render]
+/// For rendering use [`crate::render`]
 pub mod graphics;
 /// Stuff related to lists
 pub mod lists;
@@ -35,13 +47,13 @@ pub mod math;
 pub mod misc;
 /// Window creation/managing, file system creation/managing
 ///
-/// For actually rendering stuff, use [crate::render]
+/// For actually rendering stuff, use [`crate::render`]
 ///
-/// For basic collision, use [crate::math::collision]
+/// For basic collision, use [`crate::math::collision`]
 pub mod platform;
-/// Rendering stuff, simple but powerful (on [crate::platform::Buffer])
+/// Rendering stuff, simple but powerful (on [`crate::platform::Buffer`])
 ///
-/// For color stuff, use [crate::graphics]
+/// For color stuff, use [`crate::graphics`]
 pub mod render;
 /// Time related stuff
 pub mod time;
@@ -60,7 +72,12 @@ pub fn enable_traceback() {
         std::env::set_var("RUST_BACKTRACE", "1");
     }
 }
-
+/// Enables the extended rust traceback by setting the environment variable `RUST_BACKTRACE` to `FULL`
+pub fn enable_traceback_detailed() {
+    unsafe {
+        std::env::set_var("RUST_BACKTRACE", "FULL");
+    }
+}
 /// Disables the rust traceback by setting the environment variable `RUST_BACKTRACE` to `0`
 pub fn disable_traceback() {
     unsafe {

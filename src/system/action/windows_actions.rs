@@ -1,3 +1,255 @@
+/// OsImplementation for Window
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct WindowsActions {}
+
+impl Default for WindowsActions {
+    fn set_window_position(
+        handle: &raw_window_handle::RawWindowHandle,
+        x: i32,
+        y: i32,
+    ) -> bool {
+        return match handle {
+            raw_window_handle::RawWindowHandle::Win32(handle) => {
+                set_window_position_raw(
+                    windows::Win32::Foundation::HWND(handle.hwnd.get()),
+                    x,
+                    y,
+                );
+                true
+            }
+            _ => false,
+        };
+    }
+    fn set_window_level(
+        handle: &raw_window_handle::RawWindowHandle,
+        level: WindowLevel,
+    ) -> bool {
+        match handle {
+            raw_window_handle::RawWindowHandle::Win32(handle) => {
+                set_window_level_raw(
+                    windows::Win32::Foundation::HWND(handle.hwnd.get()),
+                    level,
+                );
+                true
+            }
+            _ => false,
+        }
+    }
+    fn get_window_position(
+        handle: &raw_window_handle::RawWindowHandle,
+    ) -> (i32, i32) {
+        match handle {
+            raw_window_handle::RawWindowHandle::Win32(handle) => {
+                get_window_position_raw(windows::Win32::Foundation::HWND(
+                    handle.hwnd.get(),
+                ))
+                .unwrap_or((i32::MIN, i32::MIN))
+            }
+            _ => (i32::MIN, i32::MIN),
+        }
+    }
+    fn get_window_size(
+        handle: &raw_window_handle::RawWindowHandle,
+    ) -> (i32, i32) {
+        match handle {
+            raw_window_handle::RawWindowHandle::Win32(handle) => {
+                get_window_size_raw(windows::Win32::Foundation::HWND(
+                    handle.hwnd.get(),
+                ))
+                .unwrap_or((i32::MIN, i32::MIN))
+            }
+            _ => (i32::MIN, i32::MIN),
+        }
+    }
+}
+
+impl Transparency for WindowsActions {
+    fn make_color_transparent(
+        handle: &raw_window_handle::RawWindowHandle,
+        color: (u8, u8, u8),
+    ) -> bool {
+        match handle {
+            raw_window_handle::RawWindowHandle::Win32(handle) => {
+                make_color_transparent_raw(
+                    handle.hwnd.get() as winapi::shared::windef::HWND,
+                    color,
+                );
+                true
+            }
+            _ => false,
+        }
+    }
+    fn set_window_opacity(
+        handle: &raw_window_handle::RawWindowHandle,
+        opacity: u8,
+    ) -> bool {
+        match handle {
+            raw_window_handle::RawWindowHandle::Win32(handle) => {
+                set_window_opacity_raw(
+                    windows::Win32::Foundation::HWND(handle.hwnd.get()),
+                    opacity,
+                );
+                true
+            }
+            _ => false,
+        }
+    }
+}
+impl Decoration for WindowsActions {
+    fn set_window_borderless(
+        handle: &raw_window_handle::RawWindowHandle,
+        boolean: bool,
+    ) -> bool {
+        match handle {
+            raw_window_handle::RawWindowHandle::Win32(handle) => {
+                if boolean {
+                    make_window_borderless_raw(
+                        windows::Win32::Foundation::HWND(handle.hwnd.get()),
+                    );
+                } else {
+                    give_window_a_border_raw(windows::Win32::Foundation::HWND(
+                        handle.hwnd.get(),
+                    ));
+                }
+                true
+            }
+            _ => false,
+        }
+    }
+}
+impl Misc for WindowsActions {
+    fn set_window_hidden_from_taskbar_and_alt_tab(
+        handle: &raw_window_handle::RawWindowHandle,
+        boolean: bool,
+    ) -> bool {
+        match handle {
+            raw_window_handle::RawWindowHandle::Win32(handle) => {
+                if boolean {
+                    hide_from_taskbar_and_alt_tab_raw(
+                        windows::Win32::Foundation::HWND(handle.hwnd.get()),
+                    );
+                } else {
+                    show_in_taskbar_and_alt_tab_raw(
+                        windows::Win32::Foundation::HWND(handle.hwnd.get()),
+                    );
+                }
+                true
+            }
+            _ => false,
+        }
+    }
+    fn get_all_windows() -> Vec<raw_window_handle::RawWindowHandle> {
+        let windows = get_all_windows_raw();
+        let mut new = Vec::new();
+        for i in windows {
+            new.push(raw_window_handle::RawWindowHandle::Win32(
+                raw_window_handle::Win32WindowHandle::new(
+                    std::num::NonZero::new(i.0).unwrap(),
+                ),
+            ));
+        }
+        new
+    }
+    fn get_title_using_id(
+        handle: &raw_window_handle::RawWindowHandle,
+    ) -> String {
+        match handle {
+            raw_window_handle::RawWindowHandle::Win32(handle) => {
+                get_title_using_id_raw(
+                    handle.hwnd.get() as winapi::shared::windef::HWND
+                )
+            }
+            _ => "".into(),
+        }
+    }
+    fn get_id_using_title(
+        title: &str,
+        exact_match: bool,
+        case_sensitive: bool,
+        include_hidden: bool,
+        just_one: bool,
+    ) -> Option<Vec<raw_window_handle::RawWindowHandle>> {
+        return get_window_id_by_title(
+            title,
+            exact_match,
+            case_sensitive,
+            include_hidden,
+            just_one,
+        );
+    }
+    fn capture_screen() -> Option<Buffer> {
+        return capture_screen_raw();
+    }
+    fn capture_desktop_background() -> Option<Buffer> {
+        return capture_desktop_background_raw();
+    }
+    fn set_click_ability_of_window(
+        handle: &raw_window_handle::RawWindowHandle,
+        click_through: bool,
+    ) {
+        match handle {
+            raw_window_handle::RawWindowHandle::Win32(handle) => {
+                if click_through {
+                    make_window_click_through_raw(
+                        windows::Win32::Foundation::HWND(handle.hwnd.get()),
+                    );
+                } else {
+                    make_window_click_solid_raw(
+                        windows::Win32::Foundation::HWND(handle.hwnd.get()),
+                    )
+                }
+            }
+            _ => {}
+        }
+    }
+    fn get_window_z(handle: &raw_window_handle::RawWindowHandle) -> u32 {
+        match handle {
+            #[cfg(target_os = "windows")]
+            raw_window_handle::RawWindowHandle::Win32(handle) => {
+                get_z_raw(windows::Win32::Foundation::HWND(handle.hwnd.get()))
+                    .unwrap_or(u32::MIN)
+            }
+            _ => u32::MIN,
+        }
+    }
+    fn set_window_z(
+        handle: &raw_window_handle::RawWindowHandle,
+        z: u32,
+    ) -> bool {
+        match handle {
+            #[cfg(target_os = "windows")]
+            raw_window_handle::RawWindowHandle::Win32(handle) => {
+                set_z_raw(
+                    windows::Win32::Foundation::HWND(handle.hwnd.get()),
+                    z,
+                );
+                true
+            }
+            _ => false,
+        }
+    }
+    fn set_window_z_after(
+        handle: &raw_window_handle::RawWindowHandle,
+        after: &raw_window_handle::RawWindowHandle,
+    ) -> bool {
+        // Matching 2 values at the same time feels cursed
+        match (handle, after) {
+            #[cfg(target_os = "windows")]
+            (
+                raw_window_handle::RawWindowHandle::Win32(handle),
+                raw_window_handle::RawWindowHandle::Win32(after),
+            ) => {
+                set_z_to_after_raw(
+                    windows::Win32::Foundation::HWND(handle.hwnd.get()),
+                    windows::Win32::Foundation::HWND(after.hwnd.get()),
+                );
+                true
+            }
+            _ => false,
+        }
+    }
+}
+
 extern crate winapi;
 
 use windows::Win32::UI::WindowsAndMessaging::{
@@ -30,8 +282,10 @@ use windows::{
 
 use crate::lists::combined;
 use crate::platform::{Buffer, WindowLevel};
+use crate::system::action::{Decoration, Default, Misc, Transparency};
 
-pub fn capture_screen_raw() -> Option<Buffer> {
+#[allow(trivial_casts)]
+fn capture_screen_raw() -> Option<Buffer> {
     unsafe {
         // Get the desktop window handle
         let desktop_hwnd = GetDesktopWindow();
@@ -122,7 +376,8 @@ pub fn capture_screen_raw() -> Option<Buffer> {
         Some(Buffer::new(pixels, width as usize, height as usize))
     }
 }
-pub fn capture_desktop_background_raw() -> Option<Buffer> {
+#[allow(trivial_casts)]
+fn capture_desktop_background_raw() -> Option<Buffer> {
     unsafe {
         // Get the shell window handle (desktop background + icons)
         let shell_hwnd = GetShellWindow();
@@ -214,7 +469,7 @@ pub fn capture_desktop_background_raw() -> Option<Buffer> {
     }
 }
 
-pub fn make_color_transparent_raw(
+fn make_color_transparent_raw(
     hwnd: *mut winapi::shared::windef::HWND__,
     color: (u8, u8, u8),
 ) {
@@ -238,7 +493,7 @@ pub fn make_color_transparent_raw(
     }
 }
 
-pub fn get_window_position_raw(
+fn get_window_position_raw(
     hwnd: windows::Win32::Foundation::HWND,
 ) -> Option<(i32, i32)> {
     unsafe {
@@ -251,7 +506,7 @@ pub fn get_window_position_raw(
     }
 }
 
-pub fn set_window_position_raw(
+fn set_window_position_raw(
     hwnd: windows::Win32::Foundation::HWND,
     x: i32,
     y: i32,
@@ -268,7 +523,7 @@ pub fn set_window_position_raw(
         );
     }
 }
-pub fn make_window_click_through_raw(hwnd: windows::Win32::Foundation::HWND) {
+fn make_window_click_through_raw(hwnd: windows::Win32::Foundation::HWND) {
     unsafe {
         let ex_style = GetWindowLongW(hwnd, GWL_EXSTYLE) as u32;
         SetWindowLongW(
@@ -279,7 +534,7 @@ pub fn make_window_click_through_raw(hwnd: windows::Win32::Foundation::HWND) {
     }
 }
 
-pub fn make_window_click_solid_raw(hwnd: windows::Win32::Foundation::HWND) {
+fn make_window_click_solid_raw(hwnd: windows::Win32::Foundation::HWND) {
     unsafe {
         let ex_style = GetWindowLongW(hwnd, GWL_EXSTYLE) as u32;
         SetWindowLongW(
@@ -290,7 +545,7 @@ pub fn make_window_click_solid_raw(hwnd: windows::Win32::Foundation::HWND) {
     }
 }
 
-pub fn make_window_borderless_raw(hwnd: windows::Win32::Foundation::HWND) {
+fn make_window_borderless_raw(hwnd: windows::Win32::Foundation::HWND) {
     unsafe {
         let style = GetWindowLongW(
             hwnd,
@@ -319,7 +574,7 @@ pub fn make_window_borderless_raw(hwnd: windows::Win32::Foundation::HWND) {
     }
 }
 
-pub fn give_window_a_border_raw(hwnd: windows::Win32::Foundation::HWND) {
+fn give_window_a_border_raw(hwnd: windows::Win32::Foundation::HWND) {
     unsafe {
         let style = GetWindowLongW(
             hwnd,
@@ -348,9 +603,7 @@ pub fn give_window_a_border_raw(hwnd: windows::Win32::Foundation::HWND) {
     }
 }
 
-pub fn hide_from_taskbar_and_alt_tab_raw(
-    hwnd: windows::Win32::Foundation::HWND,
-) {
+fn hide_from_taskbar_and_alt_tab_raw(hwnd: windows::Win32::Foundation::HWND) {
     unsafe {
         let ex_style = GetWindowLongW(hwnd, GWL_EXSTYLE) as u32;
         SetWindowLongW(
@@ -375,7 +628,7 @@ pub fn hide_from_taskbar_and_alt_tab_raw(
         );
     }
 }
-pub fn show_in_taskbar_and_alt_tab_raw(hwnd: windows::Win32::Foundation::HWND) {
+fn show_in_taskbar_and_alt_tab_raw(hwnd: windows::Win32::Foundation::HWND) {
     unsafe {
         let ex_style = GetWindowLongW(hwnd, GWL_EXSTYLE) as u32;
         SetWindowLongW(
@@ -401,10 +654,7 @@ pub fn show_in_taskbar_and_alt_tab_raw(hwnd: windows::Win32::Foundation::HWND) {
     }
 }
 
-pub fn set_window_opacity_raw(
-    hwnd: windows::Win32::Foundation::HWND,
-    alpha: u8,
-) {
+fn set_window_opacity_raw(hwnd: windows::Win32::Foundation::HWND, alpha: u8) {
     unsafe {
         let ex_style = GetWindowLongW(hwnd, GWL_EXSTYLE) as u32;
         SetWindowLongW(hwnd, GWL_EXSTYLE, (ex_style | WS_EX_LAYERED.0) as i32);
@@ -417,7 +667,7 @@ pub fn set_window_opacity_raw(
     }
 }
 
-pub fn get_z_raw(hwnd: windows::Win32::Foundation::HWND) -> Option<u32> {
+fn get_z_raw(hwnd: windows::Win32::Foundation::HWND) -> Option<u32> {
     unsafe {
         let mut order = 0;
         let mut current =
@@ -436,7 +686,7 @@ pub fn get_z_raw(hwnd: windows::Win32::Foundation::HWND) -> Option<u32> {
     None
 }
 
-pub fn set_z_to_after_raw(
+fn set_z_to_after_raw(
     hwnd: windows::Win32::Foundation::HWND,
     insert_after: windows::Win32::Foundation::HWND,
 ) {
@@ -455,7 +705,7 @@ pub fn set_z_to_after_raw(
     }
 }
 
-pub fn set_z_raw(hwnd: windows::Win32::Foundation::HWND, index: u32) {
+fn set_z_raw(hwnd: windows::Win32::Foundation::HWND, index: u32) {
     unsafe {
         let mut order = 0;
         let mut current =
@@ -481,7 +731,7 @@ pub fn set_z_raw(hwnd: windows::Win32::Foundation::HWND, index: u32) {
     }
 }
 
-// pub fn get_desktop_pixel_color(x: i32, y: i32) -> u32 {
+// fn get_desktop_pixel_color(x: i32, y: i32) -> u32 {
 //     unsafe {
 //         // Get the desktop window handle directly
 //         let desktop_hwnd = GetDesktopWindow();
@@ -556,7 +806,7 @@ use windows::Win32::UI::WindowsAndMessaging::{
     HWND_BOTTOM, HWND_NOTOPMOST, HWND_TOPMOST, SWP_NOMOVE,
 };
 
-pub fn set_window_level_raw(hwnd: HWND, level: WindowLevel) {
+fn set_window_level_raw(hwnd: HWND, level: WindowLevel) {
     let insert_after = match level {
         WindowLevel::AlwaysOnBottom => HWND_BOTTOM,
         WindowLevel::Normal => HWND_NOTOPMOST,
@@ -579,8 +829,9 @@ struct WindowSearchData {
     include_hidden: bool,
     just_one: bool,
 }
+#[allow(trivial_casts)]
 
-pub fn get_window_id_by_title(
+fn get_window_id_by_title(
     title: &str,
     exact_match: bool,
     case_sensitive: bool,
@@ -687,8 +938,9 @@ unsafe extern "system" fn enum_windows_proc(
         return 1; // Continue enumeration
     }
 }
+#[allow(trivial_casts)]
 
-pub fn get_all_windows_raw() -> Vec<HWND> {
+fn get_all_windows_raw() -> Vec<HWND> {
     let mut search_data = WindowSearchData {
         target_title: "".to_string(),
         found_hwnds: None,
@@ -712,7 +964,7 @@ pub fn get_all_windows_raw() -> Vec<HWND> {
     found_windows
 }
 
-pub fn get_window_size_raw(hwnd: HWND) -> Option<(i32, i32)> {
+fn get_window_size_raw(hwnd: HWND) -> Option<(i32, i32)> {
     unsafe {
         let mut rect = RECT::default();
         if GetWindowRect(hwnd, &mut rect).as_bool() {
@@ -723,7 +975,7 @@ pub fn get_window_size_raw(hwnd: HWND) -> Option<(i32, i32)> {
     }
 }
 
-pub fn get_title_using_id_raw(hwnd: winapi::shared::windef::HWND) -> String {
+fn get_title_using_id_raw(hwnd: winapi::shared::windef::HWND) -> String {
     let mut title_buf = [0u16; 512];
     let title_len;
     unsafe {

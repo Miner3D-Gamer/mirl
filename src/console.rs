@@ -7,29 +7,35 @@ use crossterm::ExecutableCommand;
 use crate::graphics::Pixel;
 
 /// Clears the currently visible console
-pub fn clear_console() {
+///
+/// # Errors
+/// Idk, this functions needs to be rewritten
+pub fn clear_console() -> std::io::Result<()> {
     stdout()
         .execute(crossterm::terminal::Clear(
             crossterm::terminal::ClearType::All,
-        ))
-        .unwrap()
-        .execute(crossterm::cursor::MoveTo(0, 0))
-        .unwrap();
+        ))?
+        .execute(crossterm::cursor::MoveTo(0, 0))?;
+    Ok(())
 }
 /// Moves the cursor to the top
-pub fn move_to_top() {
-    stdout()
-        .execute(crossterm::cursor::MoveTo(0, 0))
-        .unwrap();
+/// # Errors
+/// Idk, this functions needs to be rewritten
+pub fn move_to_top() -> std::io::Result<()> {
+    stdout().execute(crossterm::cursor::MoveTo(0, 0))?;
+    Ok(())
 }
+#[must_use]
 /// Color the given text (requires the console to support the full color range)
 pub fn color_text(msg: &str, r: u8, g: u8, b: u8) -> String {
-    return format!("\x1b[38;2;{};{};{}m{}\x1b[0m", r, g, b, msg);
+    format!("\x1b[38;2;{r};{g};{b}m{msg}\x1b[0m")
 }
+#[must_use]
 /// Color the background of the given text (requires the console to support the full color range)
 pub fn color_background(msg: &str, r: u8, g: u8, b: u8) -> String {
-    return format!("\x1b[48;2;{};{};{}m{}\x1b[0m", r, g, b, msg);
+    format!("\x1b[48;2;{r};{g};{b}m{msg}\x1b[0m")
 }
+#[must_use]
 /// Color the text and color of the given string (requires the console to support the full color range)
 pub fn color(
     msg: &str,
@@ -40,37 +46,44 @@ pub fn color(
     g2: u8,
     b2: u8,
 ) -> String {
-    return format!(
-        "\x1b[38;2;{};{};{}m\x1b[48;2;{};{};{}m{}\x1b[0m",
-        r1, g1, b1, r2, g2, b2, msg
-    );
+    format!("\x1b[38;2;{r1};{g1};{b1}m\x1b[48;2;{r2};{g2};{b2}m{msg}\x1b[0m")
 }
+#[must_use]
 /// Return the 'clear' all effects marker
 pub fn reset_color() -> String {
-    return "\x1b[0m".to_string();
+    "\x1b[0m".to_string()
 }
 /// Clear X lines
-pub fn clear_lines(n: usize) {
+///
+/// # Errors
+/// When it cannot write to the console it errors
+pub fn clear_lines(n: usize) -> std::io::Result<()> {
     let mut stdout = std::io::stdout();
 
     for _ in 0..n {
         // Move cursor up one line
-        write!(stdout, "\x1B[1A").unwrap();
+        write!(stdout, "\x1B[1A")?;
         // Clear the entire line
-        write!(stdout, "\x1B[2K").unwrap();
+        write!(stdout, "\x1B[2K")?;
     }
 
     // Ensure the commands are flushed to the terminal
-    stdout.flush().unwrap();
+    stdout.flush()?;
+    Ok(())
 }
+
 /// A python like input function
-pub fn input(msg: &str) -> String {
+///
+/// # Errors
+/// When it cannot read the console it will error
+pub fn input(msg: &str) -> std::io::Result<String> {
     let mut input = String::new();
     println!("{msg}");
-    std::io::stdin().read_line(&mut input).unwrap();
+    std::io::stdin().read_line(&mut input)?;
     input.truncate(input.len() - 1);
-    return input;
+    Ok(input)
 }
+#[must_use]
 /// Get the (full) content of the console
 pub fn get_console_content(max_lines: usize) -> Vec<String> {
     let stdin = std::io::stdin();
@@ -78,12 +91,10 @@ pub fn get_console_content(max_lines: usize) -> Vec<String> {
 
     let mut recent_lines = Vec::new();
 
-    for line in lines {
-        if let Ok(line) = line {
-            recent_lines.push(line);
-            if recent_lines.len() > max_lines as usize {
-                recent_lines.remove(0);
-            }
+    for line in lines.map_while(Result::ok) {
+        recent_lines.push(line);
+        if recent_lines.len() > max_lines {
+            recent_lines.remove(0);
         }
     }
 
@@ -91,14 +102,14 @@ pub fn get_console_content(max_lines: usize) -> Vec<String> {
 }
 
 /// Print the pixel struct as color
-pub fn print_color(buffer: Vec<Pixel>) {
-    for i in 0..buffer.len() {
-        print!("{}", color_text("#", buffer[i].r, buffer[i].g, buffer[i].b));
+pub fn print_color(buffer: &[Pixel]) {
+    for i in buffer {
+        print!("{}", color_text("#", i.r, i.g, i.b));
     }
 }
 // "▄"
 /// Print an image in console version using a list of Pixel structs
-pub fn print_color_v(buffer: &Vec<Pixel>, width: usize) {
+pub fn print_color_v(buffer: &[Pixel], width: usize) {
     for i in 0..buffer.len() / 2 {
         print!(
             "{}",
@@ -113,7 +124,7 @@ pub fn print_color_v(buffer: &Vec<Pixel>, width: usize) {
             )
         );
         if i % width == width - 1 {
-            print!("\n");
+            println!();
         }
     }
 }

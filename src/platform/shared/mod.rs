@@ -404,6 +404,7 @@ impl KeyManager {
 use strum::IntoEnumIterator;
 
 /// A struct to manage the pressed mouse keys + scroll
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct MouseManager<T: num_traits::Float> {
     scroll_x: T,
     scroll_y: T,

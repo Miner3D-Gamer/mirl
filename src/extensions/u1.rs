@@ -1,3 +1,6 @@
+#![allow(clippy::cast_lossless)]
+#![allow(clippy::cast_possible_truncation)]
+#![allow(clippy::cast_sign_loss)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, std::cmp::PartialOrd)]
 /// U1 - Just a fancy bool honestly
 pub struct U1 {
@@ -8,101 +11,114 @@ use num_traits::{NumCast, ToPrimitive};
 
 impl ToPrimitive for U1 {
     fn to_f32(&self) -> Option<f32> {
-        return Some(self.value().into());
+        Some(self.value().into())
     }
     fn to_f64(&self) -> Option<f64> {
-        return Some(self.value().into());
+        Some(self.value().into())
     }
     fn to_i128(&self) -> Option<i128> {
-        return Some(self.value().into());
+        Some(self.value().into())
     }
     fn to_i16(&self) -> Option<i16> {
-        return Some(self.value().into());
+        Some(self.value().into())
     }
     fn to_i32(&self) -> Option<i32> {
-        return Some(self.value().into());
+        Some(self.value().into())
     }
     fn to_i64(&self) -> Option<i64> {
-        return Some(self.value().into());
+        Some(self.value().into())
     }
     fn to_i8(&self) -> Option<i8> {
-        return Some(self.value().to_i8().unwrap());
+        self.value().to_i8()
     }
     fn to_isize(&self) -> Option<isize> {
-        return Some(self.value().into());
+        Some(self.value().into())
     }
     fn to_u128(&self) -> Option<u128> {
-        return Some(self.value().into());
+        Some(self.value().into())
     }
     fn to_u16(&self) -> Option<u16> {
-        return Some(self.value().into());
+        Some(self.value().into())
     }
     fn to_u32(&self) -> Option<u32> {
-        return Some(self.value().into());
+        Some(self.value().into())
     }
     fn to_u64(&self) -> Option<u64> {
-        return Some(self.value().into());
+        Some(self.value().into())
     }
     fn to_u8(&self) -> Option<u8> {
-        return Some(self.value());
+        Some(self.value())
     }
 }
 
 impl NumCast for U1 {
+    #[allow(clippy::unwrap_used)]
     fn from<T: num_traits::ToPrimitive>(n: T) -> Option<Self> {
         Some(Self::new(n.to_u8().unwrap()))
     }
 }
 
 impl U1 {
-    /// Create a U1 from a u8, panicking if value > 1
+    /// Create a U1 from a u8
+    ///
+    /// # Panics
+    /// If the value is not within 0..1
+    #[must_use]
     pub fn new(val: u8) -> Self {
         assert!(val <= 0b1, "Value out of range for U1 (must be 0..=1)");
-        U1 {
+        Self {
             b0: (val & 0b1) != 0,
         }
     }
 
     /// Create a U1 without checking (masking to lowest bit)
+    #[must_use]
     pub const fn from_u8_trunc(val: u8) -> Self {
-        U1 {
+        Self {
             b0: (val & 0b1) != 0,
         }
     }
 
     /// Get the integer value of this U1
+    #[must_use]
     pub const fn value(self) -> u8 {
         self.b0 as u8
     }
 
     /// Returns true if the value is zero
+    #[must_use]
     pub const fn is_zero(self) -> bool {
         !self.b0
     }
 
     /// Returns true if the value is the maximum (1)
+    #[must_use]
     pub const fn is_max(self) -> bool {
         self.b0
     }
 
     /// Wrapping add: (self + other) mod 2
-    pub const fn wrapping_add(self, other: U1) -> U1 {
-        U1::from_u8_trunc(self.value().wrapping_add(other.value()))
+    #[must_use]
+    pub const fn wrapping_add(self, other: Self) -> Self {
+        Self::from_u8_trunc(self.value().wrapping_add(other.value()))
     }
 
     /// Wrapping sub: (self - other) mod 2
-    pub const fn wrapping_sub(self, other: U1) -> U1 {
-        U1::from_u8_trunc(self.value().wrapping_sub(other.value()))
+    #[must_use]
+    pub const fn wrapping_sub(self, other: Self) -> Self {
+        Self::from_u8_trunc(self.value().wrapping_sub(other.value()))
     }
 
     /// Create a U1 directly from a boolean
+    #[must_use]
     pub const fn from_bool(val: bool) -> Self {
-        U1 {
+        Self {
             b0: val,
         }
     }
 
     /// Convert to boolean
+    #[must_use]
     pub const fn to_bool(self) -> bool {
         self.b0
     }
@@ -110,78 +126,78 @@ impl U1 {
 
 // Bitwise and arithmetic traits
 impl std::ops::Not for U1 {
-    type Output = U1;
-    fn not(self) -> U1 {
-        U1::from_u8_trunc(!self.value())
+    type Output = Self;
+    fn not(self) -> Self {
+        Self::from_u8_trunc(!self.value())
     }
 }
 
 impl std::ops::BitAnd for U1 {
-    type Output = U1;
-    fn bitand(self, rhs: U1) -> U1 {
-        U1::from_u8_trunc(self.value() & rhs.value())
+    type Output = Self;
+    fn bitand(self, rhs: Self) -> Self {
+        Self::from_u8_trunc(self.value() & rhs.value())
     }
 }
 
 impl std::ops::BitOr for U1 {
-    type Output = U1;
-    fn bitor(self, rhs: U1) -> U1 {
-        U1::from_u8_trunc(self.value() | rhs.value())
+    type Output = Self;
+    fn bitor(self, rhs: Self) -> Self {
+        Self::from_u8_trunc(self.value() | rhs.value())
     }
 }
 
 impl std::ops::BitXor for U1 {
-    type Output = U1;
-    fn bitxor(self, rhs: U1) -> U1 {
-        U1::from_u8_trunc(self.value() ^ rhs.value())
+    type Output = Self;
+    fn bitxor(self, rhs: Self) -> Self {
+        Self::from_u8_trunc(self.value() ^ rhs.value())
     }
 }
 
 impl std::ops::Shl<usize> for U1 {
-    type Output = U1;
-    fn shl(self, rhs: usize) -> U1 {
-        U1::from_u8_trunc(self.value() << rhs)
+    type Output = Self;
+    fn shl(self, rhs: usize) -> Self {
+        Self::from_u8_trunc(self.value() << rhs)
     }
 }
 
 impl std::ops::Shr<usize> for U1 {
-    type Output = U1;
-    fn shr(self, rhs: usize) -> U1 {
-        U1::from_u8_trunc(self.value() >> rhs)
+    type Output = Self;
+    fn shr(self, rhs: usize) -> Self {
+        Self::from_u8_trunc(self.value() >> rhs)
     }
 }
 
 impl std::ops::Add for U1 {
-    type Output = U1;
-    fn add(self, rhs: U1) -> U1 {
+    type Output = Self;
+    fn add(self, rhs: Self) -> Self {
         self.wrapping_add(rhs)
     }
 }
 
 impl std::ops::Sub for U1 {
-    type Output = U1;
-    fn sub(self, rhs: U1) -> U1 {
+    type Output = Self;
+    fn sub(self, rhs: Self) -> Self {
         self.wrapping_sub(rhs)
     }
 }
 
 impl std::ops::Mul for U1 {
-    type Output = U1;
-    fn mul(self, rhs: U1) -> U1 {
-        U1::from_u8_trunc(self.value().wrapping_mul(rhs.value()))
+    type Output = Self;
+    fn mul(self, rhs: Self) -> Self {
+        Self::from_u8_trunc(self.value().wrapping_mul(rhs.value()))
     }
 }
 impl std::ops::Div for U1 {
-    type Output = U1;
-    fn div(self, rhs: U1) -> U1 {
-        U1::from_u8_trunc(self.value().wrapping_div(rhs.value()))
+    type Output = Self;
+    fn div(self, rhs: Self) -> Self {
+        Self::from_u8_trunc(self.value().wrapping_div(rhs.value()))
     }
 }
 
 // Direct conversion between U1 and bool
 impl From<bool> for U1 {
     fn from(val: bool) -> Self {
-        U1 {
+        Self {
             b0: val,
         }
     }
@@ -196,10 +212,9 @@ impl From<U1> for bool {
 #[macro_export]
 macro_rules! u1 {
     ($val:expr) => {
-        U1::new($val)
+        Self::new($val)
     };
 }
-
 macro_rules! impl_u1_conversion {
     ($($t:ty),* $(,)?) => {
         $(
@@ -207,10 +222,8 @@ macro_rules! impl_u1_conversion {
             impl From<$t> for U1 {
                 fn from(val: $t) -> Self {
                     // Handle signed and unsigned differently
-                    let as_u8 = val as i128; // Safe for both signed/unsigned
-                    assert!((0..=1).contains(&as_u8), "Value out of range for U1 (must be 0..=1)");
-                    let val = as_u8 as u8;
-                    U1 {
+                    assert!((0..=1).contains(&val), "Value out of range for U1 (must be 0..=1)");
+                    Self {
                         b0: (val & 0b1) != 0,
                     }
                 }
@@ -219,8 +232,8 @@ macro_rules! impl_u1_conversion {
             // From U1 -> {type}
             impl From<U1> for $t {
                 fn from(val: U1) -> Self {
-                    let raw = val.b0 as u8;
-                    raw as $t
+                    let raw = val.value();
+                    num_traits::NumCast::from(raw).unwrap()
                 }
             }
         )*
@@ -290,12 +303,9 @@ impl num_traits::Num for U1 {
         radix: u32,
     ) -> Result<Self, Self::FromStrRadixErr> {
         let result = <u8 as num_traits::Num>::from_str_radix(str, radix);
-        if let Ok(r) = result {
-            return Result::Ok(Self::from_u8_trunc(r));
-        } else if let Err(e) = result {
-            return Result::Err(e);
-        } else {
-            panic!("This panic will never hit")
+        match result {
+            Ok(r) => Result::Ok(Self::from_u8_trunc(r)),
+            Err(e) => Result::Err(e),
         }
     }
 

@@ -1,5 +1,9 @@
 use crate::{platform::Buffer, render::extra::uv_interpolate};
 /// This sucks, it works but it sucks
+#[allow(clippy::cast_sign_loss)]
+#[allow(clippy::cast_precision_loss)]
+#[allow(clippy::cast_possible_truncation)]
+#[allow(clippy::cast_possible_wrap)]
 pub fn draw_triangle(
     buffer: &Buffer,
     width: usize,
@@ -46,7 +50,6 @@ pub fn draw_triangle(
             u_end = uv_interpolate(y as f32, y1 as f32, u1, y3 as f32, u3);
 
             v_start = uv_interpolate(y as f32, y1 as f32, v1, y2 as f32, v2);
-            v_end = uv_interpolate(y as f32, y1 as f32, v1, y3 as f32, v3);
         } else {
             // Bottom half of triangle
             x_start = uv_interpolate(
@@ -60,8 +63,8 @@ pub fn draw_triangle(
             u_end = uv_interpolate(y as f32, y1 as f32, u1, y3 as f32, u3);
 
             v_start = uv_interpolate(y as f32, y2 as f32, v2, y3 as f32, v3);
-            v_end = uv_interpolate(y as f32, y1 as f32, v1, y3 as f32, v3);
         }
+        v_end = uv_interpolate(y as f32, y1 as f32, v1, y3 as f32, v3);
 
         // Ensure correct ordering (left to right)
         if x_start > x_end {
@@ -81,14 +84,14 @@ pub fn draw_triangle(
             let x = x as isize;
 
             // Interpolate texture coordinates
-            let t = if x_start != x_end {
-                (x as f32 - x_start) / (x_end - x_start)
-            } else {
+            let t = if (x_start - x_end).abs() < 0.000_000_000_1 {
                 0.0
+            } else {
+                (x as f32 - x_start) / (x_end - x_start)
             };
 
-            let u = u_start + t * (u_end - u_start);
-            let v = v_start + t * (v_end - v_start);
+            let u = t.mul_add(u_end - u_start, u_start);
+            let v = t.mul_add(v_end - v_start, v_start);
 
             // Clamp texture coordinates to [0, 1]
             let u = u.clamp(0.0, 1.0);

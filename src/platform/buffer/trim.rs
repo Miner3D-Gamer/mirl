@@ -1,6 +1,5 @@
-use crate::graphics::get_u32_alpha_of_u32;
-
 use super::Buffer;
+use crate::graphics::get_u32_alpha_of_u32;
 impl Buffer {
     /// Optimizes the image by removing empty space around the image
     pub fn remove_margins(&mut self) {
@@ -12,6 +11,7 @@ impl Buffer {
             self.apply_trim(top_trim, bottom_trim, left_trim, right_trim);
         }
     }
+    #[must_use]
     /// Calculates the empty space around the image
     pub fn calculate_trims(&self) -> (usize, usize, usize, usize) {
         let mut top_trim = 0;
@@ -57,6 +57,7 @@ impl Buffer {
 
         (top_trim, bottom_trim, left_trim, right_trim)
     }
+    #[must_use]
     /// Checks if the requested row only has fully transparent pixels
     pub fn is_row_transparent(&self, row: usize) -> bool {
         let start = row * self.width;
@@ -65,6 +66,7 @@ impl Buffer {
             .iter()
             .all(|&pixel| get_u32_alpha_of_u32(pixel) == 0)
     }
+    #[must_use]
     /// Checks if the requested column only has fully transparent pixels
     pub fn is_col_transparent(&self, col: usize) -> bool {
         (0..self.height).all(|row| {

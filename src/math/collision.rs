@@ -14,7 +14,7 @@ impl<
     > From<(T, T, T, T)> for Rectangle<T, CS>
 {
     fn from(bush: (T, T, T, T)) -> Self {
-        Rectangle::new(bush.0, bush.1, bush.2, bush.3)
+        Self::new(bush.0, bush.1, bush.2, bush.3)
     }
 }
 // impl<T, const CS: bool> std::fmt::Display for Rectangle<T, CS> {
@@ -36,8 +36,9 @@ impl<T, const BOTTOM_HIGHER: bool> Rectangle<T, BOTTOM_HIGHER>
 where
     T: std::ops::Add<Output = T> + PartialOrd + Copy,
 {
+    #[must_use]
     /// Create a new Rectangle
-    pub fn new(x: T, y: T, width: T, height: T) -> Self {
+    pub const fn new(x: T, y: T, width: T, height: T) -> Self {
         Self {
             x,
             y,
@@ -46,32 +47,37 @@ where
         }
     }
     /// Get the current x
-    pub fn get_x(&self) -> T {
+    #[must_use]
+    pub const fn get_x(&self) -> T {
         self.x
     }
     /// Get the current y
-    pub fn get_y(&self) -> T {
+    #[must_use]
+    pub const fn get_y(&self) -> T {
         self.y
     }
     /// Get the current width
-    pub fn get_width(&self) -> T {
+    #[must_use]
+    pub const fn get_width(&self) -> T {
         self.width
     }
     ///Get the current height
-    pub fn get_height(&self) -> T {
+    #[must_use]
+    pub const fn get_height(&self) -> T {
         self.height
     }
     /// Get the x of the left side of this rectangle
-    pub fn left(&self) -> T {
+    #[must_use]
+    pub const fn left(&self) -> T {
         self.get_x()
     }
     /// Get the x of the right side of this rectangle
-
+    #[must_use]
     pub fn right(&self) -> T {
         self.get_x() + self.get_width()
     }
     /// Get the y of the top side of this rectangle
-
+    #[must_use]
     pub fn top(&self) -> T {
         if BOTTOM_HIGHER {
             self.get_y() + self.get_height()
@@ -79,8 +85,8 @@ where
             self.get_y()
         }
     }
+    #[must_use]
     /// Get the y of the bottom side of this rectangle
-
     pub fn bottom(&self) -> T {
         if BOTTOM_HIGHER {
             self.get_y()
@@ -88,6 +94,7 @@ where
             self.get_y() + self.get_height()
         }
     }
+    #[must_use]
     /// Checks if a point falls within the coordinate range defined by the triangle bounds
     pub fn does_area_contain_point(&self, point: (T, T)) -> bool {
         if BOTTOM_HIGHER {
@@ -103,6 +110,7 @@ where
         }
     }
 }
+#[must_use]
 /// Checks if one triangle fully encompasses anothers
 pub fn does_area_fully_include_other_area<
     T: std::cmp::PartialOrd + std::ops::Add<Output = T> + std::marker::Copy,
@@ -112,17 +120,18 @@ pub fn does_area_fully_include_other_area<
     smaller_area: &Rectangle<T, BOTTOM_HIGHER>,
 ) -> bool {
     if BOTTOM_HIGHER {
-        return bigger_area.left() <= smaller_area.left()
+        bigger_area.left() <= smaller_area.left()
             && bigger_area.right() >= smaller_area.right()
             && bigger_area.bottom() <= smaller_area.bottom()
-            && bigger_area.top() >= smaller_area.top();
+            && bigger_area.top() >= smaller_area.top()
     } else {
-        return bigger_area.left() <= smaller_area.left()
+        bigger_area.left() <= smaller_area.left()
             && bigger_area.right() >= smaller_area.right()
             && bigger_area.bottom() >= smaller_area.bottom()
-            && bigger_area.top() <= smaller_area.top();
+            && bigger_area.top() <= smaller_area.top()
     }
 }
+#[must_use]
 /// Checks if 2 rectangles collide anywhere
 pub fn do_areas_intersect<
     T: std::cmp::PartialOrd + Copy + std::ops::Add<Output = T>,
@@ -139,8 +148,8 @@ pub fn do_areas_intersect<
     let top_right = (top, right);
     let bottom_left = (bottom, left);
     let bottom_right = (bottom, right);
-    return area2.does_area_contain_point(top_left)
+    area2.does_area_contain_point(top_left)
         || area2.does_area_contain_point(top_right)
         || area2.does_area_contain_point(bottom_left)
-        || area2.does_area_contain_point(bottom_right);
+        || area2.does_area_contain_point(bottom_right)
 }

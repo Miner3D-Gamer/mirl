@@ -3,7 +3,9 @@ use crate::extensions::*;
 use crate::platform::Buffer;
 
 /// Draw a filled circle by checking if every pixel is inside the radius
-#[inline(always)]
+#[inline]
+#[allow(clippy::cast_sign_loss)]
+#[allow(clippy::cast_possible_wrap)]
 pub fn draw_circle(
     buffer: &Buffer,
     pos_x: usize,
@@ -24,7 +26,7 @@ pub fn draw_circle(
 
     for y in -radius..=radius {
         let dy = y * y;
-        let dx = (radius * radius - dy).abs().sqrt() as isize;
+        let dx = (radius * radius - dy).abs().sqrt();
 
         for x in -dx..=dx {
             let x_pos = pos_x + x;

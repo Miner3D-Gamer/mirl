@@ -1,6 +1,7 @@
 use super::{cursor_resolution, BaseCursor, Cursor};
 use crate::extensions::*;
 use crate::graphics::{pixmap_to_buffer, rasterize_svg, u32_to_hex};
+use crate::lists::buffer_to_copy_list;
 /// Load a cursor SVG and replace it's placeholders with actual colors
 pub fn load_base_cursor_with_file(
     cursor: BaseCursor,
@@ -9,7 +10,7 @@ pub fn load_base_cursor_with_file(
     secondary_color: u32,
     svg_data: String,
 ) -> Cursor {
-    let expected_size = 24; // WHO TF MAKES THE CURSOR NOT A MULTIPLE OF 16 ???
+    const EXPECTED_SIZE: f64 = 24.0; // WHO TF MAKES THE CURSOR NOT A MULTIPLE OF 16 ???
 
     let wanted_size = cursor_resolution(size);
 
@@ -28,16 +29,16 @@ pub fn load_base_cursor_with_file(
     );
 
     // Adjust hotspot because of the psycho who made the cursor not a multiple of 16
-    let adjusted_hotspot_x = ((cursor.hot_spot_x as f64 / expected_size as f64)
+    let adjusted_hotspot_x = ((cursor.hot_spot_x as f64 / EXPECTED_SIZE)
         * wanted_size as f64)
         .round() as u32;
-    let adjusted_hotspot_y = ((cursor.hot_spot_y as f64 / expected_size as f64)
+    let adjusted_hotspot_y = ((cursor.hot_spot_y as f64 / EXPECTED_SIZE)
         * wanted_size as f64)
         .round() as u32;
 
-    return Cursor::Glfw(Some((
-        pixmap_to_buffer(&image_data),
+    return Cursor::Glfw((
+        *buffer_to_copy_list(&pixmap_to_buffer(&image_data)).unwrap(),
         adjusted_hotspot_x,
         adjusted_hotspot_y,
-    )));
+    ));
 }

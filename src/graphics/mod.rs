@@ -1,116 +1,140 @@
+#![allow(clippy::inline_always)]
 use crate::extensions::*;
 
 /// Convert an r b g format into u32 argb format
 #[inline(always)]
-pub fn rgb_to_u32(r: u8, g: u8, b: u8) -> u32 {
+#[must_use]
+pub const fn rgb_to_u32(r: u8, g: u8, b: u8) -> u32 {
     (r as u32) << 16 | (g as u32) << 8 | (b as u32)
 }
 
+/// Convert an r b g format into u32 argb format
 #[inline(always)]
+#[must_use]
+pub const fn rgb_u32_to_u32(r: u32, g: u32, b: u32) -> u32 {
+    r << 16 | g << 8 | b
+}
+#[inline(always)]
+#[must_use]
 /// Convert r g b a in argb format
-pub fn rgba_to_u32(r: u8, g: u8, b: u8, a: u8) -> u32 {
+pub const fn rgba_to_u32(r: u8, g: u8, b: u8, a: u8) -> u32 {
     (a as u32) << 24 | (r as u32) << 16 | (g as u32) << 8 | b as u32
 }
 #[inline(always)]
+#[must_use]
 /// Convert r g b a into u32 argb
-pub fn rgba_u32_to_u32(r: u32, g: u32, b: u32, a: u32) -> u32 {
+pub const fn rgba_u32_to_u32(r: u32, g: u32, b: u32, a: u32) -> u32 {
     (a) << 24 | (r) << 16 | (g) << 8 | b
 }
 #[inline(always)]
+#[must_use]
 /// Convert u32 argb to r g b
-pub fn u32_to_rgb(color: u32) -> (u8, u8, u8) {
-    let r = ((color >> 16) & 0xFF) as u8;
-    let g = ((color >> 8) & 0xFF) as u8;
-    let b = (color & 0xFF) as u8;
-    (r, g, b)
+pub const fn u32_to_rgb(color: u32) -> (u8, u8, u8) {
+    let red = ((color >> 16) & 0xFF) as u8;
+    let green = ((color >> 8) & 0xFF) as u8;
+    let blue = (color & 0xFF) as u8;
+    (red, green, blue)
 }
 #[inline(always)]
+#[must_use]
 /// Convert u32 argb to r g b
-pub fn u32_to_rgb_u32(color: u32) -> (u32, u32, u32) {
-    let r = (color >> 16) & 0xFF;
-    let g = (color >> 8) & 0xFF;
-    let b = color & 0xFF;
-    (r, g, b)
+pub const fn u32_to_rgb_u32(color: u32) -> (u32, u32, u32) {
+    let red = (color >> 16) & 0xFF;
+    let green = (color >> 8) & 0xFF;
+    let blue = color & 0xFF;
+    (red, green, blue)
 }
 #[inline(always)]
+#[must_use]
 /// Convert u32 argb to r g b a or u32 rgba to a g b r
-pub fn u32_to_rgba(color: u32) -> (u8, u8, u8, u8) {
-    let a = ((color >> 24) & 0xFF) as u8;
-    let r = ((color >> 16) & 0xFF) as u8;
-    let g = ((color >> 8) & 0xFF) as u8;
-    let b = (color & 0xFF) as u8;
-    (r, g, b, a)
+pub const fn u32_to_rgba(color: u32) -> (u8, u8, u8, u8) {
+    let alpha = ((color >> 24) & 0xFF) as u8;
+    let red = ((color >> 16) & 0xFF) as u8;
+    let green = ((color >> 8) & 0xFF) as u8;
+    let blue = (color & 0xFF) as u8;
+    (red, green, blue, alpha)
 }
 #[inline(always)]
+#[must_use]
 /// Convert u32 argb to r g b a or u32 rgba to a g b r
-pub fn u32_to_rgba_u32(color: u32) -> (u32, u32, u32, u32) {
-    let a = (color >> 24) & 0xFF;
-    let r = (color >> 16) & 0xFF;
-    let g = (color >> 8) & 0xFF;
-    let b = color & 0xFF;
-    (r, g, b, a)
+pub const fn u32_to_rgba_u32(color: u32) -> (u32, u32, u32, u32) {
+    let alpha = (color >> 24) & 0xFF;
+    let red = (color >> 16) & 0xFF;
+    let green = (color >> 8) & 0xFF;
+    let blue = color & 0xFF;
+    (red, green, blue, alpha)
 }
 #[inline(always)]
+#[must_use]
 /// Convert u32 argb to a g b r or u32 rgba to r g b a
-pub fn u32_to_argb(color: u32) -> (u8, u8, u8, u8) {
-    let a = ((color >> 24) & 0xFF) as u8;
-    let r = ((color >> 16) & 0xFF) as u8;
-    let g = ((color >> 8) & 0xFF) as u8;
-    let b = (color & 0xFF) as u8;
-    (a, r, g, b)
+pub const fn u32_to_argb(color: u32) -> (u8, u8, u8, u8) {
+    let alpha = ((color >> 24) & 0xFF) as u8;
+    let red = ((color >> 16) & 0xFF) as u8;
+    let green = ((color >> 8) & 0xFF) as u8;
+    let blue = (color & 0xFF) as u8;
+    (alpha, red, green, blue)
 }
 #[inline(always)]
+#[must_use]
 /// Convert u32 argb to a g b r or u32 rgba to r g b a
-pub fn u32_to_argb_u32(color: u32) -> (u32, u32, u32, u32) {
-    let a = (color >> 24) & 0xFF;
-    let r = (color >> 16) & 0xFF;
-    let g = (color >> 8) & 0xFF;
-    let b = color & 0xFF;
-    (a, r, g, b)
+pub const fn u32_to_argb_u32(color: u32) -> (u32, u32, u32, u32) {
+    let alpha = (color >> 24) & 0xFF;
+    let red = (color >> 16) & 0xFF;
+    let green = (color >> 8) & 0xFF;
+    let blue = color & 0xFF;
+    (alpha, red, green, blue)
 }
 
 #[inline(always)]
+#[must_use]
 /// Get the alpha of a u32 in argb style, get red rgba style
-pub fn get_alpha_of_u32(color: u32) -> u8 {
+pub const fn get_alpha_of_u32(color: u32) -> u8 {
     ((color >> 24) & 0xFF) as u8
 }
 
 #[inline(always)]
+#[must_use]
 /// Get the red of a u32 in argb style, get alpha rgba style
-pub fn get_red_of_u32(color: u32) -> u8 {
+pub const fn get_red_of_u32(color: u32) -> u8 {
     ((color >> 16) & 0xFF) as u8
 }
 #[inline(always)]
+#[must_use]
 /// Get the green of a u32
-pub fn get_green_of_u32(color: u32) -> u8 {
+pub const fn get_green_of_u32(color: u32) -> u8 {
     ((color >> 8) & 0xFF) as u8
 }
 #[inline(always)]
+#[must_use]
 /// Get the blue of a u32
-pub fn get_blue_of_u32(color: u32) -> u8 {
+pub const fn get_blue_of_u32(color: u32) -> u8 {
     (color & 0xFF) as u8
 }
 //
 
 #[inline(always)]
+#[must_use]
 /// Get the alpha of a u32 in argb style, get red rgba style
-pub fn get_u32_alpha_of_u32(color: u32) -> u32 {
+pub const fn get_u32_alpha_of_u32(color: u32) -> u32 {
     (color >> 24) & 0xFF
 }
 
 #[inline(always)]
+#[must_use]
 /// Get the red of a u32 in argb style, get alpha rgba style
-pub fn get_u32_red_of_u32(color: u32) -> u32 {
+pub const fn get_u32_red_of_u32(color: u32) -> u32 {
     (color >> 16) & 0xFF
 }
 #[inline(always)]
+#[must_use]
 /// Get the green of a u32
-pub fn get_u32_green_of_u32(color: u32) -> u32 {
+pub const fn get_u32_green_of_u32(color: u32) -> u32 {
     (color >> 8) & 0xFF
 }
 #[inline(always)]
+#[must_use]
 /// Get the blue of a u32
-pub fn get_u32_blue_of_u32(color: u32) -> u32 {
+pub const fn get_u32_blue_of_u32(color: u32) -> u32 {
     color & 0xFF
 }
 /// Image support for mirl
@@ -122,6 +146,8 @@ use std::collections::HashSet;
 pub use imagery::*;
 
 #[inline]
+#[must_use]
+#[allow(clippy::float_cmp)]
 /// Get hue of rgb (hsl space)
 pub fn get_hue_of_rgb(r: f32, g: f32, b: f32) -> f32 {
     let max = r.max(g).max(b);
@@ -139,30 +165,38 @@ pub fn get_hue_of_rgb(r: f32, g: f32, b: f32) -> f32 {
 }
 
 #[inline]
+#[must_use]
+#[allow(clippy::cast_precision_loss)]
 /// Change the brightness of a hsl space
 pub fn adjust_brightness_hsl_of_rgb(color: u32, change: i32) -> u32 {
-    let a = (color >> 24) & 0xFF;
-    let r = (color >> 16) & 0xFF;
-    let g = (color >> 8) & 0xFF;
-    let b = color & 0xFF;
+    let alpha = (color >> 24) & 0xFF;
+    let red = (color >> 16) & 0xFF;
+    let green = (color >> 8) & 0xFF;
+    let blue = color & 0xFF;
 
-    let (h, s, l) = rgb_to_hsl(r as u8, g as u8, b as u8);
+    let (h, s, l) = rgb_to_hsl(red as u8, green as u8, blue as u8);
 
     // Adjust lightness in HSL space (most perceptually accurate)
     let l_new = (l + change as f32).clamp(0.0, 100.0);
 
     let (r_new, g_new, b_new) = hsl_to_rgb_u32(h, s, l_new);
 
-    (a << 24) | ((r_new as u32) << 16) | ((g_new as u32) << 8) | b_new as u32
+    (alpha << 24) | (r_new << 16) | (g_new << 8) | b_new
 }
 #[inline]
+#[must_use]
+#[allow(clippy::cast_possible_truncation)]
 /// Convert hsl space to rgb space
-pub fn hsl_to_rgb_f32(h: f32, s: f32, l: f32) -> (f32, f32, f32) {
-    let c = (1.0 - (2.0 * l - 1.0).abs()) * s;
-    let x = c * (1.0 - ((h / 60.0) % 2.0 - 1.0).abs());
-    let m = l - c / 2.0;
+pub const fn hsl_to_rgb_f32(
+    hue: f32,
+    saturation: f32,
+    lightness: f32,
+) -> (f32, f32, f32) {
+    let c = (1.0 - (2.0 * lightness - 1.0).abs()) * saturation;
+    let x = c * (1.0 - ((hue / 60.0) % 2.0 - 1.0).abs());
+    let m = lightness - c / 2.0;
 
-    let (r1, g1, b1) = match h as i32 {
+    let (r1, g1, b1) = match hue as i32 {
         0..=59 => (c, x, 0.0),
         60..=119 => (x, c, 0.0),
         120..=179 => (0.0, c, x),
@@ -176,8 +210,10 @@ pub fn hsl_to_rgb_f32(h: f32, s: f32, l: f32) -> (f32, f32, f32) {
 }
 
 #[inline]
+#[must_use]
+#[allow(clippy::float_cmp)]
 /// Convert rgb space to hsl space
-pub fn rgb_to_hsl(r: u8, g: u8, b: u8) -> (f32, f32, f32) {
+pub const fn rgb_to_hsl(r: u8, g: u8, b: u8) -> (f32, f32, f32) {
     let r_norm = r as f32 / 255.0;
     let g_norm = g as f32 / 255.0;
     let b_norm = b as f32 / 255.0;
@@ -190,12 +226,10 @@ pub fn rgb_to_hsl(r: u8, g: u8, b: u8) -> (f32, f32, f32) {
 
     let saturation = if delta < 0.0001 {
         0.0 // achromatic (gray)
+    } else if lightness < 0.5 {
+        delta / (max + min)
     } else {
-        if lightness < 0.5 {
-            delta / (max + min)
-        } else {
-            delta / (2.0 - max - min)
-        }
+        delta / (2.0 - max - min)
     };
 
     let hue = if delta < 0.0001 {
@@ -212,15 +246,21 @@ pub fn rgb_to_hsl(r: u8, g: u8, b: u8) -> (f32, f32, f32) {
 }
 
 #[inline]
+#[must_use]
+#[allow(clippy::cast_possible_truncation)]
+#[allow(clippy::cast_sign_loss)]
 /// Convert hsl space to rgb space
-
-pub fn hsl_to_rgb_u32(h: f32, s: f32, l: f32) -> (u8, u8, u8) {
-    let h_norm = h / 360.0;
-    let s_norm = s / 100.0;
-    let l_norm = l / 100.0;
+pub fn hsl_to_rgb_u32(
+    hue: f32,
+    saturation: f32,
+    lightness: f32,
+) -> (u32, u32, u32) {
+    let h_norm = hue / 360.0;
+    let s_norm = saturation / 100.0;
+    let l_norm = lightness / 100.0;
 
     if s_norm < 0.0001 {
-        let gray = (l_norm * 255.0).round() as u8;
+        let gray = (l_norm * 255.0).round() as u32;
         return (gray, gray, gray);
     }
 
@@ -234,11 +274,11 @@ pub fn hsl_to_rgb_u32(h: f32, s: f32, l: f32) -> (u8, u8, u8) {
         };
 
         if t_adj < 1.0 / 6.0 {
-            p + (q - p) * 6.0 * t_adj
+            ((q - p) * 6.0).mul_add(t_adj, p)
         } else if t_adj < 1.0 / 2.0 {
             q
         } else if t_adj < 2.0 / 3.0 {
-            p + (q - p) * (2.0 / 3.0 - t_adj) * 6.0
+            ((q - p) * (2.0 / 3.0 - t_adj)).mul_add(6.0, p)
         } else {
             p
         }
@@ -247,22 +287,23 @@ pub fn hsl_to_rgb_u32(h: f32, s: f32, l: f32) -> (u8, u8, u8) {
     let q = if l_norm < 0.5 {
         l_norm * (1.0 + s_norm)
     } else {
-        l_norm + s_norm - l_norm * s_norm
+        l_norm.mul_add(-s_norm, l_norm + s_norm)
     };
-    let p = 2.0 * l_norm - q;
+    let p = 2.0f32.mul_add(l_norm, -q);
 
-    let r = hue_to_rgb(p, q, h_norm + 1.0 / 3.0);
-    let g = hue_to_rgb(p, q, h_norm);
-    let b = hue_to_rgb(p, q, h_norm - 1.0 / 3.0);
+    let red = hue_to_rgb(p, q, h_norm + 1.0 / 3.0);
+    let green = hue_to_rgb(p, q, h_norm);
+    let blue = hue_to_rgb(p, q, h_norm - 1.0 / 3.0);
 
-    let r_8bit = (r * 255.0).round() as u8;
-    let g_8bit = (g * 255.0).round() as u8;
-    let b_8bit = (b * 255.0).round() as u8;
+    let r_8bit = (red * 255.0).round() as u32;
+    let g_8bit = (green * 255.0).round() as u32;
+    let b_8bit = (blue * 255.0).round() as u32;
 
     (r_8bit, g_8bit, b_8bit)
 }
 
 /// Higher-level function that provides both perceptual models
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum BrightnessModel {
     /// Uses RGB with perceptual weights
     LinearWeighted,
@@ -270,6 +311,11 @@ pub enum BrightnessModel {
     HSL,
 }
 #[inline]
+#[must_use]
+#[allow(clippy::cast_sign_loss)]
+#[allow(clippy::cast_precision_loss)]
+#[allow(clippy::cast_possible_truncation)]
+#[allow(clippy::cast_possible_wrap)]
 /// Change the brightness of an rgba color
 pub fn adjust_brightness_based_on_human_eye(
     color: u32,
@@ -279,44 +325,51 @@ pub fn adjust_brightness_based_on_human_eye(
     match model {
         BrightnessModel::LinearWeighted => {
             // Extract color components
-            let a = (color >> 24) & 0xFF;
-            let r = ((color >> 16) & 0xFF) as f32;
-            let g = ((color >> 8) & 0xFF) as f32;
-            let b = (color & 0xFF) as f32;
-
+            let (alpha, red, green, blue): (u32, f32, f32, f32) =
+                u32_to_argb(color).tuple_4_into();
             // Apply perceptual weights to adjustment
             let r_adj = x as f32 * 0.2126;
             let g_adj = x as f32 * 0.7152;
             let b_adj = x as f32 * 0.0722;
 
             // Apply adjustments with clamping
-            let r_new = (r + r_adj).clamp(0.0, 255.0) as u32;
-            let g_new = (g + g_adj).clamp(0.0, 255.0) as u32;
-            let b_new = (b + b_adj).clamp(0.0, 255.0) as u32;
+            let r_new = (red + r_adj).clamp(0.0, 255.0) as u32;
+            let g_new = (green + g_adj).clamp(0.0, 255.0) as u32;
+            let b_new = (blue + b_adj).clamp(0.0, 255.0) as u32;
 
             // Recombine with alpha
-            (a << 24) | (r_new << 16) | (g_new << 8) | b_new
+            (alpha << 24) | (r_new << 16) | (g_new << 8) | b_new
         }
         BrightnessModel::HSL => adjust_brightness_hsl_of_rgb(color, x),
     }
 }
 
 #[inline]
+#[must_use]
+#[allow(clippy::cast_sign_loss)]
+#[allow(clippy::cast_precision_loss)]
+#[allow(clippy::cast_possible_truncation)]
+#[allow(clippy::cast_possible_wrap)]
 /// Shift the color (hue) of rgb
-pub fn shift_color_rgb(r: u8, g: u8, b: u8, hue_shift: f32) -> (u8, u8, u8) {
-    let (h, s, l) = rgb_to_hsl(r, g, b);
+pub fn shift_color_rgb(
+    red: u8,
+    green: u8,
+    blue: u8,
+    hue_shift: f32,
+) -> (u32, u32, u32) {
+    let (hue, saturation, lightness) = rgb_to_hsl(red, green, blue);
 
-    let new_h = (h + hue_shift) % 360.0;
+    let new_h = (hue + hue_shift) % 360.0;
 
-    let l_norm = l / 100.0;
-    let s_norm = s / 100.0;
+    let l_norm = lightness / 100.0;
+    let s_norm = saturation / 100.0;
 
     let new_s = if l_norm > 0.5 {
         // Brighter colors - reduce saturation as lightness increases
-        s_norm * (1.0 - (l_norm - 0.5) * 2.0) * 100.0
+        s_norm * (l_norm - 0.5).mul_add(-2.0, 1.0) * 100.0
     } else {
         // Darker colors - reduce saturation as lightness decreases
-        s_norm * (1.0 - (0.5 - l_norm) * 2.0) * 100.0
+        s_norm * (0.5 - l_norm).mul_add(-2.0, 1.0) * 100.0
     };
 
     let new_l = if l_norm > 0.5 {
@@ -327,19 +380,20 @@ pub fn shift_color_rgb(r: u8, g: u8, b: u8, hue_shift: f32) -> (u8, u8, u8) {
         (l_norm * 1.1).min(1.0) * 100.0
     };
 
-    let new_s = new_s.max(0.0).min(100.0);
-    let new_l = new_l.max(0.0).min(100.0);
+    let new_s = new_s.clamp(0.0, 100.0);
+    let new_l = new_l.clamp(0.0, 100.0);
 
     hsl_to_rgb_u32(new_h, new_s, new_l)
 }
 
+#[must_use]
 /// Shift the hue of rgb, isn't there another function that does the exact same?
 pub fn shift_hue_rgb(
     r: u8,
     g: u8,
     b: u8,
     hue_shift_degrees: f32,
-) -> (u8, u8, u8) {
+) -> (u32, u32, u32) {
     // Convert to floating point RGB
     let mut hsv = rgb_to_hsl(r, g, b);
 
@@ -350,60 +404,67 @@ pub fn shift_hue_rgb(
     let (r, g, b) = hsl_to_rgb_u32(hsv.0, hsv.1, hsv.2);
     (r, g, b)
 }
+#[must_use]
 /// Shift the hue of a rgba u32
 pub fn shift_hue_u32(color: u32, hue_shift: f32) -> u32 {
     let (r, g, b) = u32_to_rgb(color);
     let (r, g, b) = shift_hue_rgb(r, g, b, hue_shift);
-    return rgb_to_u32(r, g, b);
+    rgb_u32_to_u32(r, g, b)
 }
 #[inline]
+#[must_use]
 /// Shift the color of a rgba u32
 pub fn shift_color_u32(color: u32, hue_shift: f32) -> u32 {
-    let a = (color >> 24) & 0xFF;
-    let r = (color >> 16) & 0xFF;
-    let g = (color >> 8) & 0xFF;
-    let b = color & 0xFF;
+    let alpha = (color >> 24) & 0xFF;
+    let red = (color >> 16) & 0xFF;
+    let green = (color >> 8) & 0xFF;
+    let blue = color & 0xFF;
 
     let (r_new, g_new, b_new) =
-        shift_color_rgb(r as u8, g as u8, b as u8, hue_shift);
+        shift_color_rgb(red as u8, green as u8, blue as u8, hue_shift);
 
-    (a << 24) | ((r_new as u32) << 16) | ((g_new as u32) << 8) | b_new as u32
+    rgba_u32_to_u32(r_new, g_new, b_new, alpha)
 }
-
+#[must_use]
 #[inline]
+#[allow(clippy::cast_sign_loss)]
 /// Adjust the brightness of a rgba u32 color faster than with the function that does it with with human perception in mind
 pub fn adjust_brightness_fast(color: u32, x: i32) -> u32 {
     // Extract color components
-    let r = ((color >> 16) & 0xFF) as i32;
-    let g = ((color >> 8) & 0xFF) as i32;
-    let b = (color & 0xFF) as i32;
+    let (red, green, blue): (i32, i32, i32) =
+        u32_to_rgb_u32(color).tuple_3_into();
 
     // Calculate new values with clamping
-    let r_new = (r + x).clamp(0, 255) as u32;
-    let g_new = (g + x).clamp(0, 255) as u32;
-    let b_new = (b + x).clamp(0, 255) as u32;
+    let r_new = (red + x).clamp(0, 255) as u32;
+    let g_new = (green + x).clamp(0, 255) as u32;
+    let b_new = (blue + x).clamp(0, 255) as u32;
 
     // Recombine into a single color value
     (r_new << 16) | (g_new << 8) | b_new
 }
 /// Desaturate the current color without caring that much about human vision
 #[inline]
+#[must_use]
+#[allow(clippy::cast_sign_loss)]
+#[allow(clippy::cast_precision_loss)]
+#[allow(clippy::cast_possible_truncation)]
+#[allow(clippy::cast_possible_wrap)]
 pub fn desaturate_fast(color: u32, amount: f32) -> u32 {
     // Extract color components
-    let r = ((color >> 16) & 0xFF) as f32;
-    let g = ((color >> 8) & 0xFF) as f32;
-    let b = (color & 0xFF) as f32;
+    let red = ((color >> 16) & 0xFF) as f32;
+    let green = ((color >> 8) & 0xFF) as f32;
+    let blue = (color & 0xFF) as f32;
 
     // Compute grayscale (luminance approximation)
-    let gray = 0.299 * r + 0.587 * g + 0.114 * b;
+    let gray = 0.114f32.mul_add(blue, 0.299f32.mul_add(red, 0.587 * green));
 
     // Interpolate between color and gray based on amount (0.0 to 1.0)
     let r_new =
-        ((r * (1.0 - amount)) + (gray * amount)).clamp(0.0, 255.0) as u32;
+        red.mul_add(1.0 - amount, gray * amount).clamp(0.0, 255.0) as u32;
     let g_new =
-        ((g * (1.0 - amount)) + (gray * amount)).clamp(0.0, 255.0) as u32;
+        green.mul_add(1.0 - amount, gray * amount).clamp(0.0, 255.0) as u32;
     let b_new =
-        ((b * (1.0 - amount)) + (gray * amount)).clamp(0.0, 255.0) as u32;
+        blue.mul_add(1.0 - amount, gray * amount).clamp(0.0, 255.0) as u32;
 
     // Recombine
     (r_new << 16) | (g_new << 8) | b_new
@@ -478,8 +539,8 @@ pub fn pixel_image_to_buffer(pixel_image: &glfw::PixelImage) -> Buffer {
         pixel_image.height as usize,
     );
 }
-/// A Buffer to be accessed without compression
-/// What is the difference between Buffer and Buffer? Buffer has more attributes ig :|
+// /// A Buffer to be accessed without compression
+// /// What is the difference between Buffer and Buffer? Buffer has more attributes ig :|
 // #[derive(Debug, Clone, PartialEq, Eq)]
 // pub struct Buffer {
 //     /// The Raw Data
@@ -656,6 +717,7 @@ use crate::platform::FileSystem;
 use crate::{math::interpolate, platform::Buffer};
 /// Convert u32 argb to hex
 #[inline(always)]
+#[must_use]
 pub fn u32_to_hex(color: u32) -> String {
     format!(
         "{:02x}{:02x}{:02x}{:02x}",
@@ -667,72 +729,64 @@ pub fn u32_to_hex(color: u32) -> String {
 }
 
 /// Convert hex into u32 argb
+///
+/// # Errors
+/// If the hex is not valid - The function expects for there to not be a # before the hex values
 #[inline(always)]
-pub fn hex_to_u32(hex: &str) -> u32 {
-    let a = u8::from_str_radix(&hex[0..2], 16).unwrap();
-    let r = u8::from_str_radix(&hex[2..4], 16).unwrap();
-    let g = u8::from_str_radix(&hex[4..6], 16).unwrap();
-    let b = u8::from_str_radix(&hex[6..8], 16).unwrap();
-    (a as u32) << 24 | (r as u32) << 16 | (g as u32) << 8 | b as u32
-}
-/// Convert hex into u32 rgba
-#[inline(always)]
-pub fn hex_to_u32_rgba(hex: &str) -> u32 {
-    let r = u8::from_str_radix(&hex[0..2], 16).unwrap();
-    let g = u8::from_str_radix(&hex[2..4], 16).unwrap();
-    let b = u8::from_str_radix(&hex[4..6], 16).unwrap();
-    let a = u8::from_str_radix(&hex[6..8], 16).unwrap();
-    (a as u32) << 24 | (r as u32) << 16 | (g as u32) << 8 | b as u32
-}
-/// Convert hex into u32 rgb
-#[inline(always)]
-pub fn hex_to_u32_rgb(hex: &str) -> u32 {
-    let r = u8::from_str_radix(&hex[2..4], 16).unwrap();
-    let g = u8::from_str_radix(&hex[4..6], 16).unwrap();
-    let b = u8::from_str_radix(&hex[6..8], 16).unwrap();
-    (r as u32) << 16 | (g as u32) << 8 | b as u32
+pub fn hex_to_u32(hex: &str) -> Result<u32, std::num::ParseIntError> {
+    let alpha = u8::from_str_radix(&hex[0..2], 16)?;
+    let red = u8::from_str_radix(&hex[2..4], 16)?;
+    let green = u8::from_str_radix(&hex[4..6], 16)?;
+    let blue = u8::from_str_radix(&hex[6..8], 16)?;
+    Ok(rgba_to_u32(red, green, blue, alpha))
 }
 
+/// Convert hex into u32 rgba
+///
+/// # Errors
+/// If the hex is not valid - The function expects for there to not be a # before the hex values
+#[inline(always)]
+pub fn hex_to_u32_rgba(hex: &str) -> Result<u32, std::num::ParseIntError> {
+    let red = u8::from_str_radix(&hex[0..2], 16)?;
+    let green = u8::from_str_radix(&hex[2..4], 16)?;
+    let blue = u8::from_str_radix(&hex[4..6], 16)?;
+    let alpha = u8::from_str_radix(&hex[6..8], 16)?;
+    Ok(argb_to_rgba(rgba_to_u32(red, green, blue, alpha)))
+}
+
+/// Convert hex into u32 rgb
+///
+/// # Errors
+/// If the hex is not valid - The function expects for there to not be a # before the hex values
+#[inline(always)]
+pub fn hex_to_u32_rgb(hex: &str) -> Result<u32, std::num::ParseIntError> {
+    let red = u8::from_str_radix(&hex[2..4], 16)?;
+    let green = u8::from_str_radix(&hex[4..6], 16)?;
+    let blue = u8::from_str_radix(&hex[6..8], 16)?;
+    Ok(rgb_to_u32(red, green, blue))
+}
+#[must_use]
 /// Converts rgb into hex
 #[inline(always)]
 pub fn rgb_to_hex(r: u8, g: u8, b: u8) -> String {
-    format!("{:02x}{:02x}{:02x}", r, g, b)
+    format!("{r:02x}{g:02x}{b:02x}")
 }
-
+/// Converts argb to rgba color
+#[must_use]
+pub const fn argb_to_rgba(color: u32) -> u32 {
+    let (a, r, g, b) = u32_to_argb(color);
+    rgba_to_u32(a, g, b, r)
+}
+#[must_use]
 /// Converts a list of argb to rgba and vice versa
 #[inline(always)]
 pub fn argb_list_to_rgba_list(input: &[u32]) -> Vec<u32> {
-    input
-        .iter()
-        .map(|&argb| {
-            let a = (argb >> 24) & 0xFF;
-            let r = (argb >> 16) & 0xFF;
-            let g = (argb >> 8) & 0xFF;
-            let b = argb & 0xFF;
-            (r as u32)
-                | ((g as u32) << 8)
-                | ((b as u32) << 16)
-                | ((a as u32) << 24)
-            // RGBA layout: 0xRRGGBBAA
-        })
-        .collect()
+    input.iter().map(|&argb| argb_to_rgba(argb)).collect()
 }
+#[must_use]
 /// Converts a list of rgba to argb and vice versa
 pub fn rgba_list_to_argb_list(input: &[u32]) -> Vec<u32> {
-    input
-        .iter()
-        .map(|&rgba| {
-            let r = (rgba >> 16) & 0xFF;
-            let g = (rgba >> 8) & 0xFF;
-            let b = rgba & 0xFF;
-            let a = (rgba >> 24) & 0xFF;
-            (r as u32)
-                | ((g as u32) << 8)
-                | ((b as u32) << 16)
-                | ((a as u32) << 24)
-            // ARGB layout: 0xAARRGGBB
-        })
-        .collect()
+    argb_list_to_rgba_list(input)
 }
 
 #[cfg(not(target_arch = "wasm32"))]
@@ -750,24 +804,21 @@ impl From<glfw::PixelImage> for Buffer {
         pixel_image_to_buffer(&pixel_image)
     }
 }
-
+#[must_use]
 #[inline]
-fn advance_color(r: u8, g: u8, b: u8) -> (u8, u8, u8) {
-    if b == 255 {
-        if g == 255 {
-            if r == 255 {
+const fn advance_color(red: u8, green: u8, blue: u8) -> (u8, u8, u8) {
+    if blue == 255 {
+        if green == 255 {
+            if red == 255 {
                 return (0, 0, 0);
-            } else {
-                return (r + 1, g, b);
             }
-        } else {
-            return (r, g + 1, b);
+            return (red + 1, green, blue);
         }
-    } else {
-        return (r, g, b + 1);
+        return (red, green + 1, blue);
     }
+    (red, green, blue + 1)
 }
-
+#[must_use]
 /// This is quite expensive
 pub fn get_unused_color(
     buffer: &[u8],
@@ -782,10 +833,11 @@ pub fn get_unused_color(
     }
     while unique_colors.contains(&current_color) {
         current_color =
-            advance_color(current_color.0, current_color.1, current_color.2)
+            advance_color(current_color.0, current_color.1, current_color.2);
     }
     current_color
 }
+#[must_use]
 /// A function specifically designed and optimized to work with the buffer of this lib
 pub fn get_unused_color_of_buffer(
     buffer: &Buffer,
@@ -803,17 +855,19 @@ pub fn get_unused_color_of_buffer(
     }
     while unique_colors.contains(&current_color) {
         current_color =
-            advance_color(current_color.0, current_color.1, current_color.2)
+            advance_color(current_color.0, current_color.1, current_color.2);
     }
     current_color
 }
 /// The interpolation mode for tge resizing of a buffer like object
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum InterpolationMode {
     /// Nearest neighbor - Best for pixel art
     Nearest,
     /// Linear interpolation - Idk this one always sucks, non pixel art ig
     Linear,
 }
+#[must_use]
 /// Resize a list of u32 to a list of u32s with a different visual size
 pub fn resize_buffer(
     buffer: &[u32],
@@ -832,6 +886,11 @@ pub fn resize_buffer(
         ),
     }
 }
+#[must_use]
+#[allow(clippy::cast_sign_loss)]
+#[allow(clippy::cast_precision_loss)]
+#[allow(clippy::cast_possible_truncation)]
+#[allow(clippy::cast_possible_wrap)]
 /// Resize u32 list using linear interpolation
 pub fn resize_buffer_linear(
     buffer: &[u32],
@@ -870,7 +929,11 @@ pub fn resize_buffer_linear(
 
     result
 }
-
+#[must_use]
+#[allow(clippy::cast_sign_loss)]
+#[allow(clippy::cast_precision_loss)]
+#[allow(clippy::cast_possible_truncation)]
+#[allow(clippy::cast_possible_wrap)]
 /// Interpolate a u32 rgba based on 4 other u32 rgba
 pub fn bilinear_interpolate_u32(
     p1: u32,
@@ -886,20 +949,24 @@ pub fn bilinear_interpolate_u32(
     let (r4, g4, b4, a4) = u32_to_rgba(p4).tuple_4_into();
 
     let interpolate_channel = |c1: f32, c2: f32, c3: f32, c4: f32| -> u8 {
-        let top = c1 * (1.0 - dx) + c2 * dx;
-        let bottom = c3 * (1.0 - dx) + c4 * dx;
-        let result = top * (1.0 - dy) + bottom * dy;
+        let top = c1.mul_add(1.0 - dx, c2 * dx);
+        let bottom = c3.mul_add(1.0 - dx, c4 * dx);
+        let result = top.mul_add(1.0 - dy, bottom * dy);
         result.round().clamp(0.0, 255.0) as u8
     };
 
-    let r = interpolate_channel(r1, r2, r3, r4);
-    let g = interpolate_channel(g1, g2, g3, g4);
-    let b = interpolate_channel(b1, b2, b3, b4);
-    let a = interpolate_channel(a1, a2, a3, a4);
+    let red = interpolate_channel(r1, r2, r3, r4);
+    let green = interpolate_channel(g1, g2, g3, g4);
+    let blue = interpolate_channel(b1, b2, b3, b4);
+    let alpha = interpolate_channel(a1, a2, a3, a4);
 
-    ((r as u32) << 24) | ((g as u32) << 16) | ((b as u32) << 8) | (a as u32)
+    rgba_to_u32(red, green, blue, alpha)
 }
-
+#[must_use]
+#[allow(clippy::cast_sign_loss)]
+#[allow(clippy::cast_precision_loss)]
+#[allow(clippy::cast_possible_truncation)]
+#[allow(clippy::cast_possible_wrap)]
 /// Resize u32 list using the nearest neighbor
 pub fn resize_buffer_nearest(
     buffer: &[u32],
@@ -915,8 +982,8 @@ pub fn resize_buffer_nearest(
 
     for y in 0..dst_height {
         for x in 0..dst_width {
-            let src_x = (x as f32 * x_ratio + 0.5).floor() as usize;
-            let src_y = (y as f32 * y_ratio + 0.5).floor() as usize;
+            let src_x = (x as f32).mul_add(x_ratio, 0.5).floor() as usize;
+            let src_y = (y as f32).mul_add(y_ratio, 0.5).floor() as usize;
 
             // Clamp to valid indices
             let src_x = src_x.min(src_width - 1);
@@ -928,6 +995,11 @@ pub fn resize_buffer_nearest(
 
     result
 }
+#[must_use]
+#[allow(clippy::cast_sign_loss)]
+#[allow(clippy::cast_precision_loss)]
+#[allow(clippy::cast_possible_truncation)]
+#[allow(clippy::cast_possible_wrap)]
 /// Interpolate between 2 colors linearly based on a scale of 0 to 1
 pub fn interpolate_color_rgb_u32(
     color1: u32,
@@ -936,42 +1008,75 @@ pub fn interpolate_color_rgb_u32(
 ) -> u32 {
     let (r1, g1, b1) = u32_to_rgb_u32(color1);
     let (r2, g2, b2) = u32_to_rgb_u32(color2);
-    let r = interpolate(r1 as f32, r2 as f32, progress);
-    let g = interpolate(g1 as f32, g2 as f32, progress);
-    let b = interpolate(b1 as f32, b2 as f32, progress);
-    return rgb_to_u32(r as u8, g as u8, b as u8);
+    let red = interpolate(r1 as f32, r2 as f32, progress);
+    let green = interpolate(g1 as f32, g2 as f32, progress);
+    let blue = interpolate(b1 as f32, b2 as f32, progress);
+    rgb_to_u32(red as u8, green as u8, blue as u8)
 }
 
 /// Inverts the rgb channels of the given color
-pub fn invert_color(color: u32) -> u32 {
+#[must_use]
+pub const fn invert_color(color: u32) -> u32 {
     let (r, g, b, a) = u32_to_rgba(color);
-    return rgba_to_u32(255 - r, 255 - g, 255 - b, a);
+    rgba_to_u32(255 - r, 255 - g, 255 - b, a)
 }
 
-/// Manage textures easily, has extra features when using the `imagery` as well as the `texture_manager_cleanup` flags
-/// Enable the `imagery` feature for automatic texture lookup -> Define a filepath for a texture and lazy load it
+/// # Features/Flag
+/// `imagery` - Grands access to automatic texture lookup -> Define a filepath for a texture and lazy load it
 ///
-/// Enable the `texture_manager_cleanup` feature to gain access to cleanup_unused
+/// `texture_manager_cleanup` - Grands accessability to `cleanup_unused`
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct TextureManager {
-    textures: Vec<Option<Buffer>>,
+    /// The raw images in Buffer form
+    pub textures: Vec<Option<Buffer>>,
+    /// A fast lookup -> Map texture indexes to String
     #[cfg(not(target_arch = "wasm32"))]
-    lookup: ahash::AHashMap<String, usize>,
+    pub lookup: ahash::AHashMap<String, usize>,
+    /// Map texture indexes to String
     #[cfg(target_arch = "wasm32")]
-    lookup: std::collections::HashMap<String, usize>,
-    free_list: Vec<usize>,
+    pub lookup: std::collections::HashMap<String, usize>,
+    /// A list of empty spaces -> Images cannot be popped when removed as that would move their index
+    pub free_list: Vec<usize>,
+    /// Map textures to files to lazy loading
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "imagery")]
-    texture_lookup: ahash::AHashMap<String, String>,
+    pub texture_lookup: ahash::AHashMap<String, String>,
     #[cfg(target_arch = "wasm32")]
     #[cfg(feature = "imagery")]
-    texture_lookup: std::collections::HashMap<String, String>,
+    /// Map textures to files to lazy loading
+    pub texture_lookup: std::collections::HashMap<String, String>,
+    /// A list of timestamps for when a texture has last been used
     #[cfg(feature = "texture_manager_cleanup")]
-    last_used: Vec<u64>, // frame number when last accessed
+    pub last_used: Vec<u64>,
+    /// 'Current' frame time for the textures to compare to
     #[cfg(feature = "texture_manager_cleanup")]
-    current_frame: u64,
+    pub current_frame: u64,
+}
+impl Default for TextureManager {
+    fn default() -> Self {
+        Self {
+            textures: Vec::new(),
+            #[cfg(not(target_arch = "wasm32"))]
+            lookup: ahash::AHashMap::new(),
+            #[cfg(target_arch = "wasm32")]
+            lookup: std::collections::HashMap::new(),
+            free_list: Vec::new(),
+            #[cfg(not(target_arch = "wasm32"))]
+            #[cfg(feature = "imagery")]
+            texture_lookup: ahash::AHashMap::new(),
+            #[cfg(target_arch = "wasm32")]
+            #[cfg(feature = "imagery")]
+            texture_lookup: std::collections::HashMap::new(),
+            #[cfg(feature = "texture_manager_cleanup")]
+            last_used: Vec::new(),
+            #[cfg(feature = "texture_manager_cleanup")]
+            current_frame: 0,
+        }
+    }
 }
 
 impl TextureManager {
+    #[must_use]
     /// Create a texture manager -> Request textures for visual applications
     pub fn new() -> Self {
         Self {
@@ -1095,7 +1200,7 @@ impl TextureManager {
         }
         Ok(())
     }
-    /// Remove textures that haven't been used in X ticks -> Call .tick() every frame for this to work properly
+    /// Remove textures that haven't been used in X ticks -> Call `tick()` every frame for this to work properly
     /// Set to 0 if you only ever want the images you need in memory
     /// Setting it to at least 1 however is recommended
     #[cfg(feature = "texture_manager_cleanup")]
@@ -1119,8 +1224,8 @@ impl TextureManager {
         }
     }
     #[allow(arithmetic_overflow)]
-    /// Tick the texture manager -> Only thing it does is increment a single value, required for .cleanup_unused()
-    pub fn tick(&mut self) {
+    /// Tick the texture manager -> Only thing it does is increment a single value, required for `cleanup_unused()`
+    pub const fn tick(&mut self) {
         self.current_frame += 1;
     }
 }

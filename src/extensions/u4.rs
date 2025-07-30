@@ -1,3 +1,6 @@
+#![allow(clippy::cast_lossless)]
+#![allow(clippy::cast_possible_truncation)]
+#![allow(clippy::cast_sign_loss)]
 use num_traits::{NumCast, ToPrimitive};
 
 use super::U2;
@@ -5,6 +8,7 @@ use super::U2;
 #[derive(Debug, Clone, Copy, PartialEq, Eq, std::cmp::PartialOrd)]
 /// A custom u4
 #[allow(missing_docs)]
+#[allow(clippy::struct_excessive_bools)]
 pub struct U4 {
     pub b0: bool,
     pub b1: bool,
@@ -13,73 +17,79 @@ pub struct U4 {
 }
 impl ToPrimitive for U4 {
     fn to_f32(&self) -> Option<f32> {
-        return Some(self.value().into());
+        Some(self.value().into())
     }
     fn to_f64(&self) -> Option<f64> {
-        return Some(self.value().into());
+        Some(self.value().into())
     }
     fn to_i128(&self) -> Option<i128> {
-        return Some(self.value().into());
+        Some(self.value().into())
     }
     fn to_i16(&self) -> Option<i16> {
-        return Some(self.value().into());
+        Some(self.value().into())
     }
     fn to_i32(&self) -> Option<i32> {
-        return Some(self.value().into());
+        Some(self.value().into())
     }
     fn to_i64(&self) -> Option<i64> {
-        return Some(self.value().into());
+        Some(self.value().into())
     }
     fn to_i8(&self) -> Option<i8> {
-        return Some(self.value().to_i8().unwrap());
+        self.value().to_i8()
     }
     fn to_isize(&self) -> Option<isize> {
-        return Some(self.value().into());
+        Some(self.value().into())
     }
     fn to_u128(&self) -> Option<u128> {
-        return Some(self.value().into());
+        Some(self.value().into())
     }
     fn to_u16(&self) -> Option<u16> {
-        return Some(self.value().into());
+        Some(self.value().into())
     }
     fn to_u32(&self) -> Option<u32> {
-        return Some(self.value().into());
+        Some(self.value().into())
     }
     fn to_u64(&self) -> Option<u64> {
-        return Some(self.value().into());
+        Some(self.value().into())
     }
     fn to_u8(&self) -> Option<u8> {
-        return Some(self.value());
+        Some(self.value())
     }
 }
 
 impl NumCast for U4 {
+    #[allow(clippy::unwrap_used)]
     fn from<T: num_traits::ToPrimitive>(n: T) -> Option<Self> {
         Some(Self::new(n.to_u8().unwrap()))
     }
 }
 
 impl U4 {
-    /// Create a U4 from a u8, panicking if value > 15
+    #[must_use]
+    /// Create a U4 from a u8
+    ///
+    /// # Panics
+    /// If the value is not within 0..15
     pub fn new(val: u8) -> Self {
         assert!(val <= 0b1111, "Value out of range for U4 (must be 0..=15)");
-        U4 {
+        Self {
             b0: (val & 0b0001) != 0,
             b1: (val & 0b0010) != 0,
             b2: (val & 0b0100) != 0,
             b3: (val & 0b1000) != 0,
         }
     }
+    #[must_use]
     /// Create a U4 without checking (masking to lower 4 bits)
     pub const fn from_u8_trunc(val: u8) -> Self {
-        U4 {
+        Self {
             b0: (val & 0b0001) != 0,
             b1: (val & 0b0010) != 0,
             b2: (val & 0b0100) != 0,
             b3: (val & 0b1000) != 0,
         }
     }
-
+    #[must_use]
     /// Get the integer value of this U4
     pub const fn value(self) -> u8 {
         (self.b0 as u8)
@@ -87,44 +97,46 @@ impl U4 {
             | ((self.b2 as u8) << 2)
             | ((self.b3 as u8) << 3)
     }
-
+    #[must_use]
     /// Returns true if the value is zero
     pub const fn is_zero(self) -> bool {
         !self.b0 && !self.b1 && !self.b2 && !self.b3
     }
-
+    #[must_use]
     /// Returns true if the value is the maximum (15)
     pub const fn is_max(self) -> bool {
         self.b0 && self.b1 && self.b2 && self.b3
     }
+    #[must_use]
     /// Wrapping add: (self + other) mod 16
-    pub const fn wrapping_add(self, other: U4) -> U4 {
-        U4::from_u8_trunc(self.value().wrapping_add(other.value()))
+    pub const fn wrapping_add(self, other: Self) -> Self {
+        Self::from_u8_trunc(self.value().wrapping_add(other.value()))
     }
-
+    #[must_use]
     /// Wrapping sub: (self - other) mod 16
-    pub const fn wrapping_sub(self, other: U4) -> U4 {
-        U4::from_u8_trunc(self.value().wrapping_sub(other.value()))
+    pub const fn wrapping_sub(self, other: Self) -> Self {
+        Self::from_u8_trunc(self.value().wrapping_sub(other.value()))
     }
+    #[must_use]
     /// Convert to U2 by truncating to lower 2 bits
     pub fn to_u2(self) -> U2 {
         self.into()
     }
-
+    #[must_use]
     /// Create a U4 from high and low U2 values
     /// The high U2 will occupy bits 2-3, and the low U2 will occupy bits 0-1
-    pub fn from_u2_pair(high: U2, low: U2) -> Self {
-        U4 {
+    pub const fn from_u2_pair(high: U2, low: U2) -> Self {
+        Self {
             b0: low.b0,
             b1: low.b1,
             b2: high.b0,
             b3: high.b1,
         }
     }
-
+    #[must_use]
     /// Split a U4 into high and low U2 values
-    /// Returns (high_bits, low_bits) where high_bits are bits 2-3 and low_bits are bits 0-1
-    pub fn split_to_u2_pair(self) -> (U2, U2) {
+    /// Returns (`high_bits`, `low_bits`) where `high_bits` are bits 2-3 and `low_bits` are bits 0-1
+    pub const fn split_to_u2_pair(self) -> (U2, U2) {
         let high = U2 {
             b0: self.b2,
             b1: self.b3,
@@ -141,63 +153,63 @@ impl U4 {
 
 // Bitwise and arithmetic traits
 impl std::ops::Not for U4 {
-    type Output = U4;
-    fn not(self) -> U4 {
-        U4::from_u8_trunc(!self.value())
+    type Output = Self;
+    fn not(self) -> Self {
+        Self::from_u8_trunc(!self.value())
     }
 }
 impl std::ops::BitAnd for U4 {
-    type Output = U4;
-    fn bitand(self, rhs: U4) -> U4 {
-        U4::from_u8_trunc(self.value() & rhs.value())
+    type Output = Self;
+    fn bitand(self, rhs: Self) -> Self {
+        Self::from_u8_trunc(self.value() & rhs.value())
     }
 }
 impl std::ops::BitOr for U4 {
-    type Output = U4;
-    fn bitor(self, rhs: U4) -> U4 {
-        U4::from_u8_trunc(self.value() | rhs.value())
+    type Output = Self;
+    fn bitor(self, rhs: Self) -> Self {
+        Self::from_u8_trunc(self.value() | rhs.value())
     }
 }
 impl std::ops::BitXor for U4 {
-    type Output = U4;
-    fn bitxor(self, rhs: U4) -> U4 {
-        U4::from_u8_trunc(self.value() ^ rhs.value())
+    type Output = Self;
+    fn bitxor(self, rhs: Self) -> Self {
+        Self::from_u8_trunc(self.value() ^ rhs.value())
     }
 }
 impl std::ops::Shl<usize> for U4 {
-    type Output = U4;
-    fn shl(self, rhs: usize) -> U4 {
-        U4::from_u8_trunc(self.value() << rhs)
+    type Output = Self;
+    fn shl(self, rhs: usize) -> Self {
+        Self::from_u8_trunc(self.value() << rhs)
     }
 }
 impl std::ops::Shr<usize> for U4 {
-    type Output = U4;
-    fn shr(self, rhs: usize) -> U4 {
-        U4::from_u8_trunc(self.value() >> rhs)
+    type Output = Self;
+    fn shr(self, rhs: usize) -> Self {
+        Self::from_u8_trunc(self.value() >> rhs)
     }
 }
 impl std::ops::Add for U4 {
     type Output = Self;
-    fn add(self, rhs: U4) -> U4 {
+    fn add(self, rhs: Self) -> Self {
         self.wrapping_add(rhs)
     }
 }
 impl std::ops::Sub for U4 {
-    type Output = U4;
-    fn sub(self, rhs: U4) -> U4 {
+    type Output = Self;
+    fn sub(self, rhs: Self) -> Self {
         self.wrapping_sub(rhs)
     }
 }
 impl std::ops::Mul for U4 {
-    type Output = U4;
-    fn mul(self, rhs: U4) -> U4 {
-        U4::from_u8_trunc(self.value().wrapping_mul(rhs.value()))
+    type Output = Self;
+    fn mul(self, rhs: Self) -> Self {
+        Self::from_u8_trunc(self.value().wrapping_mul(rhs.value()))
     }
 }
 impl std::ops::Div for U4 {
-    type Output = U4;
-    fn div(self, rhs: U4) -> U4 {
-        U4::from_u8_trunc(self.value().wrapping_div(rhs.value()))
+    type Output = Self;
+    fn div(self, rhs: Self) -> Self {
+        Self::from_u8_trunc(self.value().wrapping_div(rhs.value()))
     }
 }
 /// Convert a number into a u4
@@ -214,9 +226,7 @@ macro_rules! impl_u4_conversion {
             impl From<$t> for U4 {
                 fn from(val: $t) -> Self {
                     // Handle signed and unsigned differently
-                    let as_u8 = val as i128; // Safe for both signed/unsigned
-                    assert!((0..=15).contains(&as_u8), "Value out of range for U4 (must be 0..=15)");
-                    let val = as_u8 as u8;
+                    assert!((0..=15).contains(&val), "Value out of range for U4 (must be 0..=15)");
                     U4 {
                         b0: (val & 0b0001) != 0,
                         b1: (val & 0b0010) != 0,
@@ -233,7 +243,7 @@ macro_rules! impl_u4_conversion {
                         | ((val.b1 as u8) << 1)
                         | ((val.b2 as u8) << 2)
                         | ((val.b3 as u8) << 3);
-                    raw as $t
+                    num_traits::NumCast::from(raw).unwrap()
                 }
             }
         )*
@@ -308,12 +318,9 @@ impl num_traits::Num for U4 {
         radix: u32,
     ) -> Result<Self, Self::FromStrRadixErr> {
         let result = <u8 as num_traits::Num>::from_str_radix(str, radix);
-        if let Ok(r) = result {
-            return Result::Ok(Self::from_u8_trunc(r));
-        } else if let Err(e) = result {
-            return Result::Err(e);
-        } else {
-            panic!("This panic will never hit")
+        match result {
+            Ok(r) => Result::Ok(Self::from_u8_trunc(r)),
+            Err(e) => Result::Err(e),
         }
     }
 

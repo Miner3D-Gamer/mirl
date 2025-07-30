@@ -1,7 +1,7 @@
-use crate::graphics::{resize_buffer, u32_to_rgba, InterpolationMode};
-
 use super::Buffer;
+use crate::graphics::{resize_buffer, u32_to_rgba, InterpolationMode};
 impl Buffer {
+    #[must_use]
     /// Converts the [`Vec<u32>`] to [`Vec<8>`] by unpacking the u32 into argb style
     pub fn to_u8_argb(&self) -> Vec<u8> {
         let mut return_list = Vec::new();
@@ -12,8 +12,9 @@ impl Buffer {
             return_list.push(temp.2);
             return_list.push(temp.3);
         }
-        return return_list;
+        return_list
     }
+    #[must_use]
     /// Converts the internal [`Box<[u32]>`](Box<u32>) to [`Vec<8>`] by unpacking the u32 into rgba style
     pub fn to_u8_rgba(&self) -> Vec<u8> {
         let mut return_list = Vec::new();
@@ -24,18 +25,19 @@ impl Buffer {
             return_list.push(temp.2);
             return_list.push(temp.0);
         }
-        return return_list;
+        return_list
     }
+    #[must_use]
     /// Creates a new buffer and copies the contents of the current buffer
     pub fn resize_content(
         &mut self,
         width: usize,
         height: usize,
         resize_mode: InterpolationMode,
-    ) -> Buffer {
-        let mut new = Buffer::new_empty(width, height);
+    ) -> Self {
+        let mut new = Self::new_empty(width, height);
         let b = resize_buffer(
-            &self,
+            self,
             self.width,
             self.height,
             width,
@@ -43,6 +45,6 @@ impl Buffer {
             resize_mode,
         );
         new.data.copy_from_slice(&b);
-        return new;
+        new
     }
 }

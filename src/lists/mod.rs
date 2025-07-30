@@ -14,8 +14,9 @@ pub fn add_item_to_max_sized_list<T>(
     }
 }
 /// Get a 1d cut out from a 1d color list (1d internally, 2d textures)
+#[must_use]
 pub fn get_sub_vec_of_vec<T: Copy>(
-    vec: &Vec<T>,
+    vec: &[T],
     width: u32,
     cutout_x: u32,
     cutout_y: u32,
@@ -30,33 +31,47 @@ pub fn get_sub_vec_of_vec<T: Copy>(
             sub_vec.push(vec[index]);
         }
     }
-    return sub_vec;
+    sub_vec
 }
 /// Returns what it would be if T was pushed onto [`Vec<T>`]
-pub fn combined<T: Clone + Sized>(vec: &Vec<T>, other: T) -> Vec<T> {
+pub fn combined<T: Clone + Sized>(vec: &[T], other: T) -> Vec<T> {
     let mut new_vec = vec.to_vec();
     new_vec.push(other);
     new_vec
 }
 /// Get the average value of a list
+///
+/// # Panics
+/// If the length of the list is 0
+#[must_use]
 pub fn average<T: num_traits::Num + num_traits::NumCast + Copy>(
-    vec: &Vec<T>,
-) -> T {
+    vec: &[T],
+) -> Option<T> {
     let sum: T = vec.iter().copied().fold(T::zero(), |a, b| a + b);
-    let len = T::from(vec.len()).unwrap();
-    sum / len
-}
+    let len = T::from(vec.len());
 
+    if let Some(length) = len {
+        if length == T::zero() {
+            return None;
+        }
+        return Some(sum / length);
+    }
+    None
+}
+#[must_use]
 /// Get additions to a list
 pub fn get_difference_new<'a, T: std::cmp::PartialEq>(
-    old: &'a Vec<T>,
+    old: &'a [T],
     new: &'a Vec<T>,
 ) -> Vec<&'a T> {
     let mut result = Vec::new();
     for i in new {
         if !old.contains(i) {
-            result.push(i)
+            result.push(i);
         }
     }
-    return result;
+    result
 }
+
+mod copyable_list;
+pub use copyable_list::*;

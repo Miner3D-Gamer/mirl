@@ -1,8 +1,9 @@
 use winapi::um::winuser::GetSystemMetrics;
 
-use super::{Battery, Info, Screen, Memory};
+use super::{Battery, Info, Memory, Screen};
 
 /// Windows struct implementation of the OSInfo trait
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct WindowsInfo {
     //system: sysinfo::System,
 }
@@ -74,7 +75,7 @@ impl Screen for WindowsInfo {
                 &mut abd,
             ) != 0
             {
-                (abd.rc.bottom - abd.rc.top) as i32
+                abd.rc.bottom - abd.rc.top
             } else {
                 0 // Failed to get taskbar info
             }

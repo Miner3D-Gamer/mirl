@@ -26,7 +26,8 @@ where
         + Mul<Output = T>
         + Div<Output = T>,
 {
-    /// Create a new UnitRange with value 0.0
+    #[must_use]
+    /// Create a new `UnitRange` with value 0.0
     pub fn zero() -> Self {
         Self {
             value: T::zero(),
@@ -34,7 +35,8 @@ where
         }
     }
 
-    /// Create a new UnitRange with value 1.0
+    #[must_use]
+    /// Create a new `UnitRange` with value 1.0
     pub fn one() -> Self {
         Self {
             value: Self::max_value(),
@@ -42,15 +44,21 @@ where
         }
     }
 
-    /// Create a new UnitRange from a raw integer value
-    pub fn from_raw(value: T) -> Self {
+    #[must_use]
+    /// Create a new `UnitRange` from a raw integer value
+    pub const fn from_raw(value: T) -> Self {
         Self {
             value,
             _phantom: std::marker::PhantomData,
         }
     }
 
-    /// Create a new UnitRange from a float value (0.0 to 1.0)
+    #[must_use]
+    #[allow(clippy::unwrap_used)]
+    /// Create a new `UnitRange` from a float value (0.0 to 1.0)
+    /// 
+    /// # Panics
+    /// If T doesn't support being cast from f64
     pub fn from_f64(f: f64) -> Self {
         let clamped = f.clamp(0.0, 1.0);
         let max_val: f64 = NumCast::from(Self::max_value()).unwrap();
@@ -61,29 +69,40 @@ where
             _phantom: std::marker::PhantomData,
         }
     }
-
-    /// Create a new UnitRange from a float value (0.0 to 1.0)
+    #[must_use]
+    #[allow(clippy::cast_lossless)]
+    /// Create a new `UnitRange` from a float value (0.0 to 1.0)
     pub fn from_f32(f: f32) -> Self {
         Self::from_f64(f as f64)
     }
-
+    #[must_use]
     /// Get the raw integer value
-    pub fn raw(&self) -> T {
+    pub const fn raw(&self) -> T {
         self.value
     }
 
+    #[must_use]
+    #[allow(clippy::unwrap_used)]
     /// Convert to f64 (0.0 to 1.0)
+    ///
+    /// # Panics
+    /// If T does not support being cast to f64
     pub fn to_f64(&self) -> f64 {
         let val: f64 = NumCast::from(self.value).unwrap();
         let max_val: f64 = NumCast::from(Self::max_value()).unwrap();
         val / max_val
     }
-
+    #[must_use]
+    #[allow(clippy::cast_possible_truncation)]
     /// Convert to f32 (0.0 to 1.0)
+    ///
+    /// # Panics
+    /// If T does not support being cast to f32
     pub fn to_f32(&self) -> f32 {
         self.to_f64() as f32
     }
-
+    #[must_use]
+    #[allow(clippy::unwrap_used)]
     /// Get the maximum value for the underlying type
     #[allow(arithmetic_overflow)]
     fn max_value() -> T {
@@ -128,7 +147,7 @@ where
             max_val
         }
     }
-
+    #[must_use]
     /// Saturating addition
     pub fn saturating_add(self, other: Self) -> Self {
         let max_val = Self::max_value();
@@ -139,7 +158,7 @@ where
         };
         Self::from_raw(result)
     }
-
+    #[must_use]
     /// Saturating subtraction
     pub fn saturating_sub(self, other: Self) -> Self {
         let result = if self.value < other.value {

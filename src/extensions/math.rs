@@ -1,6 +1,10 @@
-/// A trait for numbers to support .sign()
+#![allow(clippy::cast_lossless)]
+#![allow(clippy::cast_precision_loss)]
+#![allow(clippy::cast_possible_truncation)]
+/// A trait for numbers to support `sign()`
 pub trait Sign {
     /// Returns the sign of the number -> -1, 0, 1
+    #[must_use]
     fn sign(self) -> Self;
 }
 
@@ -8,15 +12,27 @@ macro_rules! impl_sign {
     ($($t:ty),*) => {
         $(impl Sign for $t {
             fn sign(self) -> Self {
-                if self > 0 as $t { 1 as $t }
-                else if self < 0 as $t { -1 as $t }
-                else { 0 as $t }
+                if self > 0 { 1  }
+                else if self < 0  { -1 }
+                else { 0  }
+            }
+        })*
+    };
+}
+macro_rules! impl_sign_float {
+    ($($t:ty),*) => {
+        $(impl Sign for $t {
+            fn sign(self) -> Self {
+                if self > 0.0 { 1.0  }
+                else if self < 0.0  { -1.0 }
+                else { 0.0  }
             }
         })*
     };
 }
 
-impl_sign!(i8, i16, i32, i64, i128, isize, f32, f64);
+impl_sign!(i8, i16, i32, i64, i128, isize);
+impl_sign_float!(f32, f64);
 
 // use core::f32;
 // use std::convert::TryFrom;
@@ -24,9 +40,10 @@ impl_sign!(i8, i16, i32, i64, i128, isize, f32, f64);
 // pub fn from_u8<T: TryFrom<u8>>(value: u8) -> T {
 //     T::try_from(value).ok().expect("constant u8 conversion failed")
 // }
-/// A trait for making numbers support .sqrt()
+/// A trait for making numbers support `sqrt()`
 pub trait Sqrt {
     /// Return the square root of a number
+    #[must_use]
     fn sqrt(self) -> Self;
 }
 

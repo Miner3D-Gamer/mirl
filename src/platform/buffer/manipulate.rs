@@ -1,6 +1,7 @@
 use super::Buffer;
 
 impl Buffer {
+    #[must_use]
     /// Flip the buffer vertically (top becomes bottom)
     pub fn flip_vertically(&self) -> Self {
         let result = Self::new_empty(self.width, self.height);
@@ -16,7 +17,7 @@ impl Buffer {
 
         result
     }
-
+    #[must_use]
     /// Flip the buffer horizontally (left becomes right)
     pub fn flip_horizontally(&self) -> Self {
         let result = Self::new_empty(self.width, self.height);
@@ -33,7 +34,7 @@ impl Buffer {
 
         result
     }
-
+    #[must_use]
     /// Rotate the buffer 90°
     pub fn rotate_90(&self) -> Self {
         let result = Self::new_empty(self.height, self.width);
@@ -53,7 +54,7 @@ impl Buffer {
 
         result
     }
-
+    #[must_use]
     /// Rotate the buffer 180°
     pub fn rotate_180(&self) -> Self {
         let result = Self::new_empty(self.width, self.height);
@@ -68,7 +69,7 @@ impl Buffer {
 
         result
     }
-
+    #[must_use]
     /// Rotate the buffer 270° (or -90°)
     pub fn rotate_270(&self) -> Self {
         let result = Self::new_empty(self.height, self.width);

@@ -1,6 +1,7 @@
 use super::RotateDirections;
 
 /// N E S W
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Directions {
     /// It's North, what'd you expect?
     North,
@@ -15,26 +16,26 @@ pub enum Directions {
 impl RotateDirections for Directions {
     fn rotate_clockwise_90(&self) -> Self {
         match self {
-            Directions::North => Directions::East,
-            Directions::East => Directions::South,
-            Directions::South => Directions::West,
-            Directions::West => Directions::North,
+            Self::North => Self::East,
+            Self::East => Self::South,
+            Self::South => Self::West,
+            Self::West => Self::North,
         }
     }
     fn rotate_counterclockwise_90(&self) -> Self {
         match self {
-            Directions::North => Directions::West,
-            Directions::East => Directions::North,
-            Directions::South => Directions::East,
-            Directions::West => Directions::South,
+            Self::North => Self::West,
+            Self::East => Self::North,
+            Self::South => Self::East,
+            Self::West => Self::South,
         }
     }
     fn rotate_180(&self) -> Self {
         match self {
-            Directions::North => Directions::South,
-            Directions::East => Directions::West,
-            Directions::South => Directions::North,
-            Directions::West => Directions::East,
+            Self::North => Self::South,
+            Self::East => Self::West,
+            Self::South => Self::North,
+            Self::West => Self::East,
         }
     }
 }

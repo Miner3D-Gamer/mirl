@@ -1,3 +1,4 @@
+// Rewrite to use copyable list instead of Box<[u32]>?
 /// A raw color buffer to be modified and read quickly
 #[derive(PartialEq, Debug, Eq)]
 pub struct Buffer {
@@ -15,10 +16,10 @@ pub struct Buffer {
 
 mod get_converted;
 mod get_pixel;
+mod manipulate;
 mod new;
 mod set_color;
 mod trim;
-mod manipulate;
 
 use std::ops::Deref;
 // Automatically convert the usage of Buffer to Buffer.data
@@ -30,11 +31,23 @@ impl Deref for Buffer {
     }
 }
 
+impl Buffer {
+    /// Update internal pointer
+    pub fn update_pointer(&mut self) {
+        self.pointer = self.data.as_mut_ptr();
+    }
+    /// Update the total size of the buffer
+    pub const fn update_total_size(&mut self) {
+        self.total_size = self.width * self.height;
+    }
+}
+
 impl Clone for Buffer {
+    #[allow(clippy::as_ptr_cast_mut)]
     fn clone(&self) -> Self {
         let data = self.data.clone();
 
-        let pointer = data.as_ptr() as *mut u32;
+        let pointer = data.as_ptr().cast_mut();
 
         Self {
             data,

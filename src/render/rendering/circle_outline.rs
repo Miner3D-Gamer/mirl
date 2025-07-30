@@ -1,7 +1,8 @@
 use super::{draw_pixel_safe, draw_pixel_unsafe, DrawPixelFunction};
 use crate::platform::Buffer;
 
-#[inline(always)]
+#[inline]
+#[allow(clippy::cast_sign_loss)]
 /// Draws a circle outline using the Midpoint Circle Algorithm
 pub fn draw_circle_outline(
     buffer: &Buffer,
@@ -26,9 +27,9 @@ pub fn draw_circle_outline(
     while (x) < (-y) {
         if p > 0 {
             y += 1;
-            p += 2 * (x + y) + 1
+            p += 2 * (x + y) + 1;
         } else {
-            p += 2 * x + 1
+            p += 2 * x + 1;
         }
         let temp_x = x as usize;
         let temp_y = y as usize;
@@ -41,6 +42,6 @@ pub fn draw_circle_outline(
         draw_pixel(buffer, pos_x - temp_y, pos_y + temp_x, color);
         draw_pixel(buffer, pos_x - temp_y, pos_y - temp_x, color);
 
-        x += 1
+        x += 1;
     }
 }

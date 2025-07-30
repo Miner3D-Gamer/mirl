@@ -2,14 +2,16 @@ use super::{draw_pixel_safe, draw_pixel_unsafe, DrawPixelFunction};
 use crate::extensions::*;
 use crate::platform::Buffer;
 
-#[inline(always)]
+#[inline]
 /// Draw a simple line using Bresenham's line algorithm
+#[allow(clippy::cast_sign_loss)]
+#[allow(clippy::cast_precision_loss)]
+#[allow(clippy::cast_possible_truncation)]
+#[allow(clippy::cast_possible_wrap)]
 pub fn draw_line(
     buffer: &Buffer,
-    x1: usize,
-    y1: usize,
-    x2: usize,
-    y2: usize,
+    start: (usize, usize),
+    end: (usize, usize),
     color: u32,
     thickness: isize,
     safe: bool,
@@ -21,10 +23,10 @@ pub fn draw_line(
             draw_pixel_unsafe
         }
     };
-    let mut start_x = x1 as i16;
-    let mut start_y = y1 as i16;
-    let end_x = x2 as i16;
-    let end_y = y2 as i16;
+    let mut start_x = start.0 as i16;
+    let mut start_y = start.1 as i16;
+    let end_x = end.0 as i16;
+    let end_y = end.1 as i16;
 
     let difference_x: i16 = end_x - start_x;
     let difference_y: i16 = end_y - start_y;
@@ -37,12 +39,12 @@ pub fn draw_line(
     let mut normal_x = -difference_y;
     let mut normal_y = difference_x;
 
-    let length = (normal_x.pow(2) + normal_y.pow(2)) as f64;
-    let normal_length = (length as f64).sqrt() as i16;
-    normal_x =
-        (normal_x as f64 * thickness as f64 / normal_length as f64) as i16;
-    normal_y =
-        (normal_y as f64 * thickness as f64 / normal_length as f64) as i16;
+    let length = f64::from(normal_x.pow(2) + normal_y.pow(2));
+    let normal_length = (length).sqrt() as i16;
+    normal_x = (f64::from(normal_x) * thickness as f64
+        / f64::from(normal_length)) as i16;
+    normal_y = (f64::from(normal_y) * thickness as f64
+        / f64::from(normal_length)) as i16;
 
     if abs_difference_x > abs_difference_y {
         let mut error: i16 = abs_difference_x / 2;
