@@ -158,6 +158,19 @@ macro_rules! impl_sign_mapping {
                 v.wrapping_sub(<$unsigned>::MAX / 2 + 1) as Self::Signed
             }
         }
+        impl SignMapping for $unsigned {
+            type Signed = $signed;
+            type Unsigned = $unsigned;
+            
+            #[allow(clippy::cast_sign_loss)]
+            fn map_sign_to_non_sign(v: Self::Signed) -> Self::Unsigned {
+                (v as Self::Unsigned).wrapping_add(<$unsigned>::MAX / 2 + 1)
+            }
+            #[allow(clippy::cast_possible_wrap)]
+            fn map_non_sign_to_sign(v: Self::Unsigned) -> Self::Signed {
+                v.wrapping_sub(<$unsigned>::MAX / 2 + 1) as Self::Signed
+            }
+        }
     };
 }
 
