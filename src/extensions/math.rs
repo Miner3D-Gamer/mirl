@@ -67,6 +67,118 @@ impl_sqrt!(i64);
 impl_sqrt!(i128);
 impl_sqrt!(isize);
 
+use num_traits::{bounds, cast, identities, sign};
+
+/// Add a signed number to a non signed number
+pub trait AddSign<T> {
+    /// Simple addition of the possibly negative number
+    fn add_sign(&mut self, value: T);
+    /// Addition of the possibly negative number without over/underflowing
+    fn saturated_add_sign(&mut self, value: T);
+}
+
+impl<U, S> AddSign<S> for U
+where
+    U: sign::Unsigned
+        + bounds::Bounded
+        + identities::Zero
+        + Copy
+        + num_traits::WrappingAdd
+        + num_traits::WrappingSub
+        + num_traits::SaturatingAdd
+        + num_traits::SaturatingSub,
+    S: sign::Signed + Copy + std::cmp::PartialOrd + num_traits::NumCast,
+    U: std::ops::Add<U, Output = U>
+        + std::ops::Sub<U, Output = U>
+        + num_traits::NumCast,
+{
+    fn add_sign(&mut self, value: S) {
+        if value >= S::zero() {
+            if let Some(pos_val) = cast::cast::<S, U>(value) {
+                *self = self.wrapping_add(&pos_val);
+            } else {
+                *self = self.wrapping_add(&U::max_value());
+            }
+        } else {
+            let abs_val = value.abs();
+            if let Some(sub_val) = cast::cast::<S, U>(abs_val) {
+                *self = self.wrapping_sub(&sub_val);
+            } else {
+                *self = self.wrapping_sub(&U::max_value());
+            }
+        }
+    }
+
+    fn saturated_add_sign(&mut self, value: S) {
+        if value >= S::zero() {
+            if let Some(pos_val) = cast::cast::<S, U>(value) {
+                *self = self.saturating_add(&pos_val);
+            } else {
+                *self = U::max_value();
+            }
+        } else {
+            let abs_val = value.abs();
+            if let Some(sub_val) = cast::cast::<S, U>(abs_val) {
+                *self = self.saturating_sub(&sub_val);
+            } else {
+                *self = U::zero();
+            }
+        }
+    }
+}
+
+
+/// Trait for mapping between signed and unsigned integer types
+pub trait SignMapping {
+    /// Signed Version
+    type Signed;
+    /// Unsigned Version
+    type Unsigned;
+    
+    /// Map from signed to unsigned by flipping the sign bit
+    fn map_sign_to_non_sign(v: Self::Signed) -> Self::Unsigned;
+    
+    /// Map from unsigned back to signed by flipping the sign bit
+    fn map_non_sign_to_sign(v: Self::Unsigned) -> Self::Signed;
+}
+
+/// Macro to implement `SignMapping` for integer type pairs
+macro_rules! impl_sign_mapping {
+    ($signed:ty, $unsigned:ty) => {
+        impl SignMapping for $signed {
+            type Signed = $signed;
+            type Unsigned = $unsigned;
+            
+            #[allow(clippy::cast_sign_loss)]
+            fn map_sign_to_non_sign(v: Self::Signed) -> Self::Unsigned {
+                (v as Self::Unsigned).wrapping_add(<$unsigned>::MAX / 2 + 1)
+            }
+            #[allow(clippy::cast_possible_wrap)]
+            fn map_non_sign_to_sign(v: Self::Unsigned) -> Self::Signed {
+                v.wrapping_sub(<$unsigned>::MAX / 2 + 1) as Self::Signed
+            }
+        }
+    };
+}
+
+// Implement for all standard integer pairs
+impl_sign_mapping!(i8, u8);
+impl_sign_mapping!(i16, u16);
+impl_sign_mapping!(i32, u32);
+impl_sign_mapping!(i64, u64);
+impl_sign_mapping!(i128, u128);
+
+/// Map a value to their non signed counterpart
+pub fn map_sign_to_non_sign<T: SignMapping>(v: T::Signed) -> T::Unsigned {
+    T::map_sign_to_non_sign(v)
+}
+
+/// Map a value to their signed counterpart
+pub fn map_non_sign_to_sign<T: SignMapping>(v: T::Unsigned) -> T::Signed {
+    T::map_non_sign_to_sign(v)
+}
+
+
 // pub trait Modular<Rhs = Self> {
 //     type Output;
 //     fn modular(&self, modulus: Rhs) -> Self::Output;
