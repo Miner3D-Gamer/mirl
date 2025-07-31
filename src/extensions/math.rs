@@ -129,46 +129,46 @@ where
 
 
 /// Trait for mapping between signed and unsigned integer types
-pub trait SignMapping {
+pub trait MapToSign {
+    /// Signed Version
+    type Signed;
+    /// Unsigned Version
+    type Unsigned;
+    
+    /// Map from unsigned back to signed by flipping the sign bit
+    fn map_non_sign_to_sign(&self) -> Self::Signed;
+}
+/// Trait for mapping between signed and unsigned integer types
+pub trait MapToUnSign {
     /// Signed Version
     type Signed;
     /// Unsigned Version
     type Unsigned;
     
     /// Map from signed to unsigned by flipping the sign bit
-    fn map_sign_to_non_sign(v: Self::Signed) -> Self::Unsigned;
+    fn map_sign_to_non_sign(&self) -> Self::Unsigned;
     
-    /// Map from unsigned back to signed by flipping the sign bit
-    fn map_non_sign_to_sign(v: Self::Unsigned) -> Self::Signed;
 }
 
 /// Macro to implement `SignMapping` for integer type pairs
 macro_rules! impl_sign_mapping {
     ($signed:ty, $unsigned:ty) => {
-        impl SignMapping for $signed {
+        impl MapToUnSign for $signed {
             type Signed = $signed;
             type Unsigned = $unsigned;
             
             #[allow(clippy::cast_sign_loss)]
-            fn map_sign_to_non_sign(v: Self::Signed) -> Self::Unsigned {
-                (v as Self::Unsigned).wrapping_add(<$unsigned>::MAX / 2 + 1)
-            }
-            #[allow(clippy::cast_possible_wrap)]
-            fn map_non_sign_to_sign(v: Self::Unsigned) -> Self::Signed {
-                v.wrapping_sub(<$unsigned>::MAX / 2 + 1) as Self::Signed
+            fn map_sign_to_non_sign(&self) -> Self::Unsigned {
+                (*self as Self::Unsigned).wrapping_add(<$unsigned>::MAX / 2 + 1)
             }
         }
-        impl SignMapping for $unsigned {
+        impl MapToSign for $unsigned {
             type Signed = $signed;
             type Unsigned = $unsigned;
             
-            #[allow(clippy::cast_sign_loss)]
-            fn map_sign_to_non_sign(v: Self::Signed) -> Self::Unsigned {
-                (v as Self::Unsigned).wrapping_add(<$unsigned>::MAX / 2 + 1)
-            }
             #[allow(clippy::cast_possible_wrap)]
-            fn map_non_sign_to_sign(v: Self::Unsigned) -> Self::Signed {
-                v.wrapping_sub(<$unsigned>::MAX / 2 + 1) as Self::Signed
+            fn map_non_sign_to_sign(&self) -> Self::Signed {
+               self.wrapping_sub(<$unsigned>::MAX / 2 + 1) as Self::Signed
             }
         }
     };
@@ -180,16 +180,6 @@ impl_sign_mapping!(i16, u16);
 impl_sign_mapping!(i32, u32);
 impl_sign_mapping!(i64, u64);
 impl_sign_mapping!(i128, u128);
-
-/// Map a value to their non signed counterpart
-pub fn map_sign_to_non_sign<T: SignMapping>(v: T::Signed) -> T::Unsigned {
-    T::map_sign_to_non_sign(v)
-}
-
-/// Map a value to their signed counterpart
-pub fn map_non_sign_to_sign<T: SignMapping>(v: T::Unsigned) -> T::Signed {
-    T::map_non_sign_to_sign(v)
-}
 
 
 // pub trait Modular<Rhs = Self> {
