@@ -18,8 +18,8 @@ pub fn sleep(time: std::time::Duration) {
 }
 /// Log the given object to the console, not good but it works
 #[inline(always)]
-pub fn log<T: std::fmt::Debug>(t: T) {
-    println!("{:#?}", t);
+pub fn log(t: &str) {
+    println!("{}", t);
 }
 /// A struct to manage pressed keys
 #[derive(Clone, Debug, Copy, PartialEq)]

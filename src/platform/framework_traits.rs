@@ -72,7 +72,7 @@ pub trait Input {
 /// Basic logging
 pub trait Output {
     /// Log the given object (to the terminal)
-    fn log(&self, t: &dyn std::fmt::Debug);
+    fn log(&self, t: &str);
 }
 
 /// Basic timing control

@@ -128,7 +128,7 @@ pub trait FileSystem {
     /// Checks if a file exists
     fn does_file_exist(&self, path: &str) -> bool;
     /// Debug function to see what folders the implementation searched in
-    fn get_searched_folders(&self)->Vec<String>;
+    fn get_searched_folders(&self) -> Vec<String>;
 }
 /// Supported (and unsupported) mouse buttons
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -345,6 +345,37 @@ pub enum KeyCode {
     Unknown,
 }
 
+macro_rules! define_keys {
+    ( $( $ident:ident => $name:expr ),* $(,)? ) => {
+         impl KeyCode {
+    /// Converts the requested key to a string representation of itself
+            #[must_use] pub const fn to_string(&self) -> &'static str {
+                match self {
+                    $( Self::$ident => $name ),*
+                }
+            }
+        }
+
+        /// All available keys in string form in a list
+        pub const AVAILABLE_KEY_NAMES: &[&str] = &[
+            $( $name ),*
+        ];
+
+        /// All available keys in [`KeyCode`] form a list
+        pub const AVAILABLE_KEYS: &[KeyCode] =&[
+            $( KeyCode::$ident ),*];
+
+        /// Get all available keys string form in a list
+        #[must_use] pub const fn get_available_key_names() -> &'static [&'static str] {
+            AVAILABLE_KEY_NAMES
+        }
+        /// Get all available keys in [`KeyCode`] form in a list
+        #[must_use] pub const fn get_available_keys() -> &'static [KeyCode] {
+            AVAILABLE_KEYS
+        }
+    };
+}
+
 impl KeyCode {
     #[must_use]
     #[allow(clippy::too_many_lines)]
@@ -514,202 +545,395 @@ impl KeyCode {
             Self::ThornÞ => Some("Þ".to_string()),
         }
     }
+    // #[allow(clippy::too_many_lines)]
+    // #[must_use]
+    // /// Converts the requested key to a string representation of itself
+    // pub const fn to_string(&self) -> &'static str {
+    //     match self {
+    //         // Letters
+    //         Self::A => "A",
+    //         Self::B => "B",
+    //         Self::C => "C",
+    //         Self::D => "D",
+    //         Self::E => "E",
+    //         Self::F => "F",
+    //         Self::G => "G",
+    //         Self::H => "H",
+    //         Self::I => "I",
+    //         Self::J => "J",
+    //         Self::K => "K",
+    //         Self::L => "L",
+    //         Self::M => "M",
+    //         Self::N => "N",
+    //         Self::O => "O",
+    //         Self::P => "P",
+    //         Self::Q => "Q",
+    //         Self::R => "R",
+    //         Self::S => "S",
+    //         Self::T => "T",
+    //         Self::U => "U",
+    //         Self::V => "V",
+    //         Self::W => "W",
+    //         Self::X => "X",
+    //         Self::Y => "Y",
+    //         Self::Z => "Z",
+
+    //         // Numbers
+    //         Self::Num0 => "0",
+    //         Self::Num1 => "1",
+    //         Self::Num2 => "2",
+    //         Self::Num3 => "3",
+    //         Self::Num4 => "4",
+    //         Self::Num5 => "5",
+    //         Self::Num6 => "6",
+    //         Self::Num7 => "7",
+    //         Self::Num8 => "8",
+    //         Self::Num9 => "9",
+    //         Self::KeyPad0 => "KeyPad 0",
+    //         Self::KeyPad1 => "KeyPad 1",
+    //         Self::KeyPad2 => "KeyPad 2",
+    //         Self::KeyPad3 => "KeyPad 3",
+    //         Self::KeyPad4 => "KeyPad 4",
+    //         Self::KeyPad5 => "KeyPad 5",
+    //         Self::KeyPad6 => "KeyPad 6",
+    //         Self::KeyPad7 => "KeyPad 7",
+    //         Self::KeyPad8 => "KeyPad 8",
+    //         Self::KeyPad9 => "KeyPad 9",
+
+    //         // Function Keys
+    //         Self::F1 => "F1",
+    //         Self::F2 => "F2",
+    //         Self::F3 => "F3",
+    //         Self::F4 => "F4",
+    //         Self::F5 => "F5",
+    //         Self::F6 => "F6",
+    //         Self::F7 => "F7",
+    //         Self::F8 => "F8",
+    //         Self::F9 => "F9",
+    //         Self::F10 => "F10",
+    //         Self::F11 => "F11",
+    //         Self::F12 => "F12",
+    //         Self::F13 => "F13",
+    //         Self::F14 => "F14",
+    //         Self::F15 => "F15",
+    //         Self::F16 => "F16",
+    //         Self::F17 => "F17",
+    //         Self::F18 => "F18",
+    //         Self::F19 => "F19",
+    //         Self::F20 => "F20",
+    //         Self::F21 => "F21",
+    //         Self::F22 => "F22",
+    //         Self::F23 => "F23",
+    //         Self::F24 => "F24",
+
+    //         // Modifiers
+    //         Self::LeftShift => "Left Shift",
+    //         Self::RightShift => "Right Shift",
+    //         Self::LeftControl => "Left Control",
+    //         Self::RightControl => "Right Control",
+    //         Self::LeftAlt => "Left Alt",
+    //         Self::RightAlt => "Right Alt",
+    //         Self::LeftSuper => "Left Super",
+    //         Self::RightSuper => "Right Super",
+
+    //         // Symbols / Punctuation
+    //         Self::Space => "Space",
+    //         Self::Enter => "Enter",
+    //         Self::Escape => "Escape",
+    //         Self::Backspace => "Backspace",
+    //         Self::Tab => "Tab",
+    //         Self::Comma => ",",
+    //         Self::Period => ".",
+    //         Self::Minus => "-",
+    //         Self::Equal => "=",
+    //         Self::LeftBracket => "[",
+    //         Self::RightBracket => "]",
+    //         Self::Backslash => "\\",
+    //         Self::Semicolon => ";",
+    //         Self::Quote => "\"",
+    //         Self::Tilde => "~",
+    //         Self::Slash => "/",
+    //         Self::Grave => "`",
+    //         Self::Apostrophe => "'",
+
+    //         // Arrow keys
+    //         Self::Up => "Up",
+    //         Self::Down => "Down",
+    //         Self::Left => "Left",
+    //         Self::Right => "Right",
+
+    //         // Editing keys
+    //         Self::Insert => "Insert",
+    //         Self::Delete => "Delete",
+    //         Self::Home => "Home",
+    //         Self::End => "End",
+    //         Self::PageUp => "Page Up",
+    //         Self::PageDown => "Page Down",
+
+    //         // Lock keys
+    //         Self::CapsLock => "Caps Lock",
+    //         Self::NumLock => "Num Lock",
+    //         Self::ScrollLock => "Scroll Lock",
+
+    //         // Keypad operations
+    //         Self::KeyPadDivide => "KeyPad /",
+    //         Self::KeyPadMultiply => "KeyPad *",
+    //         Self::KeyPadSubtract => "KeyPad -",
+    //         Self::KeyPadAdd => "KeyPad +",
+    //         Self::KeyPadDecimal => "KeyPad .",
+    //         Self::KeyPadEnter => "KeyPad Enter",
+
+    //         // International & special characters
+    //         Self::AUmlautÄ => "Ä",
+    //         Self::UUmlautÜ => "Ü",
+    //         Self::OUmlautÖ => "Ö",
+    //         Self::SS => "ß",
+    //         Self::ACircumflexÂ => "Â",
+    //         Self::UAcuteÚ => "Ú",
+    //         Self::OCircumflexÔ => "Ô",
+    //         Self::ICircumflexÎ => "Î",
+    //         Self::ECircumflexÊ => "Ê",
+    //         Self::EthÐ => "Ð",
+    //         Self::OELigatureŒ => "Œ",
+    //         Self::AAcuteÁ => "Á",
+    //         Self::YAcuteÝ => "Ý",
+    //         Self::IUmlautÏ => "Ï",
+    //         Self::NTildeÑ => "Ñ",
+    //         Self::OGraveÒ => "Ò",
+    //         Self::UGraveÙ => "Ù",
+    //         Self::ARingÅ => "Å",
+    //         Self::AELigatureÆ => "Æ",
+    //         Self::OSlashØ => "Ø",
+    //         Self::IGraveÌ => "Ì",
+    //         Self::ThornÞ => "Þ",
+
+    //         // Multimedia keys
+    //         Self::MediaPlayPause => "Media Play/Pause",
+    //         Self::MediaStop => "Media Stop",
+    //         Self::MediaNext => "Media Next",
+    //         Self::MediaPrev => "Media Previous",
+    //         Self::VolumeUp => "Volume Up",
+    //         Self::VolumeDown => "Volume Down",
+    //         Self::Mute => "Mute",
+
+    //         // Browser/OS keys
+    //         Self::BrowserBack => "Browser Back",
+    //         Self::BrowserForward => "Browser Forward",
+    //         Self::BrowserRefresh => "Browser Refresh",
+    //         Self::BrowserHome => "Browser Home",
+    //         Self::LaunchMail => "Launch Mail",
+    //         Self::LaunchApp1 => "Launch App 1",
+    //         Self::LaunchApp2 => "Launch App 2",
+
+    //         // Platform-specific
+    //         Self::Menu => "Menu",
+    //         Self::PrintScreen => "Print Screen",
+    //         Self::Pause => "Pause",
+    //         Self::Application => "Application",
+
+    //         // what
+    //         Self::F25 => "F25",
+    //         Self::KeyPadEqual => "KeyPad =",
+    //         Self::World1 => "World 1",
+    //         Self::World2 => "World 2",
+    //         Self::Unknown => "Unknown",
+    //     }
+    // }
 }
 impl std::fmt::Display for KeyCode {
-    #[allow(clippy::too_many_lines)]
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let value = match self {
-            // Letters
-            Self::A => "A".to_string(),
-            Self::B => "B".to_string(),
-            Self::C => "C".to_string(),
-            Self::D => "D".to_string(),
-            Self::E => "E".to_string(),
-            Self::F => "F".to_string(),
-            Self::G => "G".to_string(),
-            Self::H => "H".to_string(),
-            Self::I => "I".to_string(),
-            Self::J => "J".to_string(),
-            Self::K => "K".to_string(),
-            Self::L => "L".to_string(),
-            Self::M => "M".to_string(),
-            Self::N => "N".to_string(),
-            Self::O => "O".to_string(),
-            Self::P => "P".to_string(),
-            Self::Q => "Q".to_string(),
-            Self::R => "R".to_string(),
-            Self::S => "S".to_string(),
-            Self::T => "T".to_string(),
-            Self::U => "U".to_string(),
-            Self::V => "V".to_string(),
-            Self::W => "W".to_string(),
-            Self::X => "X".to_string(),
-            Self::Y => "Y".to_string(),
-            Self::Z => "Z".to_string(),
-
-            // Numbers
-            Self::Num0 => "0".to_string(),
-            Self::Num1 => "1".to_string(),
-            Self::Num2 => "2".to_string(),
-            Self::Num3 => "3".to_string(),
-            Self::Num4 => "4".to_string(),
-            Self::Num5 => "5".to_string(),
-            Self::Num6 => "6".to_string(),
-            Self::Num7 => "7".to_string(),
-            Self::Num8 => "8".to_string(),
-            Self::Num9 => "9".to_string(),
-            Self::KeyPad0 => "KeyPad 0".to_string(),
-            Self::KeyPad1 => "KeyPad 1".to_string(),
-            Self::KeyPad2 => "KeyPad 2".to_string(),
-            Self::KeyPad3 => "KeyPad 3".to_string(),
-            Self::KeyPad4 => "KeyPad 4".to_string(),
-            Self::KeyPad5 => "KeyPad 5".to_string(),
-            Self::KeyPad6 => "KeyPad 6".to_string(),
-            Self::KeyPad7 => "KeyPad 7".to_string(),
-            Self::KeyPad8 => "KeyPad 8".to_string(),
-            Self::KeyPad9 => "KeyPad 9".to_string(),
-
-            // Function Keys
-            Self::F1 => "F1".to_string(),
-            Self::F2 => "F2".to_string(),
-            Self::F3 => "F3".to_string(),
-            Self::F4 => "F4".to_string(),
-            Self::F5 => "F5".to_string(),
-            Self::F6 => "F6".to_string(),
-            Self::F7 => "F7".to_string(),
-            Self::F8 => "F8".to_string(),
-            Self::F9 => "F9".to_string(),
-            Self::F10 => "F10".to_string(),
-            Self::F11 => "F11".to_string(),
-            Self::F12 => "F12".to_string(),
-            Self::F13 => "F13".to_string(),
-            Self::F14 => "F14".to_string(),
-            Self::F15 => "F15".to_string(),
-            Self::F16 => "F16".to_string(),
-            Self::F17 => "F17".to_string(),
-            Self::F18 => "F18".to_string(),
-            Self::F19 => "F19".to_string(),
-            Self::F20 => "F20".to_string(),
-            Self::F21 => "F21".to_string(),
-            Self::F22 => "F22".to_string(),
-            Self::F23 => "F23".to_string(),
-            Self::F24 => "F24".to_string(),
-
-            // Modifiers
-            Self::LeftShift => "Left Shift".to_string(),
-            Self::RightShift => "Right Shift".to_string(),
-            Self::LeftControl => "Left Control".to_string(),
-            Self::RightControl => "Right Control".to_string(),
-            Self::LeftAlt => "Left Alt".to_string(),
-            Self::RightAlt => "Right Alt".to_string(),
-            Self::LeftSuper => "Left Super".to_string(),
-            Self::RightSuper => "Right Super".to_string(),
-
-            // Symbols / Punctuation
-            Self::Space => "Space".to_string(),
-            Self::Enter => "Enter".to_string(),
-            Self::Escape => "Escape".to_string(),
-            Self::Backspace => "Backspace".to_string(),
-            Self::Tab => "Tab".to_string(),
-            Self::Comma => ",".to_string(),
-            Self::Period => ".".to_string(),
-            Self::Minus => "-".to_string(),
-            Self::Equal => "=".to_string(),
-            Self::LeftBracket => "[".to_string(),
-            Self::RightBracket => "]".to_string(),
-            Self::Backslash => "\\".to_string(),
-            Self::Semicolon => ";".to_string(),
-            Self::Quote => "\"".to_string(),
-            Self::Tilde => "~".to_string(),
-            Self::Slash => "/".to_string(),
-            Self::Grave => "`".to_string(),
-            Self::Apostrophe => "'".to_string(),
-
-            // Arrow keys
-            Self::Up => "Up".to_string(),
-            Self::Down => "Down".to_string(),
-            Self::Left => "Left".to_string(),
-            Self::Right => "Right".to_string(),
-
-            // Editing keys
-            Self::Insert => "Insert".to_string(),
-            Self::Delete => "Delete".to_string(),
-            Self::Home => "Home".to_string(),
-            Self::End => "End".to_string(),
-            Self::PageUp => "Page Up".to_string(),
-            Self::PageDown => "Page Down".to_string(),
-
-            // Lock keys
-            Self::CapsLock => "Caps Lock".to_string(),
-            Self::NumLock => "Num Lock".to_string(),
-            Self::ScrollLock => "Scroll Lock".to_string(),
-
-            // Keypad operations
-            Self::KeyPadDivide => "KeyPad /".to_string(),
-            Self::KeyPadMultiply => "KeyPad *".to_string(),
-            Self::KeyPadSubtract => "KeyPad -".to_string(),
-            Self::KeyPadAdd => "KeyPad +".to_string(),
-            Self::KeyPadDecimal => "KeyPad .".to_string(),
-            Self::KeyPadEnter => "KeyPad Enter".to_string(),
-
-            // International & special characters
-            Self::AUmlautÄ => "Ä".to_string(),
-            Self::UUmlautÜ => "Ü".to_string(),
-            Self::OUmlautÖ => "Ö".to_string(),
-            Self::SS => "ß".to_string(),
-            Self::ACircumflexÂ => "Â".to_string(),
-            Self::UAcuteÚ => "Ú".to_string(),
-            Self::OCircumflexÔ => "Ô".to_string(),
-            Self::ICircumflexÎ => "Î".to_string(),
-            Self::ECircumflexÊ => "Ê".to_string(),
-            Self::EthÐ => "Ð".to_string(),
-            Self::OELigatureŒ => "Œ".to_string(),
-            Self::AAcuteÁ => "Á".to_string(),
-            Self::YAcuteÝ => "Ý".to_string(),
-            Self::IUmlautÏ => "Ï".to_string(),
-            Self::NTildeÑ => "Ñ".to_string(),
-            Self::OGraveÒ => "Ò".to_string(),
-            Self::UGraveÙ => "Ù".to_string(),
-            Self::ARingÅ => "Å".to_string(),
-            Self::AELigatureÆ => "Æ".to_string(),
-            Self::OSlashØ => "Ø".to_string(),
-            Self::IGraveÌ => "Ì".to_string(),
-            Self::ThornÞ => "Þ".to_string(),
-
-            // Multimedia keys
-            Self::MediaPlayPause => "Media Play/Pause".to_string(),
-            Self::MediaStop => "Media Stop".to_string(),
-            Self::MediaNext => "Media Next".to_string(),
-            Self::MediaPrev => "Media Previous".to_string(),
-            Self::VolumeUp => "Volume Up".to_string(),
-            Self::VolumeDown => "Volume Down".to_string(),
-            Self::Mute => "Mute".to_string(),
-
-            // Browser/OS keys
-            Self::BrowserBack => "Browser Back".to_string(),
-            Self::BrowserForward => "Browser Forward".to_string(),
-            Self::BrowserRefresh => "Browser Refresh".to_string(),
-            Self::BrowserHome => "Browser Home".to_string(),
-            Self::LaunchMail => "Launch Mail".to_string(),
-            Self::LaunchApp1 => "Launch App 1".to_string(),
-            Self::LaunchApp2 => "Launch App 2".to_string(),
-
-            // Platform-specific
-            Self::Menu => "Menu".to_string(),
-            Self::PrintScreen => "Print Screen".to_string(),
-            Self::Pause => "Pause".to_string(),
-            Self::Application => "Application".to_string(),
-
-            // what
-            Self::F25 => "F25".to_string(),
-            Self::KeyPadEqual => "KeyPad =".to_string(),
-            Self::World1 => "World 1".to_string(),
-            Self::World2 => "World 2".to_string(),
-            Self::Unknown => "Unknown".to_string(),
-        };
+        let value = self.to_string();
         write!(f, "{value}")
     }
 }
+define_keys!(
+            // Letters
+            A => "A",
+            B => "B",
+            C => "C",
+            D => "D",
+            E => "E",
+            F => "F",
+            G => "G",
+            H => "H",
+            I => "I",
+            J => "J",
+            K => "K",
+            L => "L",
+            M => "M",
+            N => "N",
+            O => "O",
+            P => "P",
+            Q => "Q",
+            R => "R",
+            S => "S",
+            T => "T",
+            U => "U",
+            V => "V",
+            W => "W",
+            X => "X",
+            Y => "Y",
+            Z => "Z",
+
+            // Numbers
+            Num0 => "0",
+            Num1 => "1",
+            Num2 => "2",
+            Num3 => "3",
+            Num4 => "4",
+            Num5 => "5",
+            Num6 => "6",
+            Num7 => "7",
+            Num8 => "8",
+            Num9 => "9",
+            KeyPad0 => "KeyPad 0",
+            KeyPad1 => "KeyPad 1",
+            KeyPad2 => "KeyPad 2",
+            KeyPad3 => "KeyPad 3",
+            KeyPad4 => "KeyPad 4",
+            KeyPad5 => "KeyPad 5",
+            KeyPad6 => "KeyPad 6",
+            KeyPad7 => "KeyPad 7",
+            KeyPad8 => "KeyPad 8",
+            KeyPad9 => "KeyPad 9",
+
+            // Function Keys
+            F1 => "F1",
+            F2 => "F2",
+            F3 => "F3",
+            F4 => "F4",
+            F5 => "F5",
+            F6 => "F6",
+            F7 => "F7",
+            F8 => "F8",
+            F9 => "F9",
+            F10 => "F10",
+            F11 => "F11",
+            F12 => "F12",
+            F13 => "F13",
+            F14 => "F14",
+            F15 => "F15",
+            F16 => "F16",
+            F17 => "F17",
+            F18 => "F18",
+            F19 => "F19",
+            F20 => "F20",
+            F21 => "F21",
+            F22 => "F22",
+            F23 => "F23",
+            F24 => "F24",
+
+            // Modifiers
+            LeftShift => "Left Shift",
+            RightShift => "Right Shift",
+            LeftControl => "Left Control",
+            RightControl => "Right Control",
+            LeftAlt => "Left Alt",
+            RightAlt => "Right Alt",
+            LeftSuper => "Left Super",
+            RightSuper => "Right Super",
+
+            // Symbols / Punctuation
+            Space => "Space",
+            Enter => "Enter",
+            Escape => "Escape",
+            Backspace => "Backspace",
+            Tab => "Tab",
+            Comma => ",",
+            Period => ".",
+            Minus => "-",
+            Equal => "=",
+            LeftBracket => "[",
+            RightBracket => "]",
+            Backslash => "\\",
+            Semicolon => ";",
+            Quote => "\"",
+            Tilde => "~",
+            Slash => "/",
+            Grave => "`",
+            Apostrophe => "'",
+
+            // Arrow keys
+            Up => "Up",
+            Down => "Down",
+            Left => "Left",
+            Right => "Right",
+
+            // Editing keys
+            Insert => "Insert",
+            Delete => "Delete",
+            Home => "Home",
+            End => "End",
+            PageUp => "Page Up",
+            PageDown => "Page Down",
+
+            // Lock keys
+            CapsLock => "Caps Lock",
+            NumLock => "Num Lock",
+            ScrollLock => "Scroll Lock",
+
+            // Keypad operations
+            KeyPadDivide => "KeyPad /",
+            KeyPadMultiply => "KeyPad *",
+            KeyPadSubtract => "KeyPad -",
+            KeyPadAdd => "KeyPad +",
+            KeyPadDecimal => "KeyPad .",
+            KeyPadEnter => "KeyPad Enter",
+
+            // International & special characters
+            AUmlautÄ => "Ä",
+            UUmlautÜ => "Ü",
+            OUmlautÖ => "Ö",
+            SS => "ß",
+            ACircumflexÂ => "Â",
+            UAcuteÚ => "Ú",
+            OCircumflexÔ => "Ô",
+            ICircumflexÎ => "Î",
+            ECircumflexÊ => "Ê",
+            EthÐ => "Ð",
+            OELigatureŒ => "Œ",
+            AAcuteÁ => "Á",
+            YAcuteÝ => "Ý",
+            IUmlautÏ => "Ï",
+            NTildeÑ => "Ñ",
+            OGraveÒ => "Ò",
+            UGraveÙ => "Ù",
+            ARingÅ => "Å",
+            AELigatureÆ => "Æ",
+            OSlashØ => "Ø",
+            IGraveÌ => "Ì",
+            ThornÞ => "Þ",
+
+            // Multimedia keys
+            MediaPlayPause => "Media Play/Pause",
+            MediaStop => "Media Stop",
+            MediaNext => "Media Next",
+            MediaPrev => "Media Previous",
+            VolumeUp => "Volume Up",
+            VolumeDown => "Volume Down",
+            Mute => "Mute",
+
+            // Browser/OS keys
+            BrowserBack => "Browser Back",
+            BrowserForward => "Browser Forward",
+            BrowserRefresh => "Browser Refresh",
+            BrowserHome => "Browser Home",
+            LaunchMail => "Launch Mail",
+            LaunchApp1 => "Launch App 1",
+            LaunchApp2 => "Launch App 2",
+
+            // Platform-specific
+            Menu => "Menu",
+            PrintScreen => "Print Screen",
+            Pause => "Pause",
+            Application => "Application",
+
+            // what
+            F25 => "F25",
+            KeyPadEqual => "KeyPad =",
+            World1 => "World 1",
+            World2 => "World 2",
+            Unknown => "Unknown",);
 
 #[must_use]
 /// Convert a list of keycodes into a String and return the ones that weren't convertible
@@ -857,13 +1081,13 @@ pub mod minifb;
 /// The glfw version of the backend
 pub mod glfw;
 
+#[cfg(feature = "system")]
+/// Traits used by the backends
+pub mod framework_traits;
 #[cfg(all(feature = "resvg", feature = "system"))]
 // Window associates
 /// Everything do to with cursors
 pub mod mouse;
-#[cfg(feature = "system")]
-/// Traits used by the backends
-pub mod framework_traits;
 
 /// Why bother reading files if you can't process them? Let [`file_data::FileData`] fix that.
 pub mod file_data;

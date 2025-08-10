@@ -274,7 +274,7 @@ const fn action_to_bool(action: Action) -> bool {
 impl<MouseManagerScrollAccuracy: num_traits::Float> Output
     for Framework<MouseManagerScrollAccuracy>
 {
-    fn log(&self, t: &dyn std::fmt::Debug) {
+    fn log(&self, t: &str) {
         super::shared::log(t)
     }
 }

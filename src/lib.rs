@@ -66,6 +66,9 @@ pub mod console;
 #[cfg(feature = "system")]
 pub mod system;
 
+/// Useful constants -> std contains some of these internally yet doesn't have them `pub`bed
+pub mod constants;
+
 /// Enables the rust traceback by setting the environment variable `RUST_BACKTRACE` to `1`
 pub fn enable_traceback() {
     unsafe {

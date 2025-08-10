@@ -109,7 +109,7 @@ impl Input for Framework {
 
 impl Output for Framework {
     #[inline]
-    fn log(&self, t: &dyn std::fmt::Debug) {
+    fn log(&self, t: &str) {
         super::shared::log(t);
     }
 }
