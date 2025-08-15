@@ -11,6 +11,8 @@
         "COLORREF",
         "CXSCREEN",
         "CYSCREEN",
+        "doctest",
+        "egui",
         "EXSTYLE",
         "fdiag",
         "FRAMECHANGED",

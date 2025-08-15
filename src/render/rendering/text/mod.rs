@@ -129,12 +129,7 @@ pub fn get_character(
     return x;
 }
 /// Get the length of a string in a font if it was rendered out
-
-pub fn get_length_of_string(
-    string: &str,
-    size: f32,
-    font: &fontdue::Font,
-) -> f32 {
+pub fn get_text_width(string: &str, size: f32, font: &fontdue::Font) -> f32 {
     let mut total_width = 0.0;
 
     for ch in string.chars() {
@@ -143,4 +138,21 @@ pub fn get_length_of_string(
     }
 
     total_width
+}
+/// Get the height of a string in a font if it was rendered out
+pub fn get_text_height(string: &str, size: f32, font: &fontdue::Font) -> f32 {
+    let mut max_height = size;
+    let mut min_height = 0.0;
+
+    for ch in string.chars() {
+        let (metrics, _) = get_character(ch, size, font);
+        if metrics.height as f32 > max_height {
+            max_height = metrics.height as f32
+        }
+        if (metrics.ymin as f32) < min_height {
+            min_height = metrics.ymin as f32;
+        }
+    }
+
+    max_height - min_height
 }

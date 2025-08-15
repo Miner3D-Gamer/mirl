@@ -282,7 +282,9 @@ use windows::{
 
 use crate::lists::combined;
 use crate::platform::{Buffer, WindowLevel};
-use crate::system::action::{Decoration, Default, Misc, Transparency};
+use crate::system::action::{
+    Decoration, Default, Misc, ProgressionState, TaskBar, Transparency,
+};
 
 #[allow(trivial_casts)]
 fn capture_screen_raw() -> Option<Buffer> {
@@ -992,4 +994,91 @@ fn get_title_using_id_raw(hwnd: winapi::shared::windef::HWND) -> String {
         String::new()
     };
     return title;
+}
+
+// use windows::Win32::UI::WindowsAndMessaging::{FLASHWINFO, FLASHW_ALL, FLASHW_TIMERNOFG, FlashWindowEx};
+
+// pub fn flash_window(hwnd: HWND) {
+//     unsafe {
+//         let info = FLASHWINFO {
+//             cbSize: std::mem::size_of::<FLASHWINFO>() as u32,
+//             hwnd,
+//             dwFlags: FLASHW_ALL | FLASHW_TIMERNOFG,
+//             uCount: 0,
+//             dwTimeout: 0,
+//         };
+//         FlashWindowEx(&info);
+//     }
+// }
+
+impl TaskBar for WindowsActions {
+    fn set_icon_state(
+        handle: &raw_window_handle::RawWindowHandle,
+        state: &ProgressionState,
+    ) {
+        if let raw_window_handle::RawWindowHandle::Win32(raw) = handle {
+            let _ = set_taskbar_progress_state(HWND(raw.hwnd.get()), state);
+        }
+    }
+    fn set_icon_progress(
+        handle: &raw_window_handle::RawWindowHandle,
+        current: u64,
+        total: u64,
+    ) {
+        if let raw_window_handle::RawWindowHandle::Win32(raw) = handle {
+            let _ = set_taskbar_progress_value(
+                HWND(raw.hwnd.get()),
+                current,
+                total,
+            );
+        }
+    }
+}
+
+use windows::{
+    core::Result,
+    Win32::{
+        System::Com::{CoCreateInstance, CLSCTX_ALL},
+        UI::Shell::{
+            ITaskbarList3, TaskbarList, TBPFLAG, TBPF_ERROR,
+            TBPF_INDETERMINATE, TBPF_NOPROGRESS, TBPF_NORMAL, TBPF_PAUSED,
+        },
+    },
+};
+/// Convert between ProgressionState and TBPFLAG
+pub const fn map_state_to_windows_state(state: &ProgressionState) -> TBPFLAG {
+    match state {
+        ProgressionState::NoBar => TBPF_NOPROGRESS,
+        ProgressionState::Error => TBPF_ERROR,
+        ProgressionState::Loading => TBPF_INDETERMINATE,
+        ProgressionState::Normal => TBPF_NORMAL,
+        ProgressionState::Paused => TBPF_PAUSED,
+    }
+}
+///
+pub fn set_taskbar_progress_state(
+    hwnd: HWND,
+    state: &ProgressionState,
+) -> Result<()> {
+    unsafe {
+        let taskbar: ITaskbarList3 =
+            CoCreateInstance(&TaskbarList, None, CLSCTX_ALL)?;
+        taskbar.HrInit()?;
+        taskbar.SetProgressState(hwnd, map_state_to_windows_state(state))?;
+    }
+    Ok(())
+}
+///
+pub fn set_taskbar_progress_value(
+    hwnd: HWND,
+    completed: u64,
+    total: u64,
+) -> Result<()> {
+    unsafe {
+        let taskbar: ITaskbarList3 =
+            CoCreateInstance(&TaskbarList, None, CLSCTX_ALL)?;
+        taskbar.HrInit()?;
+        taskbar.SetProgressValue(hwnd, completed, total)?;
+    }
+    Ok(())
 }

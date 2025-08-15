@@ -11,11 +11,30 @@
 #![warn(clippy::todo)]
 #![warn(clippy::panic)]
 #![allow(clippy::wildcard_imports)]
+#![allow(clippy::needless_doctest_main)]
+#![feature(const_trait_impl)]
+#![feature(const_ops)]
 //! Miners
 //! Rust
 //! Lib
 //! Mirl (Mirl sounded better than Mrl)
 //!
+//! How to get started:
+//! ```
+//! use mirl::platform::framework_traits::Window;
+//! fn main() {
+//!     let buffer = mirl::platform::Buffer::new_empty(800, 600);
+//!     let mut window = mirl::platform::minifb::Framework::new(
+//!         "Example window",
+//!         mirl::platform::WindowSettings::default(&buffer),
+//!     );
+//!     while window.is_open() {
+//!         buffer.clear();
+//!
+//!         window.update(&buffer)
+//!     }
+//! }
+//! ```
 //!
 //! This lib has got a ton to offer but the main attractions are in here:
 //! ## Window/Rendering Bundle (flags: `minifb_backend`/`glfw_backend`/`full_backend_support`):
@@ -28,8 +47,6 @@
 //! - [Color Stuff](crate::graphics) - What is rendering without color manipulation?
 //! - [Modular File System](crate::platform::FileSystem) - A custom file system wrapper to support file accessing on web and natively
 //! - [Rust functionality extension](crate::extensions) with a big focus yet not limited to new tuple functionality
-//!
-//! If anyone knows why the result of `cargo docs` is so inconsistent for crate links, please let me know
 
 /// Directional stuff -> NESW, N NE E SE S SW W NW
 pub mod directions;

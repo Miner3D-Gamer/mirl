@@ -1,5 +1,7 @@
+#[cfg(feature = "ico")]
 use std::str::FromStr;
 
+#[cfg(feature = "ico")]
 use ico::{IconDir, IconDirEntry, IconImage, ResourceType};
 
 use super::framework_traits::{
@@ -13,6 +15,7 @@ use super::mouse::Cursor;
 use super::Time;
 use super::{time::NativeTime, Buffer};
 use crate::extensions::*;
+#[cfg(feature = "ico")]
 use crate::graphics::u32_to_rgba;
 use crate::platform::{KeyCode, MouseButton, WindowLevel};
 use crate::system::action::Decoration;
@@ -88,11 +91,10 @@ impl Window for Framework {
 impl Input for Framework {
     #[inline]
     fn get_mouse_position(&self) -> Option<(isize, isize)> {
-        let t = self.window.get_mouse_pos(minifb::MouseMode::Pass);
-        if let Some(value) = t {
-            return Some(value.tuple_2_into());
-        }
-        None
+        let value =
+            self.window.get_unscaled_mouse_pos(minifb::MouseMode::Pass)?;
+
+        Some(value.tuple_2_into())
     }
     #[inline]
     fn is_key_down(&self, key: KeyCode) -> bool {
@@ -194,6 +196,7 @@ impl ExtendedWindow for Framework {
     // fn wait(&self, time: u64) {
     //     std::thread::sleep(Duration::from_millis(time));
     // }
+    #[cfg(feature = "ico")]
     #[inline]
     fn set_icon(&mut self, buffer: &[u32], width: u32, height: u32) {
         // assert_eq!(
@@ -345,6 +348,7 @@ impl Control for Framework {
     }
 }
 
+#[cfg(feature = "ico")]
 fn encode_to_ico_format(buffer: &[u32], width: u32, height: u32) -> Vec<u8> {
     // Create a new icon directory
     let mut icon_dir = IconDir::new(ResourceType::Icon);

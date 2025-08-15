@@ -30,7 +30,7 @@ pub enum CursorStyle {
     /// Default cursor rotated to be vertical
     CenteredPointer,
     /// Horizontal resizing
-    ColResize,
+    ResizeHorizontally,
     /// Eyedropper
     ColorPicker,
     /// Default cursor with ≡ attached
@@ -70,13 +70,13 @@ pub enum CursorStyle {
     /// Arrow pointing right with a stopper →|
     SideRight,
     /// Resize top right to bottom left
-    SizeNESW,
+    ResizeNESW,
     /// Resize top left to bottom right
-    SizeNWSE,
+    ResizeNWSE,
     /// Resize horizontally
     SizeHor,
     /// Resize vertically
-    SizeVer,
+    ResizeVertically,
     /// I Beam
     Text,
     /// Arrow pointing up top left
@@ -337,6 +337,12 @@ pub enum KeyCode {
     Pause,
     Application,
 
+    // Convenient
+    AnyShift,
+    AnyAlt,
+    AnyControl,
+    AnySuper,
+
     // what
     F25,
     KeyPadEqual,
@@ -494,6 +500,10 @@ impl KeyCode {
             | Self::Application
             | Self::World1
             | Self::World2
+            | Self::AnyAlt
+            | Self::AnySuper
+            | Self::AnyControl
+            | Self::AnyShift
             | Self::Unknown => None,
             // Modifiers - return None for action keys
             // Symbols / Punctuation
@@ -928,6 +938,11 @@ define_keys!(
             Pause => "Pause",
             Application => "Application",
 
+            AnyShift=>"Shift",
+            AnyControl=>"Control",
+            AnyAlt=>"Alt",
+            AnySuper=>"Super",
+
             // what
             F25 => "F25",
             KeyPadEqual => "KeyPad =",
@@ -1103,6 +1118,8 @@ pub mod time;
 /// The standart key-board/code detection
 #[cfg(feature = "system")]
 pub mod keyboard;
+
+pub use buffer::const_buffer;
 
 // struct Camera {
 //     pub x: f64,

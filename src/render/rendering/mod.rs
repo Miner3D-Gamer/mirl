@@ -59,7 +59,6 @@ type DrawPixelFunction = fn(&Buffer, usize, usize, u32);
 //     Pretty,
 // }
 
-
 mod circle_outline;
 pub use circle_outline::*;
 #[cfg(feature = "font_support")]

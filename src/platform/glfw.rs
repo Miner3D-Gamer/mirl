@@ -12,9 +12,9 @@ use super::{
 };
 #[cfg(target_os = "windows")]
 use crate::platform::WindowLevel;
-use crate::{extensions::*, platform::KeyCode};
+use crate::{extensions::*, graphics, platform::KeyCode};
 use crate::{
-    graphics::argb_list_to_rgba_list,
+    
     system::action::{Decoration, Default},
 };
 /// glfw implementation of Framework
@@ -69,7 +69,10 @@ impl<MouseManagerScrollAccuracy: num_traits::Float> Window
 
         // Make the window's context current
         window.make_current();
+        window.set_all_polling(false);
         window.set_key_polling(true);
+        window.set_scroll_polling(true);
+        window.set_mouse_button_polling(true);
 
         window.set_pos(settings.position.0 as i32, settings.position.1 as i32);
         crate::system::OsActions::set_window_borderless(
@@ -236,12 +239,13 @@ impl<MouseManagerScrollAccuracy: num_traits::Float> Input
 {
     /// No, you won't get the real position of the mouse, calculate it yourself
     fn get_mouse_position(&self) -> Option<(isize, isize)> {
-        let (mouse_x, mouse_y): (isize, isize) =
-            self.window.get_cursor_pos().tuple_2_into();
-        let (window_x, window_y) = self.window.get_pos();
-        let relative_x = mouse_x - window_x as isize;
-        let relative_y = mouse_y - window_y as isize;
-        return Some((relative_x, relative_y));
+        Some(self.window.get_cursor_pos().tuple_2_into())
+        // let (mouse_x, mouse_y): (isize, isize) =
+        //     self.window.get_cursor_pos().tuple_2_into();
+        // let (window_x, window_y) = self.window.get_pos();
+        // let relative_x = mouse_x - window_x as isize;
+        // let relative_y = mouse_y - window_y as isize;
+        // return Some((relative_x, relative_y));
     }
     fn is_key_down(&self, keycode: super::KeyCode) -> bool {
         self.keyboard_manager.is_key_pressed(keycode)
@@ -263,11 +267,11 @@ impl<MouseManagerScrollAccuracy: num_traits::Float>
         return self.keyboard_manager.get_all_pressed_keys();
     }
 }
-const fn action_to_bool(action: Action) -> bool {
+const fn action_to_bool(action: Action) -> Option<bool> {
     match action {
-        Action::Press => true,
-        Action::Release => false,
-        Action::Repeat => false, //???
+        Action::Press => Some(true),
+        Action::Release => Some(false),
+        Action::Repeat => None,
     }
 }
 
@@ -301,9 +305,8 @@ impl<MouseManagerScrollAccuracy: num_traits::Float> ExtendedWindow
         super::mouse::use_cursor(style, Some(&mut self.window));
     }
     /// Not yet implemented
-    /// #[deprecated(note = "This function is not implemented and should not be used.")]
     fn set_icon(&mut self, _buffer: &[u32], _width: u32, _height: u32) {
-        panic!("Not yet implemented");
+        //panic!("Not yet implemented");
     }
     #[cfg(feature = "resvg")]
     fn load_custom_cursor(
@@ -362,10 +365,11 @@ fn process_events<MouseManagerScrollAccuracy: num_traits::Float>(
     for (_, event) in glfw::flush_messages(events) {
         match event {
             glfw::WindowEvent::Key(key, _scan_code, action, _mods) => {
-                window.keyboard_manager.set_key_state(
-                    map_glfw_key_to_keycode(key),
-                    action_to_bool(action),
-                );
+                if let Some(converted) = action_to_bool(action) {
+                    window
+                        .keyboard_manager
+                        .set_key_state(map_glfw_key_to_keycode(key), converted);
+                }
             }
             glfw::WindowEvent::Scroll(x, y) => {
                 window.mouse_manager.add_scroll((x, y).tuple_2_into());
@@ -374,10 +378,12 @@ fn process_events<MouseManagerScrollAccuracy: num_traits::Float>(
                 window.window.set_should_close(true);
             }
             glfw::WindowEvent::MouseButton(button, action, _mods) => {
-                window.mouse_manager.set_mouse_button_state(
-                    map_glfw_mouse_button_to_mouse_button(button),
-                    action_to_bool(action),
-                );
+                if let Some(action) = action_to_bool(action) {
+                    window.mouse_manager.set_mouse_button_state(
+                        map_glfw_mouse_button_to_mouse_button(button),
+                        action,
+                    );
+                }
             }
             glfw::WindowEvent::Maximize(bool) => {
                 window.minimized = bool;
@@ -700,7 +706,7 @@ unsafe fn update_texture(
     buffer: &[u32],
 ) {
     gl::BindTexture(gl::TEXTURE_2D, texture);
-    let rgba_buffer = argb_list_to_rgba_list(buffer);
+    let rgba_buffer = graphics::switch_red_and_blue_list(buffer);
     gl::TexImage2D(
         gl::TEXTURE_2D,
         0,

@@ -1,6 +1,6 @@
 #![allow(clippy::large_stack_frames)] // There has to be a better way
 
-use crate::{extensions::U2, platform::Buffer};
+use crate::{extensions::U2, graphics::switch_red_and_blue, platform::Buffer};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 /// A list with a known size that is able to be copied
@@ -275,5 +275,20 @@ impl From<VariableSizeList<u32>> for Buffer {
                 copy_list_to_buffer(&value, 256, 256)
             }
         }
+    }
+}
+
+impl<const N: usize> CopyableList<u32, N> {
+    /// Swaps red and blue channels in all ARGB values
+    /// ARGB format: 0xAARRGGBB -> 0xAABBGGRR
+    #[must_use]
+    pub const fn swap_red_blue(&self) -> Self {
+        let mut result = *self;
+        let mut i = 0;
+        while i < N {
+            result.data[i] = switch_red_and_blue(result.data[i]);
+            i += 1;
+        }
+        result
     }
 }

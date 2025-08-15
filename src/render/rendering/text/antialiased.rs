@@ -102,6 +102,105 @@ pub fn draw_text_antialiased(
     }
 }
 
+/// Execute a function at every pixel position
+pub fn draw_text_antialiased_execute_at(
+    buffer: &Buffer,
+    text: &str,
+    x: usize,
+    y: usize,
+    color: u32,
+    size: f32,
+    font: &fontdue::Font,
+    safe: bool,
+    function: fn(original_color: u32, color_under_pixel: u32) -> u32,
+) {
+    let draw_pixel: DrawPixelFunction = {
+        if safe {
+            draw_pixel_safe
+        } else {
+            draw_pixel_unsafe
+        }
+    };
+    let mut pen_x = x;
+    let pen_y = y;
+
+    let font_metrics = font.horizontal_line_metrics(size).unwrap();
+    let ascent = font_metrics.ascent as usize;
+
+    for ch in text.chars() {
+        // Try to get the glyph from cache first
+        let (metrics, bitmap) = get_character(ch, size, &font);
+
+        let offset_y = ascent.saturating_sub(metrics.height);
+        // Draw each character into the buffer
+        for gy in 0..metrics.height {
+            for gx in 0..metrics.width {
+                let px = pen_x + gx;
+                // Correcting for letter height
+                let py =
+                    ((pen_y + gy + offset_y) as i32 - metrics.ymin) as usize;
+
+                if px < buffer.width && py < buffer.height {
+                    let index = py * buffer.width + px;
+                    let alpha = bitmap[gy * metrics.width + gx]; // Alpha (0-255)
+                    let new_color = function(color, buffer.get_pixel((px, py)));
+
+                    if alpha > 0 {
+                        unsafe {
+                            let bg = *buffer.pointer.add(index);
+                            // Extract RGBA
+                            let (br, bg, bb, ba) = (
+                                (bg >> 24) & 0xFF,
+                                (bg >> 16) & 0xFF,
+                                (bg >> 8) & 0xFF,
+                                bg & 0xFF,
+                            );
+                            let (tr, tg, tb, ta) = (
+                                (new_color >> 24) & 0xFF,
+                                (new_color >> 16) & 0xFF,
+                                (new_color >> 8) & 0xFF,
+                                new_color & 0xFF,
+                            );
+
+                            // Alpha blending
+                            let inv_alpha: u8 = 255 - alpha;
+                            let nr = ((tr as u16 * alpha as u16
+                                + br as u16 * inv_alpha as u16)
+                                / 255)
+                                as u8;
+                            let ng = ((tg as u16 * alpha as u16
+                                + bg as u16 * inv_alpha as u16)
+                                / 255)
+                                as u8;
+                            let nb = ((tb as u16 * alpha as u16
+                                + bb as u16 * inv_alpha as u16)
+                                / 255)
+                                as u8;
+                            let na = ((ta as u16 * alpha as u16
+                                + ba as u16 * inv_alpha as u16)
+                                / 255)
+                                as u8;
+
+                            draw_pixel(
+                                buffer,
+                                px,
+                                py,
+                                (nr as u32) << 24
+                                    | (ng as u32) << 16
+                                    | (nb as u32) << 8
+                                    | na as u32,
+                            );
+                        }
+                    }
+                }
+            }
+        }
+
+        // Advance the cursor position
+        pen_x += metrics.advance_width as usize;
+    }
+}
+
 /// Draw text yet stretch the resulting characters
 pub fn draw_text_antialiased_stretched<F: num_traits::Float>(
     buffer: &Buffer,
@@ -156,7 +255,7 @@ pub fn draw_text_antialiased_stretched<F: num_traits::Float>(
 
                 if alpha > 0 {
                     let bg = buffer.get_pixel((px, py)); // Fixed: use px instead of gx
-                                                       // Extract RGBA
+                                                         // Extract RGBA
                     let (br, bg_g, bb, ba) = (
                         (bg >> 24) & 0xFF,
                         (bg >> 16) & 0xFF,

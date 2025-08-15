@@ -1,4 +1,6 @@
 /// The simplest actions you would expect from interacting with the os
+/// 
+/// TODO: Add error handling (Currently silent)
 pub trait Default {
     /// Set the position of a window, ¯\_(ツ)_/¯
     fn set_window_position(
@@ -86,21 +88,77 @@ pub trait Misc {
         after: &raw_window_handle::RawWindowHandle,
     ) -> bool;
 }
+/// Additional actions for tinkering with the taskbar
+pub trait TaskBar {
+    // fn flash(handle: &raw_window_handle::RawWindowHandle);
+    // /// For things like `Recently used` or `Pinned`
+    // fn right_click_menu(
+    //     handle: &raw_window_handle::RawWindowHandle,
+    //     actions: std::collections::HashMap<String, String>,
+    // );
+    // /// Set a custom preview instead of the default snapshot the os takes
+    // fn set_preview(
+    //     handle: &raw_window_handle::RawWindowHandle,
+    //     preview: &Buffer,
+    // );
+    // /// Little buttons like mute, pause, next
+    // fn set_toolbar_tools(
+    //     handle: &raw_window_handle::RawWindowHandle,
+    //     tools: Vec<ToolbarTool>,
+    // );
+    // /// Like the discord red circle
+    // fn set_icon_overlay(
+    //     handle: &raw_window_handle::RawWindowHandle,
+    //     overlay: &Buffer,
+    // );
+    /// Loading indicators
+    fn set_icon_state(
+        handle: &raw_window_handle::RawWindowHandle,
+        state: &ProgressionState,
+    );
+    /// Loading progress
+    fn set_icon_progress(
+        handle: &raw_window_handle::RawWindowHandle,
+        current: u64,
+        total: u64,
+    );
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+///
+pub struct ToolbarTool {}
+
+/// The loading state of the taskbar icon be aware that some OS may not support all of these
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ProgressionState {
+    /// Default behavior
+    Normal,
+    /// Make the white bar Red
+    Error,
+    /// Make the white bar Yellow
+    Paused,
+    /// Flat throbber
+    Loading,
+    /// Hide bar
+    NoBar,
+}
 
 #[cfg(target_os = "windows")]
-mod windows_actions;
+/// An OS specific library, only use when necessary
+pub mod windows_actions;
 #[cfg(target_os = "windows")]
 pub use windows_actions::WindowsActions as OsActions;
 
 #[cfg(target_os = "linux")]
-mod linux_actions;
+/// An OS specific library, only use when necessary
+pub mod linux_actions;
 #[cfg(target_os = "linux")]
 use linux_actions::{
     capture_desktop_background_raw, capture_screen_raw, get_window_id_by_title,
 };
 
 #[cfg(target_arch = "wasm32")]
-mod web_actions;
+/// An OS specific library, only use when necessary
+pub mod web_actions;
 #[cfg(target_arch = "wasm32")]
 use web_actions::{
     capture_desktop_background_raw, capture_screen_raw, get_window_id_by_title,

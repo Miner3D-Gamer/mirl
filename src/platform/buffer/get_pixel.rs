@@ -55,15 +55,14 @@ impl Buffer {
     #[allow(clippy::cast_sign_loss)]
     pub fn get_pixel_isize_fallback(
         &self,
-        x: isize,
-        y: isize,
+        xy: (isize, isize),
         fallback: u32,
     ) -> u32 {
-        if x < 0 || y < 0 {
+        if xy.0 < 0 || xy.1 < 0 {
             return fallback;
         }
-        let y = y as usize;
-        let x = x as usize;
+        let y = xy.1 as usize;
+        let x = xy.0 as usize;
         if x >= self.width || y >= self.height {
             return fallback;
         }

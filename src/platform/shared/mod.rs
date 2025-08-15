@@ -657,6 +657,13 @@ pub const fn map_keycode(keycode: KeyCode, key_manager: &KeyManager) -> bool {
         KeyCode::ThornÞ => key_manager.þ,
         KeyCode::OELigatureŒ => key_manager.œ,
 
+        KeyCode::AnyAlt => key_manager.right_shift || key_manager.left_shift,
+        KeyCode::AnyControl => {
+            key_manager.right_control || key_manager.left_control
+        }
+        KeyCode::AnyShift => key_manager.right_shift || key_manager.left_shift,
+        KeyCode::AnySuper => key_manager.right_super || key_manager.left_super,
+
         KeyCode::Pause => key_manager.pause,
         KeyCode::Apostrophe => key_manager.apostrophe,
         KeyCode::F25 => key_manager.f25,
@@ -828,6 +835,22 @@ pub fn set_keycode(
         KeyCode::YAcuteÝ => key_manager.ý = value,
         KeyCode::ThornÞ => key_manager.þ = value,
         KeyCode::OELigatureŒ => key_manager.œ = value,
+        KeyCode::AnyAlt => {
+            key_manager.right_alt = value;
+            key_manager.left_alt = value;
+        }
+        KeyCode::AnyShift => {
+            key_manager.right_shift = value;
+            key_manager.left_shift = value;
+        }
+        KeyCode::AnyControl => {
+            key_manager.right_control = value;
+            key_manager.left_control = value;
+        }
+        KeyCode::AnySuper => {
+            key_manager.right_super = value;
+            key_manager.left_super = value;
+        }
         KeyCode::Pause => key_manager.pause = value,
         KeyCode::Apostrophe => key_manager.apostrophe = value,
         KeyCode::F25 => key_manager.f25 = value,

@@ -243,9 +243,9 @@ fn delete_temp_file(path: &str) -> std::io::Result<()> {
 }
 
 /// A windows only function to set the current cursor
-pub fn set_cursor(cursor: HCURSOR) {
+pub fn set_cursor(cursor: &HCURSOR) {
     unsafe {
-        SetCursor(cursor);
+        SetCursor(*cursor);
     }
 }
 use windows::Win32::Foundation::{HWND, LPARAM, LRESULT, WPARAM};
@@ -299,8 +299,8 @@ pub unsafe fn subclass_window(
 }
 
 /// Helper function to update cursor without re-subclassing
-pub unsafe fn update_cursor(cursor: HCURSOR) {
-    CURRENT_CURSOR = cursor;
+pub unsafe fn update_cursor(cursor: &HCURSOR) {
+    CURRENT_CURSOR = *cursor;
 }
 // pub fn set_cursor_style(cursor: CursorStyle, cursors: &Cursors) {
 //     unsafe {

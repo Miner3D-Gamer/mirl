@@ -1,7 +1,6 @@
 #[cfg(feature = "resvg")]
 use super::mouse::Cursor;
 use super::{Buffer, KeyCode, MouseButton, Time};
-#[cfg(feature = "resvg")]
 use crate::extensions::*;
 
 /// Most basic of framework functionality
@@ -12,7 +11,6 @@ pub trait ExtendedFramework<MouseManagerScrollAccuracy: num_traits::Float>:
     Framework
     + ExtendedInput<MouseManagerScrollAccuracy>
     + ExtendedWindow
-    + ExtendedTiming
     + Control
     + ExtendedControl
 {
@@ -23,7 +21,6 @@ where
     T: Framework
         + ExtendedInput<MouseManagerScrollAccuracy>
         + ExtendedWindow
-        + ExtendedTiming
         + Control
         + ExtendedControl,
 {
@@ -61,7 +58,7 @@ pub trait Window {
 }
 /// Basic input detection
 pub trait Input {
-    /// Gets the current mouse position relative to the window
+    /// Gets the current mouse position
     fn get_mouse_position(&self) -> Option<(isize, isize)>;
     /// Checks if the requested key is down.
     /// Warning: Most backends to not support all keys (like 'f25', 'world2', or 'Þ') and will always return false in that case
@@ -69,6 +66,19 @@ pub trait Input {
     /// Checks if the requested mouse button is down
     fn is_mouse_down(&self, button: MouseButton) -> bool;
 }
+/// Get the relative mouse position
+pub trait RelativeMousePos {
+    /// Get the mouse position relative to the window
+    fn get_mouse_position_relative(&self) -> Option<(isize, isize)>;
+}
+impl<T: Input + Control> RelativeMousePos for T {
+    fn get_mouse_position_relative(&self) -> Option<(isize, isize)> {
+        let mouse_pos = self.get_mouse_position()?;
+        let window_pos = self.get_position();
+        Some(mouse_pos.add(window_pos))
+    }
+}
+
 /// Basic logging
 pub trait Output {
     /// Log the given object (to the terminal)
@@ -104,12 +114,20 @@ pub trait ExtendedWindow {
     fn set_title(&mut self, title: &str);
     /// Set the current icon (task bar)
     /// Width/Height should be something like 32x32 or 48x48 for maximal compatibility
+    #[cfg(feature = "ico")]
     fn set_icon(&mut self, buffer: &[u32], width: u32, height: u32);
     /// Set what cursors the os should display on the current window
     #[cfg(feature = "resvg")]
     fn set_cursor_style(&mut self, style: &Cursor);
     #[cfg(feature = "resvg")]
     /// Load the custom cursors Mirl provides by default
+    /// Be aware that this loading a bunch of textures, you may need to increase the stack size using:
+    /// ```
+    /// std::thread::Builder::new()
+    ///     .stack_size(64 * mirl::constants::bytes::MB)
+    ///     .spawn({main_loop_function});
+    /// ```
+    /// 64 MB should be enough, less is unstable, more is wasteful.
     fn load_custom_cursor(
         &mut self,
         size: U2,

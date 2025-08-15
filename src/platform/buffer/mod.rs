@@ -19,7 +19,12 @@ mod get_pixel;
 mod manipulate;
 mod new;
 mod set_color;
+mod set_pixel;
 mod trim;
+mod collision_support;
+
+/// A const buffer making money on more compile time optimizations
+pub mod const_buffer;
 
 use std::ops::Deref;
 // Automatically convert the usage of Buffer to Buffer.data

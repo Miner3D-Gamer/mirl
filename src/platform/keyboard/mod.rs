@@ -202,6 +202,10 @@ pub const fn mirl_keycode_to_device_query_keycode(
         | KeyCode::Application
         | KeyCode::World1
         | KeyCode::World2
+        | KeyCode::AnyAlt
+        | KeyCode::AnyControl
+        | KeyCode::AnyShift
+        | KeyCode::AnySuper
         | KeyCode::Unknown => None,
     }
 }

@@ -1,7 +1,11 @@
 #[cfg(all(feature = "system", target_os = "windows"))]
 pub use cursors_windows::load_base_cursor_with_file;
 
-use crate::{extensions::*, lists::VariableSizeList, platform::Buffer};
+use crate::{
+    extensions::*,
+    lists::VariableSizeList,
+    platform::{Buffer, CursorStyle},
+};
 
 /// Cursor stuff of glfw bc glfw is a bitch
 pub mod cursor_glfw;
@@ -60,9 +64,9 @@ pub struct Cursors {
     /// Arrow pointing to the bottom left ⬋
     pub bottom_left_corner: Cursor,
     /// Arrow pointing to the bottom right ⬊
-    pub bottom_right_corner: Cursor,
+    pub arrow_bottom_right: Cursor,
     /// Arrow down with a _ at the end
-    pub bottom_side: Cursor,
+    pub side_bottom: Cursor,
     /// A plus shape
     pub cell: Cursor,
     /// Default cursor rotated to be vertical
@@ -191,7 +195,7 @@ impl Cursors {
                 secondary_color,
                 include_str!("./svg/bottom_left_corner.svg").to_string(),
             ),
-            bottom_right_corner: load_base_cursor_with_file(
+            arrow_bottom_right: load_base_cursor_with_file(
                 BaseCursor {
                     hot_spot_x: 29,
                     hot_spot_y: 27,
@@ -201,7 +205,7 @@ impl Cursors {
                 secondary_color,
                 include_str!("./svg/bottom_right_corner.svg").to_string(),
             ),
-            bottom_side: load_base_cursor_with_file(
+            side_bottom: load_base_cursor_with_file(
                 BaseCursor {
                     hot_spot_x: 16,
                     hot_spot_y: 28,
@@ -573,6 +577,53 @@ impl Cursors {
             ),
         }
     }
+    /// Get the cursor from the selected [CursorStyle]
+    pub fn from_cursor_style(&self, style: CursorStyle) -> Cursor {
+        match style {
+            CursorStyle::Alias => self.alias,
+            CursorStyle::AllScroll => self.all_scroll,
+            CursorStyle::ArrowBottomLeft => self.bottom_left_corner,
+            CursorStyle::ArrowBottomRight => self.arrow_bottom_right,
+            CursorStyle::SideBottom => self.side_bottom,
+            CursorStyle::Cell => self.cell,
+            CursorStyle::CenteredPointer => self.centered_pointer,
+            CursorStyle::ResizeHorizontally => self.col_resize,
+            CursorStyle::ColorPicker => self.color_picker,
+            CursorStyle::ContextMenu => self.context_menu,
+            CursorStyle::Copy => self.copy,
+            CursorStyle::Crosshair => self.crosshair,
+            CursorStyle::Default => self.default,
+            CursorStyle::ClosedHand => self.closed_hand,
+            CursorStyle::ClosedHandNoDrop => self.closed_hand_no_drop,
+            CursorStyle::ArrowDown => self.arrow_down,
+            CursorStyle::Draft => self.draft,
+            CursorStyle::Fleur => self.fleur,
+            CursorStyle::Help => self.help,
+            CursorStyle::ArrowLeft => self.arrow_left,
+            CursorStyle::SideLeft => self.side_left,
+            CursorStyle::NoDrop => self.no_drop,
+            CursorStyle::NotAllowed => self.not_allowed,
+            CursorStyle::OpenHand => self.open_hand,
+            CursorStyle::Pencil => self.pencil,
+            CursorStyle::Pirate => self.pirate,
+            CursorStyle::Pointer => self.pointer,
+            CursorStyle::ArrowRight => self.arrow_right,
+            CursorStyle::MirroredPointer => self.mirrored_pointer,
+            CursorStyle::SideRight => self.side_right,
+            CursorStyle::ResizeNESW => self.size_nesw,
+            CursorStyle::ResizeNWSE => self.size_nwse,
+            CursorStyle::SizeHor => self.size_hor,
+            CursorStyle::ResizeVertically => self.size_ver,
+            CursorStyle::Text => self.text,
+            CursorStyle::ArrowTopLeft => self.arrow_top_left,
+            CursorStyle::ArrowTopRight => self.arrow_top_right,
+            CursorStyle::SideTop => self.side_top,
+            CursorStyle::ArrowUp => self.arrow_up,
+            CursorStyle::VerticalText => self.vertical_text,
+            CursorStyle::ZoomIn => self.zoom_in,
+            CursorStyle::ZoomOut => self.zoom_out,
+        }
+    }
 }
 
 /// Holds information any cursor would need
@@ -620,15 +671,16 @@ pub fn use_cursor(
                 panic!("Cannot set GLFW cursor -> No cursors provided");
             }
         }
+        return;
     }
     match cursor {
         #[cfg(target_os = "windows")]
         Cursor::Win(cursor) => {
             unsafe {
                 // Update the passive cursor provider windows uses
-                cursors_windows::update_cursor(*cursor);
+                cursors_windows::update_cursor(cursor);
                 // Update currently used cursor (Passive provider only gets checked when mouse moves)
-                cursors_windows::set_cursor(*cursor);
+                cursors_windows::set_cursor(cursor);
             }
         }
 

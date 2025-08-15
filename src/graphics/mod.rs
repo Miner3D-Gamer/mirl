@@ -777,6 +777,18 @@ pub const fn argb_to_rgba(color: u32) -> u32 {
     let (a, r, g, b) = u32_to_argb(color);
     rgba_to_u32(a, g, b, r)
 }
+/// Converts argb to abgr color
+#[must_use]
+pub const fn switch_red_and_blue(color: u32) -> u32 {
+    let (a, r, g, b) = u32_to_argb(color);
+    rgba_to_u32(b, g, r, a)
+}
+#[must_use]
+/// Converts a list of argb to rgba and vice versa
+#[inline(always)]
+pub fn switch_red_and_blue_list(input: &[u32]) -> Vec<u32> {
+    input.iter().map(|&argb| switch_red_and_blue(argb)).collect()
+}
 #[must_use]
 /// Converts a list of argb to rgba and vice versa
 #[inline(always)]
@@ -995,24 +1007,26 @@ pub fn resize_buffer_nearest(
 
     result
 }
-#[must_use]
-#[allow(clippy::cast_sign_loss)]
-#[allow(clippy::cast_precision_loss)]
-#[allow(clippy::cast_possible_truncation)]
-#[allow(clippy::cast_possible_wrap)]
-/// Interpolate between 2 colors linearly based on a scale of 0 to 1
-pub fn interpolate_color_rgb_u32(
-    color1: u32,
-    color2: u32,
-    progress: f32,
-) -> u32 {
-    let (r1, g1, b1) = u32_to_rgb_u32(color1);
-    let (r2, g2, b2) = u32_to_rgb_u32(color2);
-    let red = interpolate(r1 as f32, r2 as f32, progress);
-    let green = interpolate(g1 as f32, g2 as f32, progress);
-    let blue = interpolate(b1 as f32, b2 as f32, progress);
-    rgb_to_u32(red as u8, green as u8, blue as u8)
+macro_rules! interpolate_color_rgb_u32 {
+    ($t:ty, $name:ident) => {
+        /// Interpolate between 2 colors linearly based on a scale of 0 to 1
+        #[must_use]
+        #[allow(clippy::cast_sign_loss)]
+        #[allow(clippy::cast_precision_loss)]
+        #[allow(clippy::cast_possible_truncation)]
+        #[allow(clippy::cast_possible_wrap)]
+        pub fn $name(color1: u32, color2: u32, progress: $t) -> u32 {
+            let (r1, g1, b1) = u32_to_rgb_u32(color1);
+            let (r2, g2, b2) = u32_to_rgb_u32(color2);
+            let red = interpolate(r1 as $t, r2 as $t, progress);
+            let green = interpolate(g1 as $t, g2 as $t, progress);
+            let blue = interpolate(b1 as $t, b2 as $t, progress);
+            rgb_u32_to_u32(red as u32, green as u32, blue as u32)
+        }
+    };
 }
+interpolate_color_rgb_u32!(f32, interpolate_color_rgb_u32_f32);
+interpolate_color_rgb_u32!(f64, interpolate_color_rgb_u32_f64);
 
 /// Inverts the rgb channels of the given color
 #[must_use]
@@ -1020,6 +1034,25 @@ pub const fn invert_color(color: u32) -> u32 {
     let (r, g, b, a) = u32_to_rgba(color);
     rgba_to_u32(255 - r, 255 - g, 255 - b, a)
 }
+// /// Generates a random color (+random alpha)
+// ///
+// /// # Errors
+// /// See [`getrandom::Error`]
+// #[inline]
+// pub fn generate_random_color() -> Result<u32, getrandom::Error> {
+//     getrandom::u32()
+// }
+// /// Generates a random color (with alpha of 0)
+// ///
+// /// # Errors
+// /// See [`getrandom::Error`]
+// #[inline]
+// pub fn generate_random_color_stable_alpha(
+//     alpha: u32,
+// ) -> Result<u32, getrandom::Error> {
+//     let color = getrandom::u32()?;
+//     Ok(set_alpha(color, alpha))
+// }
 
 /// # Features/Flag
 /// `imagery` - Grands access to automatic texture lookup -> Define a filepath for a texture and lazy load it

@@ -30,6 +30,24 @@ impl Buffer {
         }
     }
     #[must_use]
+    /// Create a new [Buffer] filled with the specified color
+    pub fn new_empty_with_color(
+        width: usize,
+        height: usize,
+        color: u32,
+    ) -> Self {
+        let total_size = width * height;
+        let mut buffer = vec![color; total_size].into_boxed_slice();
+        let buffer_pointer = buffer.as_mut_ptr();
+        Self {
+            data: buffer,
+            pointer: buffer_pointer,
+            width,
+            height,
+            total_size,
+        }
+    }
+    #[must_use]
     /// Generate a error texture with the desired size
     pub fn generate_fallback(
         width: usize,
