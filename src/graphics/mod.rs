@@ -1,4 +1,5 @@
 #![allow(clippy::inline_always)]
+#![allow(clippy::cast_lossless)]
 use crate::extensions::*;
 
 /// Convert an r b g format into u32 argb format
@@ -713,7 +714,7 @@ mod pixel;
 pub use pixel::*;
 
 #[cfg(feature = "imagery")]
-use crate::platform::FileSystem;
+use crate::platform::file_system::FileSystem;
 use crate::{math::interpolate, platform::Buffer};
 /// Convert u32 argb to hex
 #[inline(always)]

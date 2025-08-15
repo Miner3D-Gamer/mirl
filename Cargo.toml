@@ -1,7 +1,7 @@
 [package]
 # Info
 name = "mirl"
-version = "3.5.5"
+version = "3.7.0"
 description = "Miners Rust Lib - A collection of ever growing and changing functions and structs. Check the description for compatibility and toggleable features! (Most of the lib is controlled by flags/features)"
 # Compiler
 rust-version = "1.84.0"
@@ -33,6 +33,8 @@ device_query = "4.0.0"
 once_cell = { version = ">=1.4", optional = true }
 # Font lib
 fontdue = { version = ">=0.9.3", optional = true }
+font-kit = { version = "0.11", optional = true }
+
 # Image lib for .ico used in minifb set icon function
 ico = { version = ">=0.3", optional = true }
 
@@ -96,10 +98,6 @@ glfw = { version = "0.51.0", optional = true }
 
 gl = { version = "0.14.0", optional = true }
 
-# ImGui for rust
-egui = "0.32.0"
-#getrandom = { version = "0.3" }
-
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 wasm-bindgen = "0.2"
 #getrandom = { version = "0.3", features = ["wasm_js"] }
@@ -143,7 +141,7 @@ glfw_backend = ["glfw", "gl", "system"]
 # Low level system interactions
 system = ["x11", "windows", "winapi", "raw-window-handle"]
 # Font/fontdue support
-font_support = ["fontdue", "once_cell"]
+font_support = ["fontdue", "once_cell", "font-kit"]
 # Enable all features that add content
 all = ["default", "imagery", "full_backend_support"]
 

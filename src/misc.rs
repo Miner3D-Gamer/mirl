@@ -15,6 +15,44 @@ pub fn hash_value<T: std::hash::Hash>(value: &T) -> u64 {
 pub fn repeat_data<T: Clone>(data: T, amount: usize) -> Vec<T> {
     vec![data; amount]
 }
+
+/// Convert the corner type from `mirl::math::collision` into the appropriate cursor style
+#[must_use]
+pub const fn corner_type_to_cursor_style(
+    corner: u8,
+) -> Option<crate::platform::CursorStyle> {
+    match corner {
+        0 | 4 => Some(crate::platform::CursorStyle::ResizeNWSE),
+        1 | 5 => Some(crate::platform::CursorStyle::ResizeVertically),
+        2 | 6 => Some(crate::platform::CursorStyle::ResizeNESW),
+        3 | 7 => Some(crate::platform::CursorStyle::ResizeHorizontally),
+        _ => None,
+    }
+}
+/// Convert the corner type from `mirl::math::collision` and a change in position into the change of x, y, width, and height of a rectangle
+#[must_use]
+pub const fn corner_type_and_delta_to_metric_change(
+    corner: u8,
+    mouse_pos_delta: (isize, isize),
+) -> (isize, isize, isize, isize) {
+    match corner {
+        0 => (
+            mouse_pos_delta.0,
+            mouse_pos_delta.1,
+            -mouse_pos_delta.0,
+            -mouse_pos_delta.1,
+        ),
+        1 => (0, mouse_pos_delta.1, 0, -mouse_pos_delta.1),
+        2 => (0, mouse_pos_delta.1, mouse_pos_delta.0, -mouse_pos_delta.1),
+        3 => (0, 0, mouse_pos_delta.0, 0),
+        4 => (0, 0, mouse_pos_delta.0, mouse_pos_delta.1),
+        5 => (0, 0, 0, mouse_pos_delta.1),
+        6 => (mouse_pos_delta.0, 0, -mouse_pos_delta.0, mouse_pos_delta.1),
+        7 => (mouse_pos_delta.0, 0, -mouse_pos_delta.0, 0),
+        _ => (0, 0, 0, 0),
+    }
+}
+
 /// A windows only section for misc function
 #[cfg(target_os = "windows")]
 #[cfg(feature = "system")]

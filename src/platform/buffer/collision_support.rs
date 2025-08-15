@@ -12,6 +12,8 @@ impl Buffer {
         crate::math::collision::Rectangle::new(x, y, self.width, self.height)
     }
     /// Create a collision instance for the current buffer using isize coordinates
+    #[must_use]
+    #[allow(clippy::cast_possible_wrap)]
     pub const fn create_collision_isize<const CS: bool>(
         &self,
         x: isize,
