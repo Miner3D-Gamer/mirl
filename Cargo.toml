@@ -1,10 +1,10 @@
 [package]
 # Info
 name = "mirl"
-version = "3.7.0"
+version = "3.8.0"
 description = "Miners Rust Lib - A collection of ever growing and changing functions and structs. Check the description for compatibility and toggleable features! (Most of the lib is controlled by flags/features)"
 # Compiler
-rust-version = "1.84.0"
+rust-version = "1.86.0"
 edition = "2021"
 # Credit/Misc
 license = "GPL-3.0"
@@ -144,6 +144,8 @@ system = ["x11", "windows", "winapi", "raw-window-handle"]
 font_support = ["fontdue", "once_cell", "font-kit"]
 # Enable all features that add content
 all = ["default", "imagery", "full_backend_support"]
+# Support for the f128 float type
+f128 = []
 
 [lib]
 name = "mirl"

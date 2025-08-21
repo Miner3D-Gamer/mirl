@@ -121,13 +121,13 @@ pub trait ExtendedWindow {
     fn set_cursor_style(&mut self, style: &Cursor);
     #[cfg(feature = "resvg")]
     /// Load the custom cursors Mirl provides by default
-    /// Be aware that this loading a bunch of textures, you may need to increase the stack size using:
+    /// Be aware that this loading a bunch of textures (11010720 bytes to be exact), you may need to increase the stack size using:
     /// ```
     /// std::thread::Builder::new()
-    ///     .stack_size(64 * mirl::constants::bytes::MB)
+    ///     .stack_size(32 * mirl::constants::bytes::MB)
     ///     .spawn({main_loop_function});
     /// ```
-    /// 64 MB should be enough, less is unstable, more is wasteful.
+    /// 32 MB should be enough, less is unstable, more may be wasteful.
     fn load_custom_cursor(
         &mut self,
         size: U2,

@@ -159,14 +159,18 @@ pub fn draw_buffer_on_buffer_1_to_1<
                     continue;
                 }
 
-                let color = interpolate_color_rgb_u32_f64(
-                    canvas.get_pixel_unsafe((
-                        canvas_x as usize,
-                        canvas_y as usize,
-                    )),
-                    pixel,
-                    f64::from(trans) / 255.0,
-                );
+                let color = if TRANSPARENCY_CHECK && trans == 255 {
+                    pixel
+                } else {
+                    interpolate_color_rgb_u32_f64(
+                        canvas.get_pixel_unsafe((
+                            canvas_x as usize,
+                            canvas_y as usize,
+                        )),
+                        pixel,
+                        f64::from(trans) / 255.0,
+                    )
+                };
                 canvas.set_pixel_unsafe(
                     canvas_x as usize,
                     canvas_y as usize,

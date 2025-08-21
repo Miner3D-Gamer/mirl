@@ -375,7 +375,10 @@ fn capture_screen_raw() -> Option<Buffer> {
         if !result.as_bool() {
             return None;
         }
-        Some(Buffer::new(pixels, width as usize, height as usize))
+        match Buffer::new(pixels, width as usize, height as usize) {
+            Ok(some) => Some(some),
+            Err(_) => None,
+        }
     }
 }
 #[allow(trivial_casts)]
@@ -467,7 +470,10 @@ fn capture_desktop_background_raw() -> Option<Buffer> {
             return None;
         }
 
-        Some(Buffer::new(pixels, width as usize, height as usize))
+        match Buffer::new(pixels, width as usize, height as usize) {
+            Ok(some) => Some(some),
+            Err(_) => None,
+        }
     }
 }
 

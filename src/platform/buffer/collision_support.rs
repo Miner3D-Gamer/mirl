@@ -28,12 +28,26 @@ impl Buffer {
     }
     #[must_use]
     #[inline(always)]
-    /// Simple function of pixel coordinate falls within the buffer metrics
+    /// Simple function checking if pixel a coordinate falls within the buffer metrics
     pub const fn is_pixel_position_in_buffer(
         &self,
         x: usize,
         y: usize,
     ) -> bool {
         x < self.width && y < self.height
+    }
+    #[must_use]
+    #[inline(always)]
+    #[allow(clippy::cast_sign_loss)]
+    /// Simple function checking if pixel a possibly negative coordinate falls within the buffer metrics
+    pub const fn is_pixel_position_in_buffer_isize(
+        &self,
+        x: isize,
+        y: isize,
+    ) -> bool {
+        (x as usize) < self.width
+            && (y as usize) < self.height
+            && x > 0
+            && y > 0
     }
 }

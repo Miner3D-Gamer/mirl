@@ -30,7 +30,7 @@ impl Buffer {
     #[must_use]
     /// Creates a new buffer and copies the contents of the current buffer
     pub fn resize_content(
-        &mut self,
+        &self,
         width: usize,
         height: usize,
         resize_mode: InterpolationMode,

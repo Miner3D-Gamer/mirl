@@ -15,7 +15,8 @@
 /// # Panics
 /// If somehow `T` doesn't support casting from a float this errors
 pub fn radians<T: num_traits::Float>(angle_degrees: T) -> T {
-    angle_degrees * NumCast::from(0.017_453_292_519_943_295).unwrap() //PI / 180.0
+    angle_degrees
+        * num_traits::NumCast::from(0.017_453_292_519_943_295).unwrap() //PI / 180.0
 }
 #[allow(clippy::unwrap_used)]
 /// Convert angle radians into angle degrees
@@ -23,7 +24,7 @@ pub fn radians<T: num_traits::Float>(angle_degrees: T) -> T {
 /// # Panics
 /// If somehow `T` doesn't support casting from a float this errors
 pub fn degrees<T: num_traits::Float>(angle_radians: T) -> T {
-    angle_radians * NumCast::from(57.295_779_513_082_32).unwrap() //180.0 / PI
+    angle_radians * num_traits::NumCast::from(57.295_779_513_082_32).unwrap() //180.0 / PI
 }
 /// Sets the length of the vector to 1 changing the direction it's facing
 pub fn normalize_vector<T: num_traits::Float>(x: T, y: T, z: T) -> (T, T, T) {
@@ -31,40 +32,10 @@ pub fn normalize_vector<T: num_traits::Float>(x: T, y: T, z: T) -> (T, T, T) {
     (x / v, y / v, z / v)
 }
 
-use num_traits::NumCast;
-
-use crate::extensions::*;
-
-/// A trait for defining a number that does not have fractions
-pub trait WholeNumber: std::cmp::PartialOrd + NumCast {}
-impl WholeNumber for U1 {}
-impl WholeNumber for U2 {}
-impl WholeNumber for U4 {}
-
-impl WholeNumber for u8 {}
-impl WholeNumber for u16 {}
-impl WholeNumber for u32 {}
-impl WholeNumber for u64 {}
-impl WholeNumber for u128 {}
-impl WholeNumber for usize {}
-
-impl WholeNumber for i8 {}
-impl WholeNumber for i16 {}
-impl WholeNumber for i32 {}
-impl WholeNumber for i64 {}
-impl WholeNumber for i128 {}
-impl WholeNumber for isize {}
-
-/// A trait for defining a number that does have fractions
-pub trait FloatNumber: std::cmp::PartialOrd + NumCast {}
-
-impl FloatNumber for f32 {}
-impl FloatNumber for f64 {}
-
 /// A trait for defining a number
-pub trait Number:
+pub trait NumberWithMonotoneOps:
     std::cmp::PartialOrd
-    + NumCast
+    + num_traits::NumCast
     + std::ops::Add<Output = Self>
     + std::ops::Sub<Output = Self>
     + std::ops::Mul<Output = Self>
@@ -72,32 +43,23 @@ pub trait Number:
 {
 }
 
-impl Number for U1 {}
-impl Number for U2 {}
-impl Number for U4 {}
-
-impl Number for u8 {}
-impl Number for u16 {}
-impl Number for u32 {}
-impl Number for u64 {}
-impl Number for u128 {}
-impl Number for usize {}
-
-impl Number for i8 {}
-impl Number for i16 {}
-impl Number for i32 {}
-impl Number for i64 {}
-impl Number for i128 {}
-impl Number for isize {}
-
-impl Number for f32 {}
-impl Number for f64 {}
+// What's up with this formatting?
+impl<
+        T: std::cmp::PartialOrd
+            + num_traits::NumCast
+            + std::ops::Add<Output = Self>
+            + std::ops::Sub<Output = Self>
+            + std::ops::Mul<Output = Self>
+            + std::ops::Div<Output = Self>,
+    > NumberWithMonotoneOps for T
+{
+}
 
 /// A collision extension focusing on 2d rectangles
 pub mod collision;
 
 /// Progress must be between 0 and 1 for this to work as intended most of the times
-pub fn interpolate<T: Number + Copy + num_traits::One>(
+pub fn interpolate<T: NumberWithMonotoneOps + Copy + num_traits::One>(
     start: T,
     end: T,
     progress: T,
@@ -125,3 +87,39 @@ pub fn get_center_position_of_object_for_object<
 
 mod uniform_range;
 pub use uniform_range::*;
+
+/// A trait for getting the smallest value >0 and the biggest value <1
+pub trait UniformPreviousNext {
+    /// Get the smallest value >0
+    #[must_use]
+    fn smallest_bigger_than_zero(&self) -> Self;
+    /// Get the biggest value <0
+    #[must_use]
+    fn biggest_smaller_than_one(&self) -> Self;
+}
+
+impl UniformPreviousNext for f32 {
+    fn biggest_smaller_than_one(&self) -> Self {
+        1.0f32.next_down()
+    }
+    fn smallest_bigger_than_zero(&self) -> Self {
+        Self::MIN_POSITIVE
+    }
+}
+impl UniformPreviousNext for f64 {
+    fn biggest_smaller_than_one(&self) -> Self {
+        1.0f64.next_down()
+    }
+    fn smallest_bigger_than_zero(&self) -> Self {
+        Self::MIN_POSITIVE
+    }
+}
+#[cfg(feature = "f128")]
+impl UniformPreviousNext for f128 {
+    fn biggest_smaller_than_one(&self) -> Self {
+        1.0f128.next_down()
+    }
+    fn smallest_bigger_than_zero(&self) -> Self {
+        Self::MIN_POSITIVE
+    }
+}

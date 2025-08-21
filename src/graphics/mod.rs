@@ -223,7 +223,7 @@ pub const fn rgb_to_hsl(r: u8, g: u8, b: u8) -> (f32, f32, f32) {
     let min = r_norm.min(g_norm).min(b_norm);
     let delta = max - min;
 
-    let lightness = (max + min) / 2.0;
+    let lightness = f32::midpoint(max, min);
 
     let saturation = if delta < 0.0001 {
         0.0 // achromatic (gray)
@@ -511,7 +511,7 @@ pub fn pixmap_to_buffer(pixmap: &resvg::tiny_skia::Pixmap) -> Buffer {
             ));
         }
     }
-    Buffer::new(data, pixmap.width() as usize, pixmap.height() as usize)
+    Buffer::new(data, pixmap.width() as usize, pixmap.height() as usize).expect("Not enough data provided - Was the pixmap corrupted?")
 }
 
 #[cfg(not(target_arch = "wasm32"))]
@@ -538,7 +538,7 @@ pub fn pixel_image_to_buffer(pixel_image: &glfw::PixelImage) -> Buffer {
         rgba_list_to_argb_list(&pixel_image.pixels),
         pixel_image.width as usize,
         pixel_image.height as usize,
-    );
+    ).expect("Not enough data provided - Was the glfw::PixelImage corrupted?");
 }
 // /// A Buffer to be accessed without compression
 // /// What is the difference between Buffer and Buffer? Buffer has more attributes ig :|
@@ -1016,9 +1016,9 @@ macro_rules! interpolate_color_rgb_u32 {
         #[allow(clippy::cast_precision_loss)]
         #[allow(clippy::cast_possible_truncation)]
         #[allow(clippy::cast_possible_wrap)]
-        pub fn $name(color1: u32, color2: u32, progress: $t) -> u32 {
-            let (r1, g1, b1) = u32_to_rgb_u32(color1);
-            let (r2, g2, b2) = u32_to_rgb_u32(color2);
+        pub fn $name(from: u32, to: u32, progress: $t) -> u32 {
+            let (r1, g1, b1) = u32_to_rgb_u32(from);
+            let (r2, g2, b2) = u32_to_rgb_u32(to);
             let red = interpolate(r1 as $t, r2 as $t, progress);
             let green = interpolate(g1 as $t, g2 as $t, progress);
             let blue = interpolate(b1 as $t, b2 as $t, progress);
@@ -1026,6 +1026,7 @@ macro_rules! interpolate_color_rgb_u32 {
         }
     };
 }
+// TO DO: I THINK THIS FUNCTION IS BROKEN
 interpolate_color_rgb_u32!(f32, interpolate_color_rgb_u32_f32);
 interpolate_color_rgb_u32!(f64, interpolate_color_rgb_u32_f64);
 
@@ -1263,3 +1264,5 @@ impl TextureManager {
         self.current_frame += 1;
     }
 }
+/// Presets for common colors
+pub mod color_presets;

@@ -1,19 +1,34 @@
 use super::Buffer;
-use crate::graphics::rgb_to_u32;
+use crate::graphics::{rgb_to_u32, rgba_to_u32};
 impl Buffer {
-    #[must_use]
+    
+    #[track_caller]
     /// Create a new color
-    pub fn new(data: Vec<u32>, width: usize, height: usize) -> Self {
+    /// 
+    /// # Errors
+    /// When not enough data was provided, an error is returned instead of a Buffer
+    pub fn new(
+        data: Vec<u32>,
+        width: usize,
+        height: usize,
+    ) -> Result<Self, String> {
         let total_size = width * height;
+        if data.len() != total_size {
+            return Err(format!(
+                "Data length does not match dimensions - Expected: {}, Got: {}",
+                total_size,
+                data.len()
+            ));
+        }
         let mut buffer = data.into_boxed_slice();
         let buffer_pointer = buffer.as_mut_ptr();
-        Self {
+        Ok(Self {
             data: buffer,
             pointer: buffer_pointer,
             width,
             height,
             total_size,
-        }
+        })
     }
     #[must_use]
     /// Create a new, empty, [Buffer]
@@ -48,13 +63,16 @@ impl Buffer {
         }
     }
     #[must_use]
+    #[allow(clippy::unwrap_used)]
+    #[allow(clippy::missing_panics_doc)]
     /// Generate a error texture with the desired size
     pub fn generate_fallback(
         width: usize,
         height: usize,
-        square_size: usize,
+        squares: usize,
     ) -> Self {
         let mut data = Vec::with_capacity(width * height);
+        let square_size = width.midpoint(height) / squares;
 
         let purple = rgb_to_u32(128, 0, 128);
         let black = rgb_to_u32(0, 0, 0);
@@ -74,6 +92,45 @@ impl Buffer {
             }
         }
 
-        Self::new(data, width, height)
+        Self::new(data, width, height).unwrap()
+    }
+
+    
+    /// Create a buffer from a rgba &[u8]
+    ///
+    /// # Errors
+    /// When not enough data was provided, an error is returned instead of a Buffer
+    #[track_caller]
+    pub fn from_u8_rgba(
+        rgba: &[u8],
+        width: usize,
+        height: usize,
+    ) -> Result<Self, String> {
+        let mut return_list = Vec::new();
+        for i in rgba.chunks(3) {
+            let color = rgba_to_u32(i[0], i[1], i[2], i[3]);
+            return_list.push(color);
+        }
+        Self::new(return_list, width, height)
+    }
+    
+    #[track_caller]
+    /// Create a buffer from an RGB &[u8]
+    ///
+    /// # Errors
+    /// When not enough data was provided, an error is returned instead of a Buffer
+    pub fn from_u8_rgb(
+        rgba: &[u8],
+        width: usize,
+        height: usize,
+    ) -> Result<Self, String> {
+        let mut return_list = Vec::with_capacity(rgba.len() / 3);
+        for chunk in rgba.chunks(3) {
+            if chunk.len() == 3 {
+                let color = rgb_to_u32(chunk[0], chunk[1], chunk[2]);
+                return_list.push(color);
+            }
+        }
+        Self::new(return_list, width, height)
     }
 }

@@ -27,7 +27,6 @@ impl Buffer {
     /// The function for getting a pixel safely is [`get_pixel`] or`get_pixel_isize`ze]
     #[inline(always)]
     #[must_use]
-    #[allow(clippy::cast_sign_loss)]
     pub fn get_pixel_unsafe(&self, xy: (usize, usize)) -> u32 {
         let index = xy.1 * self.width + xy.0;
         unsafe { *self.pointer.add(index) }

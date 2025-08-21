@@ -1,7 +1,7 @@
 use std::io::Read;
 
 use crate::platform::file_system::{
-    file_data::ExpectedDataType, FileData, FileSystem,
+    file_data::DataType, FileData, FileSystem,
 };
 
 /// Implementation of `FileSystem` for Native use only
@@ -57,7 +57,7 @@ impl FileSystem for NativeFileSystem {
         if let Ok(mut file) = exe_check {
             let mut buffer = Vec::new();
             file.read_to_end(&mut buffer)?;
-            return Ok(FileData::from_bytes(buffer, ExpectedDataType::Unknown));
+            return Ok(FileData::from_bytes(buffer, DataType::Unknown));
         }
 
         if let Some(src_path) = &self.src_path {
@@ -67,7 +67,7 @@ impl FileSystem for NativeFileSystem {
             let mut file = std::fs::File::open(&src_full_path)?;
             let mut buffer = Vec::new();
             file.read_to_end(&mut buffer)?;
-            return Ok(FileData::from_bytes(buffer, ExpectedDataType::Unknown));
+            return Ok(FileData::from_bytes(buffer, DataType::Unknown));
         }
         Err(Box::new(std::io::Error::new(
             std::io::ErrorKind::NotFound,

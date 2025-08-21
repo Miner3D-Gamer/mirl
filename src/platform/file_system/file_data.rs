@@ -5,10 +5,10 @@ pub struct FileData {
     /// Raw data
     pub raw_data: Vec<u8>,
     /// Path to get raw data
-    pub expected_data_type: ExpectedDataType,
+    pub expected_data_type: DataType,
 }
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum ExpectedDataType {
+pub enum DataType {
     Bytes,
     Text,
     #[cfg(feature = "font_support")]
@@ -23,7 +23,7 @@ impl FileData {
     /// Constructor to load data from raw bytes
     pub const fn from_bytes(
         data: Vec<u8>,
-        expected_data_type: ExpectedDataType,
+        expected_data_type: DataType,
     ) -> Self {
         Self {
             raw_data: data,
