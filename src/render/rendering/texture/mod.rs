@@ -83,14 +83,12 @@ pub fn draw_buffer_on_buffer<
                     f64::from(trans) / 255.0,
                 );
                 canvas.set_pixel_unsafe(
-                    canvas_x as usize,
-                    canvas_y as usize,
+                    (canvas_x as usize, canvas_y as usize),
                     color,
                 );
             } else {
                 canvas.set_pixel_unsafe(
-                    canvas_x as usize,
-                    canvas_y as usize,
+                    (canvas_x as usize, canvas_y as usize),
                     pixel,
                 );
             }
@@ -172,14 +170,12 @@ pub fn draw_buffer_on_buffer_1_to_1<
                     )
                 };
                 canvas.set_pixel_unsafe(
-                    canvas_x as usize,
-                    canvas_y as usize,
+                    (canvas_x as usize, canvas_y as usize),
                     color,
                 );
             } else {
                 canvas.set_pixel_unsafe(
-                    canvas_x as usize,
-                    canvas_y as usize,
+                    (canvas_x as usize, canvas_y as usize),
                     pixel,
                 );
             }

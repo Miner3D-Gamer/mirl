@@ -31,7 +31,7 @@ where
             data: [T::default(); N],
         }
     }
-    /// Create a new instance with already existing data, to get repeating data use [vec!]
+    /// Create a new instance with already existing data, to get repeating data use [vec!] or `.repeat_value()`
     #[must_use]
     pub const fn from_array(data: [T; N]) -> Self {
         Self {
@@ -67,7 +67,7 @@ where
     pub const fn is_empty(&self) -> bool {
         N == 0
     }
-    /// Receive the stored data [T] as &[T]
+    /// Receive the stored data as a reference
     pub const fn as_slice(&self) -> &[T] {
         &self.data
     }

@@ -1,6 +1,7 @@
 // I despise how much duplicate code is present in the text rendering functions
 use std::collections::HashMap;
-use std::sync::RwLock;
+
+use parking_lot::RwLock;
 
 /// ### Key:
 ///
@@ -17,44 +18,82 @@ use std::sync::RwLock;
 ///
 /// `Vec<u8>`: Rasterized font data (alpha)
 static GLYPH_CACHE: once_cell::sync::Lazy<
-    RwLock<HashMap<(char, (i32, i32), usize), (fontdue::Metrics, Vec<u8>)>>,
+    RwLock<HashMap<(char, u32, usize), (fontdue::Metrics, Vec<u8>)>>,
 > = once_cell::sync::Lazy::new(|| RwLock::new(HashMap::new()));
 
 /// Get a glyph from the cache if it exists
 #[inline(always)]
-pub fn _get_glyph_cache() -> &'static RwLock<
-    HashMap<(char, (i32, i32), usize), (fontdue::Metrics, Vec<u8>)>,
-> {
+#[allow(clippy::inline_always)]
+pub fn _get_glyph_cache(
+) -> &'static RwLock<HashMap<(char, u32, usize), (fontdue::Metrics, Vec<u8>)>> {
     &GLYPH_CACHE
 }
 /// Reset the glyph cache
 pub fn _reset_glyph_cache() {
-    GLYPH_CACHE.write().unwrap().clear();
+    GLYPH_CACHE.write().clear();
 }
 /// Removes a selected glyph from the glyph cache
-pub fn _remove_glyph_from_glyph_cache(glyph: &(char, (i32, i32), usize)) {
-    GLYPH_CACHE.write().unwrap().remove(glyph);
+pub fn _remove_glyph_from_glyph_cache(glyph: &(char, u32, usize)) {
+    GLYPH_CACHE.write().remove(glyph);
 }
 /// Manually add a glyph to the glyph cache
 pub fn _add_to_glyph_cache(
-    key: (char, (i32, i32), usize),
+    key: (char, u32, usize),
     data: (fontdue::Metrics, Vec<u8>),
 ) {
-    GLYPH_CACHE.write().unwrap().insert(key, data);
+    GLYPH_CACHE.write().insert(key, data);
 }
-
+const PRECISION_MULTIPLIER: f32 = 10000.0;
 #[inline(always)]
-fn round_float_key(value: f32) -> (i32, i32) {
-    let multiplier = 10.0_f32.powi(4);
-    let rounded_int_x = (value * multiplier).round() as i32;
-    let rounded_int_y = (value * multiplier).fract() as i32;
-    (rounded_int_x, rounded_int_y)
+fn round_float_key(value: f32) -> u32 {
+    // Round to some precision first if needed
+    let rounded = (value * PRECISION_MULTIPLIER).round() / PRECISION_MULTIPLIER;
+    rounded.to_bits()
 }
 
 mod aliased;
 mod antialiased;
 pub use aliased::*;
 pub use antialiased::*;
+
+use crate::platform::Buffer;
+
+/// Switch between aliased and antialiased text rendering
+pub fn draw_text_switch<const SAFE: bool>(
+    buffer: &Buffer,
+    text: &str,
+    x: usize,
+    y: usize,
+    color: u32,
+    size: f32,
+    font: &fontdue::Font,
+    antialiased: bool,
+) {
+    if antialiased {
+        draw_text_antialiased::<SAFE>(buffer, text, x, y, color, size, font);
+    } else {
+        draw_text::<SAFE>(buffer, text, x, y, color, size, font);
+    }
+}
+/// Switch between aliased and antialiased text rendering in isize space
+pub fn draw_text_switch_isize<const SAFE: bool>(
+    buffer: &Buffer,
+    text: &str,
+    x: isize,
+    y: isize,
+    color: u32,
+    size: f32,
+    font: &fontdue::Font,
+    antialiased: bool,
+) {
+    if antialiased {
+        draw_text_antialiased_isize::<SAFE>(
+            buffer, text, x, y, color, size, font,
+        );
+    } else {
+        draw_text_isize::<SAFE>(buffer, text, x, y, color, size, font);
+    }
+}
 
 // #[inline]
 // pub fn draw_text_angled_aliased(
@@ -109,31 +148,49 @@ pub fn get_character(
     ch: char,
     size: f32,
     font: &fontdue::Font,
-) -> (fontdue::Metrics, Vec<u8>) {
+) -> parking_lot::MappedRwLockReadGuard<'static, (fontdue::Metrics, Vec<u8>)> {
     let rounded_size_key = round_float_key(size);
+    let cache_key = (ch, rounded_size_key, font.file_hash());
 
-    let x = {
-        let cache = _get_glyph_cache().read().unwrap();
-        cache.get(&(ch, rounded_size_key, font.file_hash())).cloned()
+    // Fast path: try to get from cache
+    {
+        let cache = GLYPH_CACHE.read();
+        if cache.contains_key(&cache_key) {
+            return parking_lot::RwLockReadGuard::map(cache, |c| {
+                c.get(&cache_key).unwrap()
+            });
+        }
     }
-    .unwrap_or_else(|| {
+
+    // Slow path: rasterize and cache
+    {
+        let mut cache = GLYPH_CACHE.write();
+        // Double-check in case another thread inserted while we were waiting
+        if cache.get(&cache_key).is_some() {
+            // Downgrade to read lock and return
+            drop(cache);
+            let read_cache = GLYPH_CACHE.read();
+            return parking_lot::RwLockReadGuard::map(read_cache, |c| {
+                c.get(&cache_key).unwrap()
+            });
+        }
+
+        // Actually rasterize
         let rasterized = font.rasterize(ch, size);
+        cache.insert(cache_key, rasterized);
+    }
 
-        _add_to_glyph_cache(
-            (ch, rounded_size_key, font.file_hash()),
-            rasterized.clone(),
-        );
-
-        rasterized
-    });
-    return x;
+    // Return the newly cached item
+    let cache = GLYPH_CACHE.read();
+    parking_lot::RwLockReadGuard::map(cache, |c| c.get(&cache_key).unwrap())
 }
 /// Get the length of a string in a font if it was rendered out
 pub fn get_text_width(string: &str, size: f32, font: &fontdue::Font) -> f32 {
     let mut total_width = 0.0;
 
     for ch in string.chars() {
-        let (metrics, _) = get_character(ch, size, font);
+        let char = get_character(ch, size, &font);
+        let metrics = char.0;
         total_width += metrics.advance_width;
     }
 
@@ -145,7 +202,8 @@ pub fn get_text_height(string: &str, size: f32, font: &fontdue::Font) -> f32 {
     let mut min_height = 0.0;
 
     for ch in string.chars() {
-        let (metrics, _) = get_character(ch, size, font);
+        let char = get_character(ch, size, &font);
+        let metrics = char.0;
         if metrics.height as f32 > max_height {
             max_height = metrics.height as f32
         }

@@ -5,8 +5,12 @@ use crate::{
         draw_pixel_safe, draw_pixel_unsafe, rendering::DrawPixelFunction,
     },
 };
+
+#[allow(clippy::cast_precision_loss)]
+#[allow(clippy::cast_possible_truncation)]
+#[allow(clippy::cast_sign_loss)]
 /// Draw text in the specified font
-pub fn draw_text_antialiased(
+pub fn draw_text_antialiased<const SAFE: bool>(
     buffer: &Buffer,
     text: &str,
     x: usize,
@@ -14,30 +18,30 @@ pub fn draw_text_antialiased(
     color: u32,
     size: f32,
     font: &fontdue::Font,
-    safe: bool,
 ) {
     let draw_pixel: DrawPixelFunction = {
-        if safe {
+        if SAFE {
             draw_pixel_safe
         } else {
             draw_pixel_unsafe
         }
     };
-    let mut pen_x = x;
+    let mut pen_x = x as f32;
     let pen_y = y;
 
-    let font_metrics = font.horizontal_line_metrics(size).unwrap();
-    let ascent = font_metrics.ascent as usize;
+    let ascent = font.horizontal_line_metrics(size).map_or(0, |font_metrics| font_metrics.ascent as usize);
 
     for ch in text.chars() {
         // Try to get the glyph from cache first
-        let (metrics, bitmap) = get_character(ch, size, &font);
+        let char = get_character(ch, size, &font);
+        let metrics = char.0;
+        let bitmap = &char.1;
 
         let offset_y = ascent.saturating_sub(metrics.height);
         // Draw each character into the buffer
         for gy in 0..metrics.height {
             for gx in 0..metrics.width {
-                let px = pen_x + gx;
+                let px = pen_x as usize + gx;
                 // Correcting for letter height
                 let py =
                     ((pen_y + gy + offset_y) as i32 - metrics.ymin) as usize;
@@ -84,8 +88,7 @@ pub fn draw_text_antialiased(
 
                             draw_pixel(
                                 buffer,
-                                px,
-                                py,
+                                (px, py),
                                 (nr as u32) << 24
                                     | (ng as u32) << 16
                                     | (nb as u32) << 8
@@ -98,7 +101,7 @@ pub fn draw_text_antialiased(
         }
 
         // Advance the cursor position
-        pen_x += metrics.advance_width as usize;
+        pen_x += metrics.advance_width;
     }
 }
 
@@ -121,7 +124,7 @@ pub fn draw_text_antialiased_execute_at(
             draw_pixel_unsafe
         }
     };
-    let mut pen_x = x;
+    let mut pen_x = x as f32;
     let pen_y = y;
 
     let font_metrics = font.horizontal_line_metrics(size).unwrap();
@@ -129,13 +132,15 @@ pub fn draw_text_antialiased_execute_at(
 
     for ch in text.chars() {
         // Try to get the glyph from cache first
-        let (metrics, bitmap) = get_character(ch, size, &font);
+        let char = get_character(ch, size, &font);
+        let metrics = char.0;
+        let bitmap = &char.1;
 
         let offset_y = ascent.saturating_sub(metrics.height);
         // Draw each character into the buffer
         for gy in 0..metrics.height {
             for gx in 0..metrics.width {
-                let px = pen_x + gx;
+                let px = pen_x as usize + gx;
                 // Correcting for letter height
                 let py =
                     ((pen_y + gy + offset_y) as i32 - metrics.ymin) as usize;
@@ -183,8 +188,7 @@ pub fn draw_text_antialiased_execute_at(
 
                             draw_pixel(
                                 buffer,
-                                px,
-                                py,
+                                (px, py),
                                 (nr as u32) << 24
                                     | (ng as u32) << 16
                                     | (nb as u32) << 8
@@ -197,7 +201,7 @@ pub fn draw_text_antialiased_execute_at(
         }
 
         // Advance the cursor position
-        pen_x += metrics.advance_width as usize;
+        pen_x += metrics.advance_width;
     }
 }
 
@@ -221,18 +225,20 @@ pub fn draw_text_antialiased_stretched<F: num_traits::Float>(
             draw_pixel_unsafe
         }
     };
-    let mut pen_x = x;
+    let mut pen_x = x as f32;
     let pen_y = y;
     let font_metrics = font.horizontal_line_metrics(size).unwrap();
     let ascent = font_metrics.ascent as usize;
 
     for ch in text.chars() {
-        let (metrics, bitmap) = get_character(ch, size, &font);
+        let char = get_character(ch, size, &font);
+        let metrics = char.0;
+        let bitmap = &char.1;
 
         let offset_y = ascent.saturating_sub(metrics.height);
         let w = F::from(metrics.width).unwrap() * stretch_x;
         let h = F::from(metrics.height).unwrap() * stretch_y;
-        let advance_x = metrics.advance_width as usize;
+        let advance_x = metrics.advance_width;
 
         for gy in 0..h.floor().to_usize().unwrap() {
             let py = ((pen_y + gy + offset_y) as i32 - metrics.ymin) as usize;
@@ -244,7 +250,7 @@ pub fn draw_text_antialiased_stretched<F: num_traits::Float>(
                 ((F::from(gy).unwrap() / stretch_y).to_usize().unwrap())
                     * metrics.width;
             for gx in 0..w.floor().to_usize().unwrap() {
-                let px = pen_x + gx;
+                let px = pen_x as usize + gx;
                 if px >= buffer.width {
                     continue;
                 }
@@ -286,8 +292,7 @@ pub fn draw_text_antialiased_stretched<F: num_traits::Float>(
 
                     draw_pixel(
                         buffer,
-                        px,
-                        py,
+                        (px, py),
                         (nr as u32) << 24
                             | (ng as u32) << 16
                             | (nb as u32) << 8
@@ -302,7 +307,7 @@ pub fn draw_text_antialiased_stretched<F: num_traits::Float>(
 }
 
 /// Same as [draw_text_antialiased] but uses isize for positioning allowing for partially out of bounce text (left and top)
-pub fn draw_text_antialiased_isize(
+pub fn draw_text_antialiased_isize<const SAFE: bool>(
     buffer: &Buffer,
     text: &str,
     x: isize,
@@ -310,16 +315,15 @@ pub fn draw_text_antialiased_isize(
     color: u32,
     size: f32,
     font: &fontdue::Font,
-    safe: bool,
 ) {
     let draw_pixel: DrawPixelFunction = {
-        if safe {
+        if SAFE {
             draw_pixel_safe
         } else {
             draw_pixel_unsafe
         }
     };
-    let mut pen_x = x;
+    let mut pen_x = x as f32;
     let pen_y = y;
 
     let font_metrics = font.horizontal_line_metrics(size).unwrap();
@@ -327,13 +331,15 @@ pub fn draw_text_antialiased_isize(
 
     for ch in text.chars() {
         // Try to get the glyph from cache first
-        let (metrics, bitmap) = get_character(ch, size, &font);
+        let char = get_character(ch, size, &font);
+        let metrics = char.0;
+        let bitmap = &char.1;
 
         let offset_y = ascent.saturating_sub(metrics.height as isize);
         // Draw each character into the buffer
         for gy in 0..metrics.height {
             for gx in 0..metrics.width {
-                let px = pen_x + gx as isize;
+                let px = pen_x as isize + gx as isize;
                 // Correcting for letter height
                 let py = pen_y + gy as isize + offset_y - metrics.ymin as isize;
 
@@ -348,7 +354,7 @@ pub fn draw_text_antialiased_isize(
                     let index = py_u * buffer.width + px_u;
                     let alpha = bitmap[gy * metrics.width + gx]; // Alpha (0-255)
                     if alpha > 0 {
-                        if safe && index >= buffer.width * buffer.height {
+                        if SAFE && index >= buffer.width * buffer.height {
                             continue;
                         }
 
@@ -370,31 +376,30 @@ pub fn draw_text_antialiased_isize(
 
                             // Alpha blending
                             let inv_alpha: u8 = 255 - alpha;
-                            let nr = ((tr as u16 * alpha as u16
-                                + br as u16 * inv_alpha as u16)
+                            let nr = ((tr as u16 * u16::from(alpha)
+                                + br as u16 * u16::from(inv_alpha))
                                 / 255)
                                 as u8;
-                            let ng = ((tg as u16 * alpha as u16
-                                + bg as u16 * inv_alpha as u16)
+                            let ng = ((tg as u16 * u16::from(alpha)
+                                + bg as u16 * u16::from(inv_alpha))
                                 / 255)
                                 as u8;
-                            let nb = ((tb as u16 * alpha as u16
-                                + bb as u16 * inv_alpha as u16)
+                            let nb = ((tb as u16 * u16::from(alpha)
+                                + bb as u16 * u16::from(inv_alpha))
                                 / 255)
                                 as u8;
-                            let na = ((ta as u16 * alpha as u16
-                                + ba as u16 * inv_alpha as u16)
+                            let na = ((ta as u16 * u16::from(alpha)
+                                + ba as u16 * u16::from(inv_alpha))
                                 / 255)
                                 as u8;
 
                             draw_pixel(
                                 buffer,
-                                px_u,
-                                py_u,
-                                (nr as u32) << 24
-                                    | (ng as u32) << 16
-                                    | (nb as u32) << 8
-                                    | na as u32,
+                                (px_u, py_u),
+                                u32::from(nr) << 24
+                                    | u32::from(ng) << 16
+                                    | u32::from(nb) << 8
+                                    | u32::from(na),
                             );
                         }
                     }
@@ -403,11 +408,11 @@ pub fn draw_text_antialiased_isize(
         }
 
         // Advance the cursor position
-        pen_x += metrics.advance_width as isize;
+        pen_x += metrics.advance_width;
     }
 }
 
-/// Same as [draw_text_antialiased_stretched] but uses isize for positioning allowing for partially out of bounce text (left and top)
+/// Same as [`draw_text_antialiased_stretched`] but uses isize for positioning allowing for partially out of bounce text (left and top)
 pub fn draw_text_antialiased_stretched_isize<F: num_traits::Float>(
     buffer: &Buffer,
     text: &str,
@@ -427,18 +432,20 @@ pub fn draw_text_antialiased_stretched_isize<F: num_traits::Float>(
             draw_pixel_unsafe
         }
     };
-    let mut pen_x = x;
+    let mut pen_x = x as f32;
     let pen_y = y;
     let font_metrics = font.horizontal_line_metrics(size).unwrap();
     let ascent = font_metrics.ascent as isize;
 
     for ch in text.chars() {
-        let (metrics, bitmap) = get_character(ch, size, &font);
+        let char = get_character(ch, size, &font);
+        let metrics = char.0;
+        let bitmap = &char.1;
 
         let offset_y = ascent.saturating_sub(metrics.height as isize);
         let w = F::from(metrics.width).unwrap() * stretch_x;
         let h = F::from(metrics.height).unwrap() * stretch_y;
-        let advance_x = metrics.advance_width as isize;
+        let advance_x = metrics.advance_width;
 
         for gy in 0..h.floor().to_usize().unwrap() {
             let py = pen_y + gy as isize + offset_y - metrics.ymin as isize;
@@ -450,7 +457,7 @@ pub fn draw_text_antialiased_stretched_isize<F: num_traits::Float>(
                 ((F::from(gy).unwrap() / stretch_y).to_usize().unwrap())
                     * metrics.width;
             for gx in 0..w.floor().to_usize().unwrap() {
-                let px = pen_x + gx as isize;
+                let px = pen_x as isize + gx as isize;
                 if px < 0 || px >= buffer.width as isize {
                     continue;
                 }
@@ -500,8 +507,7 @@ pub fn draw_text_antialiased_stretched_isize<F: num_traits::Float>(
 
                     draw_pixel(
                         buffer,
-                        px_u,
-                        py_u,
+                        (px_u, py_u),
                         (nr as u32) << 24
                             | (ng as u32) << 16
                             | (nb as u32) << 8
@@ -514,3 +520,101 @@ pub fn draw_text_antialiased_stretched_isize<F: num_traits::Float>(
         pen_x += advance_x;
     }
 }
+
+// /// Draw text uniformly
+// pub fn draw_text_antialiased_monospace<const SAFE: bool>(
+//     buffer: &Buffer,
+//     text: &str,
+//     x: usize,
+//     y: usize,
+//     color: u32,
+//     size: f32,
+//     font: &fontdue::Font,
+// ) {
+//     let draw_pixel: DrawPixelFunction = {
+//         if SAFE {
+//             draw_pixel_safe
+//         } else {
+//             draw_pixel_unsafe
+//         }
+//     };
+//     let mut pen_x = x;
+//     let pen_y = y;
+
+//     let font_metrics = font.horizontal_line_metrics(size).unwrap();
+//     let ascent = font_metrics.ascent as usize;
+
+//     for ch in text.chars() {
+//         // Try to get the glyph from cache first
+//         let char = get_character(ch, size, &font);
+//         let metrics = char.0;
+//         let bitmap = &char.1;
+
+//         let offset_y = ascent.saturating_sub(metrics.height);
+//         // Draw each character into the buffer
+//         for gy in 0..metrics.height {
+//             for gx in 0..metrics.width {
+//                 let px = pen_x + gx;
+//                 // Correcting for letter height
+//                 let py =
+//                     ((pen_y + gy + offset_y) as i32 - metrics.ymin) as usize;
+
+//                 if px < buffer.width && py < buffer.height {
+//                     let index = py * buffer.width + px;
+//                     let alpha = bitmap[gy * metrics.width + gx]; // Alpha (0-255)
+
+//                     if alpha > 0 {
+//                         unsafe {
+//                             let bg = *buffer.pointer.add(index);
+//                             // Extract RGBA
+//                             let (br, bg, bb, ba) = (
+//                                 (bg >> 24) & 0xFF,
+//                                 (bg >> 16) & 0xFF,
+//                                 (bg >> 8) & 0xFF,
+//                                 bg & 0xFF,
+//                             );
+//                             let (tr, tg, tb, ta) = (
+//                                 (color >> 24) & 0xFF,
+//                                 (color >> 16) & 0xFF,
+//                                 (color >> 8) & 0xFF,
+//                                 color & 0xFF,
+//                             );
+
+//                             // Alpha blending
+//                             let inv_alpha: u8 = 255 - alpha;
+//                             let nr = ((tr as u16 * alpha as u16
+//                                 + br as u16 * inv_alpha as u16)
+//                                 / 255)
+//                                 as u8;
+//                             let ng = ((tg as u16 * alpha as u16
+//                                 + bg as u16 * inv_alpha as u16)
+//                                 / 255)
+//                                 as u8;
+//                             let nb = ((tb as u16 * alpha as u16
+//                                 + bb as u16 * inv_alpha as u16)
+//                                 / 255)
+//                                 as u8;
+//                             let na = ((ta as u16 * alpha as u16
+//                                 + ba as u16 * inv_alpha as u16)
+//                                 / 255)
+//                                 as u8;
+
+//                             draw_pixel(
+//                                 buffer,
+//                                 px,
+//                                 py,
+//                                 (nr as u32) << 24
+//                                     | (ng as u32) << 16
+//                                     | (nb as u32) << 8
+//                                     | na as u32,
+//                             );
+//                         }
+//                     }
+//                 }
+//             }
+//         }
+
+//         // Advance the cursor position
+//         pen_x += size as usize;
+//     }
+// }

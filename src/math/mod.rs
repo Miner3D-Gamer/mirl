@@ -40,6 +40,7 @@ pub trait NumberWithMonotoneOps:
     + std::ops::Sub<Output = Self>
     + std::ops::Mul<Output = Self>
     + std::ops::Div<Output = Self>
+    + std::ops::Rem<Output = Self>
 {
 }
 
@@ -50,9 +51,162 @@ impl<
             + std::ops::Add<Output = Self>
             + std::ops::Sub<Output = Self>
             + std::ops::Mul<Output = Self>
-            + std::ops::Div<Output = Self>,
+            + std::ops::Div<Output = Self>
+            + std::ops::Rem<Output = Self>,
     > NumberWithMonotoneOps for T
 {
+}
+#[allow(missing_docs)]
+/// An extended version of `num_traits::One` trait going all the way to Ten
+pub trait TwoTillTen<T: num_traits::One + std::ops::Add<Output = T>> {
+    #[must_use]
+    fn two() -> T {
+        T::one() + T::one()
+    }
+    #[must_use]
+    fn three() -> T {
+        T::one() + T::one() + T::one()
+    }
+    #[must_use]
+    fn four() -> T {
+        T::one() + T::one() + T::one() + T::one()
+    }
+    #[must_use]
+    fn five() -> T {
+        T::one() + T::one() + T::one() + T::one() + T::one()
+    }
+    #[must_use]
+    fn six() -> T {
+        T::one() + T::one() + T::one() + T::one() + T::one() + T::one()
+    }
+    #[must_use]
+    fn seven() -> T {
+        T::one()
+            + T::one()
+            + T::one()
+            + T::one()
+            + T::one()
+            + T::one()
+            + T::one()
+    }
+    #[must_use]
+    fn eight() -> T {
+        T::one()
+            + T::one()
+            + T::one()
+            + T::one()
+            + T::one()
+            + T::one()
+            + T::one()
+            + T::one()
+    }
+    #[must_use]
+    fn nine() -> T {
+        T::one()
+            + T::one()
+            + T::one()
+            + T::one()
+            + T::one()
+            + T::one()
+            + T::one()
+            + T::one()
+            + T::one()
+    }
+    #[must_use]
+    fn ten() -> T {
+        T::one()
+            + T::one()
+            + T::one()
+            + T::one()
+            + T::one()
+            + T::one()
+            + T::one()
+            + T::one()
+            + T::one()
+            + T::one()
+    }
+}
+#[allow(missing_docs)]
+#[const_trait]
+/// An extended version of `num_traits::ConstOne` trait going from 2 to 10
+pub trait ConstTwoTillTen {
+    const TWO: Self;
+    const THREE: Self;
+    const FOUR: Self;
+    const FIVE: Self;
+    const SIX: Self;
+    const SEVEN: Self;
+    const EIGHT: Self;
+    const NINE: Self;
+    const TEN: Self;
+}
+impl<T: num_traits::ConstOne + const std::ops::Add<Output = T>> const
+    ConstTwoTillTen for T
+{
+    const TWO: Self = T::ONE + T::ONE;
+
+    const THREE: Self = T::ONE + T::ONE + T::ONE;
+
+    const FOUR: Self = T::ONE + T::ONE + T::ONE + T::ONE;
+
+    const FIVE: Self = T::ONE + T::ONE + T::ONE + T::ONE + T::ONE;
+
+    const SIX: Self = T::ONE + T::ONE + T::ONE + T::ONE + T::ONE + T::ONE;
+
+    const SEVEN: Self =
+        T::ONE + T::ONE + T::ONE + T::ONE + T::ONE + T::ONE + T::ONE;
+
+    const EIGHT: Self =
+        T::ONE + T::ONE + T::ONE + T::ONE + T::ONE + T::ONE + T::ONE + T::ONE;
+
+    const NINE: Self = T::ONE
+        + T::ONE
+        + T::ONE
+        + T::ONE
+        + T::ONE
+        + T::ONE
+        + T::ONE
+        + T::ONE
+        + T::ONE;
+
+    const TEN: Self = T::ONE
+        + T::ONE
+        + T::ONE
+        + T::ONE
+        + T::ONE
+        + T::ONE
+        + T::ONE
+        + T::ONE
+        + T::ONE
+        + T::ONE;
+}
+
+impl<T: num_traits::One + std::ops::Add<Output = T>> TwoTillTen<T> for T {}
+
+/// A trait for simple but useful operations that weirdly enough do not exist in std
+pub trait ConvenientOps:
+    num_traits::bounds::UpperBounded + Copy + std::cmp::PartialOrd
+{
+    /// Get the half of a value
+    #[must_use]
+    fn half(&self) -> Self;
+    /// Checks if a value is more than half its maximum
+    fn more_than_half(&self) -> bool {
+        *self > Self::half(&Self::max_value())
+    }
+}
+impl<
+        T: TwoTillTen<T>
+            + NumberWithMonotoneOps
+            + Copy
+            + num_traits::bounds::UpperBounded
+            + std::cmp::PartialOrd
+            + num_traits::One,
+    > ConvenientOps for T
+{
+    fn half(&self) -> Self {
+        *self / (Self::two())
+    }
 }
 
 /// A collision extension focusing on 2d rectangles
@@ -66,12 +220,9 @@ pub fn interpolate<T: NumberWithMonotoneOps + Copy + num_traits::One>(
 ) -> T {
     start * (T::one() - progress) + end * progress
 }
-/// Get the position of object A if you wanted to center it in object B
+/// Get the position of area A if you wanted to center it in area B
 pub fn get_center_position_of_object_for_object<
-    T: std::ops::Div<Output = T>
-        + std::ops::Sub<Output = T>
-        + num_traits::ConstOne
-        + std::ops::Add<Output = T>,
+    T: std::ops::Div<Output = T> + std::ops::Sub<Output = T> + ConstTwoTillTen,
 >(
     inner_width: T,
     inner_height: T,
@@ -80,8 +231,8 @@ pub fn get_center_position_of_object_for_object<
 ) -> (T, T) {
     // This is one hell of a way of getting the number 2 for a type
     (
-        outer_width.div(T::ONE + T::ONE) - inner_width.div(T::ONE + T::ONE),
-        outer_height.div(T::ONE + T::ONE) - inner_height.div(T::ONE + T::ONE),
+        outer_width.div(T::TWO) - inner_width.div(T::TWO),
+        outer_height.div(T::TWO) - inner_height.div(T::TWO),
     )
 }
 

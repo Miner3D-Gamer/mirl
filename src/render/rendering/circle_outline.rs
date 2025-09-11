@@ -33,14 +33,14 @@ pub fn draw_circle_outline(
         }
         let temp_x = x as usize;
         let temp_y = y as usize;
-        draw_pixel(buffer, pos_x + temp_x, pos_y + temp_y, color);
-        draw_pixel(buffer, pos_x - temp_x, pos_y + temp_y, color);
-        draw_pixel(buffer, pos_x + temp_x, pos_y - temp_y, color);
-        draw_pixel(buffer, pos_x - temp_x, pos_y - temp_y, color);
-        draw_pixel(buffer, pos_x + temp_y, pos_y + temp_x, color);
-        draw_pixel(buffer, pos_x + temp_y, pos_y - temp_x, color);
-        draw_pixel(buffer, pos_x - temp_y, pos_y + temp_x, color);
-        draw_pixel(buffer, pos_x - temp_y, pos_y - temp_x, color);
+        draw_pixel(buffer, (pos_x + temp_x, pos_y + temp_y), color);
+        draw_pixel(buffer, (pos_x - temp_x, pos_y + temp_y), color);
+        draw_pixel(buffer, (pos_x + temp_x, pos_y - temp_y), color);
+        draw_pixel(buffer, (pos_x - temp_x, pos_y - temp_y), color);
+        draw_pixel(buffer, (pos_x + temp_y, pos_y + temp_x), color);
+        draw_pixel(buffer, (pos_x + temp_y, pos_y - temp_x), color);
+        draw_pixel(buffer, (pos_x - temp_y, pos_y + temp_x), color);
+        draw_pixel(buffer, (pos_x - temp_y, pos_y - temp_x), color);
 
         x += 1;
     }

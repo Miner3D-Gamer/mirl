@@ -40,50 +40,9 @@ pub trait Time {
 }
 /// Basic network information
 pub trait Network {
-    /// Tries to open a connection to the website, Default by None: http://example.com
+    /// Tries to open a connection to the website, Default by None: <http://example.com>
     fn is_connected_to_internet(website_connection: Option<String>) -> bool;
 }
-
-// enum ClipboardContentType{
-//     Text,
-//     Image,
-//     Audio,
-//     ListOfStrings
-// }
-// struct ClipboardContents {
-//     pub content_type: u8,
-//     pub text_content: Option<String>,
-//     pub image_content: Option<Buffer>,
-//     pub audio_content: Option<u8>,
-//     pub list_content: Option<Vec<String>>,
-// }
-
-// impl ClipboardContents {
-//     pub fn is_text(&self) -> bool {
-//         self.content_type == 1
-//     }
-//     pub fn is_image(&self) -> bool {
-//         self.content_type == 2
-//     }
-//     pub fn is_audio(&self) -> bool {
-//         self.content_type == 3
-//     }
-//     pub fn is_list(&self) -> bool {
-//         self.content_type == 4
-//     }
-//     pub fn get_as_text(&self) -> Option<String> {
-//         self.text_content.clone()
-//     }
-//     pub fn get_as_image(&self) -> Option<Buffer> {
-//         self.image_content.clone()
-//     }
-//     pub fn get_as_audio(&self) -> Option<u8> {
-//         self.audio_content.clone()
-//     }
-//     pub fn get_as_list(&self) -> Option<Vec<String>> {
-//         self.list_content.clone()
-//     }
-// }
 
 #[cfg(target_os = "windows")]
 mod windows;
@@ -97,7 +56,6 @@ pub use linux::LinuxInfo as OsInfo;
 mod web;
 #[cfg(target_arch = "wasm32")]
 pub use web::WebInfo as OsInfo;
-
 
 // use crate::graphics::Buffer;
 /// Get the xy coordinates of where to put an object with the specified width and height for it to be centered

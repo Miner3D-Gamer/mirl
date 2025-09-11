@@ -1,10 +1,10 @@
 [package]
 # Info
 name = "mirl"
-version = "3.8.0"
+version = "4.0.0"
 description = "Miners Rust Lib - A collection of ever growing and changing functions and structs. Check the description for compatibility and toggleable features! (Most of the lib is controlled by flags/features)"
 # Compiler
-rust-version = "1.86.0"
+rust-version = "1.87.0"
 edition = "2021"
 # Credit/Misc
 license = "GPL-3.0"
@@ -22,12 +22,13 @@ include = [
 exclude = ["**/_*", "**/*.py"]
 
 [dependencies]
-
 # Enum stuff
 strum = ">=0.26"
 strum_macros = ">=0.26"
 
 device_query = "4.0.0"
+
+parking_lot = "0.12"
 
 # Needed for glyph cache
 once_cell = { version = ">=1.4", optional = true }
@@ -50,7 +51,7 @@ raw-window-handle = { version = "0.6.2", optional = true }
 image = { version = ">=0.25.6", optional = true }
 
 
-# Used in rendering stretched text
+# This lib is pretty useful
 num-traits = ">=0.2"
 
 # system
@@ -102,9 +103,8 @@ gl = { version = "0.14.0", optional = true }
 wasm-bindgen = "0.2"
 #getrandom = { version = "0.3", features = ["wasm_js"] }
 
+
 # Unused
-# serde = "1.0"
-# serde_json = "1.0"
 # rand = "0.8"
 #minifb = "0.27.0"
 # # Make a const value be calculated at compile time
@@ -146,7 +146,6 @@ font_support = ["fontdue", "once_cell", "font-kit"]
 all = ["default", "imagery", "full_backend_support"]
 # Support for the f128 float type
 f128 = []
-
 [lib]
 name = "mirl"
 path = "src/lib.rs"

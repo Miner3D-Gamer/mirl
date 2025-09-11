@@ -4,6 +4,7 @@
         "APPBARDATA",
         "APPWINDOW",
         "bdiag",
+        "bincode",
         "BITMAPINFO",
         "BITMAPINFOHEADER",
         "Bresenham's",
@@ -48,5 +49,15 @@
     ],
     "rust-analyzer.cargo.features": [
         "all"
+    ],
+    "rust-analyzer.check.overrideCommand": [
+        "cargo",
+        "clippy",
+        "--message-format=json",
+        "--features",
+        "all",
+        "--",
+        "-A",
+        "clippy::overly_complex_bool_expr"
     ]
 }

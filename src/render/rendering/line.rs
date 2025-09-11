@@ -40,7 +40,7 @@ pub fn draw_line(
     let mut normal_x = -difference_y;
     let mut normal_y = difference_x;
 
-    let length = f64::from(normal_x.pow(2) + normal_y.pow(2));
+    let length = f64::from(normal_x * normal_x + normal_y * normal_y);
     let normal_length = (length).sqrt() as i16;
     normal_x = (f64::from(normal_x) * thickness as f64
         / f64::from(normal_length)) as i16;
@@ -62,7 +62,7 @@ pub fn draw_line(
                 for offset_y in -thickness as i16 / 2..=thickness as i16 / 2 {
                     let new_x = start_x + normal_x * offset_x;
                     let new_y = start_y + normal_y * offset_y;
-                    draw_pixel(buffer, new_x as usize, new_y as usize, color);
+                    draw_pixel(buffer, (new_x as usize, new_y as usize), color);
                 }
             }
         }
@@ -81,8 +81,54 @@ pub fn draw_line(
                 for offset_y in -thickness as i16 / 2..=thickness as i16 / 2 {
                     let new_x = start_x + normal_x * offset_x;
                     let new_y = start_y + normal_y * offset_y;
-                    draw_pixel(buffer, new_x as usize, new_y as usize, color);
+                    draw_pixel(buffer, (new_x as usize, new_y as usize), color);
                 }
+            }
+        }
+    }
+}
+#[inline]
+/// Draw a straight line
+#[allow(clippy::cast_sign_loss)]
+#[allow(clippy::cast_precision_loss)]
+#[allow(clippy::cast_possible_truncation)]
+#[allow(clippy::cast_possible_wrap)]
+pub fn draw_line_straight(
+    buffer: &Buffer,
+    start: (usize, usize),
+    length: usize,
+    vertical: bool,
+    color: u32,
+    thickness: isize,
+    safe: bool,
+) {
+    let draw_pixel: DrawPixelFunction = if safe {
+        draw_pixel_safe
+    } else {
+        draw_pixel_unsafe
+    };
+
+    let (start_x, start_y) = (start.0 as isize, start.1 as isize);
+    let half_thickness = thickness / 2;
+
+    if vertical {
+        for y in start_y..start_y + length as isize {
+            for offset_x in -half_thickness..=half_thickness {
+                draw_pixel(
+                    buffer,
+                    ((start_x + offset_x) as usize, y as usize),
+                    color,
+                );
+            }
+        }
+    } else {
+        for x in start_x..start_x + length as isize {
+            for offset_y in -half_thickness..=half_thickness {
+                draw_pixel(
+                    buffer,
+                    (x as usize, (start_y + offset_y) as usize),
+                    color,
+                );
             }
         }
     }
@@ -139,14 +185,14 @@ pub fn draw_line(
 
 //         // Draw thickness around the main line
 //         for t in
-//             -(thickness as f32 / 2.0) as i32..=(thickness as f32 / 2.0) as i32
+//             -(thickness as f32 / 2.0) as i16..=(thickness as f32 / 2.0) as i16
 //         {
 //             let thick_x = p_x.mul_add(t as f32, x);
 //             let thick_y = p_y.mul_add(t as f32, y);
 
 //             // Get the integer pixel coordinates
-//             let pixel_x = thick_x as i32;
-//             let pixel_y = thick_y as i32;
+//             let pixel_x = thick_x as i16;
+//             let pixel_y = thick_y as i16;
 
 //             // Calculate fractional parts for antialiasing
 //             let fract_x = thick_x - pixel_x as f32;

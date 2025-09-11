@@ -63,6 +63,7 @@ impl Screen for WindowsInfo {
     fn get_os_menu_height() -> i32 {
         unsafe { GetSystemMetrics(4) }
     }
+
     fn get_taskbar_height() -> i32 {
         unsafe {
             let mut abd: winapi::um::shellapi::APPBARDATA = std::mem::zeroed();
@@ -72,7 +73,7 @@ impl Screen for WindowsInfo {
 
             if winapi::um::shellapi::SHAppBarMessage(
                 winapi::um::shellapi::ABM_GETTASKBARPOS,
-                &mut abd,
+                &raw mut abd,
             ) != 0
             {
                 abd.rc.bottom - abd.rc.top
@@ -98,7 +99,7 @@ impl Battery for WindowsInfo {
         let mut power_status = SYSTEM_POWER_STATUS::default();
 
         unsafe {
-            GetSystemPowerStatus(&mut power_status);
+            GetSystemPowerStatus(&raw mut power_status);
         }
 
         if power_status.BatteryLifePercent == 255 {

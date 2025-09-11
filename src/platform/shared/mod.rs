@@ -462,8 +462,8 @@ impl<T: num_traits::Float> MouseManager<T> {
         set_mouse_button(button, self, value);
     }
 }
-
-use super::{KeyCode, MouseButton};
+use super::MouseButton;
+use crate::platform::keycodes::KeyCode;
 /// Get the value [MouseButton] of [MouseManager]
 pub const fn map_button<MouseManagerScrollAccuracy: num_traits::Float>(
     button: MouseButton,
@@ -609,10 +609,10 @@ pub const fn map_keycode(keycode: KeyCode, key_manager: &KeyManager) -> bool {
         KeyCode::Menu => key_manager.menu,
         KeyCode::Quote => key_manager.quote,
         KeyCode::Tilde => key_manager.tilde,
-        KeyCode::Up => key_manager.up,
-        KeyCode::Down => key_manager.down,
-        KeyCode::Left => key_manager.left,
-        KeyCode::Right => key_manager.right,
+        KeyCode::UpArrow => key_manager.up,
+        KeyCode::DownArrow => key_manager.down,
+        KeyCode::LeftArrow => key_manager.left,
+        KeyCode::RightArrow => key_manager.right,
         KeyCode::PageUp => key_manager.page_up,
         KeyCode::PageDown => key_manager.page_down,
         KeyCode::Home => key_manager.home,
@@ -790,10 +790,10 @@ pub fn set_keycode(
         KeyCode::Menu => key_manager.menu = value,
         KeyCode::Quote => key_manager.quote = value,
         KeyCode::Tilde => key_manager.tilde = value,
-        KeyCode::Up => key_manager.up = value,
-        KeyCode::Down => key_manager.down = value,
-        KeyCode::Left => key_manager.left = value,
-        KeyCode::Right => key_manager.right = value,
+        KeyCode::UpArrow => key_manager.up = value,
+        KeyCode::DownArrow => key_manager.down = value,
+        KeyCode::LeftArrow => key_manager.left = value,
+        KeyCode::RightArrow => key_manager.right = value,
         KeyCode::PageUp => key_manager.page_up = value,
         KeyCode::PageDown => key_manager.page_down = value,
         KeyCode::Home => key_manager.home = value,

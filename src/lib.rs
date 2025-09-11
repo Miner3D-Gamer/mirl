@@ -10,6 +10,9 @@
 #![warn(clippy::expect_used)]
 #![warn(clippy::todo)]
 #![warn(clippy::panic)]
+#![allow(clippy::cast_precision_loss)]
+#![allow(clippy::cast_possible_truncation)]
+#![allow(clippy::cast_sign_loss)]
 #![allow(clippy::wildcard_imports)]
 #![allow(clippy::needless_doctest_main)]
 #![feature(const_trait_impl)]
@@ -35,18 +38,19 @@
 //!     }
 //! }
 //! ```
+//! For a debugging window like `Dear ImGui` you can use `dear_mirl_gui` crate
 //!
 //! This lib has got a ton to offer but the main attractions are in here:
 //! ## Window/Rendering Bundle (flags: `minifb_backend`/`glfw_backend`/`full_backend_support`):
 //!
-//! - [Frameworks](crate::platform::framework_traits) - What are they capable of? (for [crate::platform::minifb::Framework](crate::platform::minifb::Framework) or [crate::platform::glfw::Framework](crate::platform::glfw::Framework))
+//! - [Frameworks](crate::platform::framework_traits) - What are they capable of? (for [`crate::platform::minifb::Framework`] or [`crate::platform::glfw::Framework`])
 //! - [Buffer](crate::platform::Buffer) - The central struct many other functions rely on
 //! - [Rendering](crate::render) - Render simple shapes
 //! - [Platform](crate::platform) - Other neat stuff like [`crate::platform::KeyCode`]/[`crate::platform::MouseButton`], or [`crate::platform::ScreenNormalizer`]
 //! - [System interaction](crate::system::action) - Functions that are untypical for usual applications like moving the window, getting/setting the z position, or hiding a window from the taskbar
 //! - [Color Stuff](crate::graphics) - What is rendering without color manipulation?
-//! - [Modular File System](crate::platform::FileSystem) - A custom file system wrapper to support file accessing on web and natively
-//! - [Rust functionality extension](crate::extensions) with a big focus yet not limited to new tuple functionality
+//! - [Modular File System](crate::platform::file_system::FileSystem) - A custom file system wrapper to support file accessing on web and natively
+//! - [Rust functionality extension](crate::extensions) - Adding to rust what should've been there in the first place, especially tuple operations
 
 /// Directional stuff -> NESW, N NE E SE S SW W NW
 pub mod directions;
@@ -54,23 +58,22 @@ pub mod directions;
 pub mod extensions;
 /// Stuff related to graphics -> Color manipulation
 ///
-/// For rendering use [`crate::render`]
+/// For rendering use [`mirl::render`](crate::render)
 pub mod graphics;
-/// Stuff related to lists
-pub mod lists;
+
 /// Math and collision focused stuff
 pub mod math;
 /// Stuff I didn't know how to categorize -> Expect these objects to be moved in the future
 pub mod misc;
 /// Window creation/managing, file system creation/managing
 ///
-/// For actually rendering stuff, use [`crate::render`]
+/// For actually rendering stuff, use [`mirl::render`](crate::render)
 ///
-/// For basic collision, use [`crate::math::collision`]
+/// For basic collision, use [`mirl::math::collision`](crate::math::collision)
 pub mod platform;
-/// Rendering stuff, simple but powerful (on [`crate::platform::Buffer`])
+/// Rendering stuff, simple but powerful (on [`mirl::platform::Buffer`](crate::platform::Buffer))
 ///
-/// For color stuff, use [`crate::graphics`]
+/// For color stuff, use [`mirl::graphics`](crate::graphics)
 pub mod render;
 /// Time related stuff
 pub mod time;
@@ -83,7 +86,7 @@ pub mod console;
 #[cfg(feature = "system")]
 pub mod system;
 
-/// Useful constants -> std contains some of these internally yet doesn't have them `pub`bed
+/// Useful constants -> std contains some of these internally yet doesn't expose them for anyone else to use
 pub mod constants;
 
 /// Enables the rust traceback by setting the environment variable `RUST_BACKTRACE` to `1`
@@ -104,3 +107,7 @@ pub fn disable_traceback() {
         std::env::set_var("RUST_BACKTRACE", "0");
     }
 }
+// This little fella is so often used that it only makes sense to reexport it
+pub use platform::Buffer;
+
+// TODO: Add clipboard support

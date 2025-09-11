@@ -2,23 +2,25 @@ use crate::platform::Buffer;
 /// Draw a pixel color onto the buffer without checking if the pixel is on screen (which will crash the program if it isn't)
 #[inline(always)]
 #[allow(clippy::inline_always)]
-pub fn draw_pixel_unsafe(buffer: &Buffer, x: usize, y: usize, color: u32) {
+#[track_caller]
+pub fn draw_pixel_unsafe(buffer: &Buffer, xy: (usize, usize), color: u32) {
     unsafe {
-        *buffer.pointer.add(y * buffer.width + x) = color;
+        *buffer.pointer.add(xy.1 * buffer.width + xy.0) = color;
     }
 }
 /// Draw a pixel color onto the buffer by first checking if the pixel is on screen
 #[inline(always)]
 #[allow(clippy::inline_always)]
-pub fn draw_pixel_safe(buffer: &Buffer, x: usize, y: usize, color: u32) {
-    if x < buffer.width && y < buffer.height {
+#[track_caller]
+pub fn draw_pixel_safe(buffer: &Buffer, xy: (usize, usize), color: u32) {
+    if xy.0 < buffer.width && xy.1 < buffer.height {
         unsafe {
-            *buffer.pointer.add(y * buffer.width + x) = color;
+            *buffer.pointer.add(xy.1 * buffer.width + xy.0) = color;
         }
     }
 }
 
-type DrawPixelFunction = fn(&Buffer, usize, usize, u32);
+type DrawPixelFunction = fn(&Buffer, (usize, usize), u32);
 
 // macro_rules! create_safe_and_unsafe {
 //     (

@@ -3,6 +3,7 @@ use std::str::FromStr;
 
 #[cfg(feature = "ico")]
 use ico::{IconDir, IconDirEntry, IconImage, ResourceType};
+use minifb::CursorStyle;
 
 use super::framework_traits::{
     Control, ExtendedControl, ExtendedInput, ExtendedTiming, ExtendedWindow,
@@ -17,7 +18,9 @@ use super::{time::NativeTime, Buffer};
 use crate::extensions::*;
 #[cfg(feature = "ico")]
 use crate::graphics::u32_to_rgba;
-use crate::platform::{KeyCode, MouseButton, WindowLevel};
+use crate::platform::framework_traits::CursorStyleControl;
+use crate::platform::keycodes::KeyCode;
+use crate::platform::{MouseButton, WindowLevel};
 use crate::system::action::Decoration;
 use crate::system::action::Default;
 /// Backend implementation using MiniFB
@@ -180,6 +183,39 @@ impl<MouseManagerScrollAccuracy: num_traits::Float>
     }
 }
 
+#[cfg(feature = "resvg")]
+impl CursorStyleControl for Framework {
+    #[inline]
+    fn set_cursor_style(&mut self, style: &Cursor) {
+        #[cfg(target_os = "windows")]
+        {
+            if !self.cursor_subclassed {
+                unsafe {
+                    super::mouse::cursors_windows::subclass_window(
+                        self.get_window_handle(),
+                        *style,
+                    );
+                }
+                self.cursor_subclassed = true;
+            }
+        }
+        super::mouse::use_cursor(style, None);
+    }
+    fn load_custom_cursor(
+        &mut self,
+        size: crate::extensions::U2,
+        main_color: u32,
+        secondary_color: u32,
+    ) -> super::mouse::Cursors {
+        super::mouse::Cursors::load(
+            size,
+            main_color,
+            secondary_color,
+            load_base_cursor_with_file,
+        )
+    }
+}
+
 impl ExtendedTiming for Framework {
     #[inline]
     fn set_target_fps(&mut self, fps: usize) {
@@ -249,37 +285,6 @@ impl ExtendedWindow for Framework {
 
             self.window.set_icon(icon);
         }
-    }
-    #[cfg(feature = "resvg")]
-    #[inline]
-    fn set_cursor_style(&mut self, style: &Cursor) {
-        #[cfg(target_os = "windows")]
-        {
-            if !self.cursor_subclassed {
-                unsafe {
-                    super::mouse::cursors_windows::subclass_window(
-                        self.get_window_handle(),
-                        *style,
-                    );
-                }
-                self.cursor_subclassed = true;
-            }
-        }
-        super::mouse::use_cursor(style, None);
-    }
-    #[cfg(feature = "resvg")]
-    fn load_custom_cursor(
-        &mut self,
-        size: crate::extensions::U2,
-        main_color: u32,
-        secondary_color: u32,
-    ) -> super::mouse::Cursors {
-        super::mouse::Cursors::load(
-            size,
-            main_color,
-            secondary_color,
-            load_base_cursor_with_file,
-        )
     }
     fn get_window_handle(&self) -> raw_window_handle::RawWindowHandle {
         get_native_window_handle_from_minifb(&self.window)
@@ -511,10 +516,10 @@ pub const fn map_keycode_to_minifb(key: KeyCode) -> minifb::Key {
         KeyCode::Tab => minifb::Key::Tab,
 
         // Arrows
-        KeyCode::Up => minifb::Key::Up,
-        KeyCode::Down => minifb::Key::Down,
-        KeyCode::Left => minifb::Key::Left,
-        KeyCode::Right => minifb::Key::Right,
+        KeyCode::UpArrow => minifb::Key::Up,
+        KeyCode::DownArrow => minifb::Key::Down,
+        KeyCode::LeftArrow => minifb::Key::Left,
+        KeyCode::RightArrow => minifb::Key::Right,
 
         // Extra
         KeyCode::Comma => minifb::Key::Comma,
@@ -694,10 +699,10 @@ pub const fn map_minifb_to_keycode(key: minifb::Key) -> KeyCode {
         minifb::Key::Tab => KeyCode::Tab,
 
         // Arrows
-        minifb::Key::Up => KeyCode::Up,
-        minifb::Key::Down => KeyCode::Down,
-        minifb::Key::Left => KeyCode::Left,
-        minifb::Key::Right => KeyCode::Right,
+        minifb::Key::Up => KeyCode::UpArrow,
+        minifb::Key::Down => KeyCode::DownArrow,
+        minifb::Key::Left => KeyCode::LeftArrow,
+        minifb::Key::Right => KeyCode::RightArrow,
 
         // Extras
         minifb::Key::Comma => KeyCode::Comma,

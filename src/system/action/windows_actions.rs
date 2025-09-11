@@ -280,7 +280,6 @@ use windows::{
     },
 };
 
-use crate::lists::combined;
 use crate::platform::{Buffer, WindowLevel};
 use crate::system::action::{
     Decoration, Default, Misc, ProgressionState, TaskBar, Transparency,
@@ -891,7 +890,7 @@ mod tests {
         }
     }
 }
-
+use crate::extensions::*;
 unsafe extern "system" fn enum_windows_proc(
     hwnd: winapi::shared::windef::HWND,
     long_param: isize,
@@ -938,7 +937,7 @@ unsafe extern "system" fn enum_windows_proc(
     }
 
     data.found_hwnds =
-        Some(combined(&data.found_hwnds.clone().unwrap_or_default(), hwnd));
+        Some(data.found_hwnds.clone().unwrap_or_default().combined(hwnd));
 
     if data.just_one {
         return 0; // Stop enumeration

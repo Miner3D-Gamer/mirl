@@ -14,7 +14,7 @@ use device_query::{DeviceQuery, DeviceState, Keycode as DQKeycode};
 #[cfg(target_os = "windows")]
 pub use windows::*;
 
-use crate::platform::KeyCode;
+use crate::platform::keycodes::KeyCode;
 /// Converts mirls keycodes to discovery queues keycodes
 pub const fn mirl_keycode_to_device_query_keycode(
     keycode: KeyCode,
@@ -114,10 +114,10 @@ pub const fn mirl_keycode_to_device_query_keycode(
         KeyCode::Slash => Some(DQKeycode::Slash),
 
         // Arrow keys
-        KeyCode::Up => Some(DQKeycode::Up),
-        KeyCode::Down => Some(DQKeycode::Down),
-        KeyCode::Left => Some(DQKeycode::Left),
-        KeyCode::Right => Some(DQKeycode::Right),
+        KeyCode::UpArrow => Some(DQKeycode::Up),
+        KeyCode::DownArrow => Some(DQKeycode::Down),
+        KeyCode::LeftArrow => Some(DQKeycode::Left),
+        KeyCode::RightArrow => Some(DQKeycode::Right),
 
         // Editing keys
         KeyCode::Insert => Some(DQKeycode::Insert),
@@ -317,10 +317,10 @@ pub const fn device_query_keycodes_to_mirls_keycode(
         DQKeycode::Slash => KeyCode::Slash,
 
         // Arrow keys
-        DQKeycode::Up => KeyCode::Up,
-        DQKeycode::Down => KeyCode::Down,
-        DQKeycode::Left => KeyCode::Left,
-        DQKeycode::Right => KeyCode::Right,
+        DQKeycode::Up => KeyCode::UpArrow,
+        DQKeycode::Down => KeyCode::DownArrow,
+        DQKeycode::Left => KeyCode::LeftArrow,
+        DQKeycode::Right => KeyCode::RightArrow,
 
         // Editing keys
         DQKeycode::Insert => KeyCode::Insert,

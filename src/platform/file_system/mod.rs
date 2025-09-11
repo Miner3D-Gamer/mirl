@@ -4,6 +4,7 @@ pub use native::*;
 /// Why bother reading files if you can't process them? Let [`file_data::FileData`] fix that.
 mod file_data;
 pub use file_data::FileData;
+pub use file_data::DataType;
 
 #[cfg(feature="font_support")]
 mod get_os_font;

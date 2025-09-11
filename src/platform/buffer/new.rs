@@ -1,5 +1,5 @@
 use super::Buffer;
-use crate::graphics::{rgb_to_u32, rgba_to_u32};
+use crate::{extensions::RepeatData, graphics::{rgb_to_u32, rgba_to_u32}};
 impl Buffer {
     
     #[track_caller]
@@ -34,7 +34,7 @@ impl Buffer {
     /// Create a new, empty, [Buffer]
     pub fn new_empty(width: usize, height: usize) -> Self {
         let total_size = width * height;
-        let mut buffer = vec![0u32; total_size].into_boxed_slice();
+        let mut buffer = 0u32.repeat_value(total_size).into_boxed_slice();
         let buffer_pointer = buffer.as_mut_ptr();
         Self {
             data: buffer,
@@ -82,7 +82,7 @@ impl Buffer {
                 let square_x = x / square_size;
                 let square_y = y / square_size;
 
-                let color = if (square_x + square_y) % 2 == 0 {
+                let color = if (square_x + square_y).is_multiple_of(2) {
                     purple
                 } else {
                     black

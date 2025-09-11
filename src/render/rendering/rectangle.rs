@@ -4,49 +4,136 @@ use crate::{platform::Buffer, render::rendering::DrawPixelFunction};
 /// Draw a simple rectangle
 #[inline]
 #[allow(clippy::cast_sign_loss)]
-pub fn draw_rectangle(
+pub fn draw_rectangle_old<const SAFE: bool>(
     buffer: &Buffer,
     pos_x: isize,
     pos_y: isize,
     width: isize,
     height: isize,
     color: u32,
-    safe: bool,
 ) {
     for y in pos_y..pos_y + height {
         for x in pos_x..pos_x + width {
-            if safe {
+            if SAFE {
                 if x > 0 && y > 0 {
-                    draw_pixel_safe(buffer, x as usize, y as usize, color);
+                    draw_pixel_safe(buffer, (x as usize, y as usize), color);
                 }
             } else {
-                draw_pixel_unsafe(buffer, x as usize, y as usize, color);
+                draw_pixel_unsafe(buffer, (x as usize, y as usize), color);
             }
         }
     }
 }
+
+#[inline]
+#[allow(clippy::cast_sign_loss)]
+#[allow(clippy::cast_possible_wrap)]
+/// Draw a simple rectangle
+pub fn draw_rectangle<const SAFE: bool>(
+    buffer: &Buffer,
+    pos_x: isize,
+    pos_y: isize,
+    width: isize,
+    height: isize,
+    color: u32,
+) {
+    if width <= 0 || height <= 0 {
+        return;
+    }
+
+    if SAFE {
+        // Calculate actual drawable bounds
+        let start_x = pos_x.max(0) as usize;
+        let start_y = pos_y.max(0) as usize;
+        let end_x = ((pos_x + width).min(buffer.width as isize)) as usize;
+        let end_y = ((pos_y + height).min(buffer.height as isize)) as usize;
+
+        if start_x >= buffer.width
+            || start_y >= buffer.height
+            || start_x >= end_x
+            || start_y >= end_y
+        {
+            return;
+        }
+
+        let row_width = end_x - start_x;
+
+        // Draw row by row using ptr::write_bytes for better performance
+        for y in start_y..end_y {
+            let row_start = y * buffer.width + start_x;
+            unsafe {
+                let ptr = buffer.pointer.add(row_start);
+                for i in 0..row_width {
+                    *ptr.add(i) = color;
+                }
+            }
+        }
+    } else {
+        let start_x = pos_x as usize;
+        let start_y = pos_y as usize;
+        let end_y = start_y + height as usize;
+        let row_width = width as usize;
+
+        for y in start_y..end_y {
+            let row_start = y * buffer.width + start_x;
+            unsafe {
+                let ptr = buffer.pointer.add(row_start);
+                if row_width <= 8 {
+                    // Manual unrolling for small rectangles
+                    match row_width {
+                        1 => *ptr = color,
+                        2 => {
+                            *ptr = color;
+                            *ptr.add(1) = color;
+                        }
+                        3 => {
+                            *ptr = color;
+                            *ptr.add(1) = color;
+                            *ptr.add(2) = color;
+                        }
+                        4 => {
+                            *ptr = color;
+                            *ptr.add(1) = color;
+                            *ptr.add(2) = color;
+                            *ptr.add(3) = color;
+                        }
+                        _ => {
+                            for i in 0..row_width {
+                                *ptr.add(i) = color;
+                            }
+                        }
+                    }
+                } else {
+                    for i in 0..row_width {
+                        *ptr.add(i) = color;
+                    }
+                }
+            }
+        }
+    }
+}
+
 /// Draw a simple rectangle
 #[inline]
 #[allow(clippy::cast_sign_loss)]
 #[allow(clippy::cast_precision_loss)]
 #[allow(clippy::cast_possible_truncation)]
 #[allow(clippy::cast_possible_wrap)]
-pub fn execute_at_rectangle(
+pub fn execute_at_rectangle<const SAFE: bool>(
     buffer: &Buffer,
     pos: (isize, isize),
     size: (isize, isize),
     color: u32,
-    safe: bool,
     function: DrawPixelFunction,
 ) {
     for y in pos.1..pos.1 + size.1 {
         for x in pos.0..pos.0 + size.0 {
-            if safe {
+            if SAFE {
                 if x > 0 && y > 0 {
-                    function(buffer, x as usize, y as usize, color);
+                    function(buffer, (x as usize, y as usize), color);
                 }
             } else {
-                function(buffer, x as usize, y as usize, color);
+                function(buffer, (x as usize, y as usize), color);
             }
         }
     }
@@ -90,16 +177,14 @@ pub fn draw_rectangle_angled(
                 if final_x >= 0 && final_y >= 0 {
                     draw_pixel_safe(
                         buffer,
-                        final_x as usize,
-                        final_y as usize,
+                        (final_x as usize, final_y as usize),
                         color,
                     );
                 }
             } else {
                 draw_pixel_unsafe(
                     buffer,
-                    final_x as usize,
-                    final_y as usize,
+                    (final_x as usize, final_y as usize),
                     color,
                 );
             }

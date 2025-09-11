@@ -1187,7 +1187,7 @@ dependencies = [
 
 [[package]]
 name = "mirl"
-version = "3.8.0"
+version = "4.0.0"
 dependencies = [
  "ahash",
  "crossterm",
@@ -1201,6 +1201,7 @@ dependencies = [
  "minifb",
  "num-traits",
  "once_cell",
+ "parking_lot",
  "raw-window-handle 0.6.2",
  "resvg",
  "strum",

@@ -6,7 +6,7 @@ use crate::platform::Buffer;
 #[inline]
 #[allow(clippy::cast_sign_loss)]
 #[allow(clippy::cast_possible_wrap)]
-pub fn draw_circle(
+pub fn draw_circle<const FIX_STRAY_PIXEL: bool>(
     buffer: &Buffer,
     pos_x: usize,
     pos_y: usize,
@@ -26,14 +26,17 @@ pub fn draw_circle(
 
     for y in -radius..=radius {
         let dy = y * y;
-        let dx = (radius * radius - dy).abs().sqrt();
+        let mut dx = (radius * radius - dy).abs().sqrt();
+        if FIX_STRAY_PIXEL && (y == 0 || y == radius || y == -radius) {
+            dx -= 1;
+        }
 
         for x in -dx..=dx {
             let x_pos = pos_x + x;
             let y_pos = pos_y + y;
 
             if x_pos >= 0 && y_pos >= 0 {
-                draw_pixel(buffer, x_pos as usize, y_pos as usize, color);
+                draw_pixel(buffer, (x_pos as usize, y_pos as usize), color);
             }
         }
     }

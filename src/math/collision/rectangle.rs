@@ -1,13 +1,3 @@
-// #[derive(Debug, Clone, Copy, PartialEq, Eq, std::marker::ConstParamTy)]
-// pub enum CoordinateSystem {
-//     BottomHigher = true,
-//     BottomLower = false,
-// }
-/// When the bottom of the collision is mathematically higher
-pub const BOTTOM_HIGHER: bool = true;
-/// When the top of the collision is mathematically higher
-pub const BOTTOM_LOWER: bool = false;
-
 impl<
         T: std::ops::Add<Output = T> + std::marker::Copy + std::cmp::PartialOrd,
         const CS: bool,
@@ -22,7 +12,7 @@ impl<
 
 //     }
 // }
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 /// A simple Rectangle defining computational limits
 #[allow(missing_docs)]
 pub struct Rectangle<T, const CS: bool> {

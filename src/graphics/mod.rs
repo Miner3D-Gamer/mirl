@@ -169,7 +169,7 @@ pub fn get_hue_of_rgb(r: f32, g: f32, b: f32) -> f32 {
 #[must_use]
 #[allow(clippy::cast_precision_loss)]
 /// Change the brightness of a hsl space
-pub fn adjust_brightness_hsl_of_rgb(color: u32, change: i32) -> u32 {
+pub fn adjust_brightness_hsl_of_rgb(color: u32, change: f32) -> u32 {
     let alpha = (color >> 24) & 0xFF;
     let red = (color >> 16) & 0xFF;
     let green = (color >> 8) & 0xFF;
@@ -178,7 +178,7 @@ pub fn adjust_brightness_hsl_of_rgb(color: u32, change: i32) -> u32 {
     let (h, s, l) = rgb_to_hsl(red as u8, green as u8, blue as u8);
 
     // Adjust lightness in HSL space (most perceptually accurate)
-    let l_new = (l + change as f32).clamp(0.0, 100.0);
+    let l_new = (l + change).clamp(0.0, 100.0);
 
     let (r_new, g_new, b_new) = hsl_to_rgb_u32(h, s, l_new);
 
@@ -303,47 +303,47 @@ pub fn hsl_to_rgb_u32(
     (r_8bit, g_8bit, b_8bit)
 }
 
-/// Higher-level function that provides both perceptual models
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum BrightnessModel {
-    /// Uses RGB with perceptual weights
-    LinearWeighted,
-    /// Uses HSL color space
-    HSL,
-}
-#[inline]
-#[must_use]
-#[allow(clippy::cast_sign_loss)]
-#[allow(clippy::cast_precision_loss)]
-#[allow(clippy::cast_possible_truncation)]
-#[allow(clippy::cast_possible_wrap)]
-/// Change the brightness of an rgba color
-pub fn adjust_brightness_based_on_human_eye(
-    color: u32,
-    x: i32,
-    model: BrightnessModel,
-) -> u32 {
-    match model {
-        BrightnessModel::LinearWeighted => {
-            // Extract color components
-            let (alpha, red, green, blue): (u32, f32, f32, f32) =
-                u32_to_argb(color).tuple_4_into();
-            // Apply perceptual weights to adjustment
-            let r_adj = x as f32 * 0.2126;
-            let g_adj = x as f32 * 0.7152;
-            let b_adj = x as f32 * 0.0722;
+// /// Higher-level function that provides both perceptual models
+// #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+// pub enum BrightnessModel {
+//     /// Uses RGB with perceptual weights
+//     LinearWeighted,
+//     /// Uses HSL color space
+//     HSL,
+// }
+// #[inline]
+// #[must_use]
+// #[allow(clippy::cast_sign_loss)]
+// #[allow(clippy::cast_precision_loss)]
+// #[allow(clippy::cast_possible_truncation)]
+// #[allow(clippy::cast_possible_wrap)]
+// /// Change the brightness of an rgba color
+// pub fn adjust_brightness_based_on_human_eye(
+//     color: u32,
+//     x: f32,
+//     model: BrightnessModel,
+// ) -> u32 {
+//     match model {
+//         BrightnessModel::LinearWeighted => {
+//             // Extract color components
+//             let (alpha, red, green, blue): (u32, f32, f32, f32) =
+//                 u32_to_argb(color).tuple_4_into();
+//             // Apply perceptual weights to adjustment
+//             let r_adj = x * 0.2126;
+//             let g_adj = x * 0.7152;
+//             let b_adj = x * 0.0722;
 
-            // Apply adjustments with clamping
-            let r_new = (red + r_adj).clamp(0.0, 255.0) as u32;
-            let g_new = (green + g_adj).clamp(0.0, 255.0) as u32;
-            let b_new = (blue + b_adj).clamp(0.0, 255.0) as u32;
+//             // Apply adjustments with clamping
+//             let r_new = (red + r_adj).clamp(0.0, 255.0) as u32;
+//             let g_new = (green + g_adj).clamp(0.0, 255.0) as u32;
+//             let b_new = (blue + b_adj).clamp(0.0, 255.0) as u32;
 
-            // Recombine with alpha
-            (alpha << 24) | (r_new << 16) | (g_new << 8) | b_new
-        }
-        BrightnessModel::HSL => adjust_brightness_hsl_of_rgb(color, x),
-    }
-}
+//             // Recombine with alpha
+//             (alpha << 24) | (r_new << 16) | (g_new << 8) | b_new
+//         }
+//         BrightnessModel::HSL => adjust_brightness_hsl_of_rgb(color, x),
+//     }
+// }
 
 #[inline]
 #[must_use]
@@ -470,22 +470,22 @@ pub fn desaturate_fast(color: u32, amount: f32) -> u32 {
     // Recombine
     (r_new << 16) | (g_new << 8) | b_new
 }
+#[allow(clippy::missing_errors_doc)]
 /// Rasterize an svg in the desired dimensions
 #[cfg(feature = "resvg")]
 pub fn rasterize_svg(
     svg_data: &[u8],
     width: u32,
     height: u32,
-) -> resvg::tiny_skia::Pixmap {
+) -> Result<resvg::tiny_skia::Pixmap, Box<dyn std::error::Error>> {
     let opt = resvg::usvg::Options::default();
     //let fontdb = usvg::fontdb::Database::new();
 
-    let tree = resvg::usvg::Tree::from_data(&svg_data, &opt).unwrap();
+    let tree = resvg::usvg::Tree::from_data(svg_data, &opt)?;
 
     // Create a pixmap with desired size (from SVG's size)
     let mut pixmap = resvg::tiny_skia::Pixmap::new(width, height)
-        .ok_or("Failed to create pixmap")
-        .unwrap();
+        .ok_or("Failed to create pixmap")?;
 
     // Render the SVG
     resvg::render(
@@ -494,10 +494,12 @@ pub fn rasterize_svg(
         &mut pixmap.as_mut(),
     );
 
-    return pixmap;
+    Ok(pixmap)
 }
 #[cfg(feature = "resvg")]
-/// To use this function, enable the "svg_support" feature
+#[allow(clippy::unwrap_used, clippy::missing_panics_doc)]
+/// To use this function, enable the "`svg_support`" feature
+#[must_use]
 pub fn pixmap_to_buffer(pixmap: &resvg::tiny_skia::Pixmap) -> Buffer {
     let mut data = Vec::new();
     for y in 0..pixmap.height() {
@@ -511,7 +513,8 @@ pub fn pixmap_to_buffer(pixmap: &resvg::tiny_skia::Pixmap) -> Buffer {
             ));
         }
     }
-    Buffer::new(data, pixmap.width() as usize, pixmap.height() as usize).expect("Not enough data provided - Was the pixmap corrupted?")
+    Buffer::new(data, pixmap.width() as usize, pixmap.height() as usize)
+        .unwrap()
 }
 
 #[cfg(not(target_arch = "wasm32"))]
@@ -519,26 +522,32 @@ pub fn pixmap_to_buffer(pixmap: &resvg::tiny_skia::Pixmap) -> Buffer {
 use glfw::PixelImage;
 #[cfg(not(target_arch = "wasm32"))]
 #[cfg(feature = "glfw_backend")]
-
-/// Convert a Buffer into a glfw::PixelImage
+/// Convert a Buffer into a `glfw::PixelImage`
 #[inline(always)]
+#[must_use]
+#[allow(clippy::cast_precision_loss)]
+#[allow(clippy::cast_possible_truncation)]
+#[allow(clippy::cast_sign_loss)]
 pub fn buffer_to_pixel_image(buffer: &Buffer) -> glfw::PixelImage {
-    return glfw::PixelImage {
+    glfw::PixelImage {
         width: buffer.width as u32,
         height: buffer.height as u32,
         pixels: argb_list_to_rgba_list(&buffer.data),
-    };
+    }
 }
-/// Convert a glfw::PixelImage into a Buffer
+/// Convert a `glfw::PixelImage` into a Buffer
 #[cfg(feature = "glfw_backend")]
 #[cfg(not(target_arch = "wasm32"))]
 #[inline(always)]
+#[must_use]
+#[allow(clippy::missing_panics_doc, clippy::unwrap_used)]
 pub fn pixel_image_to_buffer(pixel_image: &glfw::PixelImage) -> Buffer {
-    return Buffer::new(
+    Buffer::new(
         rgba_list_to_argb_list(&pixel_image.pixels),
         pixel_image.width as usize,
         pixel_image.height as usize,
-    ).expect("Not enough data provided - Was the glfw::PixelImage corrupted?");
+    )
+    .unwrap()
 }
 // /// A Buffer to be accessed without compression
 // /// What is the difference between Buffer and Buffer? Buffer has more attributes ig :|
@@ -1022,7 +1031,7 @@ macro_rules! interpolate_color_rgb_u32 {
             let red = interpolate(r1 as $t, r2 as $t, progress);
             let green = interpolate(g1 as $t, g2 as $t, progress);
             let blue = interpolate(b1 as $t, b2 as $t, progress);
-            rgb_u32_to_u32(red as u32, green as u32, blue as u32)
+            rgba_u32_to_u32(red as u32, green as u32, blue as u32, 255)
         }
     };
 }
@@ -1174,8 +1183,7 @@ impl TextureManager {
                 }
                 Err(e) => {
                     eprintln!(
-                        "Failed to load texture '{}' from '{}': {}",
-                        name, file_path, e
+                        "Failed to load texture '{name}' from '{file_path}': {e}"
                     );
                     return None;
                 }
@@ -1185,6 +1193,8 @@ impl TextureManager {
         None
     }
     /// Load texture from file to memory
+    /// # Errors
+    /// When the file was not found
     #[cfg(feature = "imagery")]
     pub fn load_texture_from_file(
         &self,
@@ -1216,10 +1226,14 @@ impl TextureManager {
     }
     /// Checks if a an image is already registered for lazy loading
     #[cfg(feature = "imagery")]
+    #[must_use]
     pub fn is_texture_registered(&self, name: &str) -> bool {
         self.texture_lookup.contains_key(name)
     }
     /// Preload registered image instead of letting it lazy load
+    /// 
+    /// # Errors
+    /// When the file cannot be loaded
     #[cfg(feature = "imagery")]
     pub fn preload_texture(
         &mut self,
@@ -1259,6 +1273,7 @@ impl TextureManager {
         }
     }
     #[allow(arithmetic_overflow)]
+    #[cfg(feature = "texture_manager_cleanup")]
     /// Tick the texture manager -> Only thing it does is increment a single value, required for `cleanup_unused()`
     pub const fn tick(&mut self) {
         self.current_frame += 1;

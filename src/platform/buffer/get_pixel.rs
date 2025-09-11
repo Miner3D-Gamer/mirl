@@ -2,8 +2,8 @@
 use super::Buffer;
 impl Buffer {
     /// Safely get the pixel color of the buffer at the specified x and y, returns 0 if the pixel is out of bounce
-    /// For a custom return number use [`get_pixel_fallback`]
-    /// For getting the pixel without bounds checking use [`get_pixel_unsafe`]
+    /// For a custom return number use [`get_pixel_fallback`](Buffer::get_pixel_fallback)
+    /// For getting the pixel without bounds checking use [`get_pixel_unsafe`](Buffer::get_pixel_unsafe)
     #[inline(always)]
     #[must_use]
     pub fn get_pixel(&self, xy: (usize, usize)) -> u32 {
@@ -24,7 +24,7 @@ impl Buffer {
         unsafe { *self.pointer.add(index) }
     }
     /// Get the pixel color at a position in a buffer without checking if the pixel is on screen (which will crash the program if it isn't)
-    /// The function for getting a pixel safely is [`get_pixel`] or`get_pixel_isize`ze]
+    /// The function for getting a pixel safely is [`get_pixel`](Buffer::get_pixel) or [`get_pixel_isize`](Buffer::get_pixel_isize)
     #[inline(always)]
     #[must_use]
     pub fn get_pixel_unsafe(&self, xy: (usize, usize)) -> u32 {

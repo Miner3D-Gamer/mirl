@@ -3,7 +3,7 @@ pub use cursors_windows::load_base_cursor_with_file;
 
 use crate::{
     extensions::*,
-    lists::VariableSizeList,
+    misc::copyable_list::VariableSizeList,
     platform::{Buffer, CursorStyle},
 };
 
@@ -157,8 +157,8 @@ impl Cursors {
         Self {
             default: load_base_cursor_with_file(
                 BaseCursor {
-                    hot_spot_x: 6,
-                    hot_spot_y: 4,
+                    hot_spot_x: 4,
+                    hot_spot_y: 5,
                 },
                 size,
                 main_color,
@@ -578,7 +578,7 @@ impl Cursors {
         }
     }
     /// Get the cursor from the selected [CursorStyle]
-    pub fn from_cursor_style(&self, style: CursorStyle) -> Cursor {
+    pub const fn from_cursor_style(&self, style: CursorStyle) -> Cursor {
         match style {
             CursorStyle::Alias => self.alias,
             CursorStyle::AllScroll => self.all_scroll,
@@ -631,8 +631,8 @@ impl Cursors {
 pub struct BaseCursor {
     //file_path: &'static str,
     //colors: u8,
-    hot_spot_x: i32,
-    hot_spot_y: i32,
+    hot_spot_x: u16,
+    hot_spot_y: u16,
 }
 
 /// Set the cursor of the current window

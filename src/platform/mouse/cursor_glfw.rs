@@ -1,7 +1,7 @@
 use super::{cursor_resolution, BaseCursor, Cursor};
 use crate::extensions::*;
 use crate::graphics::{pixmap_to_buffer, rasterize_svg, u32_to_hex};
-use crate::lists::buffer_to_copy_list;
+use crate::misc::copyable_list::buffer_to_copy_list;
 /// Load a cursor SVG and replace it's placeholders with actual colors
 pub fn load_base_cursor_with_file(
     cursor: BaseCursor,
@@ -26,7 +26,7 @@ pub fn load_base_cursor_with_file(
         &result_svg.as_bytes(),
         wanted_size as u32,
         wanted_size as u32,
-    );
+    ).unwrap();
 
     // Adjust hotspot because of the psycho who made the cursor not a multiple of 16
     let adjusted_hotspot_x = ((cursor.hot_spot_x as f64 / EXPECTED_SIZE)

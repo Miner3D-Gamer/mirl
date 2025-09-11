@@ -71,10 +71,16 @@ use num_traits::{bounds, cast, identities, sign};
 
 /// Add a signed number to a non signed number
 pub trait AddSign<T> {
-    /// Simple addition of the possibly negative number
-    fn add_sign(&mut self, value: T);
-    /// Addition of the possibly negative number without over/underflowing
-    fn saturated_add_sign(&mut self, value: T);
+    /// Simple addition of the possibly negative number (mutating)
+    fn set_add_sign(&mut self, value: T);
+    /// Addition of the possibly negative number without over/underflowing (mutating)
+    fn set_saturated_add_sign(&mut self, value: T);
+    /// Simple addition of the possibly negative number (returning)
+    #[must_use]
+    fn add_sign(&self, value: T) -> Self;
+    /// Addition of the possibly negative number without over/underflowing (returning)
+    #[must_use]
+    fn saturated_add_sign(&self, value: T) -> Self;
 }
 
 impl<U, S> AddSign<S> for U
@@ -92,7 +98,7 @@ where
         + std::ops::Sub<U, Output = U>
         + num_traits::NumCast,
 {
-    fn add_sign(&mut self, value: S) {
+    fn set_add_sign(&mut self, value: S) {
         if value >= S::zero() {
             if let Some(pos_val) = cast::cast::<S, U>(value) {
                 *self = self.wrapping_add(&pos_val);
@@ -109,7 +115,7 @@ where
         }
     }
 
-    fn saturated_add_sign(&mut self, value: S) {
+    fn set_saturated_add_sign(&mut self, value: S) {
         if value >= S::zero() {
             if let Some(pos_val) = cast::cast::<S, U>(value) {
                 *self = self.saturating_add(&pos_val);
@@ -125,8 +131,34 @@ where
             }
         }
     }
-}
 
+    fn add_sign(&self, value: S) -> Self {
+        if value >= S::zero() {
+            cast::cast::<S, U>(value).map_or_else(
+                || self.wrapping_add(&U::max_value()),
+                |pos_val| self.wrapping_add(&pos_val),
+            )
+        } else {
+            let abs_val = value.abs();
+            cast::cast::<S, U>(abs_val).map_or_else(
+                || self.wrapping_sub(&U::max_value()),
+                |sub_val| self.wrapping_sub(&sub_val),
+            )
+        }
+    }
+
+    fn saturated_add_sign(&self, value: S) -> Self {
+        if value >= S::zero() {
+            cast::cast::<S, U>(value).map_or_else(U::max_value, |pos_val| {
+                self.saturating_add(&pos_val)
+            })
+        } else {
+            let abs_val = value.abs();
+            cast::cast::<S, U>(abs_val)
+                .map_or_else(U::zero, |sub_val| self.saturating_sub(&sub_val))
+        }
+    }
+}
 
 /// Trait for mapping between signed and unsigned integer types
 pub trait MapToSign {
@@ -134,7 +166,7 @@ pub trait MapToSign {
     type Signed;
     /// Unsigned Version
     type Unsigned;
-    
+
     /// Map from unsigned back to signed by flipping the sign bit
     fn map_non_sign_to_sign(&self) -> Self::Signed;
 }
@@ -144,10 +176,9 @@ pub trait MapToUnSign {
     type Signed;
     /// Unsigned Version
     type Unsigned;
-    
+
     /// Map from signed to unsigned by flipping the sign bit
     fn map_sign_to_non_sign(&self) -> Self::Unsigned;
-    
 }
 
 /// Macro to implement `SignMapping` for integer type pairs
@@ -156,7 +187,7 @@ macro_rules! impl_sign_mapping {
         impl MapToUnSign for $signed {
             type Signed = $signed;
             type Unsigned = $unsigned;
-            
+
             #[allow(clippy::cast_sign_loss)]
             fn map_sign_to_non_sign(&self) -> Self::Unsigned {
                 (*self as Self::Unsigned).wrapping_add(<$unsigned>::MAX / 2 + 1)
@@ -165,10 +196,10 @@ macro_rules! impl_sign_mapping {
         impl MapToSign for $unsigned {
             type Signed = $signed;
             type Unsigned = $unsigned;
-            
+
             #[allow(clippy::cast_possible_wrap)]
             fn map_non_sign_to_sign(&self) -> Self::Signed {
-               self.wrapping_sub(<$unsigned>::MAX / 2 + 1) as Self::Signed
+                self.wrapping_sub(<$unsigned>::MAX / 2 + 1) as Self::Signed
             }
         }
     };
@@ -180,8 +211,6 @@ impl_sign_mapping!(i16, u16);
 impl_sign_mapping!(i32, u32);
 impl_sign_mapping!(i64, u64);
 impl_sign_mapping!(i128, u128);
-
-
 
 // pub trait Modular<Rhs = Self> {
 //     type Output;
@@ -244,3 +273,24 @@ impl_sign_mapping!(i128, u128);
 // impl_modular_unsigned!(u8, u16, u32, u64, u128, usize, U4);
 // impl_modular_signed!(i8, i16, i32, i64, i128, isize);
 // impl_modular_float!(f32, f64);
+
+// /// I always try to write `desaturating_add` instead of `saturating_sub`, idk why but now I'm fixing this problem in the stupidest I can
+// pub trait Desaturation
+// where
+//     Self: num_traits::SaturatingAdd + num_traits::SaturatingSub,
+// {
+//     /// Alias for `saturating_sub`
+//     #[must_use]
+//     fn desaturating_add(&self, other: Self) -> Self {
+//         self.saturating_sub(&other)
+//     }
+//     /// Alias for `saturating_add`
+//     #[must_use]
+//     fn desaturating_sub(&self, other: Self) -> Self {
+//         self.saturating_add(&other)
+//     }
+// }
+// impl<T: num_traits::SaturatingAdd + num_traits::SaturatingSub> Desaturation
+//     for T
+// {
+// }

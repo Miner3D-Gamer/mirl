@@ -1,6 +1,6 @@
 use winapi::um::winuser::GetAsyncKeyState;
 
-use crate::platform::KeyCode;
+use crate::platform::keycodes::KeyCode;
 
 /// Convert Windows VK codes to KeyCode enum
 pub const fn vk_code_to_keycode(vk_code: u32) -> KeyCode {
@@ -114,10 +114,10 @@ pub const fn vk_code_to_keycode(vk_code: u32) -> KeyCode {
         0xBF => KeyCode::Slash,        // VK_OEM_2
 
         // Arrow keys
-        0x26 => KeyCode::Up,
-        0x28 => KeyCode::Down,
-        0x25 => KeyCode::Left,
-        0x27 => KeyCode::Right,
+        0x26 => KeyCode::UpArrow,
+        0x28 => KeyCode::DownArrow,
+        0x25 => KeyCode::LeftArrow,
+        0x27 => KeyCode::RightArrow,
 
         // Editing keys
         0x2D => KeyCode::Insert,
@@ -279,10 +279,10 @@ pub fn keycode_to_vk_code(keycode: KeyCode) -> u32 {
         KeyCode::Slash => 0xBF,        // VK_OEM_2
 
         // Arrow keys
-        KeyCode::Up => 0x26,
-        KeyCode::Down => 0x28,
-        KeyCode::Left => 0x25,
-        KeyCode::Right => 0x27,
+        KeyCode::UpArrow => 0x26,
+        KeyCode::DownArrow => 0x28,
+        KeyCode::LeftArrow => 0x25,
+        KeyCode::RightArrow => 0x27,
 
         // Editing keys
         KeyCode::Insert => 0x2D,

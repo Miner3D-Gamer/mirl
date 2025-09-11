@@ -1,7 +1,8 @@
 #[cfg(feature = "resvg")]
 use super::mouse::Cursor;
-use super::{Buffer, KeyCode, MouseButton, Time};
+use super::{Buffer, MouseButton, Time};
 use crate::extensions::*;
+use crate::platform::keycodes::KeyCode;
 
 /// Most basic of framework functionality
 pub trait Framework: Window + Input + Output + Timing {}
@@ -25,7 +26,7 @@ where
         + ExtendedControl,
 {
 }
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 /// An enum for checking what kind of error was produced
 pub enum Errors {
     /// When the buffer was too small for the window, contains the expected buffer size
@@ -39,7 +40,7 @@ pub trait Window {
     /// ### Inputs:
     /// `title`: How the window should be named regardless of if it's shown
     ///
-    /// `settings`: See [WindowSettings](super::WindowSettings) for more info
+    /// `settings`: See [`WindowSettings`](super::WindowSettings) for more info
     ///
     // /// `cursor`: If you wish to use cursors other than the default one, provide the cursor you want the window to show by default. If this is set to None, [`set_cursor_style()`](ExtendedWindow::set_cursor_style) may not work as intended
     fn new(
@@ -116,10 +117,13 @@ pub trait ExtendedWindow {
     /// Width/Height should be something like 32x32 or 48x48 for maximal compatibility
     #[cfg(feature = "ico")]
     fn set_icon(&mut self, buffer: &[u32], width: u32, height: u32);
+    /// Get the current window handle
+    fn get_window_handle(&self) -> raw_window_handle::RawWindowHandle;
+}
+#[cfg(feature = "resvg")]
+pub trait CursorStyleControl {
     /// Set what cursors the os should display on the current window
-    #[cfg(feature = "resvg")]
     fn set_cursor_style(&mut self, style: &Cursor);
-    #[cfg(feature = "resvg")]
     /// Load the custom cursors Mirl provides by default
     /// Be aware that this loading a bunch of textures (11010720 bytes to be exact), you may need to increase the stack size using:
     /// ```
@@ -134,9 +138,8 @@ pub trait ExtendedWindow {
         main_color: u32,
         secondary_color: u32,
     ) -> super::mouse::Cursors;
-    /// Get the current window handle
-    fn get_window_handle(&self) -> raw_window_handle::RawWindowHandle;
 }
+
 /// Simple window management
 pub trait Control {
     /// Set the window position relative to its current position

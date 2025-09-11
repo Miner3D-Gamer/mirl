@@ -13,37 +13,39 @@ pub trait StringExtensions {
     // fn extract_file_name(&self) -> String;
     // fn extract_file_extension(&self) -> String;
     // fn extract_file_name_without_extension(&self) -> String;
-    /// Replaces the first occurence of X with Y
+    /// Replaces the first occurrence of X with Y
     fn replace_first_occurrence(
         &self,
         target: &str,
         replacement: &str,
     ) -> String;
-    // /// Replaces the first occurence of X with Y but error if there is not occurence of X
+    // /// Replaces the first occurrence of X with Y but error if there is not occurrence of X
     // fn replace_first_occurrence_error(
     //     &self,
     //     target: &str,
     //     replacement: &str,
     // ) -> String;
-    // /// Replaces the all occurence of X with Y
-    // fn replace_occurences(
+    // /// Replaces the all occurrence of X with Y
+    // fn replace_occurrences(
     //     &self,
     //     target: &str,
     //     replacement: &str,
     //     amount: u32,
     // ) -> String;
-    // /// Replaces the all occurence of X with Y but error if there is not occurence of X
-    // fn replace_occurences_error(
+    // /// Replaces the all occurrence of X with Y but error if there is not occurrence of X
+    // fn replace_occurrences_error(
     //     &self,
     //     target: &str,
     //     replacement: &str,
     //     amount: u32,
     // ) -> String;
+    /// Reverse the string character order and return the result
+    fn reversed(&self) -> String;
 }
 
 impl StringExtensions for str {
     fn is_number(&self) -> bool {
-        self.chars().all(|c| c.is_ascii_digit())
+        self.chars().all(char::is_numeric)
     }
 
     fn rjust(&self, length: usize, fillchar: Option<char>) -> String {
@@ -116,7 +118,7 @@ impl StringExtensions for str {
     //     result
     // }
 
-    // fn replace_occurences(
+    // fn replace_occurrences(
     //     &self,
     //     target: &str,
     //     replacement: &str,
@@ -129,7 +131,7 @@ impl StringExtensions for str {
     //     result
     // }
 
-    // fn replace_occurences_error(
+    // fn replace_occurrences_error(
     //     &self,
     //     target: &str,
     //     replacement: &str,
@@ -141,4 +143,63 @@ impl StringExtensions for str {
     //     }
     //     result
     // }
+    fn reversed(&self) -> String {
+        self.chars().rev().collect::<String>()
+    }
+}
+/// List operations for strings
+pub trait RemoveChar {
+    /// Remove the character at the position
+    fn remove_char_at(&mut self, pos: usize);
+    /// Remove the character at the position and returns it
+    fn pop_char_at(&mut self, pos: usize) -> Option<char>;
+    /// Remove the character at the position
+    fn remove_chars_at(&mut self, pos: usize, amount: usize);
+    /// Remove the character at the position and returns it
+    fn pop_chars_at(&mut self, pos: usize, amount: usize) -> Option<Vec<char>>;
+}
+
+impl RemoveChar for String {
+    fn remove_char_at(&mut self, pos: usize) {
+        if pos < self.chars().count() {
+            let mut chars: Vec<char> = self.chars().collect();
+            chars.remove(pos);
+            *self = chars.into_iter().collect();
+        }
+    }
+
+    fn pop_char_at(&mut self, pos: usize) -> Option<char> {
+        if pos < self.chars().count() {
+            let mut chars: Vec<char> = self.chars().collect();
+            let removed = chars.remove(pos);
+            *self = chars.into_iter().collect();
+            Some(removed)
+        } else {
+            None
+        }
+    }
+    fn remove_chars_at(&mut self, pos: usize, amount: usize) {
+        let len = self.chars().count();
+        if pos < len {
+            let mut chars: Vec<char> = self.chars().collect();
+            let end = (pos + amount).min(len);
+            chars.drain(pos..end);
+            *self = chars.into_iter().collect();
+        }
+    }
+
+    fn pop_chars_at(&mut self, pos: usize, amount: usize) -> Option<Vec<char>> {
+        let mut rt = Vec::new();
+        if pos < self.chars().count() {
+            for _ in 0..amount {
+                let mut chars: Vec<char> = self.chars().collect();
+                let removed = chars.remove(pos);
+                *self = chars.into_iter().collect();
+                rt.push(removed);
+            }
+            Some(rt)
+        } else {
+            None
+        }
+    }
 }

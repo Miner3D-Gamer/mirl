@@ -6,7 +6,7 @@ use crate::{
     },
 };
 /// Draw text in the specified font
-pub fn draw_text(
+pub fn draw_text<const SAFE: bool>(
     buffer: &Buffer,
     text: &str,
     x: usize,
@@ -14,21 +14,22 @@ pub fn draw_text(
     color: u32,
     size: f32,
     font: &fontdue::Font,
-    safe: bool,
 ) {
-    let mut pen_x = x;
+    let mut pen_x = x as f32;
     let pen_y = y;
     let font_metrics = font.horizontal_line_metrics(size).unwrap();
     let ascent = font_metrics.ascent as usize;
 
     for ch in text.chars() {
         // If not in cache, rasterize and insert
-        let (metrics, bitmap) = get_character(ch, size, &font);
+        let char = get_character(ch, size, &font);
+        let metrics = char.0;
+        let bitmap = &char.1;
 
         let offset_y = ascent.saturating_sub(metrics.height);
         let w = metrics.width;
         let h = metrics.height;
-        let advance_x = metrics.advance_width as usize;
+        let advance_x = metrics.advance_width;
 
         for gy in 0..h {
             let py = ((pen_y + gy + offset_y) as i32 - metrics.ymin) as usize;
@@ -38,16 +39,16 @@ pub fn draw_text(
 
             let row_start = gy * w;
             for gx in 0..w {
-                let px = pen_x + gx;
+                let px = pen_x as usize + gx;
                 if px >= buffer.width {
                     continue;
                 }
 
                 if bitmap[row_start + gx] > 0 {
-                    if safe {
-                        draw_pixel_safe(buffer, px, py, color)
+                    if SAFE {
+                        draw_pixel_safe(buffer, (px, py), color)
                     } else {
-                        draw_pixel_unsafe(buffer, px, py, color)
+                        draw_pixel_unsafe(buffer, (px, py), color)
                     }
                 }
             }
@@ -69,19 +70,21 @@ pub fn draw_text_stretched<F: num_traits::Float>(
     stretch_x: F,
     stretch_y: F,
 ) {
-    let mut pen_x = x;
+    let mut pen_x = x as f32;
     let pen_y = y;
     let font_metrics = font.horizontal_line_metrics(size).unwrap();
     let ascent = font_metrics.ascent as usize;
 
     for ch in text.chars() {
         // If not in cache, rasterize and insert
-        let (metrics, bitmap) = get_character(ch, size, &font);
+        let char = get_character(ch, size, &font);
+        let metrics = char.0;
+        let bitmap = &char.1;
 
         let offset_y = ascent.saturating_sub(metrics.height);
         let w = F::from(metrics.width).unwrap() * stretch_x;
         let h = F::from(metrics.height).unwrap() * stretch_y;
-        let advance_x = metrics.advance_width as usize;
+        let advance_x = metrics.advance_width;
 
         for gy in 0..h.floor().to_usize().unwrap() {
             let py = ((pen_y + gy + offset_y) as i32 - metrics.ymin) as usize;
@@ -93,7 +96,7 @@ pub fn draw_text_stretched<F: num_traits::Float>(
                 ((F::from(gy).unwrap() / stretch_y).to_usize().unwrap())
                     * metrics.width;
             for gx in 0..w.floor().to_usize().unwrap() {
-                let px = pen_x + gx;
+                let px = pen_x as usize + gx;
                 if px >= buffer.width {
                     continue;
                 }
@@ -102,7 +105,7 @@ pub fn draw_text_stretched<F: num_traits::Float>(
                     + (F::from(gx).unwrap() / stretch_x).to_usize().unwrap()]
                     > 0
                 {
-                    draw_pixel(buffer, px, py, color);
+                    draw_pixel(buffer, (px, py), color);
                 }
             }
         }
@@ -111,7 +114,7 @@ pub fn draw_text_stretched<F: num_traits::Float>(
 }
 
 /// Same as [draw_text] but uses isize for positioning allowing for partially out of bounce text (left and top)
-pub fn draw_text_isize(
+pub fn draw_text_isize<const SAFE: bool>(
     buffer: &Buffer,
     text: &str,
     x: isize,
@@ -119,21 +122,22 @@ pub fn draw_text_isize(
     color: u32,
     size: f32,
     font: &fontdue::Font,
-    safe: bool,
 ) {
-    let mut pen_x = x;
+    let mut pen_x = x as f32;
     let pen_y = y;
     let font_metrics = font.horizontal_line_metrics(size).unwrap();
     let ascent = font_metrics.ascent as isize;
 
     for ch in text.chars() {
         // If not in cache, rasterize and insert
-        let (metrics, bitmap) = get_character(ch, size, &font);
+        let char = get_character(ch, size, &font);
+        let metrics = char.0;
+        let bitmap = &char.1;
 
         let offset_y = ascent.saturating_sub(metrics.height as isize);
         let w = metrics.width;
         let h = metrics.height;
-        let advance_x = metrics.advance_width as isize;
+        let advance_x = metrics.advance_width;
 
         for gy in 0..h {
             let py = pen_y + gy as isize + offset_y - metrics.ymin as isize;
@@ -143,7 +147,7 @@ pub fn draw_text_isize(
 
             let row_start = gy * w;
             for gx in 0..w {
-                let px = pen_x + gx as isize;
+                let px = pen_x as isize + gx as isize;
                 if px < 0 || px >= buffer.width as isize {
                     continue;
                 }
@@ -153,14 +157,14 @@ pub fn draw_text_isize(
                     let py_u = py as usize;
                     let index = py_u * buffer.width + px_u;
 
-                    if safe && index >= buffer.width * buffer.height {
+                    if SAFE && index >= buffer.width * buffer.height {
                         continue;
                     }
 
-                    if safe {
-                        draw_pixel_safe(buffer, px_u, py_u, color)
+                    if SAFE {
+                        draw_pixel_safe(buffer, (px_u, py_u), color)
                     } else {
-                        draw_pixel_unsafe(buffer, px_u, py_u, color)
+                        draw_pixel_unsafe(buffer, (px_u, py_u), color)
                     }
                 }
             }
@@ -182,19 +186,21 @@ pub fn draw_text_stretch_isize<F: num_traits::Float>(
     stretch_x: F,
     stretch_y: F,
 ) {
-    let mut pen_x = x;
+    let mut pen_x = x as f32;
     let pen_y = y;
     let font_metrics = font.horizontal_line_metrics(size).unwrap();
     let ascent = font_metrics.ascent as isize;
 
     for ch in text.chars() {
         // If not in cache, rasterize and insert
-        let (metrics, bitmap) = get_character(ch, size, &font);
+        let char = get_character(ch, size, &font);
+        let metrics = char.0;
+        let bitmap = &char.1;
 
         let offset_y = ascent.saturating_sub(metrics.height as isize);
         let w = F::from(metrics.width).unwrap() * stretch_x;
         let h = F::from(metrics.height).unwrap() * stretch_y;
-        let advance_x = metrics.advance_width as isize;
+        let advance_x = metrics.advance_width;
 
         for gy in 0..h.floor().to_usize().unwrap() {
             let py = pen_y + gy as isize + offset_y - metrics.ymin as isize;
@@ -206,7 +212,7 @@ pub fn draw_text_stretch_isize<F: num_traits::Float>(
                 ((F::from(gy).unwrap() / stretch_y).to_usize().unwrap())
                     * metrics.width;
             for gx in 0..w.floor().to_usize().unwrap() {
-                let px = pen_x + gx as isize;
+                let px = pen_x as isize + gx as isize;
                 if px < 0 || px >= buffer.width as isize {
                     continue;
                 }
@@ -215,7 +221,7 @@ pub fn draw_text_stretch_isize<F: num_traits::Float>(
                     + (F::from(gx).unwrap() / stretch_x).to_usize().unwrap()]
                     > 0
                 {
-                    draw_pixel(buffer, px as usize, py as usize, color);
+                    draw_pixel(buffer, (px as usize, py as usize), color);
                 }
             }
         }

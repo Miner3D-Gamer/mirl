@@ -84,7 +84,7 @@ pub fn load_base_cursor_with_file(
     secondary_color: u32,
     svg_data: String,
 ) -> Cursor {
-    let svg_size = 24; // WHO TF MAKES THE CURSOR NOT A MULTIPLE OF 16 ???
+    // let svg_size = 16; // WHO TF MAKES THE CURSOR NOT A MULTIPLE OF 16 ???
 
     let wanted_size = cursor_resolution(size);
 
@@ -100,22 +100,23 @@ pub fn load_base_cursor_with_file(
         &result_svg.as_bytes(),
         wanted_size as u32,
         wanted_size as u32,
-    );
+    )
+    .unwrap();
 
-    // Adjust hotspot because of the psycho who made the cursor not a multiple of 16
-    let adjusted_hotspot_x = ((cursor.hot_spot_x as f64 / svg_size as f64)
-        * wanted_size as f64)
-        .round() as u16;
-    let adjusted_hotspot_y = ((cursor.hot_spot_y as f64 / svg_size as f64)
-        * wanted_size as f64)
-        .round() as u16;
+    // // Adjust hotspot because of the psycho who made the cursor not a multiple of 16
+    // let adjusted_hotspot_x = ((cursor.hot_spot_x as f64 / svg_size as f64)
+    //     * wanted_size as f64)
+    //     .round() as u16;
+    // let adjusted_hotspot_y = ((cursor.hot_spot_y as f64 / svg_size as f64)
+    //     * wanted_size as f64)
+    //     .round() as u16;
 
     return Cursor::Win(load_cursor(
         //&extract_file_name_without_extension(&cursor.file_path),
         size,
         pixmap_to_buffer(&image_data),
-        adjusted_hotspot_x,
-        adjusted_hotspot_y,
+        cursor.hot_spot_x,
+        cursor.hot_spot_y,
     ));
 }
 
@@ -136,22 +137,29 @@ fn create_cursor(
     height: u8,
     hotspot_x: u16,
     hotspot_y: u16,
-    rgba: &Buffer,
+    image: &Buffer,
 ) -> Vec<u8> {
-    let mut buffer: Vec<u8> = Vec::new();
+    let mut cursor_buffer: Vec<u8> = Vec::new();
+    if false {
+        // Enabling this shows where the cursor will click
+        image.set_pixel_safe(
+            (hotspot_x as usize, hotspot_y as usize),
+            crate::graphics::color_presets::PURE_RED,
+        );
+    }
 
     // ICONDIR (6 bytes)
-    buffer.extend(&[0x00, 0x00]); // Reserved
-    buffer.extend(&[0x02, 0x00]); // Image type (2 = cursor)
-    buffer.extend(&[0x01, 0x00]); // Number of images
+    cursor_buffer.extend(&[0x00, 0x00]); // Reserved
+    cursor_buffer.extend(&[0x02, 0x00]); // Image type (2 = cursor)
+    cursor_buffer.extend(&[0x01, 0x00]); // Number of images
 
     // ICONDIRENTRY (16 bytes)
-    buffer.push(width); // Width
-    buffer.push(height); // Height
-    buffer.push(0); // Color count
-    buffer.push(0); // Reserved
-    buffer.extend(&hotspot_x.to_le_bytes()); // Hotspot X
-    buffer.extend(&hotspot_y.to_le_bytes()); // Hotspot Y
+    cursor_buffer.push(width); // Width
+    cursor_buffer.push(height); // Height
+    cursor_buffer.push(0); // Color count
+    cursor_buffer.push(0); // Reserved
+    cursor_buffer.extend(&hotspot_x.to_le_bytes()); // Hotspot X
+    cursor_buffer.extend(&hotspot_y.to_le_bytes()); // Hotspot Y
 
     let image_data_offset = 6 + 16;
     let row_stride = ((width as u32 * 32 + 31) / 32) * 4;
@@ -160,8 +168,8 @@ fn create_cursor(
     let and_mask_size = height as u32 * ((width as u32 + 31) / 32 * 4);
     let size_in_bytes = bmp_header_size + pixel_array_size + and_mask_size;
 
-    buffer.extend(&(size_in_bytes).to_le_bytes()); // Image size
-    buffer.extend(&(image_data_offset as u32).to_le_bytes()); // Image offset
+    cursor_buffer.extend(&(size_in_bytes).to_le_bytes()); // Image size
+    cursor_buffer.extend(&(image_data_offset as u32).to_le_bytes()); // Image offset
 
     // BITMAPINFOHEADER (40 bytes)
     let mut bmp_data: Vec<u8> = Vec::with_capacity(size_in_bytes as usize);
@@ -177,7 +185,7 @@ fn create_cursor(
     bmp_data.extend(&(0u32.to_le_bytes())); // Colors used
     bmp_data.extend(&(0u32.to_le_bytes())); // Important colors
 
-    for pixel in rgba.flip_vertically().data.iter() {
+    for pixel in image.flip_vertically().data.iter() {
         let (r, g, b, a) = u32_to_rgba(*pixel);
         bmp_data.extend(&[b, g, r, a]);
     }
@@ -194,9 +202,9 @@ fn create_cursor(
     bmp_data.extend(vec![0u8; and_mask_size as usize]);
 
     // Combine all into buffer
-    buffer.extend(bmp_data);
+    cursor_buffer.extend(bmp_data);
 
-    return buffer;
+    return cursor_buffer;
 }
 
 // const BUILTIN_CURSORS: [BaseCursor; 1] = [BaseCursor {

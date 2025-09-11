@@ -12,9 +12,9 @@ use super::{
 };
 #[cfg(target_os = "windows")]
 use crate::platform::WindowLevel;
-use crate::{extensions::*, graphics, platform::KeyCode};
+use crate::{extensions::*, graphics, platform::keycodes::KeyCode};
 use crate::{
-    
+    platform::framework_traits::CursorStyleControl,
     system::action::{Decoration, Default},
 };
 /// glfw implementation of Framework
@@ -247,7 +247,7 @@ impl<MouseManagerScrollAccuracy: num_traits::Float> Input
         // let relative_y = mouse_y - window_y as isize;
         // return Some((relative_x, relative_y));
     }
-    fn is_key_down(&self, keycode: super::KeyCode) -> bool {
+    fn is_key_down(&self, keycode: KeyCode) -> bool {
         self.keyboard_manager.is_key_pressed(keycode)
     }
     fn is_mouse_down(&self, button: MouseButton) -> bool {
@@ -300,13 +300,21 @@ impl<MouseManagerScrollAccuracy: num_traits::Float> ExtendedWindow
     }
 
     #[cfg(feature = "resvg")]
-    fn set_cursor_style(&mut self, style: &super::Cursor) {
-        //println!("Setting cursor style");
-        super::mouse::use_cursor(style, Some(&mut self.window));
-    }
     /// Not yet implemented
     fn set_icon(&mut self, _buffer: &[u32], _width: u32, _height: u32) {
         //panic!("Not yet implemented");
+    }
+    fn get_window_handle(&self) -> raw_window_handle::RawWindowHandle {
+        get_native_window_handle_from_glfw(&self.window)
+    }
+}
+impl<MouseManagerScrollAccuracy: num_traits::Float> CursorStyleControl
+    for Framework<MouseManagerScrollAccuracy>
+{
+    #[cfg(feature = "resvg")]
+    fn set_cursor_style(&mut self, style: &super::Cursor) {
+        //println!("Setting cursor style");
+        super::mouse::use_cursor(style, Some(&mut self.window));
     }
     #[cfg(feature = "resvg")]
     fn load_custom_cursor(
@@ -321,9 +329,6 @@ impl<MouseManagerScrollAccuracy: num_traits::Float> ExtendedWindow
             secondary_color,
             super::mouse::cursor_glfw::load_base_cursor_with_file,
         )
-    }
-    fn get_window_handle(&self) -> raw_window_handle::RawWindowHandle {
-        get_native_window_handle_from_glfw(&self.window)
     }
 }
 
@@ -412,129 +417,129 @@ const fn map_glfw_mouse_button_to_mouse_button(
     }
 }
 
-const fn map_glfw_key_to_keycode(key: glfw::Key) -> super::KeyCode {
+const fn map_glfw_key_to_keycode(key: glfw::Key) -> KeyCode {
     match key {
-        glfw::Key::A => super::KeyCode::A,
-        glfw::Key::B => super::KeyCode::B,
-        glfw::Key::C => super::KeyCode::C,
-        glfw::Key::D => super::KeyCode::D,
-        glfw::Key::E => super::KeyCode::E,
-        glfw::Key::F => super::KeyCode::F,
-        glfw::Key::G => super::KeyCode::G,
-        glfw::Key::H => super::KeyCode::H,
-        glfw::Key::I => super::KeyCode::I,
-        glfw::Key::J => super::KeyCode::J,
-        glfw::Key::K => super::KeyCode::K,
-        glfw::Key::L => super::KeyCode::L,
-        glfw::Key::M => super::KeyCode::M,
-        glfw::Key::N => super::KeyCode::N,
-        glfw::Key::O => super::KeyCode::O,
-        glfw::Key::P => super::KeyCode::P,
-        glfw::Key::Q => super::KeyCode::Q,
-        glfw::Key::R => super::KeyCode::R,
-        glfw::Key::S => super::KeyCode::S,
-        glfw::Key::T => super::KeyCode::T,
-        glfw::Key::U => super::KeyCode::U,
-        glfw::Key::V => super::KeyCode::V,
-        glfw::Key::W => super::KeyCode::W,
-        glfw::Key::X => super::KeyCode::X,
-        glfw::Key::Y => super::KeyCode::Y,
-        glfw::Key::Z => super::KeyCode::Z,
-        glfw::Key::Escape => super::KeyCode::Escape,
-        glfw::Key::F1 => super::KeyCode::F1,
-        glfw::Key::F2 => super::KeyCode::F2,
-        glfw::Key::F3 => super::KeyCode::F3,
-        glfw::Key::F4 => super::KeyCode::F4,
-        glfw::Key::F5 => super::KeyCode::F5,
-        glfw::Key::F6 => super::KeyCode::F6,
-        glfw::Key::F7 => super::KeyCode::F7,
-        glfw::Key::F8 => super::KeyCode::F8,
-        glfw::Key::F9 => super::KeyCode::F9,
-        glfw::Key::F10 => super::KeyCode::F10,
-        glfw::Key::F11 => super::KeyCode::F11,
-        glfw::Key::F12 => super::KeyCode::F12,
-        glfw::Key::Space => super::KeyCode::Space,
-        glfw::Key::Enter => super::KeyCode::Enter,
-        glfw::Key::Backspace => super::KeyCode::Backspace,
-        glfw::Key::Left => super::KeyCode::Left,
-        glfw::Key::Right => super::KeyCode::Right,
-        glfw::Key::Up => super::KeyCode::Up,
-        glfw::Key::Down => super::KeyCode::Down,
-        glfw::Key::Tab => super::KeyCode::Tab,
-        glfw::Key::LeftShift => super::KeyCode::LeftShift,
-        glfw::Key::RightShift => super::KeyCode::RightShift,
-        glfw::Key::LeftControl => super::KeyCode::LeftControl,
-        glfw::Key::RightControl => super::KeyCode::RightControl,
-        glfw::Key::LeftAlt => super::KeyCode::LeftAlt,
-        glfw::Key::RightAlt => super::KeyCode::RightAlt,
-        glfw::Key::LeftSuper => super::KeyCode::LeftSuper,
-        glfw::Key::RightSuper => super::KeyCode::RightSuper,
-        glfw::Key::Comma => super::KeyCode::Comma,
-        glfw::Key::Minus => super::KeyCode::Minus,
-        glfw::Key::Period => super::KeyCode::Period,
-        glfw::Key::Slash => super::KeyCode::Slash,
-        glfw::Key::Semicolon => super::KeyCode::Semicolon,
-        glfw::Key::LeftBracket => super::KeyCode::LeftBracket,
-        glfw::Key::Backslash => super::KeyCode::Backslash,
-        glfw::Key::RightBracket => super::KeyCode::RightBracket,
-        glfw::Key::F13 => super::KeyCode::F13,
-        glfw::Key::F14 => super::KeyCode::F14,
-        glfw::Key::F15 => super::KeyCode::F15,
-        glfw::Key::F16 => super::KeyCode::F16,
-        glfw::Key::F17 => super::KeyCode::F17,
-        glfw::Key::F18 => super::KeyCode::F18,
-        glfw::Key::F19 => super::KeyCode::F19,
-        glfw::Key::F20 => super::KeyCode::F20,
-        glfw::Key::F21 => super::KeyCode::F21,
-        glfw::Key::F22 => super::KeyCode::F22,
-        glfw::Key::F23 => super::KeyCode::F23,
-        glfw::Key::F24 => super::KeyCode::F24,
-        glfw::Key::F25 => super::KeyCode::F25,
-        glfw::Key::Apostrophe => super::KeyCode::Apostrophe,
-        glfw::Key::CapsLock => super::KeyCode::CapsLock,
-        glfw::Key::Delete => super::KeyCode::Delete,
-        glfw::Key::End => super::KeyCode::End,
-        glfw::Key::Home => super::KeyCode::Home,
-        glfw::Key::Insert => super::KeyCode::Insert,
-        glfw::Key::Kp0 => super::KeyCode::KeyPad0,
-        glfw::Key::Kp1 => super::KeyCode::KeyPad1,
-        glfw::Key::Kp2 => super::KeyCode::KeyPad2,
-        glfw::Key::Kp3 => super::KeyCode::KeyPad3,
-        glfw::Key::Kp4 => super::KeyCode::KeyPad4,
-        glfw::Key::Kp5 => super::KeyCode::KeyPad5,
-        glfw::Key::Kp6 => super::KeyCode::KeyPad6,
-        glfw::Key::Kp7 => super::KeyCode::KeyPad7,
-        glfw::Key::Kp8 => super::KeyCode::KeyPad8,
-        glfw::Key::Kp9 => super::KeyCode::KeyPad9,
-        glfw::Key::KpDivide => super::KeyCode::KeyPadDivide,
-        glfw::Key::KpEnter => super::KeyCode::KeyPadEnter,
-        glfw::Key::KpEqual => super::KeyCode::KeyPadEqual,
-        glfw::Key::KpMultiply => super::KeyCode::KeyPadMultiply,
-        glfw::Key::KpSubtract => super::KeyCode::KeyPadSubtract,
-        glfw::Key::GraveAccent => super::KeyCode::Grave,
-        glfw::Key::KpAdd => super::KeyCode::KeyPadAdd,
-        glfw::Key::KpDecimal => super::KeyCode::KeyPadDecimal,
-        glfw::Key::Num0 => super::KeyCode::Num0,
-        glfw::Key::Num1 => super::KeyCode::Num1,
-        glfw::Key::Num2 => super::KeyCode::Num2,
-        glfw::Key::Num3 => super::KeyCode::Num3,
-        glfw::Key::Num4 => super::KeyCode::Num4,
-        glfw::Key::Num5 => super::KeyCode::Num5,
-        glfw::Key::Num6 => super::KeyCode::Num6,
-        glfw::Key::Num7 => super::KeyCode::Num7,
-        glfw::Key::Num8 => super::KeyCode::Num8,
-        glfw::Key::Num9 => super::KeyCode::Num9,
-        glfw::Key::Menu => super::KeyCode::Menu,
-        glfw::Key::NumLock => super::KeyCode::NumLock,
-        glfw::Key::PageDown => super::KeyCode::PageDown,
-        glfw::Key::PageUp => super::KeyCode::PageUp,
-        glfw::Key::Pause => super::KeyCode::Pause,
-        glfw::Key::PrintScreen => super::KeyCode::PrintScreen,
-        glfw::Key::World1 => super::KeyCode::World1,
-        glfw::Key::World2 => super::KeyCode::World2,
-        glfw::Key::Equal => super::KeyCode::Equal,
-        glfw::Key::ScrollLock => super::KeyCode::ScrollLock,
-        glfw::Key::Unknown => super::KeyCode::Unknown,
+        glfw::Key::A => KeyCode::A,
+        glfw::Key::B => KeyCode::B,
+        glfw::Key::C => KeyCode::C,
+        glfw::Key::D => KeyCode::D,
+        glfw::Key::E => KeyCode::E,
+        glfw::Key::F => KeyCode::F,
+        glfw::Key::G => KeyCode::G,
+        glfw::Key::H => KeyCode::H,
+        glfw::Key::I => KeyCode::I,
+        glfw::Key::J => KeyCode::J,
+        glfw::Key::K => KeyCode::K,
+        glfw::Key::L => KeyCode::L,
+        glfw::Key::M => KeyCode::M,
+        glfw::Key::N => KeyCode::N,
+        glfw::Key::O => KeyCode::O,
+        glfw::Key::P => KeyCode::P,
+        glfw::Key::Q => KeyCode::Q,
+        glfw::Key::R => KeyCode::R,
+        glfw::Key::S => KeyCode::S,
+        glfw::Key::T => KeyCode::T,
+        glfw::Key::U => KeyCode::U,
+        glfw::Key::V => KeyCode::V,
+        glfw::Key::W => KeyCode::W,
+        glfw::Key::X => KeyCode::X,
+        glfw::Key::Y => KeyCode::Y,
+        glfw::Key::Z => KeyCode::Z,
+        glfw::Key::Escape => KeyCode::Escape,
+        glfw::Key::F1 => KeyCode::F1,
+        glfw::Key::F2 => KeyCode::F2,
+        glfw::Key::F3 => KeyCode::F3,
+        glfw::Key::F4 => KeyCode::F4,
+        glfw::Key::F5 => KeyCode::F5,
+        glfw::Key::F6 => KeyCode::F6,
+        glfw::Key::F7 => KeyCode::F7,
+        glfw::Key::F8 => KeyCode::F8,
+        glfw::Key::F9 => KeyCode::F9,
+        glfw::Key::F10 => KeyCode::F10,
+        glfw::Key::F11 => KeyCode::F11,
+        glfw::Key::F12 => KeyCode::F12,
+        glfw::Key::Space => KeyCode::Space,
+        glfw::Key::Enter => KeyCode::Enter,
+        glfw::Key::Backspace => KeyCode::Backspace,
+        glfw::Key::Left => KeyCode::LeftArrow,
+        glfw::Key::Right => KeyCode::RightArrow,
+        glfw::Key::Up => KeyCode::UpArrow,
+        glfw::Key::Down => KeyCode::DownArrow,
+        glfw::Key::Tab => KeyCode::Tab,
+        glfw::Key::LeftShift => KeyCode::LeftShift,
+        glfw::Key::RightShift => KeyCode::RightShift,
+        glfw::Key::LeftControl => KeyCode::LeftControl,
+        glfw::Key::RightControl => KeyCode::RightControl,
+        glfw::Key::LeftAlt => KeyCode::LeftAlt,
+        glfw::Key::RightAlt => KeyCode::RightAlt,
+        glfw::Key::LeftSuper => KeyCode::LeftSuper,
+        glfw::Key::RightSuper => KeyCode::RightSuper,
+        glfw::Key::Comma => KeyCode::Comma,
+        glfw::Key::Minus => KeyCode::Minus,
+        glfw::Key::Period => KeyCode::Period,
+        glfw::Key::Slash => KeyCode::Slash,
+        glfw::Key::Semicolon => KeyCode::Semicolon,
+        glfw::Key::LeftBracket => KeyCode::LeftBracket,
+        glfw::Key::Backslash => KeyCode::Backslash,
+        glfw::Key::RightBracket => KeyCode::RightBracket,
+        glfw::Key::F13 => KeyCode::F13,
+        glfw::Key::F14 => KeyCode::F14,
+        glfw::Key::F15 => KeyCode::F15,
+        glfw::Key::F16 => KeyCode::F16,
+        glfw::Key::F17 => KeyCode::F17,
+        glfw::Key::F18 => KeyCode::F18,
+        glfw::Key::F19 => KeyCode::F19,
+        glfw::Key::F20 => KeyCode::F20,
+        glfw::Key::F21 => KeyCode::F21,
+        glfw::Key::F22 => KeyCode::F22,
+        glfw::Key::F23 => KeyCode::F23,
+        glfw::Key::F24 => KeyCode::F24,
+        glfw::Key::F25 => KeyCode::F25,
+        glfw::Key::Apostrophe => KeyCode::Apostrophe,
+        glfw::Key::CapsLock => KeyCode::CapsLock,
+        glfw::Key::Delete => KeyCode::Delete,
+        glfw::Key::End => KeyCode::End,
+        glfw::Key::Home => KeyCode::Home,
+        glfw::Key::Insert => KeyCode::Insert,
+        glfw::Key::Kp0 => KeyCode::KeyPad0,
+        glfw::Key::Kp1 => KeyCode::KeyPad1,
+        glfw::Key::Kp2 => KeyCode::KeyPad2,
+        glfw::Key::Kp3 => KeyCode::KeyPad3,
+        glfw::Key::Kp4 => KeyCode::KeyPad4,
+        glfw::Key::Kp5 => KeyCode::KeyPad5,
+        glfw::Key::Kp6 => KeyCode::KeyPad6,
+        glfw::Key::Kp7 => KeyCode::KeyPad7,
+        glfw::Key::Kp8 => KeyCode::KeyPad8,
+        glfw::Key::Kp9 => KeyCode::KeyPad9,
+        glfw::Key::KpDivide => KeyCode::KeyPadDivide,
+        glfw::Key::KpEnter => KeyCode::KeyPadEnter,
+        glfw::Key::KpEqual => KeyCode::KeyPadEqual,
+        glfw::Key::KpMultiply => KeyCode::KeyPadMultiply,
+        glfw::Key::KpSubtract => KeyCode::KeyPadSubtract,
+        glfw::Key::GraveAccent => KeyCode::Grave,
+        glfw::Key::KpAdd => KeyCode::KeyPadAdd,
+        glfw::Key::KpDecimal => KeyCode::KeyPadDecimal,
+        glfw::Key::Num0 => KeyCode::Num0,
+        glfw::Key::Num1 => KeyCode::Num1,
+        glfw::Key::Num2 => KeyCode::Num2,
+        glfw::Key::Num3 => KeyCode::Num3,
+        glfw::Key::Num4 => KeyCode::Num4,
+        glfw::Key::Num5 => KeyCode::Num5,
+        glfw::Key::Num6 => KeyCode::Num6,
+        glfw::Key::Num7 => KeyCode::Num7,
+        glfw::Key::Num8 => KeyCode::Num8,
+        glfw::Key::Num9 => KeyCode::Num9,
+        glfw::Key::Menu => KeyCode::Menu,
+        glfw::Key::NumLock => KeyCode::NumLock,
+        glfw::Key::PageDown => KeyCode::PageDown,
+        glfw::Key::PageUp => KeyCode::PageUp,
+        glfw::Key::Pause => KeyCode::Pause,
+        glfw::Key::PrintScreen => KeyCode::PrintScreen,
+        glfw::Key::World1 => KeyCode::World1,
+        glfw::Key::World2 => KeyCode::World2,
+        glfw::Key::Equal => KeyCode::Equal,
+        glfw::Key::ScrollLock => KeyCode::ScrollLock,
+        glfw::Key::Unknown => KeyCode::Unknown,
     }
 }
 
@@ -570,20 +575,43 @@ unsafe fn create_shader_program() -> u32 {
     shader_program
 }
 
+// unsafe fn check_shader_errors(shader: u32, shader_type: &str) {
+//     let mut success = 0;
+//     gl::GetShaderiv(shader, gl::COMPILE_STATUS, &mut success);
+//     if success == 0 {
+//         let mut log_length = 0;
+//         gl::GetShaderiv(shader, gl::INFO_LOG_LENGTH, &mut log_length);
+//         let mut log = Vec::with_capacity(log_length as usize);
+//         log.set_len(log_length as usize - 1); // Subtract 1 to skip the null terminator
+//         gl::GetShaderInfoLog(
+//             shader,
+//             log_length,
+//             std::ptr::null_mut(),
+//             log.as_mut_ptr() as *mut i8,
+//         );
+//         let log_str = String::from_utf8_lossy(&log);
+//         eprintln!(
+//             "ERROR::SHADER::{}_COMPILATION_FAILED\n{}",
+//             shader_type, log_str
+//         );
+//     }
+// }
 unsafe fn check_shader_errors(shader: u32, shader_type: &str) {
     let mut success = 0;
     gl::GetShaderiv(shader, gl::COMPILE_STATUS, &mut success);
     if success == 0 {
         let mut log_length = 0;
         gl::GetShaderiv(shader, gl::INFO_LOG_LENGTH, &mut log_length);
-        let mut log = Vec::with_capacity(log_length as usize);
-        log.set_len(log_length as usize - 1); // Subtract 1 to skip the null terminator
+
+        let mut log = vec![0u8; log_length as usize]; // properly initialized
+
         gl::GetShaderInfoLog(
             shader,
             log_length,
             std::ptr::null_mut(),
             log.as_mut_ptr() as *mut i8,
         );
+
         let log_str = String::from_utf8_lossy(&log);
         eprintln!(
             "ERROR::SHADER::{}_COMPILATION_FAILED\n{}",
@@ -592,20 +620,45 @@ unsafe fn check_shader_errors(shader: u32, shader_type: &str) {
     }
 }
 
+// unsafe fn check_program_errors(program: u32) {
+//     let mut success = 0;
+//     gl::GetProgramiv(program, gl::LINK_STATUS, &mut success);
+//     if success == 0 {
+//         let mut log_length = 0;
+//         gl::GetProgramiv(program, gl::INFO_LOG_LENGTH, &mut log_length);
+//         let mut log = Vec::with_capacity(log_length as usize);
+//         log.set_len(log_length as usize - 1); // Subtract 1 to skip the null terminator
+//         gl::GetProgramInfoLog(
+//             program,
+//             log_length,
+//             std::ptr::null_mut(),
+//             log.as_mut_ptr() as *mut i8,
+//         );
+//         let log_str = String::from_utf8_lossy(&log);
+//         eprintln!("ERROR::PROGRAM::LINKING_FAILED\n{}", log_str);
+//     }
+// }
 unsafe fn check_program_errors(program: u32) {
     let mut success = 0;
     gl::GetProgramiv(program, gl::LINK_STATUS, &mut success);
     if success == 0 {
         let mut log_length = 0;
         gl::GetProgramiv(program, gl::INFO_LOG_LENGTH, &mut log_length);
-        let mut log = Vec::with_capacity(log_length as usize);
-        log.set_len(log_length as usize - 1); // Subtract 1 to skip the null terminator
+
+        let mut log = vec![0u8; log_length as usize]; // initialized to 0
+
         gl::GetProgramInfoLog(
             program,
             log_length,
             std::ptr::null_mut(),
             log.as_mut_ptr() as *mut i8,
         );
+
+        // Strip trailing null terminator if present
+        if let Some(&0) = log.last() {
+            log.pop();
+        }
+
         let log_str = String::from_utf8_lossy(&log);
         eprintln!("ERROR::PROGRAM::LINKING_FAILED\n{}", log_str);
     }
