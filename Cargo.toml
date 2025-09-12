@@ -134,7 +134,7 @@ full_backend_support = [
     "keycode_support",
 ]
 # Framework backend using minifb (NOT COMPATIBLE WITH WEB)
-minifb_backend = ["minifb", "system", "keycode_support", "device_query"]
+minifb_backend = ["minifb", "system", "keycode_support", "keyboard_query"]
 # Icon/ico support (e.g. Taskbar)
 ico_support = ["ico"]
 # Framework backend using glfw (NOT COMPATIBLE WITH WEB)

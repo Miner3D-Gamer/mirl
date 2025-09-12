@@ -40,6 +40,9 @@
 - `all` – Enables all commonly used features: `default`, `imagery`, and `full_backend_support`
 - `f128`- Enables support for 128-bit floating point numbers since they are not yet stable
 - `keycode_support` - Enables the ability to interact with keyboard
+- `do_not_compile_extension_tuple_support` - Disables the tuple extensions -> Taking the result of cargo expand as reference, this saves ~27k lines of code the compiler can skip
+- `do_not_compile_misc` - Stops the experimental misc module from compiling
+- `keyboard_query` - Get the currently pressed keys -> Required for MiniFB
 
 ---
 
