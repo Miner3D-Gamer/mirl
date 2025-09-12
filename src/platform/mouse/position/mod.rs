@@ -1,6 +1,8 @@
 /// A way of getting the raw mouse input since using the mouse input of the os would always result in a frame of latency
 pub trait RawMouseInputTrait {
-    ///
+    /// Create a new raw mouse input getter under the window from which should poll the mouse move event
+    /// 
+    /// # Errors
     fn new(handle: RawWindowHandle) -> Result<Self, &'static str>
     where
         Self: Sized;

@@ -16,6 +16,8 @@ pub use windows::*;
 
 use crate::platform::keycodes::KeyCode;
 /// Converts mirls keycodes to discovery queues keycodes
+#[must_use]
+#[allow(clippy::too_many_lines)]
 pub const fn mirl_keycode_to_device_query_keycode(
     keycode: KeyCode,
 ) -> Option<DQKeycode> {
@@ -211,6 +213,8 @@ pub const fn mirl_keycode_to_device_query_keycode(
 }
 
 /// Converts discovery queues keycodes to mirl keycodes
+#[must_use]
+#[allow(clippy::too_many_lines)]
 pub const fn device_query_keycodes_to_mirls_keycode(
     dq_keycode: DQKeycode,
 ) -> KeyCode {
@@ -292,10 +296,10 @@ pub const fn device_query_keycodes_to_mirls_keycode(
         // Modifiers
         DQKeycode::LShift => KeyCode::LeftShift,
         DQKeycode::RShift => KeyCode::RightShift,
-        DQKeycode::LControl => KeyCode::LeftControl,
-        DQKeycode::RControl => KeyCode::RightControl,
-        DQKeycode::LAlt => KeyCode::LeftAlt,
-        DQKeycode::RAlt => KeyCode::RightAlt,
+        DQKeycode::LControl | DQKeycode::Command => KeyCode::LeftControl,
+        DQKeycode::RControl | DQKeycode::RCommand => KeyCode::RightControl,
+        DQKeycode::LAlt | DQKeycode::LOption => KeyCode::LeftAlt,
+        DQKeycode::RAlt | DQKeycode::ROption => KeyCode::RightAlt,
 
         // Special keys
         DQKeycode::Space => KeyCode::Space,
@@ -340,10 +344,6 @@ pub const fn device_query_keycodes_to_mirls_keycode(
         DQKeycode::NumpadAdd => KeyCode::KeyPadAdd,
         DQKeycode::NumpadDecimal => KeyCode::KeyPadDecimal,
         DQKeycode::Apostrophe => KeyCode::Apostrophe,
-        DQKeycode::Command => KeyCode::LeftControl,
-        DQKeycode::RCommand => KeyCode::RightControl,
-        DQKeycode::LOption => KeyCode::LeftAlt,
-        DQKeycode::ROption => KeyCode::RightAlt,
         DQKeycode::LMeta => KeyCode::LeftSuper,
         DQKeycode::RMeta => KeyCode::RightSuper,
         DQKeycode::NumpadEnter => KeyCode::KeyPadEnter,
@@ -353,17 +353,17 @@ pub const fn device_query_keycodes_to_mirls_keycode(
 
 /// One-off function to check if a key is currently pressed
 /// This respects the current keyboard layout
+#[must_use]
 pub fn is_key_pressed(keycode: KeyCode) -> bool {
-    if let Some(dq_keycode) = mirl_keycode_to_device_query_keycode(keycode) {
+    mirl_keycode_to_device_query_keycode(keycode).is_some_and(|dq_keycode| {
         let device_state = DeviceState::new();
         let keys: Vec<DQKeycode> = device_state.get_keys();
         keys.contains(&dq_keycode)
-    } else {
-        false
-    }
+    })
 }
 
 /// Checks if every key is down
+#[must_use]
 pub fn get_all_pressed_keys() -> Vec<KeyCode> {
     let device_state = DeviceState::new();
     let keys: Vec<DQKeycode> = device_state.get_keys();

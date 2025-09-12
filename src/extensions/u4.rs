@@ -60,7 +60,7 @@ impl ToPrimitive for U4 {
 impl NumCast for U4 {
     #[allow(clippy::unwrap_used)]
     fn from<T: num_traits::ToPrimitive>(n: T) -> Option<Self> {
-        Some(Self::new(n.to_u8().unwrap()))
+        Some(unsafe { Self::new(n.to_u8().unwrap_unchecked()) })
     }
 }
 
@@ -243,7 +243,7 @@ macro_rules! impl_u4_conversion {
                         | ((val.b1 as u8) << 1)
                         | ((val.b2 as u8) << 2)
                         | ((val.b3 as u8) << 3);
-                    num_traits::NumCast::from(raw).unwrap()
+                    unsafe{num_traits::NumCast::from(raw).unwrap_unchecked()}
                 }
             }
         )*

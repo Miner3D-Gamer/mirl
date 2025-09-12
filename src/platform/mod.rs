@@ -118,7 +118,8 @@ pub enum MouseButton {
 pub mod keycodes;
 
 #[cfg(feature = "system")]
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[allow(clippy::struct_excessive_bools)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 /// Settings for spawning in a window
 pub struct WindowSettings {
     /// Remove the border of the window
@@ -143,6 +144,7 @@ impl WindowSettings {
     /// Get the settings on default settings
     /// For size a buffer is required
     /// For position, it will be centered on the screen
+    #[must_use]
     pub fn default(buffer: &Buffer) -> Self {
         let size = (buffer.width, buffer.height).tuple_2_into();
         Self {
@@ -157,17 +159,17 @@ impl WindowSettings {
 
             resizable: false,
             os_menu: true,
-            size: size,
+            size,
             visible: true,
         }
     }
     /// Set the visibility of the window
-    pub fn set_visible(&mut self, visible: bool) -> &mut Self {
+    pub const fn set_visible(&mut self, visible: bool) -> &mut Self {
         self.visible = visible;
         self
     }
     /// Set the size of the window
-    pub fn set_size(&mut self, size: (isize, isize)) -> &mut Self {
+    pub const fn set_size(&mut self, size: (isize, isize)) -> &mut Self {
         self.size = size;
         self
     }
@@ -177,32 +179,38 @@ impl WindowSettings {
         self
     }
     /// Set the position of the window
-    pub fn set_position(&mut self, position: (isize, isize)) -> &mut Self {
+    pub const fn set_position(
+        &mut self,
+        position: (isize, isize),
+    ) -> &mut Self {
         self.position = position;
         self
     }
     /// Set if the title should be visible
-    pub fn set_title_visible(&mut self, title: bool) -> &mut Self {
+    pub const fn set_title_visible(&mut self, title: bool) -> &mut Self {
         self.title_visible = title;
         self
     }
     /// Sets if the border should be hidden
-    pub fn set_borderless(&mut self, borderless: bool) -> &mut Self {
+    pub const fn set_borderless(&mut self, borderless: bool) -> &mut Self {
         self.borderless = borderless;
         self
     }
     /// Set the render level of the window (topmost, normal, bottommost)
-    pub fn set_window_level(&mut self, window_level: WindowLevel) -> &mut Self {
+    pub const fn set_window_level(
+        &mut self,
+        window_level: WindowLevel,
+    ) -> &mut Self {
         self.window_level = window_level;
         self
     }
     /// Set if the window should be resizable by the user
-    pub fn set_resizable(&mut self, resizable: bool) -> &mut Self {
+    pub const fn set_resizable(&mut self, resizable: bool) -> &mut Self {
         self.resizable = resizable;
         self
     }
     /// Set if the default os decoration should be visible (fullscreen, minimize, close)
-    pub fn set_os_menu(&mut self, os_menu: bool) -> &mut Self {
+    pub const fn set_os_menu(&mut self, os_menu: bool) -> &mut Self {
         self.os_menu = os_menu;
         self
     }

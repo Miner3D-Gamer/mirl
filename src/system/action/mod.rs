@@ -1,5 +1,5 @@
 /// The simplest actions you would expect from interacting with the os
-/// 
+///
 /// TODO: Add error handling (Currently silent)
 pub trait Default {
     /// Set the position of a window, ¯\_(ツ)_/¯
@@ -8,7 +8,7 @@ pub trait Default {
         x: i32,
         y: i32,
     ) -> bool;
-    /// How the os should go about ordering this window, check the documentation of [WindowLevel] for more information
+    /// How the os should go about ordering this window, check the documentation of [`WindowLevel`] for more information
     fn set_window_level(
         handle: &raw_window_handle::RawWindowHandle,
         level: WindowLevel,
@@ -57,6 +57,7 @@ pub trait Misc {
     fn get_title_using_id(
         handle: &raw_window_handle::RawWindowHandle,
     ) -> String;
+    #[allow(clippy::fn_params_excessive_bools)]
     /// Get the title of a window
     fn get_id_using_title(
         title: &str,
@@ -77,12 +78,12 @@ pub trait Misc {
     /// Get the current z ordering of a window
     fn get_window_z(handle: &raw_window_handle::RawWindowHandle) -> u32;
 
-    /// Sets the z ordering of the current window - How does [WindowLevel] affect ordering? No clue.
+    /// Sets the z ordering of the current window - How does [`WindowLevel`] affect ordering? No clue.
     fn set_window_z(
         handle: &raw_window_handle::RawWindowHandle,
         z: u32,
     ) -> bool;
-    /// Sets the z ordering of the current window - How does [WindowLevel] affect ordering? No clue.
+    /// Sets the z ordering of the current window - How does [`WindowLevel`] affect ordering? No clue.
     fn set_window_z_after(
         handle: &raw_window_handle::RawWindowHandle,
         after: &raw_window_handle::RawWindowHandle,
@@ -123,9 +124,9 @@ pub trait TaskBar {
         total: u64,
     );
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-///
-pub struct ToolbarTool {}
+// #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+// ///
+// pub struct ToolbarTool {}
 
 /// The loading state of the taskbar icon be aware that some OS may not support all of these
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

@@ -14,25 +14,21 @@ use crate::platform::Buffer;
 
 fn load_cursor(
     size: U2,
-    image_data: Buffer,
+    image_data: &Buffer,
     hotspot_x: u16,
     hotspot_y: u16,
-) -> HCURSOR {
+) -> Option<HCURSOR> {
     let size = cursor_resolution(size);
 
-    let (file_path, temp_file) = create_temp_file(create_cursor(
-        size,
-        size,
-        hotspot_x,
-        hotspot_y,
-        &image_data,
+    let (file_path, temp_file) = create_temp_file(&create_cursor(
+        size, size, hotspot_x, hotspot_y, image_data,
     ))
-    .unwrap();
+    .ok()?;
     let _ = temp_file.keep();
 
     let temp = load_cursor_file(&file_path);
-    delete_temp_file(&file_path).unwrap();
-    return temp;
+    delete_temp_file(&file_path).ok()?;
+    temp
 }
 
 // fn load_base_cursor(
@@ -77,13 +73,15 @@ fn load_cursor(
 // }
 
 /// Load a cursor SVG and replace it's placeholders with actual colors
+#[must_use]
+#[allow(clippy::needless_pass_by_value)]
 pub fn load_base_cursor_with_file(
     cursor: BaseCursor,
     size: U2,
     main_color: u32,
     secondary_color: u32,
     svg_data: String,
-) -> Cursor {
+) -> Option<Cursor> {
     // let svg_size = 16; // WHO TF MAKES THE CURSOR NOT A MULTIPLE OF 16 ???
 
     let wanted_size = cursor_resolution(size);
@@ -97,11 +95,11 @@ pub fn load_base_cursor_with_file(
         .replace_first_occurrence("{}", &u32_to_hex(secondary_color));
 
     let image_data = rasterize_svg(
-        &result_svg.as_bytes(),
-        wanted_size as u32,
-        wanted_size as u32,
+        result_svg.as_bytes(),
+        u32::from(wanted_size),
+        u32::from(wanted_size),
     )
-    .unwrap();
+    .ok()?;
 
     // // Adjust hotspot because of the psycho who made the cursor not a multiple of 16
     // let adjusted_hotspot_x = ((cursor.hot_spot_x as f64 / svg_size as f64)
@@ -110,26 +108,24 @@ pub fn load_base_cursor_with_file(
     // let adjusted_hotspot_y = ((cursor.hot_spot_y as f64 / svg_size as f64)
     //     * wanted_size as f64)
     //     .round() as u16;
-
-    return Cursor::Win(load_cursor(
+    load_cursor(
         //&extract_file_name_without_extension(&cursor.file_path),
         size,
-        pixmap_to_buffer(&image_data),
+        &pixmap_to_buffer(&image_data),
         cursor.hot_spot_x,
         cursor.hot_spot_y,
-    ));
+    )
+    .map(Cursor::Win)
 }
 
 /// Expects .cur file
-fn load_cursor_file(file_path: &str) -> HCURSOR {
+fn load_cursor_file(file_path: &str) -> Option<HCURSOR> {
     unsafe {
-        let filename = std::ffi::CString::new(file_path).unwrap(); // null-terminated C-style byte string
+        let filename = std::ffi::CString::new(file_path).ok()?; // null-terminated C-style byte string
         let cursor =
-            LoadCursorFromFileA(PCSTR(filename.as_ptr() as *const u8)).unwrap();
-        if cursor.0 == 0 {
-            panic!("Failed to load cursor");
-        }
-        return cursor;
+            LoadCursorFromFileA(PCSTR(filename.as_ptr().cast::<u8>())).ok()?;
+        assert!(cursor.0 != 0, "Failed to load cursor");
+        Some(cursor)
     }
 }
 fn create_cursor(
@@ -162,10 +158,10 @@ fn create_cursor(
     cursor_buffer.extend(&hotspot_y.to_le_bytes()); // Hotspot Y
 
     let image_data_offset = 6 + 16;
-    let row_stride = ((width as u32 * 32 + 31) / 32) * 4;
-    let pixel_array_size = row_stride * height as u32;
+    let row_stride = (u32::from(width) * 32).div_ceil(32) * 4;
+    let pixel_array_size = row_stride * u32::from(height);
     let bmp_header_size = 40;
-    let and_mask_size = height as u32 * ((width as u32 + 31) / 32 * 4);
+    let and_mask_size = u32::from(height) * (u32::from(width).div_ceil(32) * 4);
     let size_in_bytes = bmp_header_size + pixel_array_size + and_mask_size;
 
     cursor_buffer.extend(&(size_in_bytes).to_le_bytes()); // Image size
@@ -174,8 +170,8 @@ fn create_cursor(
     // BITMAPINFOHEADER (40 bytes)
     let mut bmp_data: Vec<u8> = Vec::with_capacity(size_in_bytes as usize);
     bmp_data.extend(&(40u32.to_le_bytes())); // Header size
-    bmp_data.extend(&(width as i32).to_le_bytes()); // Width
-    bmp_data.extend(&(2 * height as i32).to_le_bytes()); // Height (x2 for AND mask)
+    bmp_data.extend(&i32::from(width).to_le_bytes()); // Width
+    bmp_data.extend(&(2 * i32::from(height)).to_le_bytes()); // Height (x2 for AND mask)
     bmp_data.extend(&(1u16.to_le_bytes())); // Planes
     bmp_data.extend(&(32u16.to_le_bytes())); // Bit count
     bmp_data.extend(&(0u32.to_le_bytes())); // Compression
@@ -185,18 +181,11 @@ fn create_cursor(
     bmp_data.extend(&(0u32.to_le_bytes())); // Colors used
     bmp_data.extend(&(0u32.to_le_bytes())); // Important colors
 
-    for pixel in image.flip_vertically().data.iter() {
+    for pixel in &image.flip_vertically().data {
         let (r, g, b, a) = u32_to_rgba(*pixel);
+        #[allow(clippy::tuple_array_conversions)]
         bmp_data.extend(&[b, g, r, a]);
     }
-
-    // // Pixel data (BGRA format, bottom-up)
-    // for y in (0..height).rev() {
-    //     for x in 0..width {
-    //         let pixel = rgba.get_pixel(x as u32, y as u32).0;
-    //         bmp_data.extend(&[pixel[2], pixel[1], pixel[0], pixel[3]]); // BGRA
-    //     }
-    // }
 
     // AND mask (all zero = fully visible)
     bmp_data.extend(vec![0u8; and_mask_size as usize]);
@@ -204,7 +193,7 @@ fn create_cursor(
     // Combine all into buffer
     cursor_buffer.extend(bmp_data);
 
-    return cursor_buffer;
+    cursor_buffer
 }
 
 // const BUILTIN_CURSORS: [BaseCursor; 1] = [BaseCursor {
@@ -226,19 +215,16 @@ fn create_cursor(
 // }
 
 fn create_temp_file(
-    cursor_data: Vec<u8>,
+    cursor_data: &[u8],
 ) -> std::io::Result<(String, tempfile::NamedTempFile)> {
     let mut file = tempfile::NamedTempFile::new()?;
-    file.write_all(&cursor_data)?;
+    file.write_all(cursor_data)?;
 
     let path_str = file
         .path()
         .to_str()
         .ok_or_else(|| {
-            std::io::Error::new(
-                std::io::ErrorKind::Other,
-                "Invalid UTF-8 in temp file path",
-            )
+            std::io::Error::other("Invalid UTF-8 in temp file path")
         })?
         .to_string();
 
@@ -247,7 +233,7 @@ fn create_temp_file(
 }
 /// Delete the file at the given path
 fn delete_temp_file(path: &str) -> std::io::Result<()> {
-    return std::fs::remove_file(path); // Removes the file at the given path
+    std::fs::remove_file(path) // Removes the file at the given path
 }
 
 /// A windows only function to set the current cursor
@@ -262,43 +248,47 @@ static mut ORIGINAL_WNDPROC: Option<WNDPROC> = None;
 static mut CURRENT_CURSOR: HCURSOR = HCURSOR(0);
 
 /// A hook to attach to a window -> Setting their cursor style
+///
+/// # Safety
+/// Interacts with windows
+#[must_use]
 pub unsafe extern "system" fn wndproc(
     hwnd: HWND,
     msg: u32,
     wparam: WPARAM,
     lparam: LPARAM,
 ) -> LRESULT {
-    match msg {
-        WM_SETCURSOR => {
-            // Only handle if we're in the client area (low word of lparam == HTCLIENT)
-            if (lparam.0 as u16) == HTCLIENT as u16 && CURRENT_CURSOR.0 != 0 {
-                SetCursor(CURRENT_CURSOR);
-                return LRESULT(1); // TRUE - we handled it
-            }
-            // Let default handler deal with non-client areas
+    if msg == WM_SETCURSOR {
+        // Only handle if we're in the client area (low word of lparam == HTCLIENT)
+        if (lparam.0 as u16) == HTCLIENT as u16 && CURRENT_CURSOR.0 != 0 {
+            SetCursor(CURRENT_CURSOR);
+            return LRESULT(1); // TRUE - we handled it
         }
-        _ => {}
+        // Let default handler deal with non-client areas
     }
 
-    if let Some(orig) = ORIGINAL_WNDPROC {
-        CallWindowProcW(orig, hwnd, msg, wparam, lparam)
-    } else {
-        DefWindowProcW(hwnd, msg, wparam, lparam)
-    }
+    ORIGINAL_WNDPROC.map_or_else(
+        || DefWindowProcW(hwnd, msg, wparam, lparam),
+        |orig| CallWindowProcW(orig, hwnd, msg, wparam, lparam),
+    )
 }
+#[allow(clippy::fn_to_numeric_cast)]
 /// Define a window to attach to so custom cursors can be defined without flickering
+///
+/// # Safety
+/// Interacts with windows
 pub unsafe fn subclass_window(
     handle: raw_window_handle::RawWindowHandle,
-    cursor: Cursor,
+    cursor: &Cursor,
 ) {
     if let raw_window_handle::RawWindowHandle::Win32(hwnd_handle) = handle {
         if let Cursor::Win(actual_cursor) = cursor {
             let hwnd = windows::Win32::Foundation::HWND(hwnd_handle.hwnd.get());
-            CURRENT_CURSOR = actual_cursor;
+            CURRENT_CURSOR = *actual_cursor;
 
             // Get the original window procedure
             let orig_proc = GetWindowLongPtrW(hwnd, GWLP_WNDPROC);
-            ORIGINAL_WNDPROC = Some(std::mem::transmute(orig_proc));
+            ORIGINAL_WNDPROC = Some(std::mem::transmute::<isize, std::option::Option<unsafe extern "system" fn(windows::Win32::Foundation::HWND, u32, windows::Win32::Foundation::WPARAM, windows::Win32::Foundation::LPARAM) -> windows::Win32::Foundation::LRESULT>>(orig_proc));
 
             // Set our window procedure
             SetWindowLongPtrW(hwnd, GWLP_WNDPROC, wndproc as isize);
@@ -306,7 +296,10 @@ pub unsafe fn subclass_window(
     }
 }
 
-/// Helper function to update cursor without re-subclassing
+/// Helper function to update cursor without re-sub classing
+///
+/// # Safety
+/// Interacts with windows
 pub unsafe fn update_cursor(cursor: &HCURSOR) {
     CURRENT_CURSOR = *cursor;
 }

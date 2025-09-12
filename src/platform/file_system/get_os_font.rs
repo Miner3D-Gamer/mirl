@@ -27,13 +27,16 @@ fn get_default_os_font() -> Result<DefaultFont, Box<dyn std::error::Error>> {
             bytes,
             font_index: _,
         } => Ok(DefaultFont {
-            bytes: Some(bytes.as_ref().to_vec()),
+            bytes: Some(bytes.as_ref().clone()),
             path: None,
         }),
     }
 }
 
 /// Get the default font the os is using TODO: Turn this into a trait and maybe drop `font_kit` dependency?
+/// 
+/// # Errors
+/// When no default font could be found
 pub fn get_default_font(
     file_system: &dyn FileSystem,
 ) -> Result<FileData, Box<dyn std::error::Error>> {

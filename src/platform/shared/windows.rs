@@ -72,7 +72,7 @@ pub fn restore(window: &*mut c_void) {
 //     }
 // }
 /// Resize the current window to the specified size
-pub fn resize<T: num_traits::ToPrimitive>(window: &*mut c_void, size: (T, T)) {
+pub fn resize(window: &*mut c_void, size: &(i32, i32)) {
     let hwnd = *window as HWND;
 
     unsafe {
@@ -82,8 +82,8 @@ pub fn resize<T: num_traits::ToPrimitive>(window: &*mut c_void, size: (T, T)) {
             std::ptr::null_mut(), // No changes to the window's position
             0,
             0,
-            size.0.to_i32().unwrap(),
-            size.1.to_i32().unwrap(),
+            size.0,
+            size.1,
             SWP_NOZORDER | SWP_NOMOVE, // Keep the current position, just resize
         );
     }
@@ -94,9 +94,9 @@ pub fn is_window_minimized(window: &*mut c_void) -> bool {
     unsafe { IsIconic(hwnd) != 0 }
 }
 /// Get the numerical value of a window
-pub fn get_window_handle(window: &*mut c_void) -> HWND {
-    let hwnd = *window as HWND;
-    hwnd
+pub const fn get_window_handle(window: &*mut c_void) -> HWND {
+    
+    *window as HWND
 }
 /// Wether a window is maximized on windows
 pub fn is_window_maximized(window: &*mut c_void) -> bool {

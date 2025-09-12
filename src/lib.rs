@@ -15,6 +15,12 @@
 #![allow(clippy::cast_sign_loss)]
 #![allow(clippy::wildcard_imports)]
 #![allow(clippy::needless_doctest_main)]
+#![allow(clippy::cast_possible_wrap)]
+#![allow(clippy::struct_excessive_bools)]
+#![allow(clippy::inline_always)]
+#![allow(clippy::overly_complex_bool_expr)]
+#![allow(clippy::too_many_lines)]
+#![allow(clippy::fn_params_excessive_bools)]
 #![feature(const_trait_impl)]
 #![feature(const_ops)]
 //! Miners

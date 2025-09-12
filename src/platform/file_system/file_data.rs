@@ -122,8 +122,10 @@ impl FileData {
         )?;
         Ok(font)
     }
-    #[must_use]
     /// Convert the raw bytes into an `image::DynamicImage` instance
+    /// 
+    /// # Errors
+    /// When unable to load the image from memory
     #[cfg(feature = "imagery")]
     pub fn as_image(
         &self,

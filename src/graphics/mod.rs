@@ -504,7 +504,7 @@ pub fn pixmap_to_buffer(pixmap: &resvg::tiny_skia::Pixmap) -> Buffer {
     let mut data = Vec::new();
     for y in 0..pixmap.height() {
         for x in 0..pixmap.width() {
-            let color = pixmap.pixel(x, y).unwrap();
+            let color = unsafe { pixmap.pixel(x, y).unwrap_unchecked() };
             data.push(rgba_to_u32(
                 color.red(),
                 color.green(),
@@ -513,8 +513,10 @@ pub fn pixmap_to_buffer(pixmap: &resvg::tiny_skia::Pixmap) -> Buffer {
             ));
         }
     }
-    Buffer::new(data, pixmap.width() as usize, pixmap.height() as usize)
-        .unwrap()
+    unsafe {
+        Buffer::new(data, pixmap.width() as usize, pixmap.height() as usize)
+            .unwrap_unchecked()
+    }
 }
 
 #[cfg(not(target_arch = "wasm32"))]
@@ -1231,7 +1233,7 @@ impl TextureManager {
         self.texture_lookup.contains_key(name)
     }
     /// Preload registered image instead of letting it lazy load
-    /// 
+    ///
     /// # Errors
     /// When the file cannot be loaded
     #[cfg(feature = "imagery")]

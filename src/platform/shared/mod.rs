@@ -1,9 +1,10 @@
 use super::{time::NativeTime, Time};
 /// Get the boxed native time struct
 #[inline(always)]
+#[must_use]
 pub fn get_time() -> Box<dyn Time> {
     // Native environment: using SystemTime to get current time
-    return Box::new(NativeTime::new());
+    Box::new(NativeTime::new())
 }
 /// Sample fps, needs to be called continuously to work properly
 #[inline(always)]
@@ -19,10 +20,11 @@ pub fn sleep(time: std::time::Duration) {
 /// Log the given object to the console, not good but it works
 #[inline(always)]
 pub fn log(t: &str) {
-    println!("{}", t);
+    println!("{t}");
 }
 /// A struct to manage pressed keys
-#[derive(Clone, Debug, Copy, PartialEq)]
+#[derive(Clone, Debug, Copy, PartialEq, Eq)]
+#[allow(clippy::struct_excessive_bools)]
 pub struct KeyManager {
     // Letters
     a: bool,
@@ -214,10 +216,17 @@ pub struct KeyManager {
     world_2: bool,
 }
 
+impl Default for KeyManager {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl KeyManager {
-    /// Create a new KeyManager instance, keep in mind that key manager itself does not check if a key is down.
+    /// Create a new `KeyManager` instance, keep in mind that key manager itself does not check if a key is down.
+    #[must_use]
     pub const fn new() -> Self {
-        KeyManager {
+        Self {
             a: false,
             b: false,
             c: false,
@@ -382,22 +391,24 @@ impl KeyManager {
         }
     }
     /// Checks if a key is pressed
-    pub fn is_key_pressed(&self, keycode: KeyCode) -> bool {
-        map_keycode(keycode, &self)
+    #[must_use]
+    pub const fn is_key_pressed(&self, keycode: KeyCode) -> bool {
+        map_keycode(keycode, self)
     }
     /// Sets if a key is down
-    pub fn set_key_state(&mut self, keycode: KeyCode, value: bool) {
+    pub const fn set_key_state(&mut self, keycode: KeyCode, value: bool) {
         set_keycode(keycode, self, value);
     }
     /// Get every pressed key (by checking if every single one is pressed)
+    #[must_use]
     pub fn get_all_pressed_keys(&self) -> Vec<KeyCode> {
         let mut key_codes = Vec::new();
         for variant in KeyCode::iter() {
             if self.is_key_pressed(variant) {
-                key_codes.push(variant)
+                key_codes.push(variant);
             }
         }
-        return key_codes;
+        key_codes
     }
 }
 
@@ -405,6 +416,7 @@ use strum::IntoEnumIterator;
 
 /// A struct to manage the pressed mouse keys + scroll
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[allow(clippy::struct_excessive_bools)]
 pub struct MouseManager<T: num_traits::Float> {
     scroll_x: T,
     scroll_y: T,
@@ -419,10 +431,17 @@ pub struct MouseManager<T: num_traits::Float> {
     extra4_button: bool,
 }
 
+impl<T: num_traits::Float> Default for MouseManager<T> {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl<T: num_traits::Float> MouseManager<T> {
-    /// Create a new MouseManager instance, keep in mind that it doesn't check if any keys are down/scroll itself
+    /// Create a new `MouseManager` instance, keep in mind that it doesn't check if any keys are down/scroll itself
+    #[must_use]
     pub fn new() -> Self {
-        MouseManager {
+        Self {
             scroll_x: T::zero(),
             scroll_y: T::zero(),
             left_mouse_button: false,
@@ -435,7 +454,7 @@ impl<T: num_traits::Float> MouseManager<T> {
         }
     }
     /// Set the scroll
-    pub fn set_scroll(&mut self, xy: (T, T)) {
+    pub const fn set_scroll(&mut self, xy: (T, T)) {
         self.scroll_x = xy.0;
         self.scroll_y = xy.1;
     }
@@ -450,21 +469,25 @@ impl<T: num_traits::Float> MouseManager<T> {
         self.scroll_y = T::zero();
     }
     /// Get the mouse wheel scroll
-    pub fn get_scroll(&self) -> (T, T) {
+    pub const fn get_scroll(&self) -> (T, T) {
         (self.scroll_x, self.scroll_y)
     }
     /// Check if a mouse button is pressed
-    pub fn is_mouse_button_pressed(&self, button: MouseButton) -> bool {
-        map_button(button, &self)
+    pub const fn is_mouse_button_pressed(&self, button: MouseButton) -> bool {
+        map_button(button, self)
     }
     /// Set the state of a mouse button
-    pub fn set_mouse_button_state(&mut self, button: MouseButton, value: bool) {
+    pub const fn set_mouse_button_state(
+        &mut self,
+        button: MouseButton,
+        value: bool,
+    ) {
         set_mouse_button(button, self, value);
     }
 }
 use super::MouseButton;
 use crate::platform::keycodes::KeyCode;
-/// Get the value [MouseButton] of [MouseManager]
+/// Get the value [`MouseButton`] of [`MouseManager`]
 pub const fn map_button<MouseManagerScrollAccuracy: num_traits::Float>(
     button: MouseButton,
     mouse_manager: &MouseManager<MouseManagerScrollAccuracy>,
@@ -480,7 +503,7 @@ pub const fn map_button<MouseManagerScrollAccuracy: num_traits::Float>(
         MouseButton::Unsupported => false,
     }
 }
-/// Set the value [MouseButton] of [MouseManager]
+/// Set the value [`MouseButton`] of [`MouseManager`]
 pub const fn set_mouse_button<MouseManagerScrollAccuracy: num_traits::Float>(
     button: MouseButton,
     mouse_manager: &mut MouseManager<MouseManagerScrollAccuracy>,
@@ -498,7 +521,8 @@ pub const fn set_mouse_button<MouseManagerScrollAccuracy: num_traits::Float>(
     }
 }
 
-/// Get the value [KeyCode] of [KeyManager]
+/// Get the value [`KeyCode`] of [`KeyManager`]
+#[must_use]
 pub const fn map_keycode(keycode: KeyCode, key_manager: &KeyManager) -> bool {
     match keycode {
         KeyCode::A => key_manager.a,
@@ -657,7 +681,7 @@ pub const fn map_keycode(keycode: KeyCode, key_manager: &KeyManager) -> bool {
         KeyCode::ThornÞ => key_manager.þ,
         KeyCode::OELigatureŒ => key_manager.œ,
 
-        KeyCode::AnyAlt => key_manager.right_shift || key_manager.left_shift,
+        KeyCode::AnyAlt => key_manager.right_alt || key_manager.left_alt,
         KeyCode::AnyControl => {
             key_manager.right_control || key_manager.left_control
         }
@@ -675,8 +699,8 @@ pub const fn map_keycode(keycode: KeyCode, key_manager: &KeyManager) -> bool {
     }
 }
 
-/// Set the value [KeyCode] of [KeyManager]
-pub fn set_keycode(
+/// Set the value [`KeyCode`] of [`KeyManager`]
+pub const fn set_keycode(
     keycode: KeyCode,
     key_manager: &mut KeyManager,
     value: bool,

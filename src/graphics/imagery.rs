@@ -124,7 +124,7 @@ pub fn pixmap_to_dynamic_image(
         for y in 0..ras.height() {
             use crate::extensions::Tuple3Into;
 
-            let color = ras.pixel(x, y).unwrap(); // If this crashes I will be glad to fix it, until then shut it
+            let color = unsafe { ras.pixel(x, y).unwrap_unchecked() }; // If this crashes I will be glad to fix it, until then shut it
             let (r, g, b) = crate::graphics::shift_hue_rgb(
                 color.red(),
                 color.green(),

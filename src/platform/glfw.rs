@@ -12,7 +12,11 @@ use super::{
 };
 #[cfg(target_os = "windows")]
 use crate::platform::WindowLevel;
-use crate::{extensions::*, graphics, platform::keycodes::KeyCode};
+use crate::{
+    extensions::*,
+    graphics,
+    platform::{framework_traits::Errors, keycodes::KeyCode},
+};
 use crate::{
     platform::framework_traits::CursorStyleControl,
     system::action::{Decoration, Default},
@@ -34,8 +38,9 @@ pub struct Framework<MouseManagerScrollAccuracy: num_traits::Float> {
     maximized: bool,
     minimized: bool,
 }
+#[allow(clippy::needless_pass_by_value, clippy::trivially_copy_pass_by_ref)]
 fn log_errors(_: glfw::Error, description: String, _: &()) {
-    println!("GLFW Error: {}", description);
+    println!("GLFW Error: {description}");
 }
 
 static LOG_ERRORS: Option<glfw::ErrorCallback<()>> = Some(glfw::Callback {
@@ -46,9 +51,14 @@ static LOG_ERRORS: Option<glfw::ErrorCallback<()>> = Some(glfw::Callback {
 impl<MouseManagerScrollAccuracy: num_traits::Float> Window
     for Framework<MouseManagerScrollAccuracy>
 {
-    fn new(title: &str, settings: super::WindowSettings) -> Self {
+    fn new(
+        title: &str,
+        settings: super::WindowSettings,
+    ) -> Result<Self, Errors> {
         // Initialize GLFW
-        let mut glfw = glfw::init(LOG_ERRORS).unwrap();
+        let Ok(mut glfw) = glfw::init(LOG_ERRORS) else {
+            return Err(Errors::Unknown);
+        };
         // Configure GLFW
         glfw.window_hint(glfw::WindowHint::ContextVersion(3, 3));
         glfw.window_hint(glfw::WindowHint::OpenGlProfile(
@@ -58,14 +68,14 @@ impl<MouseManagerScrollAccuracy: num_traits::Float> Window
         glfw.window_hint(glfw::WindowHint::OpenGlForwardCompat(true));
 
         // Create a windowed mode window and its OpenGL context
-        let (mut window, events) = glfw
-            .create_window(
-                settings.size.0 as u32,
-                settings.size.1 as u32,
-                title,
-                glfw::WindowMode::Windowed,
-            )
-            .expect("Failed to create GLFW window");
+        let Some((mut window, events)) = glfw.create_window(
+            settings.size.0 as u32,
+            settings.size.1 as u32,
+            title,
+            glfw::WindowMode::Windowed,
+        ) else {
+            return Err(Errors::FailedToOpenWindow);
+        };
 
         // Make the window's context current
         window.make_current();
@@ -90,7 +100,7 @@ impl<MouseManagerScrollAccuracy: num_traits::Float> Window
         );
 
         // Load OpenGL function pointers
-        gl::load_with(|symbol| window.get_proc_address(symbol) as *const _);
+        gl::load_with(|symbol| window.get_proc_address(symbol).cast());
 
         // Create shader program
         let shader_program = unsafe { create_shader_program() };
@@ -100,7 +110,7 @@ impl<MouseManagerScrollAccuracy: num_traits::Float> Window
 
         // Create texture
         let texture = unsafe { create_texture() };
-        return Framework {
+        Ok(Self {
             glfw,
             window,
             events,
@@ -114,9 +124,9 @@ impl<MouseManagerScrollAccuracy: num_traits::Float> Window
             mouse_manager: super::shared::MouseManager::new(),
             maximized: false,
             minimized: false,
-        };
+        })
     }
-    fn update(&mut self, buffer: &[u32]) {
+    fn update(&mut self, buffer: &[u32]) -> Errors {
         // Poll events
         self.glfw.poll_events();
 
@@ -129,7 +139,7 @@ impl<MouseManagerScrollAccuracy: num_traits::Float> Window
                 self.texture,
                 self.width as u32,
                 self.height as u32,
-                &buffer,
+                buffer,
             );
 
             // Clear the screen
@@ -150,10 +160,11 @@ impl<MouseManagerScrollAccuracy: num_traits::Float> Window
 
         // Swap front and back buffers
         self.window.swap_buffers();
+        Errors::AllGood
     }
     fn clean_up(&self) {
         unsafe {
-            gl::DeleteTextures(1, &self.texture);
+            gl::DeleteTextures(1, &raw const self.texture);
             gl::DeleteProgram(self.shader_program);
         }
     }
@@ -173,7 +184,7 @@ impl<MouseManagerScrollAccuracy: num_traits::Float> Timing
     fn get_delta_time(&mut self) -> f64 {
         let (time, r) = super::shared::sample_fps(&self.time);
         self.time = time;
-        return r;
+        r
     }
     #[inline]
     fn sleep(&self, time: Duration) {
@@ -218,19 +229,20 @@ impl<MouseManagerScrollAccuracy: num_traits::Float> Control
 {
     fn get_position(&self) -> (isize, isize) {
         let (x, y) = self.window.get_pos();
-        return (x as isize, y as isize);
+        (x as isize, y as isize)
     }
     fn get_size(&self) -> (isize, isize) {
-        return crate::system::OsActions::get_window_size(
+        crate::system::OsActions::get_window_size(
             &get_native_window_handle_from_glfw(&self.window),
         )
-        .tuple_2_into();
+        .tuple_2_into()
     }
+    #[allow(clippy::cast_possible_wrap)]
     fn set_size(&mut self, buffer: &super::Buffer) {
         self.window.set_size(buffer.width as i32, buffer.height as i32);
     }
     fn set_position(&mut self, xy: (isize, isize)) {
-        self.window.set_pos(xy.0 as i32, xy.1 as i32)
+        self.window.set_pos(xy.0 as i32, xy.1 as i32);
     }
 }
 
@@ -264,7 +276,7 @@ impl<MouseManagerScrollAccuracy: num_traits::Float>
         Some(self.mouse_manager.get_scroll())
     }
     fn get_all_keys_down(&self) -> Vec<KeyCode> {
-        return self.keyboard_manager.get_all_pressed_keys();
+        self.keyboard_manager.get_all_pressed_keys()
     }
 }
 const fn action_to_bool(action: Action) -> Option<bool> {
@@ -279,7 +291,7 @@ impl<MouseManagerScrollAccuracy: num_traits::Float> Output
     for Framework<MouseManagerScrollAccuracy>
 {
     fn log(&self, t: &str) {
-        super::shared::log(t)
+        super::shared::log(t);
     }
 }
 
@@ -301,7 +313,13 @@ impl<MouseManagerScrollAccuracy: num_traits::Float> ExtendedWindow
 
     #[cfg(feature = "resvg")]
     /// Not yet implemented
-    fn set_icon(&mut self, _buffer: &[u32], _width: u32, _height: u32) {
+    fn set_icon(
+        &mut self,
+        _buffer: &[u32],
+        _width: u32,
+        _height: u32,
+    ) -> Errors {
+        Errors::NotImplemented
         //panic!("Not yet implemented");
     }
     fn get_window_handle(&self) -> raw_window_handle::RawWindowHandle {
@@ -312,9 +330,9 @@ impl<MouseManagerScrollAccuracy: num_traits::Float> CursorStyleControl
     for Framework<MouseManagerScrollAccuracy>
 {
     #[cfg(feature = "resvg")]
-    fn set_cursor_style(&mut self, style: &super::Cursor) {
+    fn set_cursor_style(&mut self, style: &super::Cursor) -> Errors {
         //println!("Setting cursor style");
-        super::mouse::use_cursor(style, Some(&mut self.window));
+        super::mouse::use_cursor(style, Some(&mut self.window))
     }
     #[cfg(feature = "resvg")]
     fn load_custom_cursor(
@@ -322,7 +340,7 @@ impl<MouseManagerScrollAccuracy: num_traits::Float> CursorStyleControl
         size: crate::extensions::U2,
         main_color: u32,
         secondary_color: u32,
-    ) -> super::mouse::Cursors {
+    ) -> Result<super::mouse::Cursors, String> {
         super::mouse::Cursors::load(
             size,
             main_color,
@@ -333,7 +351,7 @@ impl<MouseManagerScrollAccuracy: num_traits::Float> CursorStyleControl
 }
 
 // Vertex shader source
-const VERTEX_SHADER_SOURCE: &str = r#"
+const VERTEX_SHADER_SOURCE: &str = r"
     #version 330 core
     layout (location = 0) in vec3 aPos;
     layout (location = 1) in vec2 aTexCoord;
@@ -344,10 +362,10 @@ const VERTEX_SHADER_SOURCE: &str = r#"
         gl_Position = vec4(aPos, 1.0);
         TexCoord = aTexCoord;
     }
-"#;
+";
 
 // Fragment shader source
-const FRAGMENT_SHADER_SOURCE: &str = r#"
+const FRAGMENT_SHADER_SOURCE: &str = r"
     #version 330 core
     out vec4 FragColor;
     
@@ -358,7 +376,7 @@ const FRAGMENT_SHADER_SOURCE: &str = r#"
     void main() {
         FragColor = texture(ourTexture, TexCoord);
     }
-"#;
+";
 
 fn process_events<MouseManagerScrollAccuracy: num_traits::Float>(
     window: &mut Framework<MouseManagerScrollAccuracy>,
@@ -391,7 +409,7 @@ fn process_events<MouseManagerScrollAccuracy: num_traits::Float>(
                 }
             }
             glfw::WindowEvent::Maximize(bool) => {
-                window.minimized = bool;
+                window.minimized = !bool;
             }
             glfw::WindowEvent::Iconify(bool) => {
                 window.minimized = bool;
@@ -401,23 +419,26 @@ fn process_events<MouseManagerScrollAccuracy: num_traits::Float>(
         }
     }
 }
-
-const fn map_glfw_mouse_button_to_mouse_button(
+#[must_use]
+/// Convert a glfw mouse button to a mirl mouse buttons
+pub const fn map_glfw_mouse_button_to_mouse_button(
     button: glfw::MouseButton,
 ) -> MouseButton {
     match button {
         glfw::MouseButton::Button1 => MouseButton::Left,
         glfw::MouseButton::Button2 => MouseButton::Right,
         glfw::MouseButton::Button3 => MouseButton::Middle,
-        glfw::MouseButton::Button4 => MouseButton::Unsupported,
-        glfw::MouseButton::Button5 => MouseButton::Unsupported,
-        glfw::MouseButton::Button6 => MouseButton::Unsupported,
-        glfw::MouseButton::Button7 => MouseButton::Unsupported,
-        glfw::MouseButton::Button8 => MouseButton::Unsupported,
+        glfw::MouseButton::Button4
+        | glfw::MouseButton::Button5
+        | glfw::MouseButton::Button6
+        | glfw::MouseButton::Button7
+        | glfw::MouseButton::Button8 => MouseButton::Unsupported,
     }
 }
-
-const fn map_glfw_key_to_keycode(key: glfw::Key) -> KeyCode {
+#[must_use]
+/// Convert a glfw keycode to a mirl keycode
+#[allow(clippy::too_many_lines)]
+pub const fn map_glfw_key_to_keycode(key: glfw::Key) -> KeyCode {
     match key {
         glfw::Key::A => KeyCode::A,
         glfw::Key::B => KeyCode::B,
@@ -542,7 +563,7 @@ const fn map_glfw_key_to_keycode(key: glfw::Key) -> KeyCode {
         glfw::Key::Unknown => KeyCode::Unknown,
     }
 }
-
+#[allow(clippy::unwrap_used)]
 unsafe fn create_shader_program() -> u32 {
     let vertex_shader = gl::CreateShader(gl::VERTEX_SHADER);
     let c_str_vert =
@@ -598,10 +619,10 @@ unsafe fn create_shader_program() -> u32 {
 // }
 unsafe fn check_shader_errors(shader: u32, shader_type: &str) {
     let mut success = 0;
-    gl::GetShaderiv(shader, gl::COMPILE_STATUS, &mut success);
+    gl::GetShaderiv(shader, gl::COMPILE_STATUS, &raw mut success);
     if success == 0 {
         let mut log_length = 0;
-        gl::GetShaderiv(shader, gl::INFO_LOG_LENGTH, &mut log_length);
+        gl::GetShaderiv(shader, gl::INFO_LOG_LENGTH, &raw mut log_length);
 
         let mut log = vec![0u8; log_length as usize]; // properly initialized
 
@@ -609,14 +630,11 @@ unsafe fn check_shader_errors(shader: u32, shader_type: &str) {
             shader,
             log_length,
             std::ptr::null_mut(),
-            log.as_mut_ptr() as *mut i8,
+            log.as_mut_ptr().cast::<i8>(),
         );
 
         let log_str = String::from_utf8_lossy(&log);
-        eprintln!(
-            "ERROR::SHADER::{}_COMPILATION_FAILED\n{}",
-            shader_type, log_str
-        );
+        eprintln!("ERROR::SHADER::{shader_type}_COMPILATION_FAILED\n{log_str}");
     }
 }
 
@@ -640,10 +658,10 @@ unsafe fn check_shader_errors(shader: u32, shader_type: &str) {
 // }
 unsafe fn check_program_errors(program: u32) {
     let mut success = 0;
-    gl::GetProgramiv(program, gl::LINK_STATUS, &mut success);
+    gl::GetProgramiv(program, gl::LINK_STATUS, &raw mut success);
     if success == 0 {
         let mut log_length = 0;
-        gl::GetProgramiv(program, gl::INFO_LOG_LENGTH, &mut log_length);
+        gl::GetProgramiv(program, gl::INFO_LOG_LENGTH, &raw mut log_length);
 
         let mut log = vec![0u8; log_length as usize]; // initialized to 0
 
@@ -651,19 +669,19 @@ unsafe fn check_program_errors(program: u32) {
             program,
             log_length,
             std::ptr::null_mut(),
-            log.as_mut_ptr() as *mut i8,
+            log.as_mut_ptr().cast::<i8>(),
         );
 
         // Strip trailing null terminator if present
-        if let Some(&0) = log.last() {
+        if log.last() == Some(&0) {
             log.pop();
         }
 
         let log_str = String::from_utf8_lossy(&log);
-        eprintln!("ERROR::PROGRAM::LINKING_FAILED\n{}", log_str);
+        eprintln!("ERROR::PROGRAM::LINKING_FAILED\n{log_str}");
     }
 }
-
+#[allow(clippy::cast_possible_wrap)]
 unsafe fn setup_vertices() -> (u32, u32, u32) {
     // Vertices for a quad (rectangle) that covers the screen
     #[rustfmt::skip]
@@ -682,9 +700,9 @@ unsafe fn setup_vertices() -> (u32, u32, u32) {
 
     let (mut vao, mut vbo, mut ebo) = (0, 0, 0);
 
-    gl::GenVertexArrays(1, &mut vao);
-    gl::GenBuffers(1, &mut vbo);
-    gl::GenBuffers(1, &mut ebo);
+    gl::GenVertexArrays(1, &raw mut vao);
+    gl::GenBuffers(1, &raw mut vbo);
+    gl::GenBuffers(1, &raw mut ebo);
 
     gl::BindVertexArray(vao);
 
@@ -692,7 +710,7 @@ unsafe fn setup_vertices() -> (u32, u32, u32) {
     gl::BufferData(
         gl::ARRAY_BUFFER,
         (vertices.len() * std::mem::size_of::<f32>()) as isize,
-        vertices.as_ptr() as *const std::ffi::c_void,
+        vertices.as_ptr().cast::<std::ffi::c_void>(),
         gl::STATIC_DRAW,
     );
 
@@ -700,7 +718,7 @@ unsafe fn setup_vertices() -> (u32, u32, u32) {
     gl::BufferData(
         gl::ELEMENT_ARRAY_BUFFER,
         (indices.len() * std::mem::size_of::<u32>()) as isize,
-        indices.as_ptr() as *const std::ffi::c_void,
+        indices.as_ptr().cast::<std::ffi::c_void>(),
         gl::STATIC_DRAW,
     );
 
@@ -729,10 +747,11 @@ unsafe fn setup_vertices() -> (u32, u32, u32) {
     (vao, vbo, ebo)
 }
 
+#[allow(clippy::cast_possible_wrap)]
 #[inline]
 unsafe fn create_texture() -> u32 {
     let mut texture = 0;
-    gl::GenTextures(1, &mut texture);
+    gl::GenTextures(1, &raw mut texture);
     gl::BindTexture(gl::TEXTURE_2D, texture);
 
     // Set texture parameters
@@ -752,6 +771,7 @@ unsafe fn create_texture() -> u32 {
     texture
 }
 #[inline]
+#[allow(clippy::cast_possible_wrap)]
 unsafe fn update_texture(
     texture: u32,
     width: u32,
@@ -769,10 +789,16 @@ unsafe fn update_texture(
         0,
         gl::RGBA,
         gl::UNSIGNED_BYTE,
-        rgba_buffer.as_ptr() as *const std::ffi::c_void,
+        rgba_buffer.as_ptr().cast::<std::ffi::c_void>(),
     );
 }
+#[allow(
+    clippy::cast_possible_wrap,
+    clippy::unwrap_used,
+    clippy::missing_panics_doc
+)]
 /// Get the window handle from glfw
+#[must_use]
 pub fn get_native_window_handle_from_glfw(
     window: &glfw::Window,
 ) -> raw_window_handle::RawWindowHandle {

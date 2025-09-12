@@ -26,11 +26,28 @@ where
         + ExtendedControl,
 {
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 /// An enum for checking what kind of error was produced
 pub enum Errors {
-    /// When the buffer was too small for the window, contains the expected buffer size
-    BufferTooSmall((usize, usize)),
+    /// Wait a second, this ain't an error
+    AllGood,
+    /// When for example the buffer was too small for the window, contains the expected buffer size
+    IncorrectSize((usize, usize)),
+    /// Creating a window is not supported on this os - maybe try another Framework
+    OsNotSupported,
+    /// When something happened but nobody knows how or why
+    Unknown,
+    /// Failed to create window -> Creating a window on this os may be supported but something else went wrong
+    FailedToOpenWindow,
+    /// When a feature is not yet implemented
+    NotImplemented,
+    /// When a window already exists
+    DuplicateWindow,
+    /// When accessing a file wasn't possible
+    FileAccessNotPossible {
+        /// The file path that was accessed
+        path: String,
+    },
 }
 
 /// A window instance with only the most basic of functionality
@@ -43,15 +60,17 @@ pub trait Window {
     /// `settings`: See [`WindowSettings`](super::WindowSettings) for more info
     ///
     // /// `cursor`: If you wish to use cursors other than the default one, provide the cursor you want the window to show by default. If this is set to None, [`set_cursor_style()`](ExtendedWindow::set_cursor_style) may not work as intended
+    /// # Errors
+    /// See [Errors] for the error messages
     fn new(
         title: &str,
         settings: super::WindowSettings,
         // #[cfg(feature = "resvg")] cursor: Option<Cursor>,
-    ) -> Self
+    ) -> Result<Self, Errors>
     where
         Self: Sized;
     /// Update what the current window displays using a Buffer or \[u32]
-    fn update(&mut self, buffer: &[u32]);
+    fn update(&mut self, buffer: &[u32]) -> Errors;
     /// Wether the current window is still open
     fn is_open(&self) -> bool;
     /// Clean up any remaining data after closing -> Otherwise memory leaks might happen
@@ -116,14 +135,15 @@ pub trait ExtendedWindow {
     /// Set the current icon (task bar)
     /// Width/Height should be something like 32x32 or 48x48 for maximal compatibility
     #[cfg(feature = "ico")]
-    fn set_icon(&mut self, buffer: &[u32], width: u32, height: u32);
+    fn set_icon(&mut self, buffer: &[u32], width: u32, height: u32) -> Errors;
     /// Get the current window handle
     fn get_window_handle(&self) -> raw_window_handle::RawWindowHandle;
 }
 #[cfg(feature = "resvg")]
+/// Control over the cursor style while the mouse of hovering over it
 pub trait CursorStyleControl {
     /// Set what cursors the os should display on the current window
-    fn set_cursor_style(&mut self, style: &Cursor);
+    fn set_cursor_style(&mut self, style: &Cursor) -> Errors;
     /// Load the custom cursors Mirl provides by default
     /// Be aware that this loading a bunch of textures (11010720 bytes to be exact), you may need to increase the stack size using:
     /// ```
@@ -132,12 +152,15 @@ pub trait CursorStyleControl {
     ///     .spawn({main_loop_function});
     /// ```
     /// 32 MB should be enough, less is unstable, more may be wasteful.
+    /// 
+    /// # Errors
+    /// If it was unable to load the custom cursors, it returns the file name of the cursor that failed
     fn load_custom_cursor(
         &mut self,
         size: U2,
         main_color: u32,
         secondary_color: u32,
-    ) -> super::mouse::Cursors;
+    ) -> Result<super::mouse::Cursors, String>;
 }
 
 /// Simple window management
@@ -162,9 +185,9 @@ pub trait ExtendedControl {
     fn set_render_layer(&mut self, render_layer: super::WindowLevel);
     /// Minimize the window
     fn minimize(&mut self);
-    /// Maximize the window (More or less fullscreen), to un-minimize use .restore()
+    /// Maximize the window (More or less fullscreen), to un-minimize use .`restore()`
     fn maximize(&mut self);
-    /// Opposite of .minimize()
+    /// Opposite of .`minimize()`
     fn restore(&mut self);
     /// Wether the current window is minimized
     fn is_minimized(&self) -> bool;

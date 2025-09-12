@@ -74,7 +74,7 @@ impl StringExtensions for str {
     }
     #[allow(clippy::unwrap_used)]
     fn expand_tabs(&self) -> String {
-        self.replace("\t".chars().next().unwrap(), "    ")
+        self.replace('\t', "    ")
     }
     // fn extract_file_name(&self) -> String {
     //     let parts: Vec<&str> = self.split('/').collect();

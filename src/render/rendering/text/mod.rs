@@ -3,6 +3,12 @@ use std::collections::HashMap;
 
 use parking_lot::RwLock;
 
+/// Caches drawn text
+///
+/// See [`GlyphCache`] for the composition of this type
+pub static GLYPH_CACHE: GlyphCache =
+    std::sync::LazyLock::new(|| RwLock::new(HashMap::new()));
+
 /// ### Key:
 ///
 /// `char`: Requested letter
@@ -17,15 +23,15 @@ use parking_lot::RwLock;
 /// [`fontdue::Metrics`]: Positioning data
 ///
 /// `Vec<u8>`: Rasterized font data (alpha)
-static GLYPH_CACHE: once_cell::sync::Lazy<
+pub type GlyphCache = std::sync::LazyLock<
     RwLock<HashMap<(char, u32, usize), (fontdue::Metrics, Vec<u8>)>>,
-> = once_cell::sync::Lazy::new(|| RwLock::new(HashMap::new()));
+>;
 
 /// Get a glyph from the cache if it exists
 #[inline(always)]
 #[allow(clippy::inline_always)]
-pub fn _get_glyph_cache(
-) -> &'static RwLock<HashMap<(char, u32, usize), (fontdue::Metrics, Vec<u8>)>> {
+#[must_use]
+pub fn _get_glyph_cache() -> &'static GlyphCache {
     &GLYPH_CACHE
 }
 /// Reset the glyph cache
@@ -62,25 +68,23 @@ use crate::platform::Buffer;
 pub fn draw_text_switch<const SAFE: bool>(
     buffer: &Buffer,
     text: &str,
-    x: usize,
-    y: usize,
+    xy: (usize, usize),
     color: u32,
     size: f32,
     font: &fontdue::Font,
     antialiased: bool,
 ) {
     if antialiased {
-        draw_text_antialiased::<SAFE>(buffer, text, x, y, color, size, font);
+        draw_text_antialiased::<SAFE>(buffer, text, xy, color, size, font);
     } else {
-        draw_text::<SAFE>(buffer, text, x, y, color, size, font);
+        draw_text::<SAFE>(buffer, text, xy, color, size, font);
     }
 }
 /// Switch between aliased and antialiased text rendering in isize space
 pub fn draw_text_switch_isize<const SAFE: bool>(
     buffer: &Buffer,
     text: &str,
-    x: isize,
-    y: isize,
+    xy: (isize, isize),
     color: u32,
     size: f32,
     font: &fontdue::Font,
@@ -88,10 +92,10 @@ pub fn draw_text_switch_isize<const SAFE: bool>(
 ) {
     if antialiased {
         draw_text_antialiased_isize::<SAFE>(
-            buffer, text, x, y, color, size, font,
+            buffer, text, xy, color, size, font,
         );
     } else {
-        draw_text_isize::<SAFE>(buffer, text, x, y, color, size, font);
+        draw_text_isize::<SAFE>(buffer, text, xy, color, size, font);
     }
 }
 
@@ -156,8 +160,8 @@ pub fn get_character(
     {
         let cache = GLYPH_CACHE.read();
         if cache.contains_key(&cache_key) {
-            return parking_lot::RwLockReadGuard::map(cache, |c| {
-                c.get(&cache_key).unwrap()
+            return parking_lot::RwLockReadGuard::map(cache, |c| unsafe {
+                c.get(&cache_key).unwrap_unchecked()
             });
         }
     }
@@ -170,8 +174,8 @@ pub fn get_character(
             // Downgrade to read lock and return
             drop(cache);
             let read_cache = GLYPH_CACHE.read();
-            return parking_lot::RwLockReadGuard::map(read_cache, |c| {
-                c.get(&cache_key).unwrap()
+            return parking_lot::RwLockReadGuard::map(read_cache, |c| unsafe {
+                c.get(&cache_key).unwrap_unchecked()
             });
         }
 
@@ -182,30 +186,36 @@ pub fn get_character(
 
     // Return the newly cached item
     let cache = GLYPH_CACHE.read();
-    parking_lot::RwLockReadGuard::map(cache, |c| c.get(&cache_key).unwrap())
+    parking_lot::RwLockReadGuard::map(cache, |c| unsafe {
+        c.get(&cache_key).unwrap_unchecked()
+    })
 }
 /// Get the length of a string in a font if it was rendered out
+#[must_use]
 pub fn get_text_width(string: &str, size: f32, font: &fontdue::Font) -> f32 {
     let mut total_width = 0.0;
 
     for ch in string.chars() {
-        let char = get_character(ch, size, &font);
-        let metrics = char.0;
+        
+        let metrics = get_character(ch, size, font).0;
+        
         total_width += metrics.advance_width;
     }
 
     total_width
 }
 /// Get the height of a string in a font if it was rendered out
+#[must_use]
 pub fn get_text_height(string: &str, size: f32, font: &fontdue::Font) -> f32 {
     let mut max_height = size;
     let mut min_height = 0.0;
 
     for ch in string.chars() {
-        let char = get_character(ch, size, &font);
-        let metrics = char.0;
+        
+        let metrics = get_character(ch, size, font).0;
+        
         if metrics.height as f32 > max_height {
-            max_height = metrics.height as f32
+            max_height = metrics.height as f32;
         }
         if (metrics.ymin as f32) < min_height {
             min_height = metrics.ymin as f32;

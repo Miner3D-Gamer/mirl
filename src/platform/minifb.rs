@@ -3,7 +3,6 @@ use std::str::FromStr;
 
 #[cfg(feature = "ico")]
 use ico::{IconDir, IconDirEntry, IconImage, ResourceType};
-use minifb::CursorStyle;
 
 use super::framework_traits::{
     Control, ExtendedControl, ExtendedInput, ExtendedTiming, ExtendedWindow,
@@ -19,11 +18,12 @@ use crate::extensions::*;
 #[cfg(feature = "ico")]
 use crate::graphics::u32_to_rgba;
 use crate::platform::framework_traits::CursorStyleControl;
+use crate::platform::framework_traits::Errors;
 use crate::platform::keycodes::KeyCode;
 use crate::platform::{MouseButton, WindowLevel};
 use crate::system::action::Decoration;
 use crate::system::action::Default;
-/// Backend implementation using MiniFB
+/// Backend implementation using `MiniFB`
 #[derive(Debug)]
 pub struct Framework {
     window: minifb::Window,
@@ -46,21 +46,43 @@ fn minifb_window_options_from_options(
         none: false,
     }
 }
+#[must_use]
+const fn minifb_error_to_error(error: &minifb::Error) -> Errors {
+    match error {
+        minifb::Error::MenuExists(_) => Errors::DuplicateWindow,
+        minifb::Error::MenusNotSupported => Errors::OsNotSupported,
+        minifb::Error::UpdateFailed(_) | minifb::Error::WindowCreate(_) => {
+            Errors::Unknown
+        }
+    }
+}
 
 impl Window for Framework {
     /// Settings not accounted for:
     ///
     /// visible
-    fn new(title: &str, settings: super::WindowSettings) -> Self {
+    fn new(
+        title: &str,
+        settings: super::WindowSettings,
+    ) -> Result<Self, Errors> {
         let width = settings.size.0;
         let height = settings.size.1;
-        let mut window = minifb::Window::new(
+        let mut window = match minifb::Window::new(
             title,
             width as usize,
             height as usize,
             minifb_window_options_from_options(&settings),
-        )
-        .unwrap();
+        ) {
+            Ok(w) => w,
+            Err(er) => {
+                return Err(match er {
+                    minifb::Error::MenuExists(_) => Errors::DuplicateWindow,
+                    minifb::Error::MenusNotSupported => Errors::OsNotSupported,
+                    minifb::Error::UpdateFailed(_)
+                    | minifb::Error::WindowCreate(_) => Errors::Unknown,
+                });
+            }
+        };
 
         window.set_position(settings.position.0, settings.position.1);
         crate::system::OsActions::set_window_borderless(
@@ -71,18 +93,20 @@ impl Window for Framework {
             &get_native_window_handle_from_minifb(&window),
             settings.window_level,
         );
-
-        Self {
+        Ok(Self {
             window,
             time: NativeTime::new(),
             #[cfg(feature = "resvg")]
             cursor_subclassed: false,
-        }
+        })
     }
     #[inline]
-    fn update(&mut self, buffer: &[u32]) {
+    fn update(&mut self, buffer: &[u32]) -> Errors {
         let s = self.window.get_size();
-        self.window.update_with_buffer(buffer, s.0, s.1).unwrap();
+        match self.window.update_with_buffer(buffer, s.0, s.1) {
+            Ok(()) => Errors::AllGood,
+            Err(e) => minifb_error_to_error(&e),
+        }
     }
 
     #[inline]
@@ -128,7 +152,7 @@ impl Timing for Framework {
     fn get_delta_time(&mut self) -> f64 {
         let (time, r) = super::shared::sample_fps(&self.time);
         self.time = time;
-        return r;
+        r
     }
     #[inline]
     fn sleep(&self, time: std::time::Duration) {
@@ -172,41 +196,39 @@ impl<MouseManagerScrollAccuracy: num_traits::Float>
         &self,
     ) -> Option<(MouseManagerScrollAccuracy, MouseManagerScrollAccuracy)> {
         let t = self.window.get_scroll_wheel();
-        if t.is_none() {
-            return None;
-        }
-        let (x, y) = t.unwrap();
-        return Some((x, y).tuple_2_into());
+
+        let (x, y) = t?;
+        Some((x, y).tuple_2_into())
     }
     fn get_all_keys_down(&self) -> Vec<KeyCode> {
-        return super::keyboard::get_all_pressed_keys();
+        super::keyboard::get_all_pressed_keys()
     }
 }
 
 #[cfg(feature = "resvg")]
 impl CursorStyleControl for Framework {
     #[inline]
-    fn set_cursor_style(&mut self, style: &Cursor) {
+    fn set_cursor_style(&mut self, style: &Cursor) -> Errors {
         #[cfg(target_os = "windows")]
         {
             if !self.cursor_subclassed {
                 unsafe {
                     super::mouse::cursors_windows::subclass_window(
                         self.get_window_handle(),
-                        *style,
+                        style,
                     );
                 }
                 self.cursor_subclassed = true;
             }
         }
-        super::mouse::use_cursor(style, None);
+        super::mouse::use_cursor(style, None)
     }
     fn load_custom_cursor(
         &mut self,
         size: crate::extensions::U2,
         main_color: u32,
         secondary_color: u32,
-    ) -> super::mouse::Cursors {
+    ) -> Result<super::mouse::Cursors, String> {
         super::mouse::Cursors::load(
             size,
             main_color,
@@ -234,7 +256,7 @@ impl ExtendedWindow for Framework {
     // }
     #[cfg(feature = "ico")]
     #[inline]
-    fn set_icon(&mut self, buffer: &[u32], width: u32, height: u32) {
+    fn set_icon(&mut self, buffer: &[u32], width: u32, height: u32) -> Errors {
         // assert_eq!(
         //     buffer.len(),
         //     (width * height) as usize,
@@ -254,17 +276,33 @@ impl ExtendedWindow for Framework {
         // self.window.set_icon(icon);
         #[cfg(target_os = "windows")]
         {
-            let ico_data = encode_to_ico_format(buffer, width, height);
+            let Ok(ico_data) = encode_to_ico_format(buffer, width, height)
+            else {
+                return Errors::Unknown;
+            };
 
             let temp_dir = std::env::temp_dir();
             let ico_path = temp_dir.join("temp_icon.ico");
+            let string_path = match ico_path.to_str() {
+                Some(v) => v.to_string(),
+                None => return Errors::Unknown,
+            };
 
-            std::fs::write(&ico_path, &ico_data)
-                .expect("Failed to write temporary icon file");
+            match std::fs::write(&ico_path, &ico_data) {
+                Ok(()) => {}
+                Err(_) => {
+                    return Errors::FileAccessNotPossible {
+                        path: string_path,
+                    };
+                }
+            }
+            if let Ok(p) = minifb::Icon::from_str(&string_path) {
+                self.window.set_icon(p);
+            } else {
+                return Errors::Unknown;
+            }
 
-            self.window.set_icon(
-                minifb::Icon::from_str(ico_path.to_str().unwrap()).unwrap(),
-            );
+            return Errors::AllGood;
         }
 
         // For non-Windows platforms, try the buffer approach
@@ -284,7 +322,10 @@ impl ExtendedWindow for Framework {
             );
 
             self.window.set_icon(icon);
+            return Errors::AllGood;
         }
+        #[allow(unused)]
+        return Errors::NotImplemented;
     }
     fn get_window_handle(&self) -> raw_window_handle::RawWindowHandle {
         get_native_window_handle_from_minifb(&self.window)
@@ -298,6 +339,7 @@ fn get_native_window_handle_from_minifb(
 
     #[cfg(target_os = "windows")]
     {
+        #[allow(clippy::unwrap_used)]
         let handle = raw_window_handle::Win32WindowHandle::new(
             std::num::NonZero::new(window_handle as isize).unwrap(),
         );
@@ -333,15 +375,15 @@ impl Control for Framework {
     fn set_size(&mut self, buffer: &Buffer) {
         super::shared::resize(
             &self.window.get_window_handle(),
-            (buffer.width, buffer.height),
+            &(buffer.width as i32, buffer.height as i32),
         );
     }
     #[inline]
     fn get_size(&self) -> (isize, isize) {
-        return crate::system::OsActions::get_window_size(
+        crate::system::OsActions::get_window_size(
             &get_native_window_handle_from_minifb(&self.window),
         )
-        .tuple_2_into();
+        .tuple_2_into()
     }
     #[inline]
     fn set_position(&mut self, xy: (isize, isize)) {
@@ -354,7 +396,11 @@ impl Control for Framework {
 }
 
 #[cfg(feature = "ico")]
-fn encode_to_ico_format(buffer: &[u32], width: u32, height: u32) -> Vec<u8> {
+fn encode_to_ico_format(
+    buffer: &[u32],
+    width: u32,
+    height: u32,
+) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
     // Create a new icon directory
     let mut icon_dir = IconDir::new(ResourceType::Icon);
 
@@ -379,15 +425,13 @@ fn encode_to_ico_format(buffer: &[u32], width: u32, height: u32) -> Vec<u8> {
     let icon_image = IconImage::from_rgba_data(width, height, image_data);
 
     // Add the image to the icon directory
-    icon_dir.add_entry(
-        IconDirEntry::encode(&icon_image).expect("Failed to encode icon image"),
-    );
+    icon_dir.add_entry(IconDirEntry::encode(&icon_image)?);
 
     // Encode the icon directory to a Vec<u8>
     let mut ico_data = Vec::new();
-    icon_dir.write(&mut ico_data).expect("Failed to write icon data");
+    icon_dir.write(&mut ico_data)?;
 
-    ico_data
+    Ok(ico_data)
 }
 
 // Compile-time key mapping function
@@ -403,7 +447,7 @@ fn encode_to_ico_format(buffer: &[u32], width: u32, height: u32) -> Vec<u8> {
 //         CursorStyle::ResizeAll => minifb::CursorStyle::ResizeAll,
 //     }
 // }
-/// Maps mirls MouseButtons to MiniFBs MouseButtons
+/// Maps mirls `MouseButtons` to `MiniFBs` `MouseButtons`
 const fn map_mouse_button_to_minifb(
     button: MouseButton,
 ) -> Option<minifb::MouseButton> {
@@ -411,14 +455,16 @@ const fn map_mouse_button_to_minifb(
         MouseButton::Left => Some(minifb::MouseButton::Left),
         MouseButton::Right => Some(minifb::MouseButton::Right),
         MouseButton::Middle => Some(minifb::MouseButton::Middle),
-        MouseButton::Extra1 => None,
-        MouseButton::Extra2 => None,
-        MouseButton::Extra3 => None,
-        MouseButton::Extra4 => None,
-        MouseButton::Unsupported => None,
+        MouseButton::Extra1
+        | MouseButton::Extra2
+        | MouseButton::Extra3
+        | MouseButton::Extra4
+        | MouseButton::Unsupported => None,
     }
 }
-/// Maps mirls KeyCodes to MiniFBs Keycodes
+/// Maps mirls `KeyCodes` to `MiniFBs` Keycodes
+#[must_use]
+#[allow(clippy::too_many_lines)]
 pub const fn map_keycode_to_minifb(key: KeyCode) -> minifb::Key {
     match key {
         // Letters
@@ -488,16 +534,6 @@ pub const fn map_keycode_to_minifb(key: KeyCode) -> minifb::Key {
         KeyCode::F14 => minifb::Key::F14,
         KeyCode::F15 => minifb::Key::F15,
 
-        KeyCode::F16 => minifb::Key::Unknown,
-        KeyCode::F17 => minifb::Key::Unknown,
-        KeyCode::F18 => minifb::Key::Unknown,
-        KeyCode::F19 => minifb::Key::Unknown,
-        KeyCode::F20 => minifb::Key::Unknown,
-        KeyCode::F21 => minifb::Key::Unknown,
-        KeyCode::F22 => minifb::Key::Unknown,
-        KeyCode::F23 => minifb::Key::Unknown,
-        KeyCode::F24 => minifb::Key::Unknown,
-
         // Modifiers
         KeyCode::LeftShift => minifb::Key::LeftShift,
         KeyCode::RightShift => minifb::Key::RightShift,
@@ -510,7 +546,7 @@ pub const fn map_keycode_to_minifb(key: KeyCode) -> minifb::Key {
 
         // Symbols
         KeyCode::Space => minifb::Key::Space,
-        KeyCode::Enter => minifb::Key::Enter,
+        KeyCode::Enter | KeyCode::KeyPadEnter => minifb::Key::Enter,
         KeyCode::Escape => minifb::Key::Escape,
         KeyCode::Backspace => minifb::Key::Backspace,
         KeyCode::Tab => minifb::Key::Tab,
@@ -524,39 +560,14 @@ pub const fn map_keycode_to_minifb(key: KeyCode) -> minifb::Key {
         // Extra
         KeyCode::Comma => minifb::Key::Comma,
         KeyCode::Period => minifb::Key::Period,
-        KeyCode::Minus => minifb::Key::Minus,
+        KeyCode::Minus | KeyCode::KeyPadSubtract => minifb::Key::Minus,
         KeyCode::Equal => minifb::Key::Equal,
         KeyCode::LeftBracket => minifb::Key::LeftBracket,
         KeyCode::RightBracket => minifb::Key::RightBracket,
         KeyCode::Backslash => minifb::Key::Backslash,
         KeyCode::Semicolon => minifb::Key::Semicolon,
         KeyCode::Quote => minifb::Key::Apostrophe,
-        KeyCode::Tilde => minifb::Key::Unknown,
-
         // Other letters
-        KeyCode::AUmlautÄ => minifb::Key::Unknown,
-        KeyCode::UUmlautÜ => minifb::Key::Unknown,
-        KeyCode::OUmlautÖ => minifb::Key::Unknown,
-        KeyCode::SS => minifb::Key::Unknown,
-        KeyCode::ACircumflexÂ => minifb::Key::Unknown,
-        KeyCode::UAcuteÚ => minifb::Key::Unknown,
-        KeyCode::OCircumflexÔ => minifb::Key::Unknown,
-        KeyCode::ICircumflexÎ => minifb::Key::Unknown,
-        KeyCode::ECircumflexÊ => minifb::Key::Unknown,
-        KeyCode::EthÐ => minifb::Key::Unknown,
-        KeyCode::OELigatureŒ => minifb::Key::Unknown,
-        KeyCode::AAcuteÁ => minifb::Key::Unknown,
-        KeyCode::YAcuteÝ => minifb::Key::Unknown,
-        KeyCode::IUmlautÏ => minifb::Key::Unknown,
-        KeyCode::NTildeÑ => minifb::Key::Unknown,
-        KeyCode::OGraveÒ => minifb::Key::Unknown,
-        KeyCode::UGraveÙ => minifb::Key::Unknown,
-        KeyCode::ARingÅ => minifb::Key::Unknown,
-        KeyCode::AELigatureÆ => minifb::Key::Unknown,
-        KeyCode::OSlashØ => minifb::Key::Unknown,
-        KeyCode::IGraveÌ => minifb::Key::Unknown,
-        KeyCode::ThornÞ => minifb::Key::Unknown,
-
         // Other
         KeyCode::ScrollLock => minifb::Key::ScrollLock,
         // Lock keys (new)
@@ -572,46 +583,21 @@ pub const fn map_keycode_to_minifb(key: KeyCode) -> minifb::Key {
         KeyCode::PageDown => minifb::Key::PageDown,
 
         // Keypad ops
-        KeyCode::KeyPadDivide => minifb::Key::Slash,
-        KeyCode::KeyPadMultiply => minifb::Key::Unknown,
-        KeyCode::KeyPadSubtract => minifb::Key::Minus,
-        KeyCode::KeyPadAdd => minifb::Key::Unknown,
-        KeyCode::KeyPadDecimal => minifb::Key::Unknown,
-        KeyCode::KeyPadEnter => minifb::Key::Enter,
-
+        KeyCode::KeyPadDivide | KeyCode::Slash => minifb::Key::Slash,
         // Multimedia keys (unsupported in minifb)
-        KeyCode::MediaPlayPause => minifb::Key::Unknown,
-        KeyCode::MediaStop => minifb::Key::Unknown,
-        KeyCode::MediaNext => minifb::Key::Unknown,
-        KeyCode::MediaPrev => minifb::Key::Unknown,
-        KeyCode::VolumeUp => minifb::Key::Unknown,
-        KeyCode::VolumeDown => minifb::Key::Unknown,
-        KeyCode::Mute => minifb::Key::Unknown,
-
         // Browser/OS keys
-        KeyCode::BrowserBack => minifb::Key::Unknown,
-        KeyCode::BrowserForward => minifb::Key::Unknown,
-        KeyCode::BrowserRefresh => minifb::Key::Unknown,
-        KeyCode::BrowserHome => minifb::Key::Unknown,
-        KeyCode::LaunchMail => minifb::Key::Unknown,
-        KeyCode::LaunchApp1 => minifb::Key::Unknown,
-        KeyCode::LaunchApp2 => minifb::Key::Unknown,
-
         // Platform-specific
         KeyCode::Menu => minifb::Key::Menu,
-        KeyCode::PrintScreen => minifb::Key::Unknown,
         KeyCode::Pause => minifb::Key::Pause,
-        KeyCode::Application => minifb::Key::Unknown,
-
         // Symbols not mapped before
-        KeyCode::Slash => minifb::Key::Slash,
-        KeyCode::Grave => minifb::Key::Unknown,
         // Fallback
         _ => minifb::Key::Unknown,
     }
 }
 
-/// Maps MiniFBs KeyCodes to mirls Keycodes
+/// Maps `MiniFBs` `KeyCodes` to mirls Keycodes
+#[must_use]
+#[allow(clippy::too_many_lines)]
 pub const fn map_minifb_to_keycode(key: minifb::Key) -> KeyCode {
     match key {
         // Letters

@@ -59,6 +59,7 @@ pub use web::WebInfo as OsInfo;
 
 // use crate::graphics::Buffer;
 /// Get the xy coordinates of where to put an object with the specified width and height for it to be centered
+#[must_use] 
 pub fn get_center_of_screen_for_object(width: i32, height: i32) -> (i32, i32) {
     let title_bat_height = OsInfo::get_os_menu_height();
     let (screen_width, screen_height) = OsInfo::get_screen_resolution();
@@ -71,6 +72,7 @@ pub fn get_center_of_screen_for_object(width: i32, height: i32) -> (i32, i32) {
 use crate::platform::Buffer;
 
 /// Get the xy coordinates of where to put the window associated with the [Buffer] for it to be centered
+#[must_use] 
 pub fn get_center_of_screen_of_buffer(buffer: &Buffer) -> (i32, i32) {
     let title_bat_height = crate::system::info::OsInfo::get_os_menu_height();
     let (screen_width, screen_height) = OsInfo::get_screen_resolution();

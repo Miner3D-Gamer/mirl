@@ -1,4 +1,4 @@
-/// OsImplementation for Window
+/// `OsImplementation` for Window
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct WindowsActions {}
 
@@ -8,7 +8,7 @@ impl Default for WindowsActions {
         x: i32,
         y: i32,
     ) -> bool {
-        return match handle {
+        match handle {
             raw_window_handle::RawWindowHandle::Win32(handle) => {
                 set_window_position_raw(
                     windows::Win32::Foundation::HWND(handle.hwnd.get()),
@@ -18,7 +18,7 @@ impl Default for WindowsActions {
                 true
             }
             _ => false,
-        };
+        }
     }
     fn set_window_level(
         handle: &raw_window_handle::RawWindowHandle,
@@ -143,9 +143,9 @@ impl Misc for WindowsActions {
         let mut new = Vec::new();
         for i in windows {
             new.push(raw_window_handle::RawWindowHandle::Win32(
-                raw_window_handle::Win32WindowHandle::new(
-                    std::num::NonZero::new(i.0).unwrap(),
-                ),
+                raw_window_handle::Win32WindowHandle::new(unsafe {
+                    std::num::NonZero::new(i.0).unwrap_unchecked()
+                }),
             ));
         }
         new
@@ -159,7 +159,7 @@ impl Misc for WindowsActions {
                     handle.hwnd.get() as winapi::shared::windef::HWND
                 )
             }
-            _ => "".into(),
+            _ => String::new(),
         }
     }
     fn get_id_using_title(
@@ -169,37 +169,34 @@ impl Misc for WindowsActions {
         include_hidden: bool,
         just_one: bool,
     ) -> Option<Vec<raw_window_handle::RawWindowHandle>> {
-        return get_window_id_by_title(
+        get_window_id_by_title(
             title,
             exact_match,
             case_sensitive,
             include_hidden,
             just_one,
-        );
+        )
     }
     fn capture_screen() -> Option<Buffer> {
-        return capture_screen_raw();
+        capture_screen_raw()
     }
     fn capture_desktop_background() -> Option<Buffer> {
-        return capture_desktop_background_raw();
+        capture_desktop_background_raw()
     }
     fn set_click_ability_of_window(
         handle: &raw_window_handle::RawWindowHandle,
         click_through: bool,
     ) {
-        match handle {
-            raw_window_handle::RawWindowHandle::Win32(handle) => {
-                if click_through {
-                    make_window_click_through_raw(
-                        windows::Win32::Foundation::HWND(handle.hwnd.get()),
-                    );
-                } else {
-                    make_window_click_solid_raw(
-                        windows::Win32::Foundation::HWND(handle.hwnd.get()),
-                    )
-                }
+        if let raw_window_handle::RawWindowHandle::Win32(handle) = handle {
+            if click_through {
+                make_window_click_through_raw(
+                    windows::Win32::Foundation::HWND(handle.hwnd.get()),
+                );
+            } else {
+                make_window_click_solid_raw(windows::Win32::Foundation::HWND(
+                    handle.hwnd.get(),
+                ));
             }
-            _ => {}
         }
     }
     fn get_window_z(handle: &raw_window_handle::RawWindowHandle) -> u32 {
@@ -296,7 +293,7 @@ fn capture_screen_raw() -> Option<Buffer> {
 
         // Get desktop dimensions
         let mut rect = RECT::default();
-        if !GetWindowRect(desktop_hwnd, &mut rect).as_bool() {
+        if !GetWindowRect(desktop_hwnd, &raw mut rect).as_bool() {
             return None;
         }
         let width = rect.right - rect.left;
@@ -360,8 +357,8 @@ fn capture_screen_raw() -> Option<Buffer> {
             hbitmap,
             0,
             height as u32,
-            Some(pixels.as_mut_ptr() as *mut std::ffi::c_void),
-            &bmi as *const _ as *mut _,
+            Some(pixels.as_mut_ptr().cast::<std::ffi::c_void>()),
+            (&raw const bmi).cast_mut(),
             windows::Win32::Graphics::Gdi::DIB_RGB_COLORS,
         );
 
@@ -374,10 +371,7 @@ fn capture_screen_raw() -> Option<Buffer> {
         if !result.as_bool() {
             return None;
         }
-        match Buffer::new(pixels, width as usize, height as usize) {
-            Ok(some) => Some(some),
-            Err(_) => None,
-        }
+        Buffer::new(pixels, width as usize, height as usize).ok()
     }
 }
 #[allow(trivial_casts)]
@@ -391,7 +385,7 @@ fn capture_desktop_background_raw() -> Option<Buffer> {
 
         // Get desktop dimensions
         let mut rect = RECT::default();
-        if !GetWindowRect(shell_hwnd, &mut rect).as_bool() {
+        if !GetWindowRect(shell_hwnd, &raw mut rect).as_bool() {
             return None;
         }
         let width = rect.right - rect.left;
@@ -454,8 +448,8 @@ fn capture_desktop_background_raw() -> Option<Buffer> {
             hbitmap,
             0,
             height as u32,
-            Some(pixels.as_mut_ptr() as *mut std::ffi::c_void),
-            &bmi as *const _ as *mut _,
+            Some(pixels.as_mut_ptr().cast::<std::ffi::c_void>()),
+            (&raw const bmi).cast_mut(),
             windows::Win32::Graphics::Gdi::DIB_RGB_COLORS,
         );
 
@@ -469,10 +463,7 @@ fn capture_desktop_background_raw() -> Option<Buffer> {
             return None;
         }
 
-        match Buffer::new(pixels, width as usize, height as usize) {
-            Ok(some) => Some(some),
-            Err(_) => None,
-        }
+        Buffer::new(pixels, width as usize, height as usize).ok()
     }
 }
 
@@ -505,7 +496,7 @@ fn get_window_position_raw(
 ) -> Option<(i32, i32)> {
     unsafe {
         let mut rect = RECT::default();
-        if GetWindowRect(hwnd, &mut rect).as_bool() {
+        if GetWindowRect(hwnd, &raw mut rect).as_bool() {
             Some((rect.left, rect.top))
         } else {
             None
@@ -837,7 +828,6 @@ struct WindowSearchData {
     just_one: bool,
 }
 #[allow(trivial_casts)]
-
 fn get_window_id_by_title(
     title: &str,
     exact_match: bool,
@@ -855,24 +845,21 @@ fn get_window_id_by_title(
     };
 
     unsafe {
-        EnumWindows(
-            Some(enum_windows_proc),
-            &mut search_data as *mut _ as isize,
-        );
+        EnumWindows(Some(enum_windows_proc), &raw mut search_data as isize);
     }
 
-    if let Some(hwnds) = search_data.found_hwnds {
+    search_data.found_hwnds.map(|hwnds| {
         let mut handles = Vec::new();
         for hwnd in hwnds {
             handles.push(RawWindowHandle::Win32(Win32WindowHandle::new(
-                std::num::NonZero::new(hwnd as isize).unwrap(),
+                unsafe {
+                    std::num::NonZero::new(hwnd as isize).unwrap_unchecked()
+                },
             )));
         }
 
-        Some(handles)
-    } else {
-        None
-    }
+        handles
+    })
 }
 
 #[cfg(test)]
@@ -923,12 +910,10 @@ unsafe extern "system" fn enum_windows_proc(
             } else {
                 title.to_lowercase() == data.target_title.to_lowercase()
             }
+        } else if data.case_sensitive {
+            title.contains(&data.target_title)
         } else {
-            if data.case_sensitive {
-                title.contains(&data.target_title)
-            } else {
-                title.to_lowercase().contains(&data.target_title.to_lowercase())
-            }
+            title.to_lowercase().contains(&data.target_title.to_lowercase())
         };
 
         if !title_matches {
@@ -938,18 +923,15 @@ unsafe extern "system" fn enum_windows_proc(
 
     data.found_hwnds =
         Some(data.found_hwnds.clone().unwrap_or_default().combined(hwnd));
+    // 0 Stop enumeration
+    // 1 Continue enumeration
 
-    if data.just_one {
-        return 0; // Stop enumeration
-    } else {
-        return 1; // Continue enumeration
-    }
+    i32::from(!data.just_one)
 }
 #[allow(trivial_casts)]
-
 fn get_all_windows_raw() -> Vec<HWND> {
     let mut search_data = WindowSearchData {
-        target_title: "".to_string(),
+        target_title: String::new(),
         found_hwnds: None,
         exact_match: false,
         case_sensitive: false,
@@ -958,10 +940,7 @@ fn get_all_windows_raw() -> Vec<HWND> {
     };
 
     unsafe {
-        EnumWindows(
-            Some(enum_windows_proc),
-            &mut search_data as *mut _ as isize,
-        );
+        EnumWindows(Some(enum_windows_proc), &raw mut search_data as isize);
     }
     let mut found_windows = Vec::new();
     for i in search_data.found_hwnds.unwrap_or_default() {
@@ -974,7 +953,7 @@ fn get_all_windows_raw() -> Vec<HWND> {
 fn get_window_size_raw(hwnd: HWND) -> Option<(i32, i32)> {
     unsafe {
         let mut rect = RECT::default();
-        if GetWindowRect(hwnd, &mut rect).as_bool() {
+        if GetWindowRect(hwnd, &raw mut rect).as_bool() {
             Some((rect.right - rect.left, rect.bottom - rect.top))
         } else {
             None
@@ -993,12 +972,11 @@ fn get_title_using_id_raw(hwnd: winapi::shared::windef::HWND) -> String {
         );
     }
 
-    let title = if title_len > 0 {
+    if title_len > 0 {
         String::from_utf16_lossy(&title_buf[..title_len as usize])
     } else {
         String::new()
-    };
-    return title;
+    }
 }
 
 // use windows::Win32::UI::WindowsAndMessaging::{FLASHWINFO, FLASHW_ALL, FLASHW_TIMERNOFG, FlashWindowEx};
@@ -1050,7 +1028,8 @@ use windows::{
         },
     },
 };
-/// Convert between ProgressionState and TBPFLAG
+/// Convert between `ProgressionState` and TBPFLAG
+#[must_use]
 pub const fn map_state_to_windows_state(state: &ProgressionState) -> TBPFLAG {
     match state {
         ProgressionState::NoBar => TBPF_NOPROGRESS,
@@ -1060,7 +1039,10 @@ pub const fn map_state_to_windows_state(state: &ProgressionState) -> TBPFLAG {
         ProgressionState::Paused => TBPF_PAUSED,
     }
 }
-///
+/// Set how the taskbar icon looks
+/// 
+/// # Errors
+/// When unable to set the progress
 pub fn set_taskbar_progress_state(
     hwnd: HWND,
     state: &ProgressionState,
@@ -1073,7 +1055,11 @@ pub fn set_taskbar_progress_state(
     }
     Ok(())
 }
-///
+/// Set the progress of a few styles
+/// 
+/// # Errors
+/// When the taskbar could not be referenced
+/// When setting the value didn't work
 pub fn set_taskbar_progress_value(
     hwnd: HWND,
     completed: u64,

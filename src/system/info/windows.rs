@@ -2,15 +2,22 @@ use winapi::um::winuser::GetSystemMetrics;
 
 use super::{Battery, Info, Memory, Screen};
 
-/// Windows struct implementation of the OSInfo trait
+/// Windows struct implementation of the `OSInfo` trait
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct WindowsInfo {
     //system: sysinfo::System,
 }
+impl Default for WindowsInfo {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl WindowsInfo {
-    /// Create a new [WindowsInfo] instance
-    pub fn new() -> Self {
-        WindowsInfo {
+    /// Create a new [`WindowsInfo`] instance
+    #[must_use]
+    pub const fn new() -> Self {
+        Self {
             //system: sysinfo::System::new(),
         }
     }
@@ -22,6 +29,7 @@ impl Info for WindowsInfo {
     }
 }
 impl Memory for WindowsInfo {
+    #[allow(clippy::field_reassign_with_default)]
     fn get_total_memory(&self) -> u64 {
         unsafe {
             let mut mem_status = windows::Win32::System::SystemInformation::MEMORYSTATUSEX::default();
@@ -30,7 +38,7 @@ impl Memory for WindowsInfo {
             >() as u32;
 
             if windows::Win32::System::SystemInformation::GlobalMemoryStatusEx(
-                &mut mem_status,
+                &raw mut mem_status,
             )
             .as_bool()
             {
@@ -40,6 +48,7 @@ impl Memory for WindowsInfo {
             }
         }
     }
+    #[allow(clippy::field_reassign_with_default)]
     fn get_free_memory(&self) -> u64 {
         unsafe {
             let mut mem_status = windows::Win32::System::SystemInformation::MEMORYSTATUSEX::default();
@@ -48,7 +57,7 @@ impl Memory for WindowsInfo {
             >() as u32;
 
             if windows::Win32::System::SystemInformation::GlobalMemoryStatusEx(
-                &mut mem_status,
+                &raw mut mem_status,
             )
             .as_bool()
             {

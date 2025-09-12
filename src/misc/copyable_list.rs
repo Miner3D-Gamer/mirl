@@ -1,5 +1,3 @@
-#![allow(clippy::large_stack_frames)] // There has to be a better way
-
 use crate::{extensions::U2, graphics::switch_red_and_blue, platform::Buffer};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -220,24 +218,24 @@ pub fn fill(
     Ok(list)
 }
 
-/// Converts a buffer into a copyable list
-///
-/// # Errors
-/// When the buffer is not in a size compatible with the used enum
-pub fn buffer_to_copy_list(
-    buffer: &Buffer,
-) -> Result<Box<VariableSizeList<u32>>, &'static str> {
-    if buffer.width != buffer.height {
-        return Err("Width and height differ");
-    }
-    match buffer.width {
-        32 => Ok(fill(buffer, Box::new(VariableSizeList::new_32()))?),
-        64 => Ok(fill(buffer, Box::new(VariableSizeList::new_64()))?),
-        128 => Ok(fill(buffer, Box::new(VariableSizeList::new_128()))?),
-        256 => Ok(fill(buffer, Box::new(VariableSizeList::new_256()))?),
-        _ => Err("Invalid size"),
-    }
-}
+// /// Converts a buffer into a copyable list
+// ///
+// /// # Errors
+// /// When the buffer is not in a size compatible with the used enum
+// pub fn buffer_to_copy_list(
+//     buffer: &Buffer,
+// ) -> Result<Box<VariableSizeList<u32>>, &'static str> {
+//     if buffer.width != buffer.height {
+//         return Err("Width and height differ");
+//     }
+//     match buffer.width {
+//         32 => Ok(fill(buffer, Box::new(VariableSizeList::new_32()))?),
+//         64 => Ok(fill(buffer, Box::new(VariableSizeList::new_64()))?),
+//         128 => Ok(fill(buffer, Box::new(VariableSizeList::new_128()))?),
+//         256 => Ok(fill(buffer, Box::new(VariableSizeList::new_256()))?),
+//         _ => Err("Invalid size"),
+//     }
+// }
 
 impl<const N: usize> From<CopyableList<u32, N>> for Buffer {
     fn from(list: CopyableList<u32, N>) -> Self {
@@ -246,37 +244,37 @@ impl<const N: usize> From<CopyableList<u32, N>> for Buffer {
     }
 }
 
-impl TryFrom<Buffer> for VariableSizeList<u32> {
-    fn try_from(value: Buffer) -> Result<Self, Self::Error> {
-        let some = buffer_to_copy_list(&value);
+// impl TryFrom<Buffer> for VariableSizeList<u32> {
+//     fn try_from(value: Buffer) -> Result<Self, Self::Error> {
+//         // let some = buffer_to_copy_list(&value);
 
-        match some {
-            Ok(v) => Ok(*v),
-            Err(v) => Err(v),
-        }
-    }
+//         match some {
+//             Ok(v) => Ok(*v),
+//             Err(v) => Err(v),
+//         }
+//     }
 
-    type Error = &'static str;
-}
+//     type Error = &'static str;
+// }
 
-impl From<VariableSizeList<u32>> for Buffer {
-    fn from(list: VariableSizeList<u32>) -> Self {
-        match list {
-            VariableSizeList::Image128(value) => {
-                copy_list_to_buffer(&value, 128, 128)
-            }
-            VariableSizeList::Image64(value) => {
-                copy_list_to_buffer(&value, 64, 64)
-            }
-            VariableSizeList::Image32(value) => {
-                copy_list_to_buffer(&value, 32, 32)
-            }
-            VariableSizeList::Image256(value) => {
-                copy_list_to_buffer(&value, 256, 256)
-            }
-        }
-    }
-}
+// impl From<VariableSizeList<u32>> for Buffer {
+//     fn from(list: VariableSizeList<u32>) -> Self {
+//         match list {
+//             VariableSizeList::Image128(value) => {
+//                 copy_list_to_buffer(&value, 128, 128)
+//             }
+//             VariableSizeList::Image64(value) => {
+//                 copy_list_to_buffer(&value, 64, 64)
+//             }
+//             VariableSizeList::Image32(value) => {
+//                 copy_list_to_buffer(&value, 32, 32)
+//             }
+//             VariableSizeList::Image256(value) => {
+//                 copy_list_to_buffer(&value, 256, 256)
+//             }
+//         }
+//     }
+// }
 
 impl<const N: usize> CopyableList<u32, N> {
     /// Swaps red and blue channels in all ARGB values

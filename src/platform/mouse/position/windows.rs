@@ -9,7 +9,7 @@ use winapi::shared::windef::HWND;
 use winapi::um::winuser::{
     CallWindowProcW, DefWindowProcW, GetRawInputData, GetWindowLongPtrW,
     RegisterRawInputDevices, SetWindowLongPtrW, GWLP_WNDPROC, RAWINPUT,
-    RAWINPUTDEVICE, RAWINPUTHEADER, RIDEV_INPUTSINK, RIDEV_REMOVE, RID_INPUT, 
+    RAWINPUTDEVICE, RAWINPUTHEADER, RIDEV_INPUTSINK, RIDEV_REMOVE, RID_INPUT,
     RIM_TYPEMOUSE, WM_INPUT, WNDPROC,
 };
 
@@ -19,7 +19,8 @@ use super::{MouseDelta, RawMouseInputTrait};
 static GLOBAL_MOUSE_DELTA: OnceLock<Arc<Mutex<MouseDelta>>> = OnceLock::new();
 
 /// Global storage for original window procedures
-static ORIGINAL_PROCS: OnceLock<Arc<Mutex<HashMap<isize, WNDPROC>>>> = OnceLock::new();
+static ORIGINAL_PROCS: OnceLock<Arc<Mutex<HashMap<isize, WNDPROC>>>> =
+    OnceLock::new();
 
 /// Get or initialize the global mouse delta storage
 fn get_global_delta() -> &'static Arc<Mutex<MouseDelta>> {
@@ -29,8 +30,7 @@ fn get_global_delta() -> &'static Arc<Mutex<MouseDelta>> {
 
 /// Get or initialize the original procedures storage
 fn get_original_procs() -> &'static Arc<Mutex<HashMap<isize, WNDPROC>>> {
-    ORIGINAL_PROCS
-        .get_or_init(|| Arc::new(Mutex::new(HashMap::new())))
+    ORIGINAL_PROCS.get_or_init(|| Arc::new(Mutex::new(HashMap::new())))
 }
 
 /// Update the global mouse delta
@@ -50,11 +50,7 @@ fn reset_global_delta() {
 
 /// Get the original window procedure for a given HWND
 fn get_original_proc(hwnd: HWND) -> Option<WNDPROC> {
-    get_original_procs()
-        .lock()
-        .ok()?
-        .get(&(hwnd as isize))
-        .copied()
+    get_original_procs().lock().ok()?.get(&(hwnd as isize)).copied()
 }
 
 /// Store the original window procedure for a given HWND
@@ -79,7 +75,7 @@ unsafe fn process_raw_input(lparam: LPARAM) {
         lparam as *mut _,
         RID_INPUT,
         ptr::null_mut(),
-        &mut size,
+        &raw mut size,
         mem::size_of::<RAWINPUTHEADER>() as UINT,
     );
 
@@ -94,16 +90,16 @@ unsafe fn process_raw_input(lparam: LPARAM) {
     let result = GetRawInputData(
         lparam as *mut _,
         RID_INPUT,
-        buffer.as_mut_ptr() as *mut _,
-        &mut size,
+        buffer.as_mut_ptr().cast(),
+        &raw mut size,
         mem::size_of::<RAWINPUTHEADER>() as UINT,
     );
 
     if result == u32::MAX {
         return;
     }
-
-    let raw_input = &*(buffer.as_ptr() as *const RAWINPUT);
+    #[allow(clippy::cast_ptr_alignment)]
+    let raw_input = &*buffer.as_ptr().cast::<RAWINPUT>();
 
     // Check if this is mouse input
     if raw_input.header.dwType == RIM_TYPEMOUSE {
@@ -115,13 +111,16 @@ unsafe fn process_raw_input(lparam: LPARAM) {
 
         // Only update if there's actual movement
         if dx != 0 || dy != 0 {
-            let delta = MouseDelta { dx, dy };
+            let delta = MouseDelta {
+                dx,
+                dy,
+            };
             update_global_delta(delta);
         }
     }
 }
 
-/// Window procedure that intercepts WM_INPUT messages
+/// Window procedure that intercepts `WM_INPUT` messages
 unsafe extern "system" fn raw_mouse_window_proc(
     hwnd: HWND,
     msg: UINT,
@@ -135,12 +134,12 @@ unsafe extern "system" fn raw_mouse_window_proc(
     }
 
     // Always call the original window procedure
-    if let Some(original_proc) = get_original_proc(hwnd) {
-        CallWindowProcW(original_proc, hwnd, msg, wparam, lparam)
-    } else {
-        // Fallback to default if we somehow lost the original procedure
-        DefWindowProcW(hwnd, msg, wparam, lparam)
-    }
+    get_original_proc(hwnd).map_or_else(
+        || DefWindowProcW(hwnd, msg, wparam, lparam),
+        |original_proc| {
+            CallWindowProcW(original_proc, hwnd, msg, wparam, lparam)
+        },
+    )
 }
 
 /// Raw mouse input handler
@@ -171,10 +170,11 @@ impl RawMouseInputTrait for RawMouseInputWindows {
             }
 
             let original_proc: WNDPROC = std::mem::transmute(original_proc_ptr);
-            
+
             // Store the original procedure in our global map
             store_original_proc(hwnd, original_proc);
 
+            #[allow(clippy::fn_to_numeric_cast)]
             // Set our custom window procedure
             let result = SetWindowLongPtrW(
                 hwnd,
@@ -188,7 +188,7 @@ impl RawMouseInputTrait for RawMouseInputWindows {
             }
 
             // Register for raw mouse input
-            let mut rid = RAWINPUTDEVICE {
+            let rid = RAWINPUTDEVICE {
                 usUsagePage: 0x01,        // Generic Desktop Controls
                 usUsage: 0x02,            // Mouse
                 dwFlags: RIDEV_INPUTSINK, // Receive input even when not in foreground
@@ -196,7 +196,7 @@ impl RawMouseInputTrait for RawMouseInputWindows {
             };
 
             let register_result = RegisterRawInputDevices(
-                &mut rid,
+                &raw const rid,
                 1,
                 mem::size_of::<RAWINPUTDEVICE>() as UINT,
             );
@@ -216,10 +216,7 @@ impl RawMouseInputTrait for RawMouseInputWindows {
     }
 
     fn get_delta(&self) -> (i32, i32) {
-        let delta = match get_global_delta().lock() {
-            Ok(buffer) => *buffer,
-            Err(_) => MouseDelta::default(),
-        };
+        let delta = get_global_delta().lock().map_or_else(|_| MouseDelta::default(), |buffer| *buffer);
 
         // Reset delta after reading (so each call gets the accumulated delta since last call)
         reset_global_delta();
@@ -231,6 +228,7 @@ impl RawMouseInputTrait for RawMouseInputWindows {
 impl Drop for RawMouseInputWindows {
     fn drop(&mut self) {
         unsafe {
+            #[allow(clippy::missing_transmute_annotations)]
             // Restore original window procedure
             SetWindowLongPtrW(
                 self.hwnd,
@@ -242,7 +240,7 @@ impl Drop for RawMouseInputWindows {
             remove_original_proc(self.hwnd);
 
             // Unregister raw input
-            let mut rid = RAWINPUTDEVICE {
+            let rid = RAWINPUTDEVICE {
                 usUsagePage: 0x01,
                 usUsage: 0x02,
                 dwFlags: RIDEV_REMOVE,
@@ -250,7 +248,7 @@ impl Drop for RawMouseInputWindows {
             };
 
             RegisterRawInputDevices(
-                &mut rid,
+                &raw const rid,
                 1,
                 mem::size_of::<RAWINPUTDEVICE>() as UINT,
             );
