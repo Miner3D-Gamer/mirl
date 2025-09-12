@@ -524,6 +524,7 @@ pub struct Point3D<T> {
     /// Coordinate on the z axis
     pub z: T,
 }
+#[cfg(feature = "keycode_support")]
 /// A few lines of helper code for easier keybind handling time
 pub mod keybinds;
 

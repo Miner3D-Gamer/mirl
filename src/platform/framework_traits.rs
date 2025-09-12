@@ -14,6 +14,7 @@ pub trait ExtendedFramework<MouseManagerScrollAccuracy: num_traits::Float>:
     + ExtendedWindow
     + Control
     + ExtendedControl
+    + CursorStyleControl
 {
 }
 impl<T, MouseManagerScrollAccuracy: num_traits::Float>
@@ -23,7 +24,8 @@ where
         + ExtendedInput<MouseManagerScrollAccuracy>
         + ExtendedWindow
         + Control
-        + ExtendedControl,
+        + ExtendedControl
+        + CursorStyleControl,
 {
 }
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -86,11 +88,13 @@ pub trait Input {
     /// Checks if the requested mouse button is down
     fn is_mouse_down(&self, button: MouseButton) -> bool;
 }
+#[cfg(not(feature = "do_not_compile_extension_tuple_support"))]
 /// Get the relative mouse position
 pub trait RelativeMousePos {
     /// Get the mouse position relative to the window
     fn get_mouse_position_relative(&self) -> Option<(isize, isize)>;
 }
+#[cfg(not(feature = "do_not_compile_extension_tuple_support"))]
 impl<T: Input + Control> RelativeMousePos for T {
     fn get_mouse_position_relative(&self) -> Option<(isize, isize)> {
         let mouse_pos = self.get_mouse_position()?;
@@ -152,7 +156,7 @@ pub trait CursorStyleControl {
     ///     .spawn({main_loop_function});
     /// ```
     /// 32 MB should be enough, less is unstable, more may be wasteful.
-    /// 
+    ///
     /// # Errors
     /// If it was unable to load the custom cursors, it returns the file name of the cursor that failed
     fn load_custom_cursor(

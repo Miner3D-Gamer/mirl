@@ -60,6 +60,8 @@
 
 /// Directional stuff -> NESW, N NE E SE S SW W NW
 pub mod directions;
+
+
 /// Stuff that should exist by default yet doesn't; use `mirl::extensions::*;` to import all of 'em
 pub mod extensions;
 /// Stuff related to graphics -> Color manipulation
@@ -69,6 +71,7 @@ pub mod graphics;
 
 /// Math and collision focused stuff
 pub mod math;
+#[cfg(not(feature = "do_not_compile_misc"))]
 /// Stuff I didn't know how to categorize -> Expect these objects to be moved in the future
 pub mod misc;
 /// Window creation/managing, file system creation/managing

@@ -1,14 +1,19 @@
 use std::time::Duration;
 
-use glfw::{Action, Context};
+use glfw::Action;
+#[cfg(not(feature = "do_not_compile_extension_tuple_support"))]
+use glfw::Context;
 
+#[cfg(not(feature = "do_not_compile_extension_tuple_support"))]
 use super::{
-    framework_traits::{
-        Control, ExtendedControl, ExtendedInput, ExtendedWindow, Input, Output,
-        Timing, Window,
-    },
+    framework_traits::{Control, Input, Window},
     time::NativeTime,
     MouseButton, Time,
+};
+use super::{
+    framework_traits::{
+        ExtendedControl, ExtendedInput, ExtendedWindow, Output, Timing,
+    },
 };
 #[cfg(target_os = "windows")]
 use crate::platform::WindowLevel;
@@ -48,6 +53,7 @@ static LOG_ERRORS: Option<glfw::ErrorCallback<()>> = Some(glfw::Callback {
     data: (),
 });
 
+#[cfg(not(feature = "do_not_compile_extension_tuple_support"))]
 impl<MouseManagerScrollAccuracy: num_traits::Float> Window
     for Framework<MouseManagerScrollAccuracy>
 {
@@ -224,6 +230,7 @@ impl<MouseManagerScrollAccuracy: num_traits::Float> ExtendedControl
     }
 }
 
+#[cfg(not(feature = "do_not_compile_extension_tuple_support"))]
 impl<MouseManagerScrollAccuracy: num_traits::Float> Control
     for Framework<MouseManagerScrollAccuracy>
 {
@@ -246,6 +253,7 @@ impl<MouseManagerScrollAccuracy: num_traits::Float> Control
     }
 }
 
+#[cfg(not(feature = "do_not_compile_extension_tuple_support"))]
 impl<MouseManagerScrollAccuracy: num_traits::Float> Input
     for Framework<MouseManagerScrollAccuracy>
 {
@@ -311,7 +319,7 @@ impl<MouseManagerScrollAccuracy: num_traits::Float> ExtendedWindow
         self.window.set_title(title);
     }
 
-    #[cfg(feature = "resvg")]
+    #[cfg(feature = "ico")]
     /// Not yet implemented
     fn set_icon(
         &mut self,
@@ -378,6 +386,7 @@ const FRAGMENT_SHADER_SOURCE: &str = r"
     }
 ";
 
+#[cfg(not(feature = "do_not_compile_extension_tuple_support"))]
 fn process_events<MouseManagerScrollAccuracy: num_traits::Float>(
     window: &mut Framework<MouseManagerScrollAccuracy>,
 ) {

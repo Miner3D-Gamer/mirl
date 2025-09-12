@@ -1,10 +1,11 @@
 use super::Buffer;
-use crate::{extensions::RepeatData, graphics::{rgb_to_u32, rgba_to_u32}};
+
+use crate::extensions::RepeatData;
+use crate::graphics::{rgb_to_u32, rgba_to_u32};
 impl Buffer {
-    
     #[track_caller]
     /// Create a new color
-    /// 
+    ///
     /// # Errors
     /// When not enough data was provided, an error is returned instead of a Buffer
     pub fn new(
@@ -30,6 +31,7 @@ impl Buffer {
             total_size,
         })
     }
+    
     #[must_use]
     /// Create a new, empty, [Buffer]
     pub fn new_empty(width: usize, height: usize) -> Self {
@@ -95,7 +97,6 @@ impl Buffer {
         Self::new(data, width, height).unwrap()
     }
 
-    
     /// Create a buffer from a rgba &[u8]
     ///
     /// # Errors
@@ -113,7 +114,7 @@ impl Buffer {
         }
         Self::new(return_list, width, height)
     }
-    
+
     #[track_caller]
     /// Create a buffer from an RGB &[u8]
     ///

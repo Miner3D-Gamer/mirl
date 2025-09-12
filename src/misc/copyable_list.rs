@@ -1,4 +1,6 @@
-use crate::{extensions::U2, graphics::switch_red_and_blue, platform::Buffer};
+
+use crate::extensions::U2;
+use crate::{graphics::switch_red_and_blue, platform::Buffer};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 /// A list with a known size that is able to be copied

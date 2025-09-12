@@ -18,12 +18,14 @@ impl FileData {
         match self.expected_data_type {
             DataType::Text => format!("Text: {:?}", self.as_string()),
             #[cfg(feature = "font_support")]
-            DataType::Font => {
-                self.as_font().map_or_else(|_| "Not a font.".into(), |font| format!("Font: {font:?}"))
-            }
+            DataType::Font => self.as_font().map_or_else(
+                |_| "Not a font.".into(),
+                |font| format!("Font: {font:?}"),
+            ),
             #[cfg(feature = "imagery")]
             DataType::Image => format!("Bytes: {:?}", self.as_image()),
             DataType::Audio => format!("Audio: {:?}", "<Unsupported>"),
+            #[cfg(not(feature = "do_not_compile_misc"))]
             DataType::ListOfText => {
                 format!("List of text: {:#?}", self.as_list_of_strings())
             }
@@ -81,6 +83,7 @@ impl FileData {
     pub const fn from_string(data: String) -> Self {
         Self::from_bytes(data.into_bytes(), DataType::Text)
     }
+    #[cfg(not(feature = "do_not_compile_misc"))]
     #[must_use]
     /// Constructor to load data from a Vec<String>
     pub fn from_list_of_strings(value: &Vec<String>) -> Self {
@@ -112,7 +115,7 @@ impl FileData {
     // }
     #[cfg(feature = "font_support")]
     /// Convert the raw bytes to a [`fontdue::Font`] if possible
-    /// 
+    ///
     /// # Errors
     /// When not a font it will error
     pub fn as_font(&self) -> Result<fontdue::Font, Box<dyn std::error::Error>> {
@@ -123,7 +126,7 @@ impl FileData {
         Ok(font)
     }
     /// Convert the raw bytes into an `image::DynamicImage` instance
-    /// 
+    ///
     /// # Errors
     /// When unable to load the image from memory
     #[cfg(feature = "imagery")]
@@ -140,6 +143,7 @@ impl FileData {
     pub const fn as_bytes(&self) -> &Vec<u8> {
         &self.raw_data
     }
+    #[cfg(not(feature = "do_not_compile_misc"))]
     /// Get the list of strings/file paths
     #[must_use]
     pub fn as_list_of_strings(&self) -> Option<Vec<String>> {

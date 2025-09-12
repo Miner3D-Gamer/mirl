@@ -1,4 +1,5 @@
 #[cfg(feature = "system")]
+#[cfg(not(feature = "do_not_compile_extension_tuple_support"))]
 use crate::extensions::*;
 
 /// Time trait, IDK
@@ -114,6 +115,7 @@ pub enum MouseButton {
     /// You can't expect to be able to expect everything ¯\_(ツ)_/¯
     Unsupported,
 }
+#[cfg(feature = "keycode_support")]
 /// Represents digital keys using `KeyCodes` of which there should be plenty enough to pretty all libraries that use their own `KeyCodes`
 pub mod keycodes;
 
@@ -139,6 +141,7 @@ pub struct WindowSettings {
     /// If the window should be considered visible to the user or not
     pub visible: bool,
 }
+#[cfg(not(feature = "do_not_compile_extension_tuple_support"))]
 #[cfg(feature = "system")]
 impl WindowSettings {
     /// Get the settings on default settings
@@ -236,6 +239,7 @@ pub enum WindowLevel {
     AlwaysOnTop,
 }
 
+#[cfg(feature = "keycode_support")]
 #[cfg(all(feature = "resvg", feature = "system"))]
 pub use mouse::Cursor;
 
@@ -245,18 +249,24 @@ pub use buffer::Buffer;
 // Windows
 #[cfg(not(target_arch = "wasm32"))]
 #[cfg(feature = "minifb_backend")]
+#[cfg(feature = "keycode_support")]
+#[cfg(not(feature = "do_not_compile_extension_tuple_support"))]
 /// The minifb version of the backend
 pub mod minifb;
 
 #[cfg(not(target_arch = "wasm32"))]
 #[cfg(feature = "glfw_backend")]
+#[cfg(feature = "keycode_support")]
+#[cfg(not(feature = "do_not_compile_extension_tuple_support"))]
 /// The glfw version of the backend
 pub mod glfw;
 
 #[cfg(feature = "system")]
+#[cfg(feature = "keycode_support")]
 /// Traits used by the backends
 pub mod framework_traits;
 #[cfg(all(feature = "resvg", feature = "system"))]
+#[cfg(feature = "keycode_support")]
 // Window associates
 /// Everything do to with cursors
 pub mod mouse;
@@ -265,6 +275,7 @@ pub mod mouse;
 pub mod file_system;
 
 #[cfg(feature = "system")]
+#[cfg(feature = "keycode_support")]
 /// There is a lot of duplicate functionality between backends, why not share them?
 pub mod shared;
 /// Time related stuff, it's not a lot I Reckon
@@ -272,6 +283,8 @@ pub mod time;
 
 /// The standart key-board/code detection
 #[cfg(feature = "system")]
+#[cfg(feature = "keycode_support")]
+#[cfg(feature = "device_query")]
 pub mod keyboard;
 
 pub use buffer::const_buffer;

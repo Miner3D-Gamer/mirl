@@ -1,30 +1,33 @@
 // This file is terrible, more TGE lib functions need to be ported over
 
-use std::io::{stdout, BufRead, Write};
+use std::io::{
+    //stdout,
+    BufRead,
+    Write,
+};
 
-use crossterm::ExecutableCommand;
-
+// use crossterm::ExecutableCommand;
 use crate::graphics::Pixel;
 
-/// Clears the currently visible console
-///
-/// # Errors
-/// Idk, this functions needs to be rewritten
-pub fn clear_console() -> std::io::Result<()> {
-    stdout()
-        .execute(crossterm::terminal::Clear(
-            crossterm::terminal::ClearType::All,
-        ))?
-        .execute(crossterm::cursor::MoveTo(0, 0))?;
-    Ok(())
-}
-/// Moves the cursor to the top
-/// # Errors
-/// Idk, this functions needs to be rewritten
-pub fn move_to_top() -> std::io::Result<()> {
-    stdout().execute(crossterm::cursor::MoveTo(0, 0))?;
-    Ok(())
-}
+// /// Clears the currently visible console
+// ///
+// /// # Errors
+// /// Idk, this functions needs to be rewritten
+// pub fn clear_console() -> std::io::Result<()> {
+//     stdout()
+//         .execute(crossterm::terminal::Clear(
+//             crossterm::terminal::ClearType::All,
+//         ))?
+//         .execute(crossterm::cursor::MoveTo(0, 0))?;
+//     Ok(())
+// }
+// /// Moves the cursor to the top
+// /// # Errors
+// /// Idk, this functions needs to be rewritten
+// pub fn move_to_top() -> std::io::Result<()> {
+//     stdout().execute(crossterm::cursor::MoveTo(0, 0))?;
+//     Ok(())
+// }
 #[must_use]
 /// Color the given text (requires the console to support the full color range)
 pub fn color_text(msg: &str, r: u8, g: u8, b: u8) -> String {

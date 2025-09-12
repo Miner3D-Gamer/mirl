@@ -115,6 +115,7 @@ impl Window for Framework {
     }
 }
 
+#[cfg(not(feature = "do_not_compile_extension_tuple_support"))]
 impl Input for Framework {
     #[inline]
     fn get_mouse_position(&self) -> Option<(isize, isize)> {
@@ -188,6 +189,8 @@ impl ExtendedControl for Framework {
     }
 }
 
+#[cfg(feature = "device_query")]
+#[cfg(not(feature = "do_not_compile_extension_tuple_support"))]
 impl<MouseManagerScrollAccuracy: num_traits::Float>
     ExtendedInput<MouseManagerScrollAccuracy> for Framework
 {
@@ -369,6 +372,7 @@ fn get_native_window_handle_from_minifb(
     }
 }
 
+#[cfg(not(feature = "do_not_compile_extension_tuple_support"))]
 #[cfg(target_os = "windows")]
 impl Control for Framework {
     #[inline]

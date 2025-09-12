@@ -877,6 +877,7 @@ mod tests {
         }
     }
 }
+
 use crate::extensions::*;
 unsafe extern "system" fn enum_windows_proc(
     hwnd: winapi::shared::windef::HWND,

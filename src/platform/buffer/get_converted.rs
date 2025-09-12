@@ -1,5 +1,7 @@
 use super::Buffer;
-use crate::graphics::{resize_buffer, u32_to_rgba, InterpolationMode};
+use crate::graphics::u32_to_rgba;
+#[cfg(not(feature = "do_not_compile_extension_tuple_support"))]
+use crate::{graphics::resize_buffer, graphics::InterpolationMode};
 impl Buffer {
     #[must_use]
     /// Converts the [`Vec<u32>`] to [`Vec<8>`] by unpacking the u32 into argb style
@@ -27,6 +29,7 @@ impl Buffer {
         }
         return_list
     }
+    #[cfg(not(feature = "do_not_compile_extension_tuple_support"))]
     #[must_use]
     /// Creates a new buffer and copies the contents of the current buffer
     pub fn resize_content(

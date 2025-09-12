@@ -1,6 +1,6 @@
 use super::{cursor_resolution, BaseCursor, Cursor};
-use crate::extensions::*;
-use crate::graphics::{pixmap_to_buffer, rasterize_svg, u32_to_hex};
+use crate::graphics::{pixmap_to_buffer, rasterize_svg};
+use crate::{extensions::*, graphics};
 //use crate::misc::copyable_list::buffer_to_copy_list;
 /// Load a cursor SVG and replace it's placeholders with actual colors
 #[must_use]
@@ -21,8 +21,14 @@ pub fn load_base_cursor_with_file(
     // if svg has one {}, insert main_color, if svg has two {}, insert main_color, secondary_color
 
     let result_svg = svg_data
-        .replace_first_occurrence("{}", &u32_to_hex(main_color))
-        .replace_first_occurrence("{}", &u32_to_hex(secondary_color));
+        .replace_first_occurrence(
+            "{main}",
+            &graphics::u32_to_hex_without_alpha(main_color),
+        )
+        .replace_first_occurrence(
+            "{secondary}",
+            &graphics::u32_to_hex_without_alpha(secondary_color),
+        );
 
     let image_data = rasterize_svg(
         result_svg.as_bytes(),

@@ -12,9 +12,10 @@
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum NoneOnly {}
 
+#[cfg(not(feature = "do_not_compile_extension_tuple_support"))]
 /// More tuple functions
 mod tuple;
-
+#[cfg(not(feature = "do_not_compile_extension_tuple_support"))]
 pub use tuple::*;
 
 mod string;
@@ -55,11 +56,11 @@ pub mod lists;
 pub use lists::traits::*;
 
 /// Writing out {variable} = `std::default::Default::default()`; is annoying, if only there was a function you could call from the variable itself.
-pub trait SetToDefault{
+pub trait SetToDefault {
     /// Set the value to its default form
     fn restore_default(&mut self);
 }
-impl <T:Default> SetToDefault for T{
+impl<T: Default> SetToDefault for T {
     fn restore_default(&mut self) {
         *self = std::default::Default::default();
     }

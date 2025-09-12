@@ -1,5 +1,6 @@
 #![allow(clippy::inline_always)]
 #![allow(clippy::cast_lossless)]
+#[cfg(not(feature = "do_not_compile_extension_tuple_support"))]
 use crate::extensions::*;
 
 /// Convert an r b g format into u32 argb format
@@ -426,6 +427,7 @@ pub fn shift_color_u32(color: u32, hue_shift: f32) -> u32 {
 
     rgba_u32_to_u32(r_new, g_new, b_new, alpha)
 }
+#[cfg(not(feature = "do_not_compile_extension_tuple_support"))]
 #[must_use]
 #[inline]
 #[allow(clippy::cast_sign_loss)]
@@ -534,7 +536,7 @@ pub fn buffer_to_pixel_image(buffer: &Buffer) -> glfw::PixelImage {
     glfw::PixelImage {
         width: buffer.width as u32,
         height: buffer.height as u32,
-        pixels: argb_list_to_rgba_list(&buffer.data),
+        pixels: switch_red_and_blue_list(&buffer.data),
     }
 }
 /// Convert a `glfw::PixelImage` into a Buffer
@@ -730,14 +732,16 @@ use crate::{math::interpolate, platform::Buffer};
 /// Convert u32 argb to hex
 #[inline(always)]
 #[must_use]
+pub fn u32_to_hex_without_alpha(color: u32) -> String {
+    let (r, g, b) = u32_to_rgb(color);
+    format!("{r:02x}{g:02x}{b:02x}")
+}
+/// Convert u32 argb to hex
+#[inline(always)]
+#[must_use]
 pub fn u32_to_hex(color: u32) -> String {
-    format!(
-        "{:02x}{:02x}{:02x}{:02x}",
-        color >> 24,
-        (color >> 16) & 0xFF,
-        (color >> 8) & 0xFF,
-        color & 0xFF
-    )
+    let (r, g, b, a) = u32_to_rgba(color);
+    format!("{r:02x}{g:02x}{b:02x}{a:02x}")
 }
 
 /// Convert hex into u32 argb
@@ -794,6 +798,18 @@ pub const fn argb_to_rgba(color: u32) -> u32 {
 pub const fn switch_red_and_blue(color: u32) -> u32 {
     let (a, r, g, b) = u32_to_argb(color);
     rgba_to_u32(b, g, r, a)
+}
+/// Converts argb to abgr color
+#[must_use]
+pub const fn switch_alpha_and_blue(color: u32) -> u32 {
+    let (a, r, g, b) = u32_to_argb(color);
+    rgba_to_u32(r, g, a, b)
+}
+#[must_use]
+/// Converts a list of argb to rgba and vice versa
+#[inline(always)]
+pub fn switch_alpha_and_blue_list(input: &[u32]) -> Vec<u32> {
+    input.iter().map(|&argb| switch_alpha_and_blue(argb)).collect()
 }
 #[must_use]
 /// Converts a list of argb to rgba and vice versa
@@ -891,6 +907,7 @@ pub enum InterpolationMode {
     /// Linear interpolation - Idk this one always sucks, non pixel art ig
     Linear,
 }
+#[cfg(not(feature = "do_not_compile_extension_tuple_support"))]
 #[must_use]
 /// Resize a list of u32 to a list of u32s with a different visual size
 pub fn resize_buffer(
@@ -910,6 +927,7 @@ pub fn resize_buffer(
         ),
     }
 }
+#[cfg(not(feature = "do_not_compile_extension_tuple_support"))]
 #[must_use]
 #[allow(clippy::cast_sign_loss)]
 #[allow(clippy::cast_precision_loss)]
@@ -953,6 +971,7 @@ pub fn resize_buffer_linear(
 
     result
 }
+#[cfg(not(feature = "do_not_compile_extension_tuple_support"))]
 #[must_use]
 #[allow(clippy::cast_sign_loss)]
 #[allow(clippy::cast_precision_loss)]

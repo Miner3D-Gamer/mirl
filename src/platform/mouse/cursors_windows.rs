@@ -89,10 +89,11 @@ pub fn load_base_cursor_with_file(
     //let path = get_cursor_path(&cursor.file_path.to_string());
     //let svg_data = std::fs::read_to_string(path).unwrap();
     // if svg has one {}, insert main_color, if svg has two {}, insert main_color, secondary_color
-
-    let result_svg = svg_data
-        .replace_first_occurrence("{}", &u32_to_hex(main_color))
-        .replace_first_occurrence("{}", &u32_to_hex(secondary_color));
+    
+    let result_svg =
+        svg_data.replace_first_occurrence("{main}", &u32_to_hex(main_color));
+    let result_svg = result_svg
+        .replace_first_occurrence("{secondary}", &u32_to_hex(secondary_color));
 
     let image_data = rasterize_svg(
         result_svg.as_bytes(),

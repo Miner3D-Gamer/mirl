@@ -108,6 +108,8 @@ pub fn set_image_size(
 //         Err(e) => panic!("Failed to load image: {}", e),
 //     }
 // }
+
+#[cfg(not(feature = "do_not_compile_extension_tuple_support"))]
 #[must_use]
 #[allow(clippy::unwrap_used, clippy::missing_panics_doc)]
 #[cfg(feature = "svg_support")]

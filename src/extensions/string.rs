@@ -19,6 +19,13 @@ pub trait StringExtensions {
         target: &str,
         replacement: &str,
     ) -> String;
+    /// Replace the nth instance of a pattern
+    fn replace_nth_occurrence(
+        &self,
+        target: &str,
+        replacement: &str,
+        n: usize,
+    ) -> String;
     // /// Replaces the first occurrence of X with Y but error if there is not occurrence of X
     // fn replace_first_occurrence_error(
     //     &self,
@@ -91,6 +98,27 @@ impl StringExtensions for str {
     //     let parts: Vec<&str> = parts[0].split('/').collect();
     //     parts[parts.len() - 1].to_string()
     // }
+    fn replace_nth_occurrence(
+        &self,
+        target: &str,
+        replacement: &str,
+        n: usize,
+    ) -> String {
+        let mut start = 0;
+        for _ in 0..n {
+            if let Some(pos) = self[start..].find(target) {
+                start += pos + target.len();
+            } else {
+                return self.to_string(); // not enough occurrences
+            }
+        }
+        let mut text = self.to_string();
+        if let Some(pos) = self[start..].find(target) {
+            let idx = start + pos;
+            text.replace_range(idx..idx + target.len(), replacement);
+        }
+        text
+    }
 
     fn replace_first_occurrence(
         &self,

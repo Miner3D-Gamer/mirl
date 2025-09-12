@@ -10,13 +10,16 @@ mod windows;
 //     }
 //     return key_codes;
 // }
+#[cfg(feature = "device_query")]
 use device_query::{DeviceQuery, DeviceState, Keycode as DQKeycode};
 #[cfg(target_os = "windows")]
 pub use windows::*;
 
+#[cfg(feature = "device_query")]
 use crate::platform::keycodes::KeyCode;
 /// Converts mirls keycodes to discovery queues keycodes
 #[must_use]
+#[cfg(feature = "device_query")]
 #[allow(clippy::too_many_lines)]
 pub const fn mirl_keycode_to_device_query_keycode(
     keycode: KeyCode,
@@ -215,6 +218,7 @@ pub const fn mirl_keycode_to_device_query_keycode(
 /// Converts discovery queues keycodes to mirl keycodes
 #[must_use]
 #[allow(clippy::too_many_lines)]
+#[cfg(feature = "device_query")]
 pub const fn device_query_keycodes_to_mirls_keycode(
     dq_keycode: DQKeycode,
 ) -> KeyCode {
@@ -354,6 +358,7 @@ pub const fn device_query_keycodes_to_mirls_keycode(
 /// One-off function to check if a key is currently pressed
 /// This respects the current keyboard layout
 #[must_use]
+#[cfg(feature = "device_query")]
 pub fn is_key_pressed(keycode: KeyCode) -> bool {
     mirl_keycode_to_device_query_keycode(keycode).is_some_and(|dq_keycode| {
         let device_state = DeviceState::new();
@@ -364,6 +369,7 @@ pub fn is_key_pressed(keycode: KeyCode) -> bool {
 
 /// Checks if every key is down
 #[must_use]
+#[cfg(feature = "device_query")]
 pub fn get_all_pressed_keys() -> Vec<KeyCode> {
     let device_state = DeviceState::new();
     let keys: Vec<DQKeycode> = device_state.get_keys();
