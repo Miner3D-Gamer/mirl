@@ -1,6 +1,4 @@
-use crate::platform::file_system::{
-    file_data::DataType, FileData, FileSystem,
-};
+use crate::platform::file_system::{file_data::DataType, FileData, FileSystem};
 
 struct DefaultFont {
     pub bytes: Option<Vec<u8>>,
@@ -34,11 +32,11 @@ fn get_default_os_font() -> Result<DefaultFont, Box<dyn std::error::Error>> {
 }
 
 /// Get the default font the os is using TODO: Turn this into a trait and maybe drop `font_kit` dependency?
-/// 
+///
 /// # Errors
 /// When no default font could be found
-pub fn get_default_font(
-    file_system: &dyn FileSystem,
+pub fn get_default_font<T: FileSystem>(
+    file_system: &T,
 ) -> Result<FileData, Box<dyn std::error::Error>> {
     let thing = get_default_os_font()?;
     if let Some(data) = thing.bytes {

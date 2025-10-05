@@ -2,6 +2,7 @@
 #[cfg(not(feature = "do_not_compile_extension_tuple_support"))]
 use crate::extensions::*;
 
+#[const_trait]
 /// Time trait, IDK
 pub trait Time {
     /// Get time in seconds
@@ -13,9 +14,9 @@ pub enum CursorStyle {
     /// Default Pointer
     Default,
     /// Open hand
-    OpenHand,
+    HandOpen,
     /// Closed hand
-    ClosedHand,
+    HandClosed,
     /// Default cursor with an extra arrow (e.g. clickable text)
     Alias,
     /// Resize vertically + Resize horizontally
@@ -41,7 +42,7 @@ pub enum CursorStyle {
     /// Cross
     Crosshair,
     /// Closed hand with an 🚫 attached
-    ClosedHandNoDrop,
+    HandClosedNoDrop,
     /// Arrow pointing down
     ArrowDown,
     /// Tip of an ink pen

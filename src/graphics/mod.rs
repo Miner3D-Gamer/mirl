@@ -479,11 +479,14 @@ pub fn rasterize_svg(
     svg_data: &[u8],
     width: u32,
     height: u32,
-) -> Result<resvg::tiny_skia::Pixmap, Box<dyn std::error::Error>> {
+) -> Result<resvg::tiny_skia::Pixmap, String> {
     let opt = resvg::usvg::Options::default();
     //let fontdb = usvg::fontdb::Database::new();
 
-    let tree = resvg::usvg::Tree::from_data(svg_data, &opt)?;
+    let tree = match resvg::usvg::Tree::from_data(svg_data, &opt) {
+        Ok(value) => value,
+        Err(error) => return Err(error.to_string()),
+    };
 
     // Create a pixmap with desired size (from SVG's size)
     let mut pixmap = resvg::tiny_skia::Pixmap::new(width, height)
@@ -501,6 +504,7 @@ pub fn rasterize_svg(
 #[cfg(feature = "resvg")]
 #[allow(clippy::unwrap_used, clippy::missing_panics_doc)]
 /// To use this function, enable the "`svg_support`" feature
+/// Converts a `resvg::tiny_skia::Pixmap` to a `mirl::Buffer`
 #[must_use]
 pub fn pixmap_to_buffer(pixmap: &resvg::tiny_skia::Pixmap) -> Buffer {
     let mut data = Vec::new();
@@ -728,7 +732,7 @@ pub use pixel::*;
 
 #[cfg(feature = "imagery")]
 use crate::platform::file_system::FileSystem;
-use crate::{math::interpolate, platform::Buffer};
+use crate::platform::Buffer;
 /// Convert u32 argb to hex
 #[inline(always)]
 #[must_use]
@@ -899,78 +903,6 @@ pub fn get_unused_color_of_buffer(
     }
     current_color
 }
-/// The interpolation mode for tge resizing of a buffer like object
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum InterpolationMode {
-    /// Nearest neighbor - Best for pixel art
-    Nearest,
-    /// Linear interpolation - Idk this one always sucks, non pixel art ig
-    Linear,
-}
-#[cfg(not(feature = "do_not_compile_extension_tuple_support"))]
-#[must_use]
-/// Resize a list of u32 to a list of u32s with a different visual size
-pub fn resize_buffer(
-    buffer: &[u32],
-    src_width: usize,
-    src_height: usize,
-    dst_width: usize,
-    dst_height: usize,
-    resize_mode: InterpolationMode,
-) -> Vec<u32> {
-    match resize_mode {
-        InterpolationMode::Nearest => resize_buffer_nearest(
-            buffer, src_width, src_height, dst_width, dst_height,
-        ),
-        InterpolationMode::Linear => resize_buffer_linear(
-            buffer, src_width, src_height, dst_width, dst_height,
-        ),
-    }
-}
-#[cfg(not(feature = "do_not_compile_extension_tuple_support"))]
-#[must_use]
-#[allow(clippy::cast_sign_loss)]
-#[allow(clippy::cast_precision_loss)]
-#[allow(clippy::cast_possible_truncation)]
-#[allow(clippy::cast_possible_wrap)]
-/// Resize u32 list using linear interpolation
-pub fn resize_buffer_linear(
-    buffer: &[u32],
-    src_width: usize,
-    src_height: usize,
-    dst_width: usize,
-    dst_height: usize,
-) -> Vec<u32> {
-    let mut result = Vec::with_capacity(dst_width * dst_height);
-
-    let x_ratio = src_width as f32 / dst_width as f32;
-    let y_ratio = src_height as f32 / dst_height as f32;
-
-    for y in 0..dst_height {
-        for x in 0..dst_width {
-            let src_x = x as f32 * x_ratio;
-            let src_y = y as f32 * y_ratio;
-
-            let x1 = src_x.floor() as usize;
-            let y1 = src_y.floor() as usize;
-            let x2 = (x1 + 1).min(src_width - 1);
-            let y2 = (y1 + 1).min(src_height - 1);
-
-            let dx = src_x - x1 as f32;
-            let dy = src_y - y1 as f32;
-
-            let p1 = buffer[y1 * src_width + x1]; // top-left
-            let p2 = buffer[y1 * src_width + x2]; // top-right
-            let p3 = buffer[y2 * src_width + x1]; // bottom-left
-            let p4 = buffer[y2 * src_width + x2]; // bottom-right
-
-            let interpolated = bilinear_interpolate_u32(p1, p2, p3, p4, dx, dy);
-            result.push(interpolated);
-        }
-    }
-
-    result
-}
 #[cfg(not(feature = "do_not_compile_extension_tuple_support"))]
 #[must_use]
 #[allow(clippy::cast_sign_loss)]
@@ -1005,38 +937,55 @@ pub fn bilinear_interpolate_u32(
 
     rgba_to_u32(red, green, blue, alpha)
 }
+
 #[must_use]
-#[allow(clippy::cast_sign_loss)]
-#[allow(clippy::cast_precision_loss)]
-#[allow(clippy::cast_possible_truncation)]
-#[allow(clippy::cast_possible_wrap)]
-/// Resize u32 list using the nearest neighbor
-pub fn resize_buffer_nearest(
-    buffer: &[u32],
-    src_width: usize,
-    src_height: usize,
-    dst_width: usize,
-    dst_height: usize,
-) -> Vec<u32> {
-    let mut result = Vec::with_capacity(dst_width * dst_height);
+/// Interpolate between 2 numbers linearly
+/// progress should be from 0 to 255
+pub const fn interpolate_color_rgb_f32(
+    from: u32,
+    to: u32,
+    progress: u32,
+) -> u32 {
+    // Convert progress to fixed-point (8.8 format)
+    let inv_progress = 256 - progress;
 
-    let x_ratio = src_width as f32 / dst_width as f32;
-    let y_ratio = src_height as f32 / dst_height as f32;
+    let r1 = (from >> 24) & 0xFF;
+    let g1 = (from >> 16) & 0xFF;
+    let b1 = (from >> 8) & 0xFF;
+    let r2 = (to >> 24) & 0xFF;
+    let g2 = (to >> 16) & 0xFF;
+    let b2 = (to >> 8) & 0xFF;
 
-    for y in 0..dst_height {
-        for x in 0..dst_width {
-            let src_x = (x as f32).mul_add(x_ratio, 0.5).floor() as usize;
-            let src_y = (y as f32).mul_add(y_ratio, 0.5).floor() as usize;
+    let r = (r1 * inv_progress + r2 * progress) >> 8;
+    let g = (g1 * inv_progress + g2 * progress) >> 8;
+    let b = (b1 * inv_progress + b2 * progress) >> 8;
 
-            // Clamp to valid indices
-            let src_x = src_x.min(src_width - 1);
-            let src_y = src_y.min(src_height - 1);
+    (r << 24) | (g << 16) | (b << 8) | 0xFF
+}
+#[must_use]
+/// Interpolate between 2 numbers linearly
+/// progress should be from 0 to 255
+pub const fn interpolate_color_rgb_f64(
+    from: u32,
+    to: u32,
+    progress: u32,
+) -> u32 {
+    // Convert progress to fixed-point (8.8 format)
+    //let progress_fixed = (progress * 256.0) as u32;
+    let inv_progress = 256 - progress;
 
-            result.push(buffer[src_y * src_width + src_x]);
-        }
-    }
+    let r1 = (from >> 24) & 0xFF;
+    let g1 = (from >> 16) & 0xFF;
+    let b1 = (from >> 8) & 0xFF;
+    let r2 = (to >> 24) & 0xFF;
+    let g2 = (to >> 16) & 0xFF;
+    let b2 = (to >> 8) & 0xFF;
 
-    result
+    let r = (r1 * inv_progress + r2 * progress) >> 8;
+    let g = (g1 * inv_progress + g2 * progress) >> 8;
+    let b = (b1 * inv_progress + b2 * progress) >> 8;
+
+    (r << 24) | (g << 16) | (b << 8) | 0xFF
 }
 macro_rules! interpolate_color_rgb_u32 {
     ($t:ty, $name:ident) => {
@@ -1049,14 +998,13 @@ macro_rules! interpolate_color_rgb_u32 {
         pub fn $name(from: u32, to: u32, progress: $t) -> u32 {
             let (r1, g1, b1) = u32_to_rgb_u32(from);
             let (r2, g2, b2) = u32_to_rgb_u32(to);
-            let red = interpolate(r1 as $t, r2 as $t, progress);
-            let green = interpolate(g1 as $t, g2 as $t, progress);
-            let blue = interpolate(b1 as $t, b2 as $t, progress);
+            let red = crate::math::interpolate(r1 as $t, r2 as $t, progress);
+            let green = crate::math::interpolate(g1 as $t, g2 as $t, progress);
+            let blue = crate::math::interpolate(b1 as $t, b2 as $t, progress);
             rgba_u32_to_u32(red as u32, green as u32, blue as u32, 255)
         }
     };
 }
-// TO DO: I THINK THIS FUNCTION IS BROKEN
 interpolate_color_rgb_u32!(f32, interpolate_color_rgb_u32_f32);
 interpolate_color_rgb_u32!(f64, interpolate_color_rgb_u32_f64);
 
@@ -1302,3 +1250,6 @@ impl TextureManager {
 }
 /// Presets for common colors
 pub mod color_presets;
+
+mod interpolation;
+pub use interpolation::*;

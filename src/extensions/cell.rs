@@ -1,5 +1,6 @@
 use std::cell::Cell;
 
+#[const_trait]
 /// Set the value inside the Cell to zero
 pub trait SetCellToZero {
     /// Zero out cell's value
@@ -7,10 +8,10 @@ pub trait SetCellToZero {
 }
 impl<T: num_traits::ConstZero> SetCellToZero for std::cell::Cell<T> {
     fn set_zero(&self) {
-        self.set(T::ZERO);
+        self.replace(T::ZERO);
     }
 }
-
+#[const_trait]
 /// Basic arithmetic operations that modify the cell in place.
 pub trait CellIntOps<T> {
     /// Adds `rhs` to the cell's value.
@@ -23,6 +24,7 @@ pub trait CellIntOps<T> {
     fn div(&self, rhs: T);
 }
 
+#[const_trait]
 /// Basic arithmetic operations that return a new value without modifying the cell.
 pub trait CellIntReturnOps<T> {
     /// Returns the cell's value plus `rhs`.
@@ -35,6 +37,7 @@ pub trait CellIntReturnOps<T> {
     fn divided(&self, rhs: T) -> T;
 }
 
+#[const_trait]
 /// Saturating arithmetic operations that modify the cell in place.
 pub trait CellIntSaturatedOps<T> {
     /// Adds `rhs` to the cell's value, saturating at numeric bounds.
@@ -45,6 +48,7 @@ pub trait CellIntSaturatedOps<T> {
     fn saturating_mul(&self, rhs: T);
 }
 
+#[const_trait]
 /// Saturating arithmetic operations that return a new value without modifying the cell.
 pub trait CellIntSaturatedReturnOps<T> {
     /// Returns the cell's value plus `rhs`, saturating at numeric bounds.
@@ -55,28 +59,28 @@ pub trait CellIntSaturatedReturnOps<T> {
     fn saturating_multiplied(&self, rhs: T) -> T;
 }
 
-impl<T> CellIntOps<T> for Cell<T>
+impl<T> const CellIntOps<T> for Cell<T>
 where
     T: Copy
-        + std::ops::Add<Output = T>
-        + std::ops::Sub<Output = T>
-        + std::ops::Mul<Output = T>
-        + std::ops::Div<Output = T>,
+        + [const] std::ops::Add<Output = T>
+        + [const] std::ops::Sub<Output = T>
+        + [const] std::ops::Mul<Output = T>
+        + [const] std::ops::Div<Output = T>,
 {
     fn add(&self, rhs: T) {
-        self.set(self.get() + rhs);
+        self.replace(self.get() + rhs);
     }
 
     fn sub(&self, rhs: T) {
-        self.set(self.get() - rhs);
+        self.replace(self.get() - rhs);
     }
 
     fn mul(&self, rhs: T) {
-        self.set(self.get() * rhs);
+        self.replace(self.get() * rhs);
     }
 
     fn div(&self, rhs: T) {
-        self.set(self.get() / rhs);
+        self.replace(self.get() / rhs);
     }
 }
 
@@ -90,25 +94,25 @@ where
 {
     fn added(&self, rhs: T) -> T {
         let result = self.get() + rhs;
-        self.set(result);
+        self.replace(result);
         result
     }
 
     fn subtracted(&self, rhs: T) -> T {
         let result = self.get() - rhs;
-        self.set(result);
+        self.replace(result);
         result
     }
 
     fn multiplied(&self, rhs: T) -> T {
         let result = self.get() * rhs;
-        self.set(result);
+        self.replace(result);
         result
     }
 
     fn divided(&self, rhs: T) -> T {
         let result = self.get() / rhs;
-        self.set(result);
+        self.replace(result);
         result
     }
 }
@@ -118,34 +122,34 @@ macro_rules! impl_saturated {
         $(
             impl CellIntSaturatedOps<$ty> for Cell<$ty> {
                 fn saturating_add(&self, rhs: $ty) {
-                    self.set(self.get().saturating_add(rhs));
+                    self.replace(self.get().saturating_add(rhs));
                 }
 
                 fn saturating_sub(&self, rhs: $ty) {
-                    self.set(self.get().saturating_sub(rhs));
+                    self.replace(self.get().saturating_sub(rhs));
                 }
 
                 fn saturating_mul(&self, rhs: $ty) {
-                    self.set(self.get().saturating_mul(rhs));
+                    self.replace(self.get().saturating_mul(rhs));
                 }
             }
 
             impl CellIntSaturatedReturnOps<$ty> for Cell<$ty> {
                 fn saturating_added(&self, rhs: $ty) -> $ty {
                     let result = self.get().saturating_add(rhs);
-                    //self.set(result);
+                    //self.replace(result);
                     result
                 }
 
                 fn saturating_subtracted(&self, rhs: $ty) -> $ty {
                     let result = self.get().saturating_sub(rhs);
-                    //self.set(result);
+                    //self.replace(result);
                     result
                 }
 
                 fn saturating_multiplied(&self, rhs: $ty) -> $ty {
                     let result = self.get().saturating_mul(rhs);
-                    //self.set(result);
+                    //self.replace(result);
                     result
                 }
             }
@@ -214,15 +218,15 @@ where
     T: Copy + Ord,
 {
     fn min(&self, rhs: T) {
-        self.set(self.get().min(rhs));
+        self.replace(self.get().min(rhs));
     }
 
     fn max(&self, rhs: T) {
-        self.set(self.get().max(rhs));
+        self.replace(self.get().max(rhs));
     }
 
     fn clamp(&self, min: T, max: T) {
-        self.set(self.get().clamp(min, max));
+        self.replace(self.get().clamp(min, max));
     }
 }
 
@@ -235,14 +239,12 @@ where
     }
 
     fn maxed(&self, rhs: T) -> T {
-        
-        //self.set(result);
+        //self.replace(result);
         self.get().max(rhs)
     }
 
     fn clamped(&self, min: T, max: T) -> T {
-        
-        //self.set(result);
+        //self.replace(result);
         self.get().clamp(min, max)
     }
 }
@@ -252,58 +254,58 @@ macro_rules! impl_signed {
         $(
             impl CellIntSignedOps<$ty> for Cell<$ty> {
                 fn abs(&self) {
-                    self.set(self.get().abs());
+                    self.replace(self.get().abs());
                 }
 
                 fn neg(&self) {
-                    self.set(-self.get());
+                    self.replace(-self.get());
                 }
 
                 fn signum(&self) {
-                    self.set(self.get().signum());
+                    self.replace(self.get().signum());
                 }
             }
 
             impl CellIntSignedReturnOps<$ty> for Cell<$ty> {
                 fn absed(&self) -> $ty {
                     let result = self.get().abs();
-                    //self.set(result);
+                    //self.replace(result);
                     result
                 }
 
                 fn neged(&self) -> $ty {
                     let result = -self.get();
-                    //self.set(result);
+                    //self.replace(result);
                     result
                 }
 
                 fn signumed(&self) -> $ty {
                     let result = self.get().signum();
-                    //self.set(result);
+                    //self.replace(result);
                     result
                 }
             }
 
             impl CellIntSaturatedSignedOps<$ty> for Cell<$ty> {
                 fn saturating_abs(&self) {
-                    self.set(self.get().saturating_abs());
+                    self.replace(self.get().saturating_abs());
                 }
 
                 fn saturating_neg(&self) {
-                    self.set(self.get().saturating_neg());
+                    self.replace(self.get().saturating_neg());
                 }
             }
 
             impl CellIntSaturatedSignedReturnOps<$ty> for Cell<$ty> {
                 fn saturating_absed(&self) -> $ty {
                     let result = self.get().saturating_abs();
-                    //self.set(result);
+                    //self.replace(result);
                     result
                 }
 
                 fn saturating_neged(&self) -> $ty {
                     let result = self.get().saturating_neg();
-                    //self.set(result);
+                    //self.replace(result);
                     result
                 }
             }

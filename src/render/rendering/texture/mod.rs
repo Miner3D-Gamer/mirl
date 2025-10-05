@@ -1,5 +1,5 @@
 use crate::{
-    graphics::{get_u32_alpha_of_u32, interpolate_color_rgb_u32_f64},
+    graphics::{get_u32_alpha_of_u32, interpolate_color_rgb_f64},
     platform::Buffer,
 };
 #[allow(clippy::cast_sign_loss)]
@@ -77,10 +77,10 @@ pub fn draw_buffer_on_buffer<
                     continue;
                 }
 
-                let color = interpolate_color_rgb_u32_f64(
+                let color = interpolate_color_rgb_f64(
                     canvas.get_pixel((canvas_x as usize, canvas_y as usize)),
                     pixel,
-                    f64::from(trans) / 255.0,
+                    trans,
                 );
                 canvas.set_pixel_unsafe(
                     (canvas_x as usize, canvas_y as usize),
@@ -102,7 +102,8 @@ pub fn draw_buffer_on_buffer<
 pub fn draw_buffer_on_buffer_1_to_1<
     const SAFE: bool,
     const TRANSPARENCY: bool,
-    const TRANSPARENCY_CHECK: bool,
+    const TRANSPARENCY_INTERPOLATION: bool,
+    const NICHE_TRANSPARENCY_CHECK: bool,
 >(
     canvas: &Buffer,
     texture: &Buffer,
@@ -153,21 +154,30 @@ pub fn draw_buffer_on_buffer_1_to_1<
 
             if TRANSPARENCY {
                 let trans = get_u32_alpha_of_u32(pixel);
-                if TRANSPARENCY_CHECK && trans == 0 {
+                if NICHE_TRANSPARENCY_CHECK && trans == 0 {
                     continue;
                 }
 
-                let color = if TRANSPARENCY_CHECK && trans == 255 {
+                let color = if TRANSPARENCY_INTERPOLATION {
+                    if NICHE_TRANSPARENCY_CHECK && trans == 255 {
+                        pixel
+                    } else {
+                        crate::graphics::interpolate_color_rgb_f32(
+                            canvas.get_pixel_unsafe((
+                                canvas_x as usize,
+                                canvas_y as usize,
+                            )),
+                            pixel,
+                            trans,
+                        )
+                    }
+                } else if trans != 0 {
                     pixel
                 } else {
-                    interpolate_color_rgb_u32_f64(
-                        canvas.get_pixel_unsafe((
-                            canvas_x as usize,
-                            canvas_y as usize,
-                        )),
-                        pixel,
-                        f64::from(trans) / 255.0,
-                    )
+                    canvas.get_pixel_unsafe((
+                        canvas_x as usize,
+                        canvas_y as usize,
+                    ))
                 };
                 canvas.set_pixel_unsafe(
                     (canvas_x as usize, canvas_y as usize),

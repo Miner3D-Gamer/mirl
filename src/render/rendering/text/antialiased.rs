@@ -105,6 +105,8 @@ pub fn draw_text_antialiased<const SAFE: bool>(
 }
 
 /// Execute a function at every pixel position
+/// 
+/// function: `fn(original_color: u32, color_under_pixel: u32) -> u32`
 pub fn draw_text_antialiased_execute_at<const SAFE: bool>(
     buffer: &Buffer,
     text: &str,
@@ -112,7 +114,7 @@ pub fn draw_text_antialiased_execute_at<const SAFE: bool>(
     color: u32,
     size: f32,
     font: &fontdue::Font,
-    function: fn(original_color: u32, color_under_pixel: u32) -> u32,
+    function: impl Fn(u32, u32) -> u32,
 ) {
     let mut pen_x = xy.0 as f32;
     let pen_y = xy.1;

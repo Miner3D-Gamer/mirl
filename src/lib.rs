@@ -52,7 +52,7 @@
 //! - [Frameworks](crate::platform::framework_traits) - What are they capable of? (for [`crate::platform::minifb::Framework`] or [`crate::platform::glfw::Framework`])
 //! - [Buffer](crate::platform::Buffer) - The central struct many other functions rely on
 //! - [Rendering](crate::render) - Render simple shapes
-//! - [Platform](crate::platform) - Other neat stuff like [`crate::platform::KeyCode`]/[`crate::platform::MouseButton`], or [`crate::platform::ScreenNormalizer`]
+//! - [Platform](crate::platform) - Other neat stuff like [`crate::platform::keycodes::KeyCode`]/[`crate::platform::MouseButton`], or [`crate::platform::ScreenNormalizer`]
 //! - [System interaction](crate::system::action) - Functions that are untypical for usual applications like moving the window, getting/setting the z position, or hiding a window from the taskbar
 //! - [Color Stuff](crate::graphics) - What is rendering without color manipulation?
 //! - [Modular File System](crate::platform::file_system::FileSystem) - A custom file system wrapper to support file accessing on web and natively

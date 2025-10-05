@@ -3,7 +3,7 @@ pub use cursors_windows::load_base_cursor_with_file;
 
 use crate::{
     extensions::*,
-    //misc::copyable_list::VariableSizeList,
+    graphics,
     platform::{framework_traits::Errors, Buffer, CursorStyle},
 };
 
@@ -11,6 +11,7 @@ use crate::{
 /// Cursor stuff of glfw bc glfw is a bitch
 pub mod cursor_glfw;
 /// The Cursor Manager provides a way of easily loading cursors based on a Buffer or the default cursors that come with this lib
+#[const_trait]
 pub trait CursorManager {
     /// Create a Cursor instance using a Buffer
     fn load_cursor(
@@ -158,19 +159,26 @@ impl Cursors {
         load_base_cursor_with_file: F,
     ) -> Result<Self, String>
     where
-        F: Fn(BaseCursor, U2, u32, u32, String) -> Option<Cursor>,
+        F: Fn(BaseCursor, U2, String) -> Result<Cursor, String>,
     {
         let default = load_base_cursor_with_file(
             BaseCursor {
-                hot_spot_x: 4,
-                hot_spot_y: 5,
+                hot_spot_x: 6,
+                hot_spot_y: 4,
             },
             size,
-            main_color,
-            secondary_color,
-            include_str!("./svg/default.svg").to_string(),
+            include_str!("./svg/default.svg")
+                .to_string()
+                .replace(
+                    "{main}",
+                    &graphics::u32_to_hex_without_alpha(main_color),
+                )
+                .replace(
+                    "{secondary}",
+                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                ),
         )
-        .ok_or_else(|| "default.svg".to_string())?;
+        .map_err(|_| "default.svg".to_string())?;
 
         let alias = load_base_cursor_with_file(
             BaseCursor {
@@ -178,11 +186,18 @@ impl Cursors {
                 hot_spot_y: 4,
             },
             size,
-            main_color,
-            secondary_color,
-            include_str!("./svg/alias.svg").to_string(),
+            include_str!("./svg/alias.svg")
+                .to_string()
+                .replace(
+                    "{main}",
+                    &graphics::u32_to_hex_without_alpha(main_color),
+                )
+                .replace(
+                    "{secondary}",
+                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                ),
         )
-        .ok_or_else(|| "alias.svg".to_string())?;
+        .map_err(|_| "alias.svg".to_string())?;
 
         let all_scroll = load_base_cursor_with_file(
             BaseCursor {
@@ -190,11 +205,18 @@ impl Cursors {
                 hot_spot_y: 16,
             },
             size,
-            main_color,
-            secondary_color,
-            include_str!("./svg/all-scroll.svg").to_string(),
+            include_str!("./svg/all-scroll.svg")
+                .to_string()
+                .replace(
+                    "{main}",
+                    &graphics::u32_to_hex_without_alpha(main_color),
+                )
+                .replace(
+                    "{secondary}",
+                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                ),
         )
-        .ok_or_else(|| "all-scroll.svg".to_string())?;
+        .map_err(|_| "all-scroll.svg".to_string())?;
 
         let bottom_left_corner = load_base_cursor_with_file(
             BaseCursor {
@@ -202,11 +224,18 @@ impl Cursors {
                 hot_spot_y: 27,
             },
             size,
-            main_color,
-            secondary_color,
-            include_str!("./svg/bottom_left_corner.svg").to_string(),
+            include_str!("./svg/bottom_left_corner.svg")
+                .to_string()
+                .replace(
+                    "{main}",
+                    &graphics::u32_to_hex_without_alpha(main_color),
+                )
+                .replace(
+                    "{secondary}",
+                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                ),
         )
-        .ok_or_else(|| "bottom_left_corner.svg".to_string())?;
+        .map_err(|_| "bottom_left_corner.svg".to_string())?;
 
         let arrow_bottom_right = load_base_cursor_with_file(
             BaseCursor {
@@ -214,11 +243,18 @@ impl Cursors {
                 hot_spot_y: 27,
             },
             size,
-            main_color,
-            secondary_color,
-            include_str!("./svg/bottom_right_corner.svg").to_string(),
+            include_str!("./svg/bottom_right_corner.svg")
+                .to_string()
+                .replace(
+                    "{main}",
+                    &graphics::u32_to_hex_without_alpha(main_color),
+                )
+                .replace(
+                    "{secondary}",
+                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                ),
         )
-        .ok_or_else(|| "bottom_right_corner.svg".to_string())?;
+        .map_err(|_| "bottom_right_corner.svg".to_string())?;
 
         let side_bottom = load_base_cursor_with_file(
             BaseCursor {
@@ -226,11 +262,18 @@ impl Cursors {
                 hot_spot_y: 28,
             },
             size,
-            main_color,
-            secondary_color,
-            include_str!("./svg/bottom_side.svg").to_string(),
+            include_str!("./svg/bottom_side.svg")
+                .to_string()
+                .replace(
+                    "{main}",
+                    &graphics::u32_to_hex_without_alpha(main_color),
+                )
+                .replace(
+                    "{secondary}",
+                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                ),
         )
-        .ok_or_else(|| "bottom_side.svg".to_string())?;
+        .map_err(|_| "bottom_side.svg".to_string())?;
 
         let cell = load_base_cursor_with_file(
             BaseCursor {
@@ -238,11 +281,18 @@ impl Cursors {
                 hot_spot_y: 16,
             },
             size,
-            main_color,
-            secondary_color,
-            include_str!("./svg/cell.svg").to_string(),
+            include_str!("./svg/cell.svg")
+                .to_string()
+                .replace(
+                    "{main}",
+                    &graphics::u32_to_hex_without_alpha(main_color),
+                )
+                .replace(
+                    "{secondary}",
+                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                ),
         )
-        .ok_or_else(|| "cell.svg".to_string())?;
+        .map_err(|_| "cell.svg".to_string())?;
 
         let centered_pointer = load_base_cursor_with_file(
             BaseCursor {
@@ -250,11 +300,18 @@ impl Cursors {
                 hot_spot_y: 7,
             },
             size,
-            main_color,
-            secondary_color,
-            include_str!("./svg/center_ptr.svg").to_string(),
+            include_str!("./svg/center_ptr.svg")
+                .to_string()
+                .replace(
+                    "{main}",
+                    &graphics::u32_to_hex_without_alpha(main_color),
+                )
+                .replace(
+                    "{secondary}",
+                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                ),
         )
-        .ok_or_else(|| "center_ptr.svg".to_string())?;
+        .map_err(|_| "center_ptr.svg".to_string())?;
 
         let col_resize = load_base_cursor_with_file(
             BaseCursor {
@@ -262,11 +319,18 @@ impl Cursors {
                 hot_spot_y: 16,
             },
             size,
-            main_color,
-            secondary_color,
-            include_str!("./svg/col-resize.svg").to_string(),
+            include_str!("./svg/col-resize.svg")
+                .to_string()
+                .replace(
+                    "{main}",
+                    &graphics::u32_to_hex_without_alpha(main_color),
+                )
+                .replace(
+                    "{secondary}",
+                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                ),
         )
-        .ok_or_else(|| "col-resize.svg".to_string())?;
+        .map_err(|_| "col-resize.svg".to_string())?;
 
         let color_picker = load_base_cursor_with_file(
             BaseCursor {
@@ -274,11 +338,18 @@ impl Cursors {
                 hot_spot_y: 29,
             },
             size,
-            main_color,
-            secondary_color,
-            include_str!("./svg/color-picker.svg").to_string(),
+            include_str!("./svg/color-picker.svg")
+                .to_string()
+                .replace(
+                    "{main}",
+                    &graphics::u32_to_hex_without_alpha(main_color),
+                )
+                .replace(
+                    "{secondary}",
+                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                ),
         )
-        .ok_or_else(|| "color-picker.svg".to_string())?;
+        .map_err(|_| "color-picker.svg".to_string())?;
 
         let context_menu = load_base_cursor_with_file(
             BaseCursor {
@@ -286,11 +357,18 @@ impl Cursors {
                 hot_spot_y: 4,
             },
             size,
-            main_color,
-            secondary_color,
-            include_str!("./svg/context-menu.svg").to_string(),
+            include_str!("./svg/context-menu.svg")
+                .to_string()
+                .replace(
+                    "{main}",
+                    &graphics::u32_to_hex_without_alpha(main_color),
+                )
+                .replace(
+                    "{secondary}",
+                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                ),
         )
-        .ok_or_else(|| "context-menu.svg".to_string())?;
+        .map_err(|_| "context-menu.svg".to_string())?;
 
         let copy = load_base_cursor_with_file(
             BaseCursor {
@@ -298,11 +376,18 @@ impl Cursors {
                 hot_spot_y: 4,
             },
             size,
-            main_color,
-            secondary_color,
-            include_str!("./svg/copy.svg").to_string(),
+            include_str!("./svg/copy.svg")
+                .to_string()
+                .replace(
+                    "{main}",
+                    &graphics::u32_to_hex_without_alpha(main_color),
+                )
+                .replace(
+                    "{secondary}",
+                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                ),
         )
-        .ok_or_else(|| "copy.svg".to_string())?;
+        .map_err(|_| "copy.svg".to_string())?;
 
         let crosshair = load_base_cursor_with_file(
             BaseCursor {
@@ -310,11 +395,18 @@ impl Cursors {
                 hot_spot_y: 16,
             },
             size,
-            main_color,
-            secondary_color,
-            include_str!("./svg/crosshair.svg").to_string(),
+            include_str!("./svg/crosshair.svg")
+                .to_string()
+                .replace(
+                    "{main}",
+                    &graphics::u32_to_hex_without_alpha(main_color),
+                )
+                .replace(
+                    "{secondary}",
+                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                ),
         )
-        .ok_or_else(|| "crosshair.svg".to_string())?;
+        .map_err(|_| "crosshair.svg".to_string())?;
 
         let closed_hand = load_base_cursor_with_file(
             BaseCursor {
@@ -322,11 +414,18 @@ impl Cursors {
                 hot_spot_y: 16,
             },
             size,
-            main_color,
-            secondary_color,
-            include_str!("./svg/closed-hand.svg").to_string(),
+            include_str!("./svg/closed-hand.svg")
+                .to_string()
+                .replace(
+                    "{main}",
+                    &graphics::u32_to_hex_without_alpha(main_color),
+                )
+                .replace(
+                    "{secondary}",
+                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                ),
         )
-        .ok_or_else(|| "closed-hand.svg".to_string())?;
+        .map_err(|_| "closed-hand.svg".to_string())?;
 
         let closed_hand_no_drop = load_base_cursor_with_file(
             BaseCursor {
@@ -334,11 +433,18 @@ impl Cursors {
                 hot_spot_y: 16,
             },
             size,
-            main_color,
-            secondary_color,
-            include_str!("./svg/closed-hand-no-drop.svg").to_string(),
+            include_str!("./svg/closed-hand-no-drop.svg")
+                .to_string()
+                .replace(
+                    "{main}",
+                    &graphics::u32_to_hex_without_alpha(main_color),
+                )
+                .replace(
+                    "{secondary}",
+                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                ),
         )
-        .ok_or_else(|| "closed-hand-no-drop.svg".to_string())?;
+        .map_err(|_| "closed-hand-no-drop.svg".to_string())?;
 
         let arrow_down = load_base_cursor_with_file(
             BaseCursor {
@@ -346,11 +452,18 @@ impl Cursors {
                 hot_spot_y: 28,
             },
             size,
-            main_color,
-            secondary_color,
-            include_str!("./svg/down-arrow.svg").to_string(),
+            include_str!("./svg/down-arrow.svg")
+                .to_string()
+                .replace(
+                    "{main}",
+                    &graphics::u32_to_hex_without_alpha(main_color),
+                )
+                .replace(
+                    "{secondary}",
+                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                ),
         )
-        .ok_or_else(|| "down-arrow.svg".to_string())?;
+        .map_err(|_| "down-arrow.svg".to_string())?;
 
         let draft = load_base_cursor_with_file(
             BaseCursor {
@@ -358,11 +471,18 @@ impl Cursors {
                 hot_spot_y: 29,
             },
             size,
-            main_color,
-            secondary_color,
-            include_str!("./svg/draft.svg").to_string(),
+            include_str!("./svg/draft.svg")
+                .to_string()
+                .replace(
+                    "{main}",
+                    &graphics::u32_to_hex_without_alpha(main_color),
+                )
+                .replace(
+                    "{secondary}",
+                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                ),
         )
-        .ok_or_else(|| "draft.svg".to_string())?;
+        .map_err(|_| "draft.svg".to_string())?;
 
         let fleur = load_base_cursor_with_file(
             BaseCursor {
@@ -370,11 +490,18 @@ impl Cursors {
                 hot_spot_y: 16,
             },
             size,
-            main_color,
-            secondary_color,
-            include_str!("./svg/fleur.svg").to_string(),
+            include_str!("./svg/fleur.svg")
+                .to_string()
+                .replace(
+                    "{main}",
+                    &graphics::u32_to_hex_without_alpha(main_color),
+                )
+                .replace(
+                    "{secondary}",
+                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                ),
         )
-        .ok_or_else(|| "fleur.svg".to_string())?;
+        .map_err(|_| "fleur.svg".to_string())?;
 
         let help = load_base_cursor_with_file(
             BaseCursor {
@@ -382,11 +509,18 @@ impl Cursors {
                 hot_spot_y: 4,
             },
             size,
-            main_color,
-            secondary_color,
-            include_str!("./svg/help.svg").to_string(),
+            include_str!("./svg/help.svg")
+                .to_string()
+                .replace(
+                    "{main}",
+                    &graphics::u32_to_hex_without_alpha(main_color),
+                )
+                .replace(
+                    "{secondary}",
+                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                ),
         )
-        .ok_or_else(|| "help.svg".to_string())?;
+        .map_err(|_| "help.svg".to_string())?;
 
         let arrow_left = load_base_cursor_with_file(
             BaseCursor {
@@ -394,11 +528,18 @@ impl Cursors {
                 hot_spot_y: 16,
             },
             size,
-            main_color,
-            secondary_color,
-            include_str!("./svg/left-arrow.svg").to_string(),
+            include_str!("./svg/left-arrow.svg")
+                .to_string()
+                .replace(
+                    "{main}",
+                    &graphics::u32_to_hex_without_alpha(main_color),
+                )
+                .replace(
+                    "{secondary}",
+                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                ),
         )
-        .ok_or_else(|| "left-arrow.svg".to_string())?;
+        .map_err(|_| "left-arrow.svg".to_string())?;
 
         let side_left = load_base_cursor_with_file(
             BaseCursor {
@@ -406,11 +547,18 @@ impl Cursors {
                 hot_spot_y: 16,
             },
             size,
-            main_color,
-            secondary_color,
-            include_str!("./svg/left_side.svg").to_string(),
+            include_str!("./svg/left_side.svg")
+                .to_string()
+                .replace(
+                    "{main}",
+                    &graphics::u32_to_hex_without_alpha(main_color),
+                )
+                .replace(
+                    "{secondary}",
+                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                ),
         )
-        .ok_or_else(|| "left_side.svg".to_string())?;
+        .map_err(|_| "left_side.svg".to_string())?;
 
         let no_drop = load_base_cursor_with_file(
             BaseCursor {
@@ -418,11 +566,18 @@ impl Cursors {
                 hot_spot_y: 4,
             },
             size,
-            main_color,
-            secondary_color,
-            include_str!("./svg/no-drop.svg").to_string(),
+            include_str!("./svg/no-drop.svg")
+                .to_string()
+                .replace(
+                    "{main}",
+                    &graphics::u32_to_hex_without_alpha(main_color),
+                )
+                .replace(
+                    "{secondary}",
+                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                ),
         )
-        .ok_or_else(|| "no-drop.svg".to_string())?;
+        .map_err(|_| "no-drop.svg".to_string())?;
 
         let not_allowed = load_base_cursor_with_file(
             BaseCursor {
@@ -430,11 +585,18 @@ impl Cursors {
                 hot_spot_y: 16,
             },
             size,
-            main_color,
-            secondary_color,
-            include_str!("./svg/not-allowed.svg").to_string(),
+            include_str!("./svg/not-allowed.svg")
+                .to_string()
+                .replace(
+                    "{main}",
+                    &graphics::u32_to_hex_without_alpha(main_color),
+                )
+                .replace(
+                    "{secondary}",
+                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                ),
         )
-        .ok_or_else(|| "not-allowed.svg".to_string())?;
+        .map_err(|_| "not-allowed.svg".to_string())?;
 
         let open_hand = load_base_cursor_with_file(
             BaseCursor {
@@ -442,11 +604,18 @@ impl Cursors {
                 hot_spot_y: 16,
             },
             size,
-            main_color,
-            secondary_color,
-            include_str!("./svg/open-hand.svg").to_string(),
+            include_str!("./svg/open-hand.svg")
+                .to_string()
+                .replace(
+                    "{main}",
+                    &graphics::u32_to_hex_without_alpha(main_color),
+                )
+                .replace(
+                    "{secondary}",
+                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                ),
         )
-        .ok_or_else(|| "open-hand.svg".to_string())?;
+        .map_err(|_| "open-hand.svg".to_string())?;
 
         let pencil = load_base_cursor_with_file(
             BaseCursor {
@@ -454,11 +623,18 @@ impl Cursors {
                 hot_spot_y: 29,
             },
             size,
-            main_color,
-            secondary_color,
-            include_str!("./svg/pencil.svg").to_string(),
+            include_str!("./svg/pencil.svg")
+                .to_string()
+                .replace(
+                    "{main}",
+                    &graphics::u32_to_hex_without_alpha(main_color),
+                )
+                .replace(
+                    "{secondary}",
+                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                ),
         )
-        .ok_or_else(|| "pencil.svg".to_string())?;
+        .map_err(|_| "pencil.svg".to_string())?;
 
         let pirate = load_base_cursor_with_file(
             BaseCursor {
@@ -466,11 +642,18 @@ impl Cursors {
                 hot_spot_y: 16,
             },
             size,
-            main_color,
-            secondary_color,
-            include_str!("./svg/pirate.svg").to_string(),
+            include_str!("./svg/pirate.svg")
+                .to_string()
+                .replace(
+                    "{main}",
+                    &graphics::u32_to_hex_without_alpha(main_color),
+                )
+                .replace(
+                    "{secondary}",
+                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                ),
         )
-        .ok_or_else(|| "pirate.svg".to_string())?;
+        .map_err(|_| "pirate.svg".to_string())?;
 
         let pointer = load_base_cursor_with_file(
             BaseCursor {
@@ -478,11 +661,18 @@ impl Cursors {
                 hot_spot_y: 7,
             },
             size,
-            main_color,
-            secondary_color,
-            include_str!("./svg/pointer.svg").to_string(),
+            include_str!("./svg/pointer.svg")
+                .to_string()
+                .replace(
+                    "{main}",
+                    &graphics::u32_to_hex_without_alpha(main_color),
+                )
+                .replace(
+                    "{secondary}",
+                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                ),
         )
-        .ok_or_else(|| "pointer.svg".to_string())?;
+        .map_err(|_| "pointer.svg".to_string())?;
 
         let arrow_right = load_base_cursor_with_file(
             BaseCursor {
@@ -490,11 +680,18 @@ impl Cursors {
                 hot_spot_y: 16,
             },
             size,
-            main_color,
-            secondary_color,
-            include_str!("./svg/right-arrow.svg").to_string(),
+            include_str!("./svg/right-arrow.svg")
+                .to_string()
+                .replace(
+                    "{main}",
+                    &graphics::u32_to_hex_without_alpha(main_color),
+                )
+                .replace(
+                    "{secondary}",
+                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                ),
         )
-        .ok_or_else(|| "right-arrow.svg".to_string())?;
+        .map_err(|_| "right-arrow.svg".to_string())?;
 
         let mirrored_pointer = load_base_cursor_with_file(
             BaseCursor {
@@ -502,11 +699,18 @@ impl Cursors {
                 hot_spot_y: 4,
             },
             size,
-            main_color,
-            secondary_color,
-            include_str!("./svg/right_ptr.svg").to_string(),
+            include_str!("./svg/right_ptr.svg")
+                .to_string()
+                .replace(
+                    "{main}",
+                    &graphics::u32_to_hex_without_alpha(main_color),
+                )
+                .replace(
+                    "{secondary}",
+                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                ),
         )
-        .ok_or_else(|| "right_ptr.svg".to_string())?;
+        .map_err(|_| "right_ptr.svg".to_string())?;
 
         let side_right = load_base_cursor_with_file(
             BaseCursor {
@@ -514,11 +718,18 @@ impl Cursors {
                 hot_spot_y: 16,
             },
             size,
-            main_color,
-            secondary_color,
-            include_str!("./svg/right_side.svg").to_string(),
+            include_str!("./svg/right_side.svg")
+                .to_string()
+                .replace(
+                    "{main}",
+                    &graphics::u32_to_hex_without_alpha(main_color),
+                )
+                .replace(
+                    "{secondary}",
+                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                ),
         )
-        .ok_or_else(|| "right_side.svg".to_string())?;
+        .map_err(|_| "right_side.svg".to_string())?;
 
         let size_nesw = load_base_cursor_with_file(
             BaseCursor {
@@ -526,11 +737,18 @@ impl Cursors {
                 hot_spot_y: 16,
             },
             size,
-            main_color,
-            secondary_color,
-            include_str!("./svg/size_nesw.svg").to_string(),
+            include_str!("./svg/size_nesw.svg")
+                .to_string()
+                .replace(
+                    "{main}",
+                    &graphics::u32_to_hex_without_alpha(main_color),
+                )
+                .replace(
+                    "{secondary}",
+                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                ),
         )
-        .ok_or_else(|| "size_nesw.svg".to_string())?;
+        .map_err(|_| "size_nesw.svg".to_string())?;
 
         let size_nwse = load_base_cursor_with_file(
             BaseCursor {
@@ -538,11 +756,18 @@ impl Cursors {
                 hot_spot_y: 16,
             },
             size,
-            main_color,
-            secondary_color,
-            include_str!("./svg/size_nwse.svg").to_string(),
+            include_str!("./svg/size_nwse.svg")
+                .to_string()
+                .replace(
+                    "{main}",
+                    &graphics::u32_to_hex_without_alpha(main_color),
+                )
+                .replace(
+                    "{secondary}",
+                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                ),
         )
-        .ok_or_else(|| "size_nwse.svg".to_string())?;
+        .map_err(|_| "size_nwse.svg".to_string())?;
 
         let size_hor = load_base_cursor_with_file(
             BaseCursor {
@@ -550,11 +775,18 @@ impl Cursors {
                 hot_spot_y: 16,
             },
             size,
-            main_color,
-            secondary_color,
-            include_str!("./svg/size_hor.svg").to_string(),
+            include_str!("./svg/size_hor.svg")
+                .to_string()
+                .replace(
+                    "{main}",
+                    &graphics::u32_to_hex_without_alpha(main_color),
+                )
+                .replace(
+                    "{secondary}",
+                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                ),
         )
-        .ok_or_else(|| "size_hor.svg".to_string())?;
+        .map_err(|_| "size_hor.svg".to_string())?;
 
         let size_ver = load_base_cursor_with_file(
             BaseCursor {
@@ -562,23 +794,37 @@ impl Cursors {
                 hot_spot_y: 16,
             },
             size,
-            main_color,
-            secondary_color,
-            include_str!("./svg/size_ver.svg").to_string(),
+            include_str!("./svg/size_ver.svg")
+                .to_string()
+                .replace(
+                    "{main}",
+                    &graphics::u32_to_hex_without_alpha(main_color),
+                )
+                .replace(
+                    "{secondary}",
+                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                ),
         )
-        .ok_or_else(|| "size_ver.svg".to_string())?;
+        .map_err(|_| "size_ver.svg".to_string())?;
 
         let text = load_base_cursor_with_file(
             BaseCursor {
-                hot_spot_x: 16,
+                hot_spot_x: 15,
                 hot_spot_y: 16,
             },
             size,
-            main_color,
-            secondary_color,
-            include_str!("./svg/text.svg").to_string(),
+            include_str!("./svg/text.svg")
+                .to_string()
+                .replace(
+                    "{main}",
+                    &graphics::u32_to_hex_without_alpha(main_color),
+                )
+                .replace(
+                    "{secondary}",
+                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                ),
         )
-        .ok_or_else(|| "text.svg".to_string())?;
+        .map_err(|_| "text.svg".to_string())?;
 
         let arrow_top_left = load_base_cursor_with_file(
             BaseCursor {
@@ -586,11 +832,18 @@ impl Cursors {
                 hot_spot_y: 9,
             },
             size,
-            main_color,
-            secondary_color,
-            include_str!("./svg/top_left_corner.svg").to_string(),
+            include_str!("./svg/top_left_corner.svg")
+                .to_string()
+                .replace(
+                    "{main}",
+                    &graphics::u32_to_hex_without_alpha(main_color),
+                )
+                .replace(
+                    "{secondary}",
+                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                ),
         )
-        .ok_or_else(|| "top_left_corner.svg".to_string())?;
+        .map_err(|_| "top_left_corner.svg".to_string())?;
 
         let arrow_top_right = load_base_cursor_with_file(
             BaseCursor {
@@ -598,11 +851,18 @@ impl Cursors {
                 hot_spot_y: 9,
             },
             size,
-            main_color,
-            secondary_color,
-            include_str!("./svg/top_right_corner.svg").to_string(),
+            include_str!("./svg/top_right_corner.svg")
+                .to_string()
+                .replace(
+                    "{main}",
+                    &graphics::u32_to_hex_without_alpha(main_color),
+                )
+                .replace(
+                    "{secondary}",
+                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                ),
         )
-        .ok_or_else(|| "top_right_corner.svg".to_string())?;
+        .map_err(|_| "top_right_corner.svg".to_string())?;
 
         let side_top = load_base_cursor_with_file(
             BaseCursor {
@@ -610,11 +870,18 @@ impl Cursors {
                 hot_spot_y: 4,
             },
             size,
-            main_color,
-            secondary_color,
-            include_str!("./svg/top_side.svg").to_string(),
+            include_str!("./svg/top_side.svg")
+                .to_string()
+                .replace(
+                    "{main}",
+                    &graphics::u32_to_hex_without_alpha(main_color),
+                )
+                .replace(
+                    "{secondary}",
+                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                ),
         )
-        .ok_or_else(|| "top_side.svg".to_string())?;
+        .map_err(|_| "top_side.svg".to_string())?;
 
         let arrow_up = load_base_cursor_with_file(
             BaseCursor {
@@ -622,11 +889,18 @@ impl Cursors {
                 hot_spot_y: 4,
             },
             size,
-            main_color,
-            secondary_color,
-            include_str!("./svg/up-arrow.svg").to_string(),
+            include_str!("./svg/up-arrow.svg")
+                .to_string()
+                .replace(
+                    "{main}",
+                    &graphics::u32_to_hex_without_alpha(main_color),
+                )
+                .replace(
+                    "{secondary}",
+                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                ),
         )
-        .ok_or_else(|| "up-arrow.svg".to_string())?;
+        .map_err(|_| "up-arrow.svg".to_string())?;
 
         let vertical_text = load_base_cursor_with_file(
             BaseCursor {
@@ -634,11 +908,18 @@ impl Cursors {
                 hot_spot_y: 16,
             },
             size,
-            main_color,
-            secondary_color,
-            include_str!("./svg/vertical-text.svg").to_string(),
+            include_str!("./svg/vertical-text.svg")
+                .to_string()
+                .replace(
+                    "{main}",
+                    &graphics::u32_to_hex_without_alpha(main_color),
+                )
+                .replace(
+                    "{secondary}",
+                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                ),
         )
-        .ok_or_else(|| "vertical-text.svg".to_string())?;
+        .map_err(|_| "vertical-text.svg".to_string())?;
 
         let zoom_in = load_base_cursor_with_file(
             BaseCursor {
@@ -646,11 +927,18 @@ impl Cursors {
                 hot_spot_y: 16,
             },
             size,
-            main_color,
-            secondary_color,
-            include_str!("./svg/zoom-in.svg").to_string(),
+            include_str!("./svg/zoom-in.svg")
+                .to_string()
+                .replace(
+                    "{main}",
+                    &graphics::u32_to_hex_without_alpha(main_color),
+                )
+                .replace(
+                    "{secondary}",
+                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                ),
         )
-        .ok_or_else(|| "zoom-in.svg".to_string())?;
+        .map_err(|_| "zoom-in.svg".to_string())?;
 
         let zoom_out = load_base_cursor_with_file(
             BaseCursor {
@@ -658,11 +946,18 @@ impl Cursors {
                 hot_spot_y: 16,
             },
             size,
-            main_color,
-            secondary_color,
-            include_str!("./svg/zoom-out.svg").to_string(),
+            include_str!("./svg/zoom-out.svg")
+                .to_string()
+                .replace(
+                    "{main}",
+                    &graphics::u32_to_hex_without_alpha(main_color),
+                )
+                .replace(
+                    "{secondary}",
+                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                ),
         )
-        .ok_or_else(|| "zoom-out.svg".to_string())?;
+        .map_err(|_| "zoom-out.svg".to_string())?;
 
         Ok(Self {
             alias,
@@ -726,8 +1021,8 @@ impl Cursors {
             CursorStyle::Copy => &self.copy,
             CursorStyle::Crosshair => &self.crosshair,
             CursorStyle::Default => &self.default,
-            CursorStyle::ClosedHand => &self.closed_hand,
-            CursorStyle::ClosedHandNoDrop => &self.closed_hand_no_drop,
+            CursorStyle::HandClosed => &self.closed_hand,
+            CursorStyle::HandClosedNoDrop => &self.closed_hand_no_drop,
             CursorStyle::ArrowDown => &self.arrow_down,
             CursorStyle::Draft => &self.draft,
             CursorStyle::Fleur => &self.fleur,
@@ -736,7 +1031,7 @@ impl Cursors {
             CursorStyle::SideLeft => &self.side_left,
             CursorStyle::NoDrop => &self.no_drop,
             CursorStyle::NotAllowed => &self.not_allowed,
-            CursorStyle::OpenHand => &self.open_hand,
+            CursorStyle::HandOpen => &self.open_hand,
             CursorStyle::Pencil => &self.pencil,
             CursorStyle::Pirate => &self.pirate,
             CursorStyle::Pointer => &self.pointer,
@@ -758,7 +1053,6 @@ impl Cursors {
         }
     }
 }
-
 /// Holds information any cursor would need
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct BaseCursor {

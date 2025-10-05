@@ -7,28 +7,38 @@ use windows::{
 
 use super::{cursor_resolution, BaseCursor, Cursor};
 use crate::extensions::*;
-use crate::graphics::{
-    pixmap_to_buffer, rasterize_svg, u32_to_hex, u32_to_rgba,
-};
+use crate::graphics::{pixmap_to_buffer, rasterize_svg, u32_to_rgba};
 use crate::platform::Buffer;
 
-fn load_cursor(
-    size: U2,
+/// Load a custom cursor
+// /// Size:
+// /// 0.into(): 32x32
+// /// 1.into(): 64x64
+// /// 2.into(): 128x128
+// /// 3.into(): 256x256
+/// # Errors
+/// When no tempfile could be created
+/// When the tempfile could not be deleted
+pub fn load_cursor(
+    //size: U2,
     image_data: &Buffer,
     hotspot_x: u16,
     hotspot_y: u16,
-) -> Option<HCURSOR> {
-    let size = cursor_resolution(size);
+) -> std::result::Result<HCURSOR, &'static str> {
+    //let size = cursor_resolution(size);
 
-    let (file_path, temp_file) = create_temp_file(&create_cursor(
-        size, size, hotspot_x, hotspot_y, image_data,
-    ))
-    .ok()?;
+    let Ok((file_path, temp_file)) =
+        create_temp_file(&create_cursor(hotspot_x, hotspot_y, image_data))
+    else {
+        return Err("Unable to create a tempfile");
+    };
     let _ = temp_file.keep();
 
     let temp = load_cursor_file(&file_path);
-    delete_temp_file(&file_path).ok()?;
-    temp
+    if delete_temp_file(&file_path).is_err() {
+        return Err("Unable to delete the cursor tempfile");
+    }
+    temp.map_or(Err("Unable to load cursor (problem with os?)"), Ok)
 }
 
 // fn load_base_cursor(
@@ -72,78 +82,63 @@ fn load_cursor(
 //     );
 // }
 
-/// Load a cursor SVG and replace it's placeholders with actual colors
-#[must_use]
+/// Load a cursor SVG 
+/// 
+/// # Errors
+/// When the image could not be rasterized
 #[allow(clippy::needless_pass_by_value)]
 pub fn load_base_cursor_with_file(
     cursor: BaseCursor,
     size: U2,
-    main_color: u32,
-    secondary_color: u32,
     svg_data: String,
-) -> Option<Cursor> {
-    // let svg_size = 16; // WHO TF MAKES THE CURSOR NOT A MULTIPLE OF 16 ???
-
+) -> std::result::Result<Cursor, String> {
     let wanted_size = cursor_resolution(size);
 
-    //let path = get_cursor_path(&cursor.file_path.to_string());
-    //let svg_data = std::fs::read_to_string(path).unwrap();
-    // if svg has one {}, insert main_color, if svg has two {}, insert main_color, secondary_color
-    
-    let result_svg =
-        svg_data.replace_first_occurrence("{main}", &u32_to_hex(main_color));
-    let result_svg = result_svg
-        .replace_first_occurrence("{secondary}", &u32_to_hex(secondary_color));
-
-    let image_data = rasterize_svg(
-        result_svg.as_bytes(),
+    let Ok(image_data) = rasterize_svg(
+        svg_data.as_bytes(),
         u32::from(wanted_size),
         u32::from(wanted_size),
-    )
-    .ok()?;
+    ) else {
+        return Err("Unable to rasterize svg".to_string());
+    };
 
-    // // Adjust hotspot because of the psycho who made the cursor not a multiple of 16
-    // let adjusted_hotspot_x = ((cursor.hot_spot_x as f64 / svg_size as f64)
-    //     * wanted_size as f64)
-    //     .round() as u16;
-    // let adjusted_hotspot_y = ((cursor.hot_spot_y as f64 / svg_size as f64)
-    //     * wanted_size as f64)
-    //     .round() as u16;
-    load_cursor(
-        //&extract_file_name_without_extension(&cursor.file_path),
-        size,
+    match load_cursor(
         &pixmap_to_buffer(&image_data),
         cursor.hot_spot_x,
         cursor.hot_spot_y,
-    )
-    .map(Cursor::Win)
+    ) {
+        Ok(v) => Ok(Cursor::Win(v)),
+        Err(e) => Err(e.to_string()),
+    }
 }
 
 /// Expects .cur file
-fn load_cursor_file(file_path: &str) -> Option<HCURSOR> {
+fn load_cursor_file(
+    file_path: &str,
+) -> std::result::Result<HCURSOR, &'static str> {
     unsafe {
-        let filename = std::ffi::CString::new(file_path).ok()?; // null-terminated C-style byte string
-        let cursor =
-            LoadCursorFromFileA(PCSTR(filename.as_ptr().cast::<u8>())).ok()?;
+        let Some(filename) = std::ffi::CString::new(file_path).ok() else {
+            return Err("Unable to create null-terminated C-style byte string from file path");
+        };
+        let Ok(cursor) =
+            LoadCursorFromFileA(PCSTR(filename.as_ptr().cast::<u8>()))
+        else {
+            return Err("why");
+        };
         assert!(cursor.0 != 0, "Failed to load cursor");
-        Some(cursor)
+        Ok(cursor)
     }
 }
-fn create_cursor(
-    width: u8,
-    height: u8,
-    hotspot_x: u16,
-    hotspot_y: u16,
-    image: &Buffer,
-) -> Vec<u8> {
+fn create_cursor(hotspot_x: u16, hotspot_y: u16, image: &Buffer) -> Vec<u8> {
     let mut cursor_buffer: Vec<u8> = Vec::new();
-    if false {
-        // Enabling this shows where the cursor will click
-        image.set_pixel_safe(
-            (hotspot_x as usize, hotspot_y as usize),
-            crate::graphics::color_presets::PURE_RED,
-        );
-    }
+    #[cfg(feature = "cursor_show_hotspot")]
+    // Enabling this shows where the cursor will click
+    image.set_pixel_safe(
+        (hotspot_x as usize, hotspot_y as usize),
+        crate::graphics::color_presets::PURE_RED,
+    );
+    let width = image.width as u8;
+    let height = image.height as u8;
 
     // ICONDIR (6 bytes)
     cursor_buffer.extend(&[0x00, 0x00]); // Reserved
@@ -328,8 +323,8 @@ pub unsafe fn update_cursor(cursor: &HCURSOR) {
 //         CursorStyle::ContextMenu => &cursors.context_menu,
 //         CursorStyle::Copy => &cursors.copy,
 //         CursorStyle::Crosshair => &cursors.crosshair,
-//         CursorStyle::ClosedHand => &cursors.dnd_move,
-//         CursorStyle::ClosedHandNoDrop => &cursors.dnd_no_drop,
+//         CursorStyle::HandClosed => &cursors.dnd_move,
+//         CursorStyle::HandClosedNoDrop => &cursors.dnd_no_drop,
 //         CursorStyle::DownArrow => &cursors.down_arrow,
 //         CursorStyle::Draft => &cursors.draft,
 //         CursorStyle::Fleur => &cursors.fleur,
@@ -338,7 +333,7 @@ pub unsafe fn update_cursor(cursor: &HCURSOR) {
 //         CursorStyle::LeftSide => &cursors.left_side,
 //         CursorStyle::NoDrop => &cursors.no_drop,
 //         CursorStyle::NotAllowed => &cursors.not_allowed,
-//         CursorStyle::OpenHand => &cursors.open_hand,
+//         CursorStyle::HandOpen => &cursors.open_hand,
 //         CursorStyle::Pencil => &cursors.pencil,
 //         CursorStyle::Pirate => &cursors.pirate,
 //         CursorStyle::Pointer => &cursors.pointer,

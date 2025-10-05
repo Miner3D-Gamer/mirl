@@ -260,6 +260,7 @@ macro_rules! define_keys {
         }
     };
 }
+#[const_trait]
 /// Convert from a string to a Vec<KeyCode>
 pub trait StringToKeyCodes {
     /// Convert from a string to a Vec<KeyCode>

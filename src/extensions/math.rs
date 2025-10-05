@@ -2,6 +2,7 @@
 #![allow(clippy::cast_precision_loss)]
 #![allow(clippy::cast_possible_truncation)]
 /// A trait for numbers to support `sign()`
+#[const_trait]
 pub trait Sign {
     /// Returns the sign of the number -> -1, 0, 1
     #[must_use]
@@ -41,6 +42,7 @@ impl_sign_float!(f32, f64);
 //     T::try_from(value).ok().expect("constant u8 conversion failed")
 // }
 /// A trait for making numbers support `sqrt()`
+#[const_trait]
 pub trait Sqrt {
     /// Return the square root of a number
     #[must_use]
@@ -69,6 +71,7 @@ impl_sqrt!(isize);
 
 use num_traits::{bounds, cast, identities, sign};
 
+#[const_trait]
 /// Add a signed number to a non signed number
 pub trait AddSign<T> {
     /// Simple addition of the possibly negative number (mutating)
@@ -160,6 +163,7 @@ where
     }
 }
 
+#[const_trait]
 /// Trait for mapping between signed and unsigned integer types
 pub trait MapToSign {
     /// Signed Version
@@ -170,6 +174,7 @@ pub trait MapToSign {
     /// Map from unsigned back to signed by flipping the sign bit
     fn map_non_sign_to_sign(&self) -> Self::Signed;
 }
+#[const_trait]
 /// Trait for mapping between signed and unsigned integer types
 pub trait MapToUnSign {
     /// Signed Version

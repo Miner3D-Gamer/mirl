@@ -1,6 +1,7 @@
 /// The simplest actions you would expect from interacting with the os
 ///
 /// TODO: Add error handling (Currently silent)
+#[const_trait]
 pub trait Default {
     /// Set the position of a window, ¯\_(ツ)_/¯
     fn set_window_position(
@@ -23,6 +24,7 @@ pub trait Default {
     ) -> (i32, i32);
 }
 
+#[const_trait]
 /// Transparency information/Manipulation
 pub trait Transparency {
     /// Culls the given color -> Essentially just a green screen
@@ -36,6 +38,7 @@ pub trait Transparency {
         opacity: u8,
     ) -> bool;
 }
+#[const_trait]
 /// Decoration like os menu manipulation
 pub trait Decoration {
     /// Remove/Give a window their border
@@ -44,6 +47,7 @@ pub trait Decoration {
         boolean: bool,
     ) -> bool;
 }
+#[const_trait]
 /// Stuff I couldn't categorize yet
 pub trait Misc {
     /// The title says it all
@@ -89,6 +93,7 @@ pub trait Misc {
         after: &raw_window_handle::RawWindowHandle,
     ) -> bool;
 }
+#[const_trait]
 /// Additional actions for tinkering with the taskbar
 pub trait TaskBar {
     // fn flash(handle: &raw_window_handle::RawWindowHandle);

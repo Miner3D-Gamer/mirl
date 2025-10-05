@@ -36,7 +36,7 @@ impl Buffer {
         &self,
         width: usize,
         height: usize,
-        resize_mode: InterpolationMode,
+        resizing_method: InterpolationMode,
     ) -> Self {
         let mut new = Self::new_empty(width, height);
         let b = resize_buffer(
@@ -45,7 +45,7 @@ impl Buffer {
             self.height,
             width,
             height,
-            resize_mode,
+            resizing_method,
         );
         new.data.copy_from_slice(&b);
         new

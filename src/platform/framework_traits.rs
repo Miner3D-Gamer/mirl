@@ -4,10 +4,12 @@ use super::{Buffer, MouseButton, Time};
 use crate::extensions::*;
 use crate::platform::keycodes::KeyCode;
 
+#[const_trait]
 /// Most basic of framework functionality
 pub trait Framework: Window + Input + Output + Timing {}
 impl<T: Window + Input + Output + Timing> Framework for T {}
 /// Framework with all functionality it could support
+#[const_trait]
 pub trait ExtendedFramework<MouseManagerScrollAccuracy: num_traits::Float>:
     Framework
     + ExtendedInput<MouseManagerScrollAccuracy>
@@ -52,6 +54,7 @@ pub enum Errors {
     },
 }
 
+#[const_trait]
 /// A window instance with only the most basic of functionality
 pub trait Window {
     /// ### Create a new window with the desired settings
@@ -78,6 +81,7 @@ pub trait Window {
     /// Clean up any remaining data after closing -> Otherwise memory leaks might happen
     fn clean_up(&self) {}
 }
+#[const_trait]
 /// Basic input detection
 pub trait Input {
     /// Gets the current mouse position
@@ -88,6 +92,7 @@ pub trait Input {
     /// Checks if the requested mouse button is down
     fn is_mouse_down(&self, button: MouseButton) -> bool;
 }
+#[const_trait]
 #[cfg(not(feature = "do_not_compile_extension_tuple_support"))]
 /// Get the relative mouse position
 pub trait RelativeMousePos {
@@ -103,12 +108,14 @@ impl<T: Input + Control> RelativeMousePos for T {
     }
 }
 
+#[const_trait]
 /// Basic logging
 pub trait Output {
     /// Log the given object (to the terminal)
     fn log(&self, t: &str);
 }
 
+#[const_trait]
 /// Basic timing control
 pub trait Timing {
     /// Get the current time
@@ -118,11 +125,13 @@ pub trait Timing {
     /// Get
     fn get_delta_time(&mut self) -> f64;
 }
+#[const_trait]
 /// Advanced timing control
 pub trait ExtendedTiming {
     /// Automatically set the max fps, use manual fps management for more control
     fn set_target_fps(&mut self, fps: usize);
 }
+#[const_trait]
 /// More advanced input methods
 pub trait ExtendedInput<MouseManagerScrollAccuracy: num_traits::Float> {
     /// Get how much the mouse has been scrolled on its wheel (x, y)
@@ -132,6 +141,7 @@ pub trait ExtendedInput<MouseManagerScrollAccuracy: num_traits::Float> {
     /// Get all currently pressed keys
     fn get_all_keys_down(&self) -> Vec<KeyCode>;
 }
+#[const_trait]
 /// More 'advanced' window control
 pub trait ExtendedWindow {
     /// Set the title (Duh)
@@ -143,30 +153,35 @@ pub trait ExtendedWindow {
     /// Get the current window handle
     fn get_window_handle(&self) -> raw_window_handle::RawWindowHandle;
 }
+#[const_trait]
 #[cfg(feature = "resvg")]
 /// Control over the cursor style while the mouse of hovering over it
 pub trait CursorStyleControl {
     /// Set what cursors the os should display on the current window
     fn set_cursor_style(&mut self, style: &Cursor) -> Errors;
     /// Load the custom cursors Mirl provides by default
-    /// Be aware that this loading a bunch of textures (11010720 bytes to be exact), you may need to increase the stack size using:
-    /// ```
-    /// std::thread::Builder::new()
-    ///     .stack_size(32 * mirl::constants::bytes::MB)
-    ///     .spawn({main_loop_function});
-    /// ```
-    /// 32 MB should be enough, less is unstable, more may be wasteful.
     ///
     /// # Errors
-    /// If it was unable to load the custom cursors, it returns the file name of the cursor that failed
-    fn load_custom_cursor(
+    /// If it was unable to load the custom cursors, it returns the file name of the cursor that failed - This should only ever happen when a file corrupted
+    fn load_custom_cursors(
         &mut self,
         size: U2,
         main_color: u32,
         secondary_color: u32,
     ) -> Result<super::mouse::Cursors, String>;
+    /// Load your own custom cursor
+    /// Just make sure the size of the buffer is 32x32, 64x64, 128x128 or 256x256
+    ///
+    /// # Errors
+    /// String explaining what went wrong
+    fn load_custom_cursor(
+        &mut self,
+        image: super::Buffer,
+        hotspot: (u8, u8),
+    ) -> Result<super::mouse::Cursor, String>;
 }
 
+#[const_trait]
 /// Simple window management
 pub trait Control {
     /// Set the window position relative to its current position
@@ -183,6 +198,7 @@ pub trait Control {
     /// Get the size of the window
     fn get_size(&self) -> (isize, isize);
 }
+#[const_trait]
 /// More complex window controls
 pub trait ExtendedControl {
     /// Set the window layer like topmost, bottommost, and default

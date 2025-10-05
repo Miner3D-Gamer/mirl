@@ -3,6 +3,7 @@ use std::ops::Div;
 
 use num_traits::{SaturatingAdd, SaturatingMul, SaturatingSub};
 
+#[const_trait]
 pub trait SaturatingTupleOps<Rhs = Self> {
     type Output;
     fn saturating_add(self, rhs: Rhs) -> Self::Output;

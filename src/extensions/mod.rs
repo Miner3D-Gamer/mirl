@@ -38,6 +38,10 @@ pub use math::*;
 mod cell;
 pub use cell::*;
 
+mod error;
+pub use error::*;
+
+#[const_trait]
 /// A trait that allows for data to repeat
 pub trait RepeatData
 where
@@ -55,6 +59,7 @@ impl<T: Sized + Clone> RepeatData for T {
 pub mod lists;
 pub use lists::traits::*;
 
+#[const_trait]
 /// Writing out {variable} = `std::default::Default::default()`; is annoying, if only there was a function you could call from the variable itself.
 pub trait SetToDefault {
     /// Set the value to its default form

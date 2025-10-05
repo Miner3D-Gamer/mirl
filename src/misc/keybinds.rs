@@ -90,3 +90,43 @@ pub fn sort_actions<T: Clone>(actions: Vec<KeyBind<T>>) -> Vec<KeyBind<T>> {
 
     new_actions
 }
+#[must_use]
+#[allow(clippy::ptr_arg)]
+/// Using the available keybinds, newly pressed, and held keys. Determines what keybinds have activated
+/// 
+/// Returns: Activated [`KeyBind`]s, remaining [`KeyCode`]s
+pub fn handle_keycodes<T: Clone>(
+    keybinds: &Vec<KeyBind<T>>,
+    newly_pressed: &[KeyCode],
+    held: &[KeyCode],
+) -> (Vec<KeyBind<T>>, Vec<KeyCode>) {
+    let mut newly_pressed = newly_pressed.to_vec();
+
+    let control_down = held.contains(&KeyCode::LeftControl)
+        || held.contains(&KeyCode::RightControl);
+    let alt_down =
+        held.contains(&KeyCode::LeftAlt) || held.contains(&KeyCode::RightAlt);
+    let shift_down = held.contains(&KeyCode::LeftShift)
+        || held.contains(&KeyCode::RightShift);
+
+    let mut active_keybinds = Vec::new();
+
+    for keybind in keybinds.clone() {
+        //let k = keybind.keybind();
+        let active = keybind.is_keybind_activated(
+            &newly_pressed,
+            shift_down,
+            alt_down,
+            control_down,
+        );
+        if active {
+            active_keybinds.push(keybind);
+        }
+    }
+    let new_actions = sort_actions(active_keybinds);
+
+    for i in &new_actions {
+        i.remove_required_keys(&mut newly_pressed);
+    }
+    (new_actions, newly_pressed)
+}

@@ -4,23 +4,24 @@ use glfw::Action;
 #[cfg(not(feature = "do_not_compile_extension_tuple_support"))]
 use glfw::Context;
 
+use super::framework_traits::{
+    ExtendedControl, ExtendedInput, ExtendedWindow, Output, Timing,
+};
 #[cfg(not(feature = "do_not_compile_extension_tuple_support"))]
 use super::{
     framework_traits::{Control, Input, Window},
     time::NativeTime,
     MouseButton, Time,
 };
-use super::{
-    framework_traits::{
-        ExtendedControl, ExtendedInput, ExtendedWindow, Output, Timing,
-    },
-};
 #[cfg(target_os = "windows")]
 use crate::platform::WindowLevel;
 use crate::{
     extensions::*,
     graphics,
-    platform::{framework_traits::Errors, keycodes::KeyCode},
+    platform::{
+        framework_traits::Errors, keycodes::KeyCode,
+        mouse::cursor_glfw::cursor_from_buffer,
+    },
 };
 use crate::{
     platform::framework_traits::CursorStyleControl,
@@ -343,7 +344,7 @@ impl<MouseManagerScrollAccuracy: num_traits::Float> CursorStyleControl
         super::mouse::use_cursor(style, Some(&mut self.window))
     }
     #[cfg(feature = "resvg")]
-    fn load_custom_cursor(
+    fn load_custom_cursors(
         &mut self,
         size: crate::extensions::U2,
         main_color: u32,
@@ -355,6 +356,13 @@ impl<MouseManagerScrollAccuracy: num_traits::Float> CursorStyleControl
             secondary_color,
             super::mouse::cursor_glfw::load_base_cursor_with_file,
         )
+    }
+    fn load_custom_cursor(
+        &mut self,
+        image: super::Buffer,
+        hotspot: (u8, u8),
+    ) -> Result<super::mouse::Cursor, String> {
+        Ok(cursor_from_buffer(image, hotspot.tuple_2_into()))
     }
 }
 

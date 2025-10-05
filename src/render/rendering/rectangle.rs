@@ -1,5 +1,5 @@
 use super::{draw_pixel_safe, draw_pixel_unsafe};
-use crate::{platform::Buffer, render::rendering::DrawPixelFunction};
+use crate::platform::Buffer;
 
 /// Draw a simple rectangle
 #[inline]
@@ -124,7 +124,7 @@ pub fn execute_at_rectangle<const SAFE: bool>(
     pos: (isize, isize),
     size: (isize, isize),
     color: u32,
-    function: DrawPixelFunction,
+    function: impl Fn(&Buffer, (usize, usize), u32),
 ) {
     for y in pos.1..pos.1 + size.1 {
         for x in pos.0..pos.0 + size.0 {
@@ -145,14 +145,13 @@ pub fn execute_at_rectangle<const SAFE: bool>(
 #[allow(clippy::cast_precision_loss)]
 #[allow(clippy::cast_possible_truncation)]
 #[allow(clippy::cast_possible_wrap)]
-pub fn draw_rectangle_angled(
+pub fn draw_rectangle_angled<const SAFE: bool>(
     buffer: &Buffer,
     pos: (usize, usize),
     size: (isize, isize),
     color: u32,
     anchor_pos: (usize, usize),
     rotation: f32,
-    safe: bool,
 ) {
     let cos_theta = rotation.cos();
     let sin_theta = rotation.sin();
@@ -173,7 +172,7 @@ pub fn draw_rectangle_angled(
             let final_y =
                 (pos.1 as f32 + rotated_y + anchor_y_offset).round() as isize;
 
-            if safe {
+            if SAFE {
                 if final_x >= 0 && final_y >= 0 {
                     draw_pixel_safe(
                         buffer,

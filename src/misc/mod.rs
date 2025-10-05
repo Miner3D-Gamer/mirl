@@ -530,3 +530,26 @@ pub mod keybinds;
 
 /// A 2d point specialize for lines and columns
 pub mod text_position;
+
+#[macro_export]
+/// Create a compile time warning using deprecation
+macro_rules! compile_warn {
+    ($msg:expr) => {
+        #[deprecated(note = $msg)]
+        const fn deprecated_trigger() {}
+        let _ = deprecated_trigger;
+    };
+}
+#[allow(clippy::implicit_hasher)]
+/// Instead of key -> value, value -> key
+pub fn find_key_by_value<K: Eq + std::hash::Hash + Clone, V: PartialEq>(
+    map: &std::collections::HashMap<K, V>,
+    value: &V,
+) -> Option<K> {
+    for (k, v) in map {
+        if v == value {
+            return Some(k.clone());
+        }
+    }
+    None
+}

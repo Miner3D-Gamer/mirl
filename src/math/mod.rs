@@ -32,15 +32,16 @@ pub fn normalize_vector<T: num_traits::Float>(x: T, y: T, z: T) -> (T, T, T) {
     (x / v, y / v, z / v)
 }
 
+#[const_trait]
 /// A trait for defining a number
 pub trait NumberWithMonotoneOps:
     std::cmp::PartialOrd
     + num_traits::NumCast
-    + std::ops::Add<Output = Self>
-    + std::ops::Sub<Output = Self>
-    + std::ops::Mul<Output = Self>
-    + std::ops::Div<Output = Self>
-    + std::ops::Rem<Output = Self>
+    + [const] std::ops::Add<Output = Self>
+    + [const] std::ops::Sub<Output = Self>
+    + [const] std::ops::Mul<Output = Self>
+    + [const] std::ops::Div<Output = Self>
+    + [const] std::ops::Rem<Output = Self>
 {
 }
 
@@ -57,75 +58,52 @@ impl<
 {
 }
 #[allow(missing_docs)]
-/// An extended version of `num_traits::One` trait going all the way to Ten
+#[const_trait]
 pub trait TwoTillTen<T: num_traits::One + std::ops::Add<Output = T>> {
-    #[must_use]
+    fn two() -> T;
+    fn three() -> T;
+    fn four() -> T;
+    fn five() -> T;
+    fn six() -> T;
+    fn seven() -> T;
+    fn eight() -> T;
+    fn nine() -> T;
+    fn ten() -> T;
+}
+
+impl<T> TwoTillTen<T> for T
+where
+    T: num_traits::One + std::ops::Add<Output = T> + Copy,
+{
     fn two() -> T {
         T::one() + T::one()
     }
-    #[must_use]
     fn three() -> T {
         T::one() + T::one() + T::one()
     }
-    #[must_use]
     fn four() -> T {
-        T::one() + T::one() + T::one() + T::one()
+        Self::two() + Self::two()
     }
-    #[must_use]
     fn five() -> T {
-        T::one() + T::one() + T::one() + T::one() + T::one()
+        Self::four() + T::one()
     }
-    #[must_use]
     fn six() -> T {
-        T::one() + T::one() + T::one() + T::one() + T::one() + T::one()
+        Self::three() + Self::three()
     }
-    #[must_use]
     fn seven() -> T {
-        T::one()
-            + T::one()
-            + T::one()
-            + T::one()
-            + T::one()
-            + T::one()
-            + T::one()
+        Self::six() + T::one()
     }
-    #[must_use]
     fn eight() -> T {
-        T::one()
-            + T::one()
-            + T::one()
-            + T::one()
-            + T::one()
-            + T::one()
-            + T::one()
-            + T::one()
+        Self::four() + Self::four()
     }
-    #[must_use]
     fn nine() -> T {
-        T::one()
-            + T::one()
-            + T::one()
-            + T::one()
-            + T::one()
-            + T::one()
-            + T::one()
-            + T::one()
-            + T::one()
+        Self::eight() + T::one()
     }
-    #[must_use]
     fn ten() -> T {
-        T::one()
-            + T::one()
-            + T::one()
-            + T::one()
-            + T::one()
-            + T::one()
-            + T::one()
-            + T::one()
-            + T::one()
-            + T::one()
+        Self::five() + Self::five()
     }
 }
+
 #[allow(missing_docs)]
 #[const_trait]
 /// An extended version of `num_traits::ConstOne` trait going from 2 to 10
@@ -181,31 +159,29 @@ impl<T: num_traits::ConstOne + const std::ops::Add<Output = T>> const
         + T::ONE;
 }
 
-impl<T: num_traits::One + std::ops::Add<Output = T>> TwoTillTen<T> for T {}
-
+#[const_trait]
 /// A trait for simple but useful operations that weirdly enough do not exist in std
-pub trait ConvenientOps:
-    num_traits::bounds::UpperBounded + Copy + std::cmp::PartialOrd
-{
+pub trait ConvenientOps: UpperBounded + Copy + std::cmp::PartialOrd {
     /// Get the half of a value
     #[must_use]
     fn half(&self) -> Self;
     /// Checks if a value is more than half its maximum
-    fn more_than_half(&self) -> bool {
-        *self > Self::half(&Self::max_value())
-    }
+    fn more_than_half(&self) -> bool;
 }
 impl<
-        T: TwoTillTen<T>
+        T: ConstTwoTillTen
             + NumberWithMonotoneOps
             + Copy
-            + num_traits::bounds::UpperBounded
-            + std::cmp::PartialOrd
-            + num_traits::One,
+            + UpperBounded
+            + ConstPartialOrd
+            + std::ops::Div,
     > ConvenientOps for T
 {
     fn half(&self) -> Self {
-        *self / (Self::two())
+        *self / Self::TWO
+    }
+    fn more_than_half(&self) -> bool {
+        *self > Self::half(&Self::max_value())
     }
 }
 
@@ -274,3 +250,75 @@ impl UniformPreviousNext for f128 {
         Self::MIN_POSITIVE
     }
 }
+
+use core::{f32, f64};
+
+#[const_trait]
+#[allow(missing_docs)]
+/// The upper and lower bound of a value
+pub trait Bounded {
+    fn min_value() -> Self;
+    fn max_value() -> Self;
+}
+
+#[const_trait]
+#[allow(missing_docs)]
+/// The lower limit of a value
+pub trait LowerBounded {
+    fn min_value() -> Self;
+}
+
+impl<T: Bounded> LowerBounded for T {
+    fn min_value() -> T {
+        Bounded::min_value()
+    }
+}
+
+#[const_trait]
+#[allow(missing_docs)]
+/// The upper limit of a value
+pub trait UpperBounded {
+    fn max_value() -> Self;
+}
+
+impl<T: Bounded> UpperBounded for T {
+    fn max_value() -> T {
+        Bounded::max_value()
+    }
+}
+
+macro_rules! bounded_impl {
+    ($t:ty, $min:expr, $max:expr) => {
+        impl Bounded for $t {
+            #[inline]
+            fn min_value() -> $t {
+                $min
+            }
+
+            #[inline]
+            fn max_value() -> $t {
+                $max
+            }
+        }
+    };
+}
+
+bounded_impl!(usize, usize::MIN, usize::MAX);
+bounded_impl!(u8, u8::MIN, u8::MAX);
+bounded_impl!(u16, u16::MIN, u16::MAX);
+bounded_impl!(u32, u32::MIN, u32::MAX);
+bounded_impl!(u64, u64::MIN, u64::MAX);
+bounded_impl!(u128, u128::MIN, u128::MAX);
+
+bounded_impl!(isize, isize::MIN, isize::MAX);
+bounded_impl!(i8, i8::MIN, i8::MAX);
+bounded_impl!(i16, i16::MIN, i16::MAX);
+bounded_impl!(i32, i32::MIN, i32::MAX);
+bounded_impl!(i64, i64::MIN, i64::MAX);
+bounded_impl!(i128, i128::MIN, i128::MAX);
+
+bounded_impl!(f32, f32::MIN, f32::MAX);
+bounded_impl!(f64, f64::MIN, f64::MAX);
+
+mod const_partial_ord;
+pub use const_partial_ord::ConstPartialOrd;

@@ -4,7 +4,7 @@ name = "mirl"
 version = "4.2.0"
 description = "Miners Rust Lib - A collection of ever growing and changing functions and structs. Check the description for compatibility and toggleable features! (Most of the lib is controlled by flags/features)"
 # Compiler
-rust-version = "1.87.0"
+rust-version = "1.88.0"
 edition = "2021"
 # Credit/Misc
 license = "GPL-3.0"
@@ -27,6 +27,8 @@ strum = { version = ">=0.26", optional = true }
 strum_macros = { version = ">=0.26", optional = true }
 
 device_query = { version = "4.0.0", optional = true }
+
+# dear_mirl_gui = { path = "../dear_mirl_gui", optional = true }
 
 parking_lot = "0.12"
 
@@ -144,7 +146,7 @@ system = ["x11", "windows", "winapi", "raw-window-handle"]
 # Font/fontdue support
 font_support = ["fontdue", "once_cell", "font-kit"]
 # Enable all features that add content
-all = ["default", "imagery", "full_backend_support", "do_not_compile_misc"]
+all = ["default", "imagery", "full_backend_support"]
 # Support for the f128 float type
 f128 = []
 # Support for interacting with they keyboard
@@ -154,6 +156,10 @@ do_not_compile_extension_tuple_support = []
 # If set, the misc module will be disabled
 do_not_compile_misc = []
 keyboard_query = ["device_query"]
+# A debug option for showing where the current cursor style will click
+cursor_show_hotspot = []
+# # Enables some extra rendering features for some structs
+# dear_mirl_gui_support = ["dear_mirl_gui"]
 
 
 # Get the current state of the keyboard

@@ -200,7 +200,7 @@ fn copy_list_to_buffer<const N: usize>(
     height: usize,
 ) -> Buffer {
     let mut buffer = Buffer::new_empty(width, height);
-    buffer.data = Box::new(list.data);
+    buffer.data = list.data.to_vec();
     buffer.update_pointer();
     buffer
 }

@@ -31,3 +31,24 @@ impl<const CS: bool, T: NumberWithMonotoneOps + Copy> Circle<T, CS> {
         dx * dx + dy * dy <= self.radius * self.radius
     }
 }
+
+impl<
+        const CS: bool,
+        T: NumberWithMonotoneOps + Copy + num_traits::Zero + num_traits::Float,
+    > Circle<T, CS>
+{
+    /// Get the closest point on the edge to the defined point
+    pub fn get_closest_point_on_edge(&self, point: (T, T)) -> (T, T) {
+        let cx = self.x + self.half_radius;
+        let cy = self.y + self.half_radius;
+        let dx = point.0 - cx;
+        let dy = point.1 - cy;
+        let dist_sq = dx * dx + dy * dy;
+        if dist_sq == T::zero() {
+            return (cx + self.radius, cy); // arbitrary edge point when point == center
+        }
+        let dist = dist_sq.sqrt();
+        let scale = self.radius / dist;
+        (cx + dx * scale, cy + dy * scale)
+    }
+}

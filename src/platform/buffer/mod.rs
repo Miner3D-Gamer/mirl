@@ -3,7 +3,7 @@
 #[derive(PartialEq, Debug, Eq)]
 pub struct Buffer {
     /// Actual color data
-    pub data: Box<[u32]>,
+    pub data: Vec<u32>,
     /// Pointer to the color data
     pub pointer: *mut u32,
     /// Width of the buffer
@@ -13,7 +13,10 @@ pub struct Buffer {
     /// The total size -> width*height
     pub total_size: usize,
 }
+unsafe impl std::marker::Send for Buffer {}
+unsafe impl std::marker::Sync for Buffer {}
 
+mod collision_support;
 mod get_converted;
 mod get_pixel;
 mod manipulate;
@@ -21,7 +24,7 @@ mod new;
 mod set_color;
 mod set_pixel;
 mod trim;
-mod collision_support;
+mod misc;
 
 /// A const buffer making money on more compile time optimizations
 pub mod const_buffer;
@@ -38,7 +41,7 @@ impl Deref for Buffer {
 
 impl Buffer {
     /// Update internal pointer
-    pub fn update_pointer(&mut self) {
+    pub const fn update_pointer(&mut self) {
         self.pointer = self.data.as_mut_ptr();
     }
     /// Update the total size of the buffer

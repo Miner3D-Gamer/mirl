@@ -1,7 +1,7 @@
 use std::io::Read;
 
 use crate::platform::file_system::{
-    file_data::DataType, FileData, FileSystem,
+    file_data::DataType, FileData, FileSystem, FileSystemNew,
 };
 
 /// Implementation of `FileSystem` for Native use only
@@ -10,8 +10,7 @@ pub struct NativeFileSystem {
     exe_path: std::path::PathBuf,
     src_path: Option<std::path::PathBuf>,
 }
-
-impl FileSystem for NativeFileSystem {
+impl FileSystemNew for NativeFileSystem {
     fn new(
         required_files: Vec<&'static str>,
     ) -> Result<Self, Box<dyn std::error::Error>> {
@@ -46,6 +45,9 @@ impl FileSystem for NativeFileSystem {
 
         Ok(file_system)
     }
+}
+
+impl FileSystem for NativeFileSystem {
     fn get_file_contents(
         &self,
         path: &str,

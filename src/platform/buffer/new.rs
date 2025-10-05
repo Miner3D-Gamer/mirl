@@ -1,10 +1,8 @@
 use super::Buffer;
-
 use crate::extensions::RepeatData;
 use crate::graphics::{rgb_to_u32, rgba_to_u32};
 impl Buffer {
-    #[track_caller]
-    /// Create a new color
+    /// Create a new buffer
     ///
     /// # Errors
     /// When not enough data was provided, an error is returned instead of a Buffer
@@ -21,22 +19,22 @@ impl Buffer {
                 data.len()
             ));
         }
-        let mut buffer = data.into_boxed_slice();
-        let buffer_pointer = buffer.as_mut_ptr();
-        Ok(Self {
-            data: buffer,
-            pointer: buffer_pointer,
+        let mut t = Self {
+            data,
+            pointer: std::ptr::null_mut::<u32>(),
             width,
             height,
             total_size,
-        })
+        };
+        t.update_pointer();
+        Ok(t)
     }
-    
+
     #[must_use]
     /// Create a new, empty, [Buffer]
     pub fn new_empty(width: usize, height: usize) -> Self {
         let total_size = width * height;
-        let mut buffer = 0u32.repeat_value(total_size).into_boxed_slice();
+        let mut buffer = 0u32.repeat_value(total_size);
         let buffer_pointer = buffer.as_mut_ptr();
         Self {
             data: buffer,
@@ -54,7 +52,7 @@ impl Buffer {
         color: u32,
     ) -> Self {
         let total_size = width * height;
-        let mut buffer = vec![color; total_size].into_boxed_slice();
+        let mut buffer = vec![color; total_size];
         let buffer_pointer = buffer.as_mut_ptr();
         Self {
             data: buffer,

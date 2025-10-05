@@ -226,7 +226,7 @@ impl CursorStyleControl for Framework {
         }
         super::mouse::use_cursor(style, None)
     }
-    fn load_custom_cursor(
+    fn load_custom_cursors(
         &mut self,
         size: crate::extensions::U2,
         main_color: u32,
@@ -238,6 +238,19 @@ impl CursorStyleControl for Framework {
             secondary_color,
             load_base_cursor_with_file,
         )
+    }
+    fn load_custom_cursor(
+        &mut self,
+        image: super::Buffer,
+        hotspot: (u8, u8),
+    ) -> Result<super::mouse::Cursor, String> {
+        super::mouse::cursors_windows::load_cursor(
+            &image,
+            u16::from(hotspot.0),
+            u16::from(hotspot.1),
+        )
+        .result_error_into()
+        .map(Cursor::Win)
     }
 }
 
@@ -442,8 +455,8 @@ fn encode_to_ico_format(
 // const fn map_cursor_style(style: CursorStyle) -> minifb::CursorStyle {
 //     match style {
 //         CursorStyle::Default => minifb::CursorStyle::Arrow,
-//         CursorStyle::ClosedHand => minifb::CursorStyle::ClosedHand,
-//         CursorStyle::OpenHand => minifb::CursorStyle::OpenHand,
+//         CursorStyle::HandClosed => minifb::CursorStyle::HandClosed,
+//         CursorStyle::HandOpen => minifb::CursorStyle::HandOpen,
 //         CursorStyle::Insertion => minifb::CursorStyle::Ibeam,
 //         CursorStyle::Crosshair => minifb::CursorStyle::Crosshair,
 //         CursorStyle::ResizeHorizontal => minifb::CursorStyle::ResizeLeftRight,

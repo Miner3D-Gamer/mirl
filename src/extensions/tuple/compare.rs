@@ -1,6 +1,7 @@
 
 use std::cmp::Ordering;
 
+#[const_trait]
 /// Allows for < > >= <= ==
 pub trait TupleCmp<Rhs = Self> {
     /// <

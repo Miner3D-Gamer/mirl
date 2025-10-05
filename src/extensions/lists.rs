@@ -84,14 +84,17 @@ pub fn has_duplicates<T: std::hash::Hash + Eq>(vec: &Vec<T>) -> bool {
 /// Traits for easy function usage
 pub mod traits {
     use crate::extensions::lists::{
-        add_item_to_max_sized_list, average, combined, get_difference_new, get_sub_vec_of_vec, has_duplicates
+        add_item_to_max_sized_list, average, combined, find_in_list,
+        get_difference_new, get_sub_vec_of_vec, has_duplicates,
     };
 
+    #[const_trait]
     /// Add item to list without exceeding the specified maximal size
     pub trait ListPushOrReplaceOnMaxSize<T> {
         /// Add item to list without exceeding the specified maximal size
         fn push_or_replace_on_max_size(&mut self, max_size: usize, item: T);
     }
+    #[const_trait]
     /// Cut out a 2d area from a 1d array and return it as a 1d array
     pub trait ListGetRegion<T: Copy> {
         /// Cut out a 2d area from a 1d array and return it as a 1d array
@@ -104,22 +107,37 @@ pub mod traits {
             cutout_height: usize,
         ) -> Vec<T>;
     }
+    #[const_trait]
     /// Returns what it would be if `T` was pushed onto [`Vec<T>`]
     pub trait ListCombined<T: Clone + Sized> {
         /// Returns what it would be if `T` was pushed onto [`Vec<T>`]
         fn combined(&self, other: T) -> Vec<T>;
     }
+    #[const_trait]
     /// Get additions to a list
     pub trait ListAverage<T: num_traits::Num + num_traits::NumCast + Copy> {
         /// Get additions to a list
         fn average(&self) -> Option<T>;
     }
+    #[const_trait]
     /// Returns if the list has duplicate values
     pub trait ListHasDuplicates<T: std::hash::Hash + Eq> {
         /// Returns if the list has duplicate values
         fn has_duplicates(&self) -> bool;
     }
+    #[const_trait]
+    /// Find the first instance of T
+    pub trait Index<T: std::cmp::PartialEq> {
+        /// Find the first instance of T
+        fn find(&self, item: &T) -> Option<usize>;
+    }
+    impl<T: std::cmp::Eq> Index<T> for Vec<T> {
+        fn find(&self, item: &T) -> Option<usize> {
+            find_in_list(self, item)
+        }
+    }
 
+    #[const_trait]
     /// Get the difference between 2 lists
     pub trait ListGetNewItems<'a, T: std::cmp::PartialEq> {
         /// Get what is new in the list compared to another
@@ -170,9 +188,18 @@ pub mod traits {
             combined(self, other)
         }
     }
-    impl<T: num_traits::Num + num_traits::NumCast + Copy> ListAverage<T> for Vec<T> {
+    impl<T: num_traits::Num + num_traits::NumCast + Copy> ListAverage<T>
+        for Vec<T>
+    {
         fn average(&self) -> Option<T> {
             average(self)
         }
     }
+}
+/// Find an item in a list
+pub fn find_in_list<T: std::cmp::PartialEq>(
+    vec: &[T],
+    item: &T,
+) -> Option<usize> {
+    vec.iter().position(|x| *x == *item)
 }

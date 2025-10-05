@@ -3,18 +3,17 @@ pub use native::*;
 
 /// Why bother reading files if you can't process them? Let [`file_data::FileData`] fix that.
 mod file_data;
-pub use file_data::FileData;
 pub use file_data::DataType;
+pub use file_data::FileData;
 
-#[cfg(feature="font_support")]
+#[cfg(feature = "font_support")]
 mod get_os_font;
-#[cfg(feature="font_support")]
+#[cfg(feature = "font_support")]
 pub use get_os_font::get_default_font;
 
-
-
-/// A trait for a simple file system for possible portability
-pub trait FileSystem {
+#[const_trait]
+/// A helper trait for file systems so the new function is uniform
+pub trait FileSystemNew {
     /// Create a new file system access-er, files that are not defined in `required_files` are not guaranteed to exist
     ///
     /// # Errors
@@ -24,6 +23,11 @@ pub trait FileSystem {
     ) -> Result<Self, Box<dyn std::error::Error>>
     where
         Self: Sized;
+}
+
+#[const_trait]
+/// A trait for a simple file system for possible portability
+pub trait FileSystem {
     /// # Get the contents of a file
     ///
     /// # Errors

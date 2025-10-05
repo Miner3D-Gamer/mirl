@@ -1,8 +1,10 @@
 /// Basic OS info
+#[const_trait]
 pub trait Info {
     /// The name of the os
     fn get_os_name() -> String;
 }
+#[const_trait]
 /// Get memory related info
 pub trait Memory {
     /// The total amount of memory
@@ -10,6 +12,7 @@ pub trait Memory {
     /// The currently remaining amount of memory
     fn get_free_memory(&self) -> u64;
 }
+#[const_trait]
 /// Basic screen information
 pub trait Screen {
     /// The os menu on top of windows
@@ -19,6 +22,7 @@ pub trait Screen {
     /// Height of task bar
     fn get_taskbar_height() -> i32;
 }
+#[const_trait]
 /// Basic Battery information
 pub trait Battery {
     /// From 0 to 100
@@ -28,6 +32,7 @@ pub trait Battery {
     /// If the os is in low power mode
     fn is_in_low_power_mode() -> bool;
 }
+#[const_trait]
 /// Basic Clipboard operations
 // pub trait Clipboard {
 //     fn get_clipboard() -> ClipboardContents;
@@ -38,6 +43,7 @@ pub trait Time {
     /// Get the timezone offset -> How many hours over/under the standart time
     fn get_timezone_offset() -> i8;
 }
+#[const_trait]
 /// Basic network information
 pub trait Network {
     /// Tries to open a connection to the website, Default by None: <http://example.com>

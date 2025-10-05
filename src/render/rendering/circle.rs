@@ -6,23 +6,22 @@ use crate::platform::Buffer;
 #[inline]
 #[allow(clippy::cast_sign_loss)]
 #[allow(clippy::cast_possible_wrap)]
-pub fn draw_circle<const FIX_STRAY_PIXEL: bool>(
+pub fn draw_circle<const SAFE: bool, const FIX_STRAY_PIXEL: bool>(
     buffer: &Buffer,
-    pos_x: usize,
-    pos_y: usize,
+    pos_x: isize,
+    pos_y: isize,
     radius: isize,
     color: u32,
-    safe: bool,
 ) {
     let draw_pixel: DrawPixelFunction = {
-        if safe {
+        if SAFE {
             draw_pixel_safe
         } else {
             draw_pixel_unsafe
         }
     };
-    let pos_x = pos_x as isize;
-    let pos_y = pos_y as isize;
+    // let pos_x = pos_x as isize;
+    // let pos_y = pos_y as isize;
 
     for y in -radius..=radius {
         let dy = y * y;

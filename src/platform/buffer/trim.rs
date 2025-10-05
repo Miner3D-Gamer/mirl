@@ -91,7 +91,7 @@ impl Buffer {
             new_data.extend_from_slice(&self.data[row_start..row_end]);
         }
 
-        self.data = new_data.into();
+        self.data = new_data;
         self.width = new_width;
         self.height = new_height;
     }
