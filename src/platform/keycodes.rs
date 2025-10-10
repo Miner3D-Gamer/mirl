@@ -217,6 +217,11 @@ macro_rules! define_keys {
                     _=>Self::Unknown
                 }
             }
+            #[must_use]
+            /// Converts self to Vec<self>
+            pub fn to_vec(&self) -> Vec<Self> {
+                Vec::from([*self])
+            }
         }
         impl StringToKeyCodes for String {
             fn to_keycodes(&self) -> Vec<KeyCode> {

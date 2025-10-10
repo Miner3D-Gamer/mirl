@@ -1,13 +1,13 @@
 [package]
 # Info
 name = "mirl"
-version = "4.3.0"
+version = "4.3.1"
 description = "Miners Rust Lib - A collection of ever growing and changing functions and structs. Check the description for compatibility and toggleable features! (Most of the lib is controlled by flags/features)"
 # Compiler
 rust-version = "1.88.0"
 edition = "2021"
 # Credit/Misc
-license = "GPL-3.0"
+license = "MIT"
 authors = ["Miner3D"]
 keywords = []
 repository = "https://github.com/Miner3D-Gamer/mirl"

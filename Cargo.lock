@@ -1103,7 +1103,7 @@ dependencies = [
 
 [[package]]
 name = "mirl"
-version = "4.3.0"
+version = "4.3.1"
 dependencies = [
  "ahash",
  "device_query",

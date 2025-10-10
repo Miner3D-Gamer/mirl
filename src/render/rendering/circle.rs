@@ -8,8 +8,7 @@ use crate::platform::Buffer;
 #[allow(clippy::cast_possible_wrap)]
 pub fn draw_circle<const SAFE: bool, const FIX_STRAY_PIXEL: bool>(
     buffer: &Buffer,
-    pos_x: isize,
-    pos_y: isize,
+    pos: (isize, isize),
     radius: isize,
     color: u32,
 ) {
@@ -31,8 +30,8 @@ pub fn draw_circle<const SAFE: bool, const FIX_STRAY_PIXEL: bool>(
         }
 
         for x in -dx..=dx {
-            let x_pos = pos_x + x;
-            let y_pos = pos_y + y;
+            let x_pos = pos.0 + x;
+            let y_pos = pos.1 + y;
 
             if x_pos >= 0 && y_pos >= 0 {
                 draw_pixel(buffer, (x_pos as usize, y_pos as usize), color);
