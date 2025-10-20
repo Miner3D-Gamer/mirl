@@ -1,5 +1,5 @@
 use crate::graphics::{
-    self, get_alpha_of_u32, get_blue_of_u32, get_green_of_u32, get_red_of_u32,
+    self, get_alpha_of_u32_in_u8, get_blue_of_u32_in_u8, get_green_of_u32_in_u8, get_red_of_u32_in_u8,
 };
 
 // #[cfg(feature = "imagery")]
@@ -35,10 +35,10 @@ impl FileData {
                     format!(
                         "Color: {:?} | r{} g{} b{} a{}",
                         color,
-                        get_red_of_u32(color),
-                        get_green_of_u32(color),
-                        get_blue_of_u32(color),
-                        get_alpha_of_u32(color)
+                        get_red_of_u32_in_u8(color),
+                        get_green_of_u32_in_u8(color),
+                        get_blue_of_u32_in_u8(color),
+                        get_alpha_of_u32_in_u8(color)
                     )
                 },
             ),
@@ -161,17 +161,17 @@ impl FileData {
     #[must_use]
     pub fn as_color(&self) -> Option<u32> {
         match self.raw_data.len() {
-            1 => Some(graphics::rgb_to_u32(
+            1 => Some(graphics::rgb_u8_to_u32(
                 self.raw_data[0],
                 self.raw_data[0],
                 self.raw_data[0],
             )),
-            3 => Some(graphics::rgb_to_u32(
+            3 => Some(graphics::rgb_u8_to_u32(
                 self.raw_data[0],
                 self.raw_data[1],
                 self.raw_data[2],
             )),
-            4 => Some(graphics::rgba_to_u32(
+            4 => Some(graphics::rgba_u8_to_u32(
                 self.raw_data[0],
                 self.raw_data[1],
                 self.raw_data[2],

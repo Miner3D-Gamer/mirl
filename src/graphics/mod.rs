@@ -6,32 +6,32 @@ use crate::extensions::*;
 /// Convert an r b g format into u32 argb format
 #[inline(always)]
 #[must_use]
-pub const fn rgb_to_u32(r: u8, g: u8, b: u8) -> u32 {
+pub const fn rgb_u8_to_u32(r: u8, g: u8, b: u8) -> u32 {
     (r as u32) << 16 | (g as u32) << 8 | (b as u32)
 }
 
 /// Convert an r b g format into u32 argb format
 #[inline(always)]
 #[must_use]
-pub const fn rgb_u32_to_u32(r: u32, g: u32, b: u32) -> u32 {
+pub const fn rgb_to_u32(r: u32, g: u32, b: u32) -> u32 {
     r << 16 | g << 8 | b
 }
 #[inline(always)]
 #[must_use]
 /// Convert r g b a in argb format
-pub const fn rgba_to_u32(r: u8, g: u8, b: u8, a: u8) -> u32 {
+pub const fn rgba_u8_to_u32(r: u8, g: u8, b: u8, a: u8) -> u32 {
     (a as u32) << 24 | (r as u32) << 16 | (g as u32) << 8 | b as u32
 }
 #[inline(always)]
 #[must_use]
 /// Convert r g b a into u32 argb
-pub const fn rgba_u32_to_u32(r: u32, g: u32, b: u32, a: u32) -> u32 {
+pub const fn rgba_to_u32(r: u32, g: u32, b: u32, a: u32) -> u32 {
     (a) << 24 | (r) << 16 | (g) << 8 | b
 }
 #[inline(always)]
 #[must_use]
 /// Convert u32 argb to r g b
-pub const fn u32_to_rgb(color: u32) -> (u8, u8, u8) {
+pub const fn u32_to_rgb_u8(color: u32) -> (u8, u8, u8) {
     let red = ((color >> 16) & 0xFF) as u8;
     let green = ((color >> 8) & 0xFF) as u8;
     let blue = (color & 0xFF) as u8;
@@ -40,7 +40,7 @@ pub const fn u32_to_rgb(color: u32) -> (u8, u8, u8) {
 #[inline(always)]
 #[must_use]
 /// Convert u32 argb to r g b
-pub const fn u32_to_rgb_u32(color: u32) -> (u32, u32, u32) {
+pub const fn u32_to_rgb(color: u32) -> (u32, u32, u32) {
     let red = (color >> 16) & 0xFF;
     let green = (color >> 8) & 0xFF;
     let blue = color & 0xFF;
@@ -49,7 +49,7 @@ pub const fn u32_to_rgb_u32(color: u32) -> (u32, u32, u32) {
 #[inline(always)]
 #[must_use]
 /// Convert u32 argb to r g b a or u32 rgba to a g b r
-pub const fn u32_to_rgba(color: u32) -> (u8, u8, u8, u8) {
+pub const fn u32_to_rgba_u8(color: u32) -> (u8, u8, u8, u8) {
     let alpha = ((color >> 24) & 0xFF) as u8;
     let red = ((color >> 16) & 0xFF) as u8;
     let green = ((color >> 8) & 0xFF) as u8;
@@ -59,7 +59,7 @@ pub const fn u32_to_rgba(color: u32) -> (u8, u8, u8, u8) {
 #[inline(always)]
 #[must_use]
 /// Convert u32 argb to r g b a or u32 rgba to a g b r
-pub const fn u32_to_rgba_u32(color: u32) -> (u32, u32, u32, u32) {
+pub const fn u32_to_rgba(color: u32) -> (u32, u32, u32, u32) {
     let alpha = (color >> 24) & 0xFF;
     let red = (color >> 16) & 0xFF;
     let green = (color >> 8) & 0xFF;
@@ -69,7 +69,7 @@ pub const fn u32_to_rgba_u32(color: u32) -> (u32, u32, u32, u32) {
 #[inline(always)]
 #[must_use]
 /// Convert u32 argb to a g b r or u32 rgba to r g b a
-pub const fn u32_to_argb(color: u32) -> (u8, u8, u8, u8) {
+pub const fn u32_to_argb_u8(color: u32) -> (u8, u8, u8, u8) {
     let alpha = ((color >> 24) & 0xFF) as u8;
     let red = ((color >> 16) & 0xFF) as u8;
     let green = ((color >> 8) & 0xFF) as u8;
@@ -79,7 +79,7 @@ pub const fn u32_to_argb(color: u32) -> (u8, u8, u8, u8) {
 #[inline(always)]
 #[must_use]
 /// Convert u32 argb to a g b r or u32 rgba to r g b a
-pub const fn u32_to_argb_u32(color: u32) -> (u32, u32, u32, u32) {
+pub const fn u32_to_argb(color: u32) -> (u32, u32, u32, u32) {
     let alpha = (color >> 24) & 0xFF;
     let red = (color >> 16) & 0xFF;
     let green = (color >> 8) & 0xFF;
@@ -90,26 +90,26 @@ pub const fn u32_to_argb_u32(color: u32) -> (u32, u32, u32, u32) {
 #[inline(always)]
 #[must_use]
 /// Get the alpha of a u32 in argb style, get red rgba style
-pub const fn get_alpha_of_u32(color: u32) -> u8 {
+pub const fn get_alpha_of_u32_in_u8(color: u32) -> u8 {
     ((color >> 24) & 0xFF) as u8
 }
 
 #[inline(always)]
 #[must_use]
 /// Get the red of a u32 in argb style, get alpha rgba style
-pub const fn get_red_of_u32(color: u32) -> u8 {
+pub const fn get_red_of_u32_in_u8(color: u32) -> u8 {
     ((color >> 16) & 0xFF) as u8
 }
 #[inline(always)]
 #[must_use]
 /// Get the green of a u32
-pub const fn get_green_of_u32(color: u32) -> u8 {
+pub const fn get_green_of_u32_in_u8(color: u32) -> u8 {
     ((color >> 8) & 0xFF) as u8
 }
 #[inline(always)]
 #[must_use]
 /// Get the blue of a u32
-pub const fn get_blue_of_u32(color: u32) -> u8 {
+pub const fn get_blue_of_u32_in_u8(color: u32) -> u8 {
     (color & 0xFF) as u8
 }
 //
@@ -117,26 +117,26 @@ pub const fn get_blue_of_u32(color: u32) -> u8 {
 #[inline(always)]
 #[must_use]
 /// Get the alpha of a u32 in argb style, get red rgba style
-pub const fn get_u32_alpha_of_u32(color: u32) -> u32 {
+pub const fn get_alpha_of_u32(color: u32) -> u32 {
     (color >> 24) & 0xFF
 }
 
 #[inline(always)]
 #[must_use]
 /// Get the red of a u32 in argb style, get alpha rgba style
-pub const fn get_u32_red_of_u32(color: u32) -> u32 {
+pub const fn get_red_of_u32(color: u32) -> u32 {
     (color >> 16) & 0xFF
 }
 #[inline(always)]
 #[must_use]
 /// Get the green of a u32
-pub const fn get_u32_green_of_u32(color: u32) -> u32 {
+pub const fn get_green_of_u32(color: u32) -> u32 {
     (color >> 8) & 0xFF
 }
 #[inline(always)]
 #[must_use]
 /// Get the blue of a u32
-pub const fn get_u32_blue_of_u32(color: u32) -> u32 {
+pub const fn get_blue_of_u32(color: u32) -> u32 {
     color & 0xFF
 }
 /// Image support for mirl
@@ -409,9 +409,9 @@ pub fn shift_hue_rgb(
 #[must_use]
 /// Shift the hue of a rgba u32
 pub fn shift_hue_u32(color: u32, hue_shift: f32) -> u32 {
-    let (r, g, b) = u32_to_rgb(color);
+    let (r, g, b) = u32_to_rgb_u8(color);
     let (r, g, b) = shift_hue_rgb(r, g, b, hue_shift);
-    rgb_u32_to_u32(r, g, b)
+    rgb_to_u32(r, g, b)
 }
 #[inline]
 #[must_use]
@@ -425,7 +425,7 @@ pub fn shift_color_u32(color: u32, hue_shift: f32) -> u32 {
     let (r_new, g_new, b_new) =
         shift_color_rgb(red as u8, green as u8, blue as u8, hue_shift);
 
-    rgba_u32_to_u32(r_new, g_new, b_new, alpha)
+    rgba_to_u32(r_new, g_new, b_new, alpha)
 }
 #[cfg(not(feature = "do_not_compile_extension_tuple_support"))]
 #[must_use]
@@ -434,8 +434,7 @@ pub fn shift_color_u32(color: u32, hue_shift: f32) -> u32 {
 /// Adjust the brightness of a rgba u32 color faster than with the function that does it with with human perception in mind
 pub fn adjust_brightness_fast(color: u32, x: i32) -> u32 {
     // Extract color components
-    let (red, green, blue): (i32, i32, i32) =
-        u32_to_rgb_u32(color).tuple_3_into();
+    let (red, green, blue): (i32, i32, i32) = u32_to_rgb(color).tuple_3_into();
 
     // Calculate new values with clamping
     let r_new = (red + x).clamp(0, 255) as u32;
@@ -511,7 +510,7 @@ pub fn pixmap_to_buffer(pixmap: &resvg::tiny_skia::Pixmap) -> Buffer {
     for y in 0..pixmap.height() {
         for x in 0..pixmap.width() {
             let color = unsafe { pixmap.pixel(x, y).unwrap_unchecked() };
-            data.push(rgba_to_u32(
+            data.push(rgba_u8_to_u32(
                 color.red(),
                 color.green(),
                 color.blue(),
@@ -737,14 +736,14 @@ use crate::platform::Buffer;
 #[inline(always)]
 #[must_use]
 pub fn u32_to_hex_without_alpha(color: u32) -> String {
-    let (r, g, b) = u32_to_rgb(color);
+    let (r, g, b) = u32_to_rgb_u8(color);
     format!("{r:02x}{g:02x}{b:02x}")
 }
 /// Convert u32 argb to hex
 #[inline(always)]
 #[must_use]
 pub fn u32_to_hex(color: u32) -> String {
-    let (r, g, b, a) = u32_to_rgba(color);
+    let (r, g, b, a) = u32_to_rgba_u8(color);
     format!("{r:02x}{g:02x}{b:02x}{a:02x}")
 }
 
@@ -758,7 +757,7 @@ pub fn hex_to_u32(hex: &str) -> Result<u32, std::num::ParseIntError> {
     let red = u8::from_str_radix(&hex[2..4], 16)?;
     let green = u8::from_str_radix(&hex[4..6], 16)?;
     let blue = u8::from_str_radix(&hex[6..8], 16)?;
-    Ok(rgba_to_u32(red, green, blue, alpha))
+    Ok(rgba_u8_to_u32(red, green, blue, alpha))
 }
 
 /// Convert hex into u32 rgba
@@ -771,7 +770,7 @@ pub fn hex_to_u32_rgba(hex: &str) -> Result<u32, std::num::ParseIntError> {
     let green = u8::from_str_radix(&hex[2..4], 16)?;
     let blue = u8::from_str_radix(&hex[4..6], 16)?;
     let alpha = u8::from_str_radix(&hex[6..8], 16)?;
-    Ok(argb_to_rgba(rgba_to_u32(red, green, blue, alpha)))
+    Ok(argb_to_rgba(rgba_u8_to_u32(red, green, blue, alpha)))
 }
 
 /// Convert hex into u32 rgb
@@ -783,7 +782,7 @@ pub fn hex_to_u32_rgb(hex: &str) -> Result<u32, std::num::ParseIntError> {
     let red = u8::from_str_radix(&hex[2..4], 16)?;
     let green = u8::from_str_radix(&hex[4..6], 16)?;
     let blue = u8::from_str_radix(&hex[6..8], 16)?;
-    Ok(rgb_to_u32(red, green, blue))
+    Ok(rgb_u8_to_u32(red, green, blue))
 }
 #[must_use]
 /// Converts rgb into hex
@@ -794,20 +793,20 @@ pub fn rgb_to_hex(r: u8, g: u8, b: u8) -> String {
 /// Converts argb to rgba color
 #[must_use]
 pub const fn argb_to_rgba(color: u32) -> u32 {
-    let (a, r, g, b) = u32_to_argb(color);
-    rgba_to_u32(a, g, b, r)
+    let (a, r, g, b) = u32_to_argb_u8(color);
+    rgba_u8_to_u32(a, g, b, r)
 }
 /// Converts argb to abgr color
 #[must_use]
 pub const fn switch_red_and_blue(color: u32) -> u32 {
-    let (a, r, g, b) = u32_to_argb(color);
-    rgba_to_u32(b, g, r, a)
+    let (a, r, g, b) = u32_to_argb_u8(color);
+    rgba_u8_to_u32(b, g, r, a)
 }
 /// Converts argb to abgr color
 #[must_use]
 pub const fn switch_alpha_and_blue(color: u32) -> u32 {
-    let (a, r, g, b) = u32_to_argb(color);
-    rgba_to_u32(r, g, a, b)
+    let (a, r, g, b) = u32_to_argb_u8(color);
+    rgba_u8_to_u32(r, g, a, b)
 }
 #[must_use]
 /// Converts a list of argb to rgba and vice versa
@@ -891,7 +890,7 @@ pub fn get_unused_color_of_buffer(
     let mut unique_colors = HashSet::new();
     for index in 0..buffer.total_size {
         unsafe {
-            let i = u32_to_argb(*buffer.pointer.add(index));
+            let i = u32_to_argb_u8(*buffer.pointer.add(index));
             if i.0 != 0 {
                 unique_colors.insert((i.1, i.2, i.3));
             }
@@ -918,10 +917,10 @@ pub fn bilinear_interpolate_u32(
     dx: f32,
     dy: f32,
 ) -> u32 {
-    let (r1, g1, b1, a1) = u32_to_rgba(p1).tuple_4_into();
-    let (r2, g2, b2, a2) = u32_to_rgba(p2).tuple_4_into();
-    let (r3, g3, b3, a3) = u32_to_rgba(p3).tuple_4_into();
-    let (r4, g4, b4, a4) = u32_to_rgba(p4).tuple_4_into();
+    let (r1, g1, b1, a1) = u32_to_rgba_u8(p1).tuple_4_into();
+    let (r2, g2, b2, a2) = u32_to_rgba_u8(p2).tuple_4_into();
+    let (r3, g3, b3, a3) = u32_to_rgba_u8(p3).tuple_4_into();
+    let (r4, g4, b4, a4) = u32_to_rgba_u8(p4).tuple_4_into();
 
     let interpolate_channel = |c1: f32, c2: f32, c3: f32, c4: f32| -> u8 {
         let top = c1.mul_add(1.0 - dx, c2 * dx);
@@ -935,7 +934,7 @@ pub fn bilinear_interpolate_u32(
     let blue = interpolate_channel(b1, b2, b3, b4);
     let alpha = interpolate_channel(a1, a2, a3, a4);
 
-    rgba_to_u32(red, green, blue, alpha)
+    rgba_u8_to_u32(red, green, blue, alpha)
 }
 
 #[must_use]
@@ -996,12 +995,12 @@ macro_rules! interpolate_color_rgb_u32 {
         #[allow(clippy::cast_possible_truncation)]
         #[allow(clippy::cast_possible_wrap)]
         pub fn $name(from: u32, to: u32, progress: $t) -> u32 {
-            let (r1, g1, b1) = u32_to_rgb_u32(from);
-            let (r2, g2, b2) = u32_to_rgb_u32(to);
+            let (r1, g1, b1) = u32_to_rgb(from);
+            let (r2, g2, b2) = u32_to_rgb(to);
             let red = crate::math::interpolate(r1 as $t, r2 as $t, progress);
             let green = crate::math::interpolate(g1 as $t, g2 as $t, progress);
             let blue = crate::math::interpolate(b1 as $t, b2 as $t, progress);
-            rgba_u32_to_u32(red as u32, green as u32, blue as u32, 255)
+            rgba_to_u32(red as u32, green as u32, blue as u32, 255)
         }
     };
 }
@@ -1011,8 +1010,8 @@ interpolate_color_rgb_u32!(f64, interpolate_color_rgb_u32_f64);
 /// Inverts the rgb channels of the given color
 #[must_use]
 pub const fn invert_color(color: u32) -> u32 {
-    let (r, g, b, a) = u32_to_rgba(color);
-    rgba_to_u32(255 - r, 255 - g, 255 - b, a)
+    let (r, g, b, a) = u32_to_rgba_u8(color);
+    rgba_u8_to_u32(255 - r, 255 - g, 255 - b, a)
 }
 // /// Generates a random color (+random alpha)
 // ///
@@ -1253,3 +1252,154 @@ pub mod color_presets;
 
 mod interpolation;
 pub use interpolation::*;
+#[const_trait]
+/// A trait for changing a single channel of a color
+pub trait ColorManipulation {
+    /// Set the alpha channel
+    fn with_alpha(&self, alpha: u32) -> u32;
+    /// Set the red channel
+    fn with_red(&self, alpha: u32) -> u32;
+    /// Set the green channel
+    fn with_green(&self, alpha: u32) -> u32;
+    /// Set the blue channel
+    fn with_blue(&self, alpha: u32) -> u32;
+}
+impl const ColorManipulation for u32 {
+    fn with_alpha(&self, alpha: u32) -> u32 {
+        rgba_to_u32(
+            get_red_of_u32(*self),
+            get_green_of_u32(*self),
+            get_blue_of_u32(*self),
+            alpha,
+        )
+    }
+    fn with_red(&self, red: u32) -> u32 {
+        rgba_to_u32(
+            red,
+            get_green_of_u32(*self),
+            get_blue_of_u32(*self),
+            get_alpha_of_u32(*self),
+        )
+    }
+    fn with_blue(&self, blue: u32) -> u32 {
+        rgba_to_u32(
+            get_red_of_u32(*self),
+            get_green_of_u32(*self),
+            blue,
+            get_alpha_of_u32(*self),
+        )
+    }
+    fn with_green(&self, green: u32) -> u32 {
+        rgba_to_u32(
+            get_red_of_u32(*self),
+            green,
+            get_blue_of_u32(*self),
+            get_alpha_of_u32(*self),
+        )
+    }
+}
+#[must_use]
+/// Convert the image the buffer is holding into a bmp
+pub fn create_bmp(image: &Buffer) -> Vec<u8> {
+    let mut bmp_buffer: Vec<u8> = Vec::new();
+
+    let width = image.width as u32;
+    let height = image.height as u32;
+
+    // BMP File Header (14 bytes)
+    bmp_buffer.extend(&[0x42, 0x4D]); // "BM" signature
+
+    let row_stride = (width * 32).div_ceil(32) * 4;
+    let pixel_array_size = row_stride * height;
+    let bmp_header_size = 40;
+    let file_header_size = 14;
+    let file_size = file_header_size + bmp_header_size + pixel_array_size;
+    let pixel_data_offset = file_header_size + bmp_header_size;
+
+    bmp_buffer.extend(&file_size.to_le_bytes()); // File size
+    bmp_buffer.extend(&[0x00, 0x00]); // Reserved
+    bmp_buffer.extend(&[0x00, 0x00]); // Reserved
+    bmp_buffer.extend(&pixel_data_offset.to_le_bytes()); // Pixel data offset
+
+    // BITMAPINFOHEADER (40 bytes)
+    bmp_buffer.extend(&40u32.to_le_bytes()); // Header size
+    bmp_buffer.extend(&(width as i32).to_le_bytes()); // Width
+    bmp_buffer.extend(&(height as i32).to_le_bytes()); // Height (no x2 for BMP)
+    bmp_buffer.extend(&1u16.to_le_bytes()); // Planes
+    bmp_buffer.extend(&32u16.to_le_bytes()); // Bit count
+    bmp_buffer.extend(&0u32.to_le_bytes()); // Compression
+    bmp_buffer.extend(&pixel_array_size.to_le_bytes()); // Image size
+    bmp_buffer.extend(&0u32.to_le_bytes()); // X pixels per meter
+    bmp_buffer.extend(&0u32.to_le_bytes()); // Y pixels per meter
+    bmp_buffer.extend(&0u32.to_le_bytes()); // Colors used
+    bmp_buffer.extend(&0u32.to_le_bytes()); // Important colors
+
+    // Pixel data (BGR + Alpha format)
+    for pixel in &image.flip_vertically().data {
+        let (r, g, b, a) = u32_to_rgba_u8(*pixel);
+        #[allow(clippy::tuple_array_conversions)]
+        bmp_buffer.extend(&[b, g, r, a]);
+    }
+
+    bmp_buffer
+}
+#[must_use]
+/// Convert the image the buffer is holding into a .cur
+pub fn create_ico(image: &Buffer) -> Vec<u8> {
+    let mut ico_buffer: Vec<u8> = Vec::new();
+
+    let width = image.width as u8;
+    let height = image.height as u8;
+
+    // ICONDIR (6 bytes)
+    ico_buffer.extend(&[0x00, 0x00]); // Reserved
+    ico_buffer.extend(&[0x01, 0x00]); // Image type (1 = icon, not 2)
+    ico_buffer.extend(&[0x01, 0x00]); // Number of images
+
+    // ICONDIRENTRY (16 bytes)
+    ico_buffer.push(width); // Width
+    ico_buffer.push(height); // Height
+    ico_buffer.push(0); // Color count
+    ico_buffer.push(0); // Reserved
+    ico_buffer.extend(&[0x00, 0x00]); // Color planes (0 for icons)
+    ico_buffer.extend(&[0x20, 0x00]); // Bits per pixel (32)
+
+    let image_data_offset = 6 + 16;
+    let row_stride = (u32::from(width) * 32).div_ceil(32) * 4;
+    let pixel_array_size = row_stride * u32::from(height);
+    let bmp_header_size = 40;
+    let and_mask_size = u32::from(height) * (u32::from(width).div_ceil(32) * 4);
+    let size_in_bytes = bmp_header_size + pixel_array_size + and_mask_size;
+
+    ico_buffer.extend(&size_in_bytes.to_le_bytes()); // Image size
+    ico_buffer.extend(&(image_data_offset as u32).to_le_bytes()); // Image offset
+
+    // BITMAPINFOHEADER (40 bytes)
+    let mut bmp_data: Vec<u8> = Vec::with_capacity(size_in_bytes as usize);
+    bmp_data.extend(&40u32.to_le_bytes()); // Header size
+    bmp_data.extend(&i32::from(width).to_le_bytes()); // Width
+    bmp_data.extend(&(2 * i32::from(height)).to_le_bytes()); // Height (x2 for AND mask)
+    bmp_data.extend(&1u16.to_le_bytes()); // Planes
+    bmp_data.extend(&32u16.to_le_bytes()); // Bit count
+    bmp_data.extend(&0u32.to_le_bytes()); // Compression
+    bmp_data.extend(&0u32.to_le_bytes()); // Image size
+    bmp_data.extend(&0u32.to_le_bytes()); // X pixels per meter
+    bmp_data.extend(&0u32.to_le_bytes()); // Y pixels per meter
+    bmp_data.extend(&0u32.to_le_bytes()); // Colors used
+    bmp_data.extend(&0u32.to_le_bytes()); // Important colors
+
+    // Pixel data
+    for pixel in &image.flip_vertically().data {
+        let (r, g, b, a) = u32_to_rgba_u8(*pixel);
+        #[allow(clippy::tuple_array_conversions)]
+        bmp_data.extend(&[b, g, r, a]);
+    }
+
+    // AND mask (all zero = fully visible)
+    bmp_data.extend(vec![0u8; and_mask_size as usize]);
+
+    // Combine all into buffer
+    ico_buffer.extend(bmp_data);
+
+    ico_buffer
+}

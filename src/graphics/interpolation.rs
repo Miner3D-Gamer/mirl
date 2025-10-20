@@ -2,7 +2,7 @@
 #![allow(clippy::many_single_char_names)]
 
 use crate::{
-    graphics::{rgba_u32_to_u32, u32_to_rgba, u32_to_rgba_u32},
+    graphics::{rgba_to_u32, u32_to_rgba_u8, u32_to_rgba},
     math::interpolate,
 };
 
@@ -360,10 +360,10 @@ fn bilinear_interpolate_u32(
     dx: f32,
     dy: f32,
 ) -> u32 {
-    let (r1, g1, b1, a1) = u32_to_rgba_u32(p1);
-    let (r2, g2, b2, a2) = u32_to_rgba_u32(p2);
-    let (r3, g3, b3, a3) = u32_to_rgba_u32(p3);
-    let (r4, g4, b4, a4) = u32_to_rgba_u32(p4);
+    let (r1, g1, b1, a1) = u32_to_rgba(p1);
+    let (r2, g2, b2, a2) = u32_to_rgba(p2);
+    let (r3, g3, b3, a3) = u32_to_rgba(p3);
+    let (r4, g4, b4, a4) = u32_to_rgba(p4);
 
     let r = interpolate(
         interpolate(r1 as f32, r2 as f32, dx),
@@ -386,7 +386,7 @@ fn bilinear_interpolate_u32(
         dy,
     );
 
-    rgba_u32_to_u32(r as u32, g as u32, b as u32, a as u32)
+    rgba_to_u32(r as u32, g as u32, b as u32, a as u32)
 }
 
 fn get_pixel_safe(
@@ -423,7 +423,7 @@ fn bicubic_sample(
         for i in -1..3 {
             let pixel =
                 get_pixel_safe(buffer, width, height, x_int + i, y_int + j);
-            let (pr, pg, pb, pa) = u32_to_rgba_u32(pixel);
+            let (pr, pg, pb, pa) = u32_to_rgba(pixel);
 
             let weight_x = cubic_hermite(dx, i as f32);
             let weight_y = cubic_hermite(dy, j as f32);
@@ -436,7 +436,7 @@ fn bicubic_sample(
         }
     }
 
-    rgba_u32_to_u32(
+    rgba_to_u32(
         r.clamp(0.0, 255.0) as u32,
         g.clamp(0.0, 255.0) as u32,
         b.clamp(0.0, 255.0) as u32,
@@ -466,7 +466,7 @@ pub fn lanczos_sample(
         for i in -RADIUS..=RADIUS {
             let pixel =
                 get_pixel_safe(buffer, width, height, x_int + i, y_int + j);
-            let (pr, pg, pb, pa) = u32_to_rgba_u32(pixel);
+            let (pr, pg, pb, pa) = u32_to_rgba(pixel);
 
             let weight_x = lanczos_kernel(x - (x_int + i) as f32, RADIUS);
             let weight_y = lanczos_kernel(y - (y_int + j) as f32, RADIUS);
@@ -487,7 +487,7 @@ pub fn lanczos_sample(
         a /= weight_sum;
     }
 
-    rgba_u32_to_u32(
+    rgba_to_u32(
         r.clamp(0.0, 255.0) as u32,
         g.clamp(0.0, 255.0) as u32,
         b.clamp(0.0, 255.0) as u32,
@@ -519,7 +519,7 @@ pub fn area_average_sample(
     for y in y1..y2 {
         for x in x1..x2 {
             let pixel = buffer[y * width + x];
-            let (pr, pg, pb, pa) = u32_to_rgba(pixel);
+            let (pr, pg, pb, pa) = u32_to_rgba_u8(pixel);
 
             let weight = calculate_overlap(
                 x as f32,
@@ -547,7 +547,7 @@ pub fn area_average_sample(
         a /= total_weight;
     }
 
-    rgba_u32_to_u32(
+    rgba_to_u32(
         r.clamp(0.0, 255.0) as u32,
         g.clamp(0.0, 255.0) as u32,
         b.clamp(0.0, 255.0) as u32,
@@ -578,7 +578,7 @@ pub fn catmull_rom_sample(
         for i in -1..3 {
             let pixel =
                 get_pixel_safe(buffer, width, height, x_int + i, y_int + j);
-            let (pr, pg, pb, pa) = u32_to_rgba_u32(pixel);
+            let (pr, pg, pb, pa) = u32_to_rgba(pixel);
 
             let weight_x = catmull_rom_kernel(dx - i as f32);
             let weight_y = catmull_rom_kernel(dy - j as f32);
@@ -591,7 +591,7 @@ pub fn catmull_rom_sample(
         }
     }
 
-    rgba_u32_to_u32(
+    rgba_to_u32(
         r.clamp(0.0, 255.0) as u32,
         g.clamp(0.0, 255.0) as u32,
         b.clamp(0.0, 255.0) as u32,
@@ -623,7 +623,7 @@ pub fn gaussian_sample(
         for i in -RADIUS..=RADIUS {
             let pixel =
                 get_pixel_safe(buffer, width, height, x_int + i, y_int + j);
-            let (pr, pg, pb, pa) = u32_to_rgba_u32(pixel);
+            let (pr, pg, pb, pa) = u32_to_rgba(pixel);
 
             let dx = x - (x_int + i) as f32;
             let dy = y - (y_int + j) as f32;
@@ -645,7 +645,7 @@ pub fn gaussian_sample(
         a /= weight_sum;
     }
 
-    rgba_u32_to_u32(
+    rgba_to_u32(
         r.clamp(0.0, 255.0) as u32,
         g.clamp(0.0, 255.0) as u32,
         b.clamp(0.0, 255.0) as u32,
@@ -676,7 +676,7 @@ pub fn mitchell_netravali_sample(
         for i in -1..3 {
             let pixel =
                 get_pixel_safe(buffer, width, height, x_int + i, y_int + j);
-            let (pr, pg, pb, pa) = u32_to_rgba(pixel);
+            let (pr, pg, pb, pa) = u32_to_rgba_u8(pixel);
 
             let weight_x = mitchell_netravali_kernel(dx - i as f32);
             let weight_y = mitchell_netravali_kernel(dy - j as f32);
@@ -689,7 +689,7 @@ pub fn mitchell_netravali_sample(
         }
     }
 
-    rgba_u32_to_u32(
+    rgba_to_u32(
         r.clamp(0.0, 255.0) as u32,
         g.clamp(0.0, 255.0) as u32,
         b.clamp(0.0, 255.0) as u32,

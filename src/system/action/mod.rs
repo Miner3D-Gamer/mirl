@@ -22,6 +22,10 @@ pub trait Default {
     fn get_window_size(
         handle: &raw_window_handle::RawWindowHandle,
     ) -> (i32, i32);
+    /// Get the current size of a window, including its decorations. Windows for example likes to add an 8 pixel padding both to the left and right sides of a window
+    fn get_window_hitbox_size(
+        handle: &raw_window_handle::RawWindowHandle,
+    ) -> (i32, i32);
 }
 
 #[const_trait]
@@ -92,6 +96,11 @@ pub trait Misc {
         handle: &raw_window_handle::RawWindowHandle,
         after: &raw_window_handle::RawWindowHandle,
     ) -> bool;
+    /// Set the priority of a running process
+    fn set_cpu_priority(
+        handle: &raw_window_handle::RawWindowHandle,
+        priority: CpuPriority,
+    );
 }
 #[const_trait]
 /// Additional actions for tinkering with the taskbar
@@ -171,3 +180,19 @@ use web_actions::{
 };
 
 use crate::platform::{Buffer, WindowLevel};
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+/// The cpu/thread priority a process can have
+pub enum CpuPriority {
+    /// I do not with to be perceived
+    Idle,
+    /// Handled later than default processes
+    BelowNormal,
+    /// The default priority
+    Normal,
+    /// Handled earlier than default processes
+    AboveNormal,
+    /// Handled even earlier than default processes
+    High,
+    /// I own the cpu.
+    Realtime,
+}

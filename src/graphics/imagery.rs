@@ -1,20 +1,20 @@
 use image::{GenericImage, GenericImageView};
 
 use crate::{
-    graphics::{rgba_to_u32, u32_to_rgba},
+    graphics::{rgba_u8_to_u32, u32_to_rgba_u8},
     platform::Buffer,
 };
 /// Convert a [u32] argb format into an [`image::Rgba<u8>`]
 #[must_use]
 pub const fn u32_to_image_rgba(color: u32) -> image::Rgba<u8> {
-    let (r, g, b, a) = u32_to_rgba(color);
+    let (r, g, b, a) = u32_to_rgba_u8(color);
     image::Rgba([r, g, b, 255 - a])
 }
 /// Convert a [`image::Rgba<u8>`] into an [u32] argb
 #[must_use]
 pub const fn image_rgba_to_u32(rgba: image::Rgba<u8>) -> u32 {
     let [r, g, b, a] = rgba.0;
-    rgba_to_u32(r, g, b, a)
+    rgba_u8_to_u32(r, g, b, a)
 }
 #[must_use]
 /// Convert basic RGB into [`image::Rgba<u8>`]

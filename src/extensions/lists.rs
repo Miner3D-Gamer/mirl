@@ -45,16 +45,13 @@ pub fn combined<T: Clone + Sized>(vec: &[T], other: T) -> Vec<T> {
 pub fn average<T: num_traits::Num + num_traits::NumCast + Copy>(
     vec: &[T],
 ) -> Option<T> {
-    let sum: T = vec.iter().copied().fold(T::zero(), |a, b| a + b);
-    let len = T::from(vec.len());
-
-    if let Some(length) = len {
-        if length == T::zero() {
-            return None;
-        }
-        return Some(sum / length);
+    let len = T::from(vec.len())?;
+    if len == T::zero() {
+        return None;
     }
-    None
+    let sum: T = vec.iter().copied().fold(T::zero(), |a, b| a + b);
+
+    Some(sum / len)
 }
 #[must_use]
 /// Get additions to a list

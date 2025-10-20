@@ -1,5 +1,5 @@
 use super::Buffer;
-use crate::graphics::u32_to_rgba;
+use crate::graphics::u32_to_rgba_u8;
 #[cfg(not(feature = "do_not_compile_extension_tuple_support"))]
 use crate::{graphics::resize_buffer, graphics::InterpolationMode};
 impl Buffer {
@@ -8,7 +8,7 @@ impl Buffer {
     pub fn to_u8_argb(&self) -> Vec<u8> {
         let mut return_list = Vec::new();
         for i in &self.data {
-            let temp = u32_to_rgba(*i);
+            let temp = u32_to_rgba_u8(*i);
             return_list.push(temp.0);
             return_list.push(temp.1);
             return_list.push(temp.2);
@@ -21,7 +21,7 @@ impl Buffer {
     pub fn to_u8_rgba(&self) -> Vec<u8> {
         let mut return_list = Vec::new();
         for i in &self.data {
-            let temp = u32_to_rgba(*i);
+            let temp = u32_to_rgba_u8(*i);
             return_list.push(temp.3);
             return_list.push(temp.1);
             return_list.push(temp.2);

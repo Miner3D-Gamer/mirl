@@ -1,4 +1,4 @@
-use super::{rgb_to_u32, u32_to_rgba};
+use super::{rgb_u8_to_u32, u32_to_rgba_u8};
 
 /// A pixel made to be read FAST
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -24,13 +24,13 @@ impl Pixel {
             g,
             b,
             a,
-            color: rgb_to_u32(r, g, b),
+            color: rgb_u8_to_u32(r, g, b),
         }
     }
     /// Create a new Pixel instance using a u32 rgba
     #[must_use]
     pub const fn new_32(color: u32) -> Self {
-        let (r, g, b, a) = u32_to_rgba(color);
+        let (r, g, b, a) = u32_to_rgba_u8(color);
         Self {
             r,
             g,

@@ -7,7 +7,7 @@ use windows::{
 
 use super::{cursor_resolution, BaseCursor, Cursor};
 use crate::extensions::*;
-use crate::graphics::{pixmap_to_buffer, rasterize_svg, u32_to_rgba};
+use crate::graphics::{pixmap_to_buffer, rasterize_svg, u32_to_rgba_u8};
 use crate::platform::Buffer;
 
 /// Load a custom cursor
@@ -82,8 +82,8 @@ pub fn load_cursor(
 //     );
 // }
 
-/// Load a cursor SVG 
-/// 
+/// Load a cursor SVG
+///
 /// # Errors
 /// When the image could not be rasterized
 #[allow(clippy::needless_pass_by_value)]
@@ -129,7 +129,13 @@ fn load_cursor_file(
         Ok(cursor)
     }
 }
-fn create_cursor(hotspot_x: u16, hotspot_y: u16, image: &Buffer) -> Vec<u8> {
+#[must_use]
+/// Converts the image buffer into a windows compatible .cur
+pub fn create_cursor(
+    hotspot_x: u16,
+    hotspot_y: u16,
+    image: &Buffer,
+) -> Vec<u8> {
     let mut cursor_buffer: Vec<u8> = Vec::new();
     #[cfg(feature = "cursor_show_hotspot")]
     // Enabling this shows where the cursor will click
@@ -178,7 +184,7 @@ fn create_cursor(hotspot_x: u16, hotspot_y: u16, image: &Buffer) -> Vec<u8> {
     bmp_data.extend(&(0u32.to_le_bytes())); // Important colors
 
     for pixel in &image.flip_vertically().data {
-        let (r, g, b, a) = u32_to_rgba(*pixel);
+        let (r, g, b, a) = u32_to_rgba_u8(*pixel);
         #[allow(clippy::tuple_array_conversions)]
         bmp_data.extend(&[b, g, r, a]);
     }

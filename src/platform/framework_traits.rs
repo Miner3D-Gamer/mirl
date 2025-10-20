@@ -52,7 +52,17 @@ pub enum Errors {
         /// The file path that was accessed
         path: String,
     },
+    /// Other error
+    Misc(String)
 }
+// impl std::error::Error for Errors {}
+// impl std::fmt::Display for Errors {
+//     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+//         match self {
+//             Self::AllGood
+//         }
+//     }
+// }
 
 #[const_trait]
 /// A window instance with only the most basic of functionality
@@ -148,8 +158,7 @@ pub trait ExtendedWindow {
     fn set_title(&mut self, title: &str);
     /// Set the current icon (task bar)
     /// Width/Height should be something like 32x32 or 48x48 for maximal compatibility
-    #[cfg(feature = "ico")]
-    fn set_icon(&mut self, buffer: &[u32], width: u32, height: u32) -> Errors;
+    fn set_icon(&mut self, buffer: &Buffer) -> Errors;
     /// Get the current window handle
     fn get_window_handle(&self) -> raw_window_handle::RawWindowHandle;
 }

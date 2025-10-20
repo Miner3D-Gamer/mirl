@@ -1,4 +1,4 @@
-use crate::graphics::get_alpha_of_u32;
+use crate::graphics::get_alpha_of_u32_in_u8;
 
 use super::Buffer;
 impl Buffer {
@@ -31,7 +31,7 @@ impl Buffer {
     pub fn replace_transparent_with_color(&self, color: u32) {
         for idx in 0..self.total_size {
             unsafe {
-                if get_alpha_of_u32(*self.pointer.add(idx)) == 0 {
+                if get_alpha_of_u32_in_u8(*self.pointer.add(idx)) == 0 {
                     *self.pointer.add(idx) = color;
                 }
             }

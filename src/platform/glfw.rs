@@ -15,6 +15,7 @@ use super::{
 };
 #[cfg(target_os = "windows")]
 use crate::platform::WindowLevel;
+use crate::Buffer;
 use crate::{
     extensions::*,
     graphics,
@@ -320,13 +321,10 @@ impl<MouseManagerScrollAccuracy: num_traits::Float> ExtendedWindow
         self.window.set_title(title);
     }
 
-    #[cfg(feature = "ico")]
     /// Not yet implemented
     fn set_icon(
         &mut self,
-        _buffer: &[u32],
-        _width: u32,
-        _height: u32,
+        _buffer: &Buffer
     ) -> Errors {
         Errors::NotImplemented
         //panic!("Not yet implemented");

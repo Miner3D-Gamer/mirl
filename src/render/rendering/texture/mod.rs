@@ -1,5 +1,5 @@
 use crate::{
-    graphics::{get_u32_alpha_of_u32, interpolate_color_rgb_f64},
+    graphics::{get_alpha_of_u32, interpolate_color_rgb_f64},
     platform::Buffer,
 };
 #[allow(clippy::cast_sign_loss)]
@@ -72,7 +72,7 @@ pub fn draw_buffer_on_buffer<
             let pixel = texture.get_pixel_unsafe((texture_x, texture_y));
 
             if TRANSPARENCY {
-                let trans = get_u32_alpha_of_u32(pixel);
+                let trans = get_alpha_of_u32(pixel);
                 if TRANSPARENCY_CHECK && trans == 0 {
                     continue;
                 }
@@ -153,7 +153,7 @@ pub fn draw_buffer_on_buffer_1_to_1<
             let pixel = texture.get_pixel_unsafe((texture_x, texture_y));
 
             if TRANSPARENCY {
-                let trans = get_u32_alpha_of_u32(pixel);
+                let trans = get_alpha_of_u32(pixel);
                 if NICHE_TRANSPARENCY_CHECK && trans == 0 {
                     continue;
                 }

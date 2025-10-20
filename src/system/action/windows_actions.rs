@@ -56,6 +56,18 @@ impl Default for WindowsActions {
                 get_window_size_raw(windows::Win32::Foundation::HWND(
                     handle.hwnd.get(),
                 ))
+            }
+            _ => (i32::MIN, i32::MIN),
+        }
+    }
+    fn get_window_hitbox_size(
+        handle: &raw_window_handle::RawWindowHandle,
+    ) -> (i32, i32) {
+        match handle {
+            raw_window_handle::RawWindowHandle::Win32(handle) => {
+                get_window_hitbox_size_raw(windows::Win32::Foundation::HWND(
+                    handle.hwnd.get(),
+                ))
                 .unwrap_or((i32::MIN, i32::MIN))
             }
             _ => (i32::MIN, i32::MIN),
@@ -245,12 +257,23 @@ impl Misc for WindowsActions {
             _ => false,
         }
     }
+    fn set_cpu_priority(
+        handle: &raw_window_handle::RawWindowHandle,
+        priority: CpuPriority,
+    ) {
+        if let raw_window_handle::RawWindowHandle::Win32(hwnd) = handle {
+            set_cpu_priority(
+                windows::Win32::Foundation::HWND(hwnd.hwnd.get()),
+                priority,
+            );
+        }
+    }
 }
 
 extern crate winapi;
 
 use windows::Win32::UI::WindowsAndMessaging::{
-    SetWindowPos, SWP_NOSIZE, SWP_NOZORDER,
+    GetClientRect, SetWindowPos, SWP_NOSIZE, SWP_NOZORDER,
 };
 use windows::{
     Win32::Foundation::HWND,
@@ -279,7 +302,8 @@ use windows::{
 
 use crate::platform::{Buffer, WindowLevel};
 use crate::system::action::{
-    Decoration, Default, Misc, ProgressionState, TaskBar, Transparency,
+    CpuPriority, Decoration, Default, Misc, ProgressionState, TaskBar,
+    Transparency,
 };
 
 #[allow(trivial_casts)]
@@ -951,7 +975,7 @@ fn get_all_windows_raw() -> Vec<HWND> {
     found_windows
 }
 
-fn get_window_size_raw(hwnd: HWND) -> Option<(i32, i32)> {
+fn get_window_hitbox_size_raw(hwnd: HWND) -> Option<(i32, i32)> {
     unsafe {
         let mut rect = RECT::default();
         if GetWindowRect(hwnd, &raw mut rect).as_bool() {
@@ -959,6 +983,13 @@ fn get_window_size_raw(hwnd: HWND) -> Option<(i32, i32)> {
         } else {
             None
         }
+    }
+}
+fn get_window_size_raw(hwnd: HWND) -> (i32, i32) {
+    unsafe {
+        let mut rect = RECT::default();
+        GetClientRect(hwnd, &raw mut rect);
+        (rect.right - rect.left, rect.bottom - rect.top)
     }
 }
 
@@ -977,6 +1008,71 @@ fn get_title_using_id_raw(hwnd: winapi::shared::windef::HWND) -> String {
         String::from_utf16_lossy(&title_buf[..title_len as usize])
     } else {
         String::new()
+    }
+}
+
+use windows::Win32::System::Threading::{
+    OpenProcess, OpenThread, SetPriorityClass, SetThreadPriority,
+    ABOVE_NORMAL_PRIORITY_CLASS, BELOW_NORMAL_PRIORITY_CLASS,
+    HIGH_PRIORITY_CLASS, IDLE_PRIORITY_CLASS, NORMAL_PRIORITY_CLASS,
+    PROCESS_SET_INFORMATION, REALTIME_PRIORITY_CLASS,
+    THREAD_PRIORITY_ABOVE_NORMAL, THREAD_PRIORITY_BELOW_NORMAL,
+    THREAD_PRIORITY_HIGHEST, THREAD_PRIORITY_IDLE, THREAD_PRIORITY_NORMAL,
+    THREAD_PRIORITY_TIME_CRITICAL, THREAD_SET_INFORMATION,
+};
+use windows::Win32::UI::WindowsAndMessaging::GetWindowThreadProcessId;
+
+/// Set the priority of a running process
+pub fn set_cpu_priority(hwnd: HWND, priority: CpuPriority) {
+    unsafe {
+        let mut process_id = 0u32;
+        let thread_id =
+            GetWindowThreadProcessId(hwnd, Some(&raw mut process_id));
+
+        if thread_id == 0 {
+            return; // Failed to get thread ID
+        }
+
+        // Open the process with permission to set priority
+        let Ok(process) =
+            OpenProcess(PROCESS_SET_INFORMATION, false, process_id)
+        else {
+            return;
+        };
+
+        // Open the thread with permission to set priority
+        let Ok(thread) = OpenThread(THREAD_SET_INFORMATION, false, thread_id)
+        else {
+            return;
+        };
+
+        match priority {
+            CpuPriority::Idle => {
+                let _ = SetPriorityClass(process, IDLE_PRIORITY_CLASS);
+                let _ = SetThreadPriority(thread, THREAD_PRIORITY_IDLE);
+            }
+            CpuPriority::BelowNormal => {
+                let _ = SetPriorityClass(process, BELOW_NORMAL_PRIORITY_CLASS);
+                let _ = SetThreadPriority(thread, THREAD_PRIORITY_BELOW_NORMAL);
+            }
+            CpuPriority::Normal => {
+                let _ = SetPriorityClass(process, NORMAL_PRIORITY_CLASS);
+                let _ = SetThreadPriority(thread, THREAD_PRIORITY_NORMAL);
+            }
+            CpuPriority::AboveNormal => {
+                let _ = SetPriorityClass(process, ABOVE_NORMAL_PRIORITY_CLASS);
+                let _ = SetThreadPriority(thread, THREAD_PRIORITY_ABOVE_NORMAL);
+            }
+            CpuPriority::High => {
+                let _ = SetPriorityClass(process, HIGH_PRIORITY_CLASS);
+                let _ = SetThreadPriority(thread, THREAD_PRIORITY_HIGHEST);
+            }
+            CpuPriority::Realtime => {
+                let _ = SetPriorityClass(process, REALTIME_PRIORITY_CLASS);
+                let _ =
+                    SetThreadPriority(thread, THREAD_PRIORITY_TIME_CRITICAL);
+            }
+        }
     }
 }
 
@@ -1041,7 +1137,7 @@ pub const fn map_state_to_windows_state(state: &ProgressionState) -> TBPFLAG {
     }
 }
 /// Set how the taskbar icon looks
-/// 
+///
 /// # Errors
 /// When unable to set the progress
 pub fn set_taskbar_progress_state(
@@ -1057,7 +1153,7 @@ pub fn set_taskbar_progress_state(
     Ok(())
 }
 /// Set the progress of a few styles
-/// 
+///
 /// # Errors
 /// When the taskbar could not be referenced
 /// When setting the value didn't work

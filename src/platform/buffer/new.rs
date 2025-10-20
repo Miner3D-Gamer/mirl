@@ -1,6 +1,6 @@
 use super::Buffer;
 use crate::extensions::RepeatData;
-use crate::graphics::{rgb_to_u32, rgba_to_u32};
+use crate::graphics::{rgb_u8_to_u32, rgba_u8_to_u32};
 impl Buffer {
     /// Create a new buffer
     ///
@@ -74,8 +74,8 @@ impl Buffer {
         let mut data = Vec::with_capacity(width * height);
         let square_size = width.midpoint(height) / squares;
 
-        let purple = rgb_to_u32(128, 0, 128);
-        let black = rgb_to_u32(0, 0, 0);
+        let purple = rgb_u8_to_u32(128, 0, 128);
+        let black = rgb_u8_to_u32(0, 0, 0);
 
         for y in 0..height {
             for x in 0..width {
@@ -107,7 +107,7 @@ impl Buffer {
     ) -> Result<Self, String> {
         let mut return_list = Vec::new();
         for i in rgba.chunks(3) {
-            let color = rgba_to_u32(i[0], i[1], i[2], i[3]);
+            let color = rgba_u8_to_u32(i[0], i[1], i[2], i[3]);
             return_list.push(color);
         }
         Self::new(return_list, width, height)
@@ -126,7 +126,7 @@ impl Buffer {
         let mut return_list = Vec::with_capacity(rgba.len() / 3);
         for chunk in rgba.chunks(3) {
             if chunk.len() == 3 {
-                let color = rgb_to_u32(chunk[0], chunk[1], chunk[2]);
+                let color = rgb_u8_to_u32(chunk[0], chunk[1], chunk[2]);
                 return_list.push(color);
             }
         }

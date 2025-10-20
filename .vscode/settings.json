@@ -52,6 +52,7 @@
         "RAWINPUT",
         "RAWINPUTDEVICE",
         "RAWINPUTHEADER",
+        "reqwest",
         "RGBQUAD",
         "RIDEV",
         "RRGGBBAA",

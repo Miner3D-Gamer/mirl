@@ -1,5 +1,5 @@
 use super::Buffer;
-use crate::graphics::get_u32_alpha_of_u32;
+use crate::graphics::get_alpha_of_u32;
 impl Buffer {
     /// Optimizes the image by removing empty space around the image
     pub fn remove_margins(&mut self) {
@@ -64,13 +64,13 @@ impl Buffer {
         let end = start + self.width;
         self.data[start..end]
             .iter()
-            .all(|&pixel| get_u32_alpha_of_u32(pixel) == 0)
+            .all(|&pixel| get_alpha_of_u32(pixel) == 0)
     }
     #[must_use]
     /// Checks if the requested column only has fully transparent pixels
     pub fn is_col_transparent(&self, col: usize) -> bool {
         (0..self.height).all(|row| {
-            get_u32_alpha_of_u32(self.data[row * self.width + col]) == 0
+            get_alpha_of_u32(self.data[row * self.width + col]) == 0
         })
     }
     /// Trims the image by the given restrictions

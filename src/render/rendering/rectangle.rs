@@ -6,14 +6,12 @@ use crate::platform::Buffer;
 #[allow(clippy::cast_sign_loss)]
 pub fn draw_rectangle_old<const SAFE: bool>(
     buffer: &Buffer,
-    pos_x: isize,
-    pos_y: isize,
-    width: isize,
-    height: isize,
+    pos: (isize, isize),
+    size: (isize, isize),
     color: u32,
 ) {
-    for y in pos_y..pos_y + height {
-        for x in pos_x..pos_x + width {
+    for y in pos.1..pos.1 + size.1 {
+        for x in pos.0..pos.0 + size.0 {
             if SAFE {
                 if x > 0 && y > 0 {
                     draw_pixel_safe(buffer, (x as usize, y as usize), color);
@@ -31,22 +29,20 @@ pub fn draw_rectangle_old<const SAFE: bool>(
 /// Draw a simple rectangle
 pub fn draw_rectangle<const SAFE: bool>(
     buffer: &Buffer,
-    pos_x: isize,
-    pos_y: isize,
-    width: isize,
-    height: isize,
+    pos: (isize, isize),
+    size: (isize, isize),
     color: u32,
 ) {
-    if width <= 0 || height <= 0 {
+    if size.0 <= 0 || size.1 <= 0 {
         return;
     }
 
     if SAFE {
         // Calculate actual drawable bounds
-        let start_x = pos_x.max(0) as usize;
-        let start_y = pos_y.max(0) as usize;
-        let end_x = ((pos_x + width).min(buffer.width as isize)) as usize;
-        let end_y = ((pos_y + height).min(buffer.height as isize)) as usize;
+        let start_x = pos.0.max(0) as usize;
+        let start_y = pos.1.max(0) as usize;
+        let end_x = ((pos.0 + size.0).min(buffer.width as isize)) as usize;
+        let end_y = ((pos.1 + size.1).min(buffer.height as isize)) as usize;
 
         if start_x >= buffer.width
             || start_y >= buffer.height
@@ -69,10 +65,10 @@ pub fn draw_rectangle<const SAFE: bool>(
             }
         }
     } else {
-        let start_x = pos_x as usize;
-        let start_y = pos_y as usize;
-        let end_y = start_y + height as usize;
-        let row_width = width as usize;
+        let start_x = pos.0 as usize;
+        let start_y = pos.1 as usize;
+        let end_y = start_y + size.1 as usize;
+        let row_width = size.0 as usize;
 
         for y in start_y..end_y {
             let row_start = y * buffer.width + start_x;
@@ -198,26 +194,24 @@ pub fn draw_rectangle_angled<const SAFE: bool>(
 #[allow(clippy::cast_possible_wrap)]
 pub fn draw_rectangle_impl_simd(
     buffer: &Buffer,
-    pos_x: isize,
-    pos_y: isize,
-    width: isize,
-    height: isize,
+    pos: (isize, isize),
+    size: (isize, isize),
     color: u32,
     safe: bool,
 ) {
     if safe
-        && (pos_x < 0
-            || pos_y < 0
-            || pos_x + width > buffer.width as isize
-            || pos_y + height > buffer.height as isize)
+        && (pos.0 < 0
+            || pos.1 < 0
+            || pos.0 + size.0 > buffer.width as isize
+            || pos.1 + size.1 > buffer.height as isize)
     {
         return;
     }
 
-    let start_x = pos_x as usize;
-    let start_y = pos_y as usize;
-    let rect_width = width as usize;
-    let rect_height = height as usize;
+    let start_x = pos.0 as usize;
+    let start_y = pos.1 as usize;
+    let rect_width = size.0 as usize;
+    let rect_height = size.1 as usize;
 
     for y in 0..rect_height {
         let row_start = (start_y + y) * buffer.width + start_x;

@@ -1,8 +1,5 @@
-#[cfg(feature = "ico")]
-use std::str::FromStr;
-
-#[cfg(feature = "ico")]
-use ico::{IconDir, IconDirEntry, IconImage, ResourceType};
+// #[cfg(feature = "ico")]
+// use ico::{IconDir, IconDirEntry, IconImage, ResourceType};
 
 use super::framework_traits::{
     Control, ExtendedControl, ExtendedInput, ExtendedTiming, ExtendedWindow,
@@ -15,8 +12,8 @@ use super::mouse::Cursor;
 use super::Time;
 use super::{time::NativeTime, Buffer};
 use crate::extensions::*;
-#[cfg(feature = "ico")]
-use crate::graphics::u32_to_rgba;
+// #[cfg(feature = "ico")]
+// use crate::graphics::u32_to_rgba_u8;
 use crate::platform::framework_traits::CursorStyleControl;
 use crate::platform::framework_traits::Errors;
 use crate::platform::keycodes::KeyCode;
@@ -270,9 +267,8 @@ impl ExtendedWindow for Framework {
     // fn wait(&self, time: u64) {
     //     std::thread::sleep(Duration::from_millis(time));
     // }
-    #[cfg(feature = "ico")]
     #[inline]
-    fn set_icon(&mut self, buffer: &[u32], width: u32, height: u32) -> Errors {
+    fn set_icon(&mut self, buffer: &Buffer) -> Errors {
         // assert_eq!(
         //     buffer.len(),
         //     (width * height) as usize,
@@ -292,10 +288,9 @@ impl ExtendedWindow for Framework {
         // self.window.set_icon(icon);
         #[cfg(target_os = "windows")]
         {
-            let Ok(ico_data) = encode_to_ico_format(buffer, width, height)
-            else {
-                return Errors::Unknown;
-            };
+            use std::str::FromStr;
+
+            let ico_data = crate::graphics::create_ico(buffer);
 
             let temp_dir = std::env::temp_dir();
             let ico_path = temp_dir.join("temp_icon.ico");
@@ -412,44 +407,44 @@ impl Control for Framework {
     }
 }
 
-#[cfg(feature = "ico")]
-fn encode_to_ico_format(
-    buffer: &[u32],
-    width: u32,
-    height: u32,
-) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
-    // Create a new icon directory
-    let mut icon_dir = IconDir::new(ResourceType::Icon);
+// #[cfg(feature = "ico")]
+// fn encode_to_ico_format(
+//     buffer: &[u32],
+//     width: u32,
+//     height: u32,
+// ) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
+//     // Create a new icon directory
+//     let mut icon_dir = IconDir::new(ResourceType::Icon);
 
-    // Convert the RGBA u32 buffer to a Vec<u8> in BGRA format
-    // Windows .ico format typically expects BGRA ordering
-    let mut image_data = Vec::with_capacity(buffer.len() * 4);
+//     // Convert the RGBA u32 buffer to a Vec<u8> in BGRA format
+//     // Windows .ico format typically expects BGRA ordering
+//     let mut image_data = Vec::with_capacity(buffer.len() * 4);
 
-    for &pixel in buffer {
-        // Extract RGBA components from u32
-        let (r, g, b, _a) = u32_to_rgba(pixel);
-        // ALPHA IS NOT READ CORRECTLY -> IT'S ALWAYS 0
-        // println!("Fix alpha channel not being read correctly");
+//     for &pixel in buffer {
+//         // Extract RGBA components from u32
+//         let (r, g, b, _a) = u32_to_rgba_u8(pixel);
+//         // ALPHA IS NOT READ CORRECTLY -> IT'S ALWAYS 0
+//         // println!("Fix alpha channel not being read correctly");
 
-        // Push as BGRA
-        image_data.push(b);
-        image_data.push(g);
-        image_data.push(r);
-        image_data.push(255);
-    }
+//         // Push as BGRA
+//         image_data.push(r);
+//         image_data.push(g);
+//         image_data.push(b);
+//         image_data.push(0);
+//     }
 
-    // Create icon image with proper transparency
-    let icon_image = IconImage::from_rgba_data(width, height, image_data);
+//     // Create icon image with proper transparency
+//     let icon_image = IconImage::from_rgba_data(width, height, image_data);
 
-    // Add the image to the icon directory
-    icon_dir.add_entry(IconDirEntry::encode(&icon_image)?);
+//     // Add the image to the icon directory
+//     icon_dir.add_entry(IconDirEntry::encode(&icon_image)?);
 
-    // Encode the icon directory to a Vec<u8>
-    let mut ico_data = Vec::new();
-    icon_dir.write(&mut ico_data)?;
+//     // Encode the icon directory to a Vec<u8>
+//     let mut ico_data = Vec::new();
+//     icon_dir.write(&mut ico_data)?;
 
-    Ok(ico_data)
-}
+//     Ok(ico_data)
+// }
 
 // Compile-time key mapping function
 // const fn map_cursor_style(style: CursorStyle) -> minifb::CursorStyle {

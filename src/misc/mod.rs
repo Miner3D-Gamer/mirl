@@ -230,7 +230,7 @@ pub fn invert_color_below(
     let new = crate::graphics::interpolate_color_rgb_u32_f32(
         inverted,
         old,
-        crate::graphics::get_u32_alpha_of_u32(color) as f32 / 255.0,
+        crate::graphics::get_alpha_of_u32(color) as f32 / 255.0,
     );
     crate::render::draw_pixel_safe(buffer, xy, new);
 }
@@ -553,3 +553,6 @@ pub fn find_key_by_value<K: Eq + std::hash::Hash + Clone, V: PartialEq>(
     }
     None
 }
+#[cfg(feature = "discord_support")]
+/// Send stuff to discord webhooks, created because `discord-webhooks` kinda sucks and `discord-webhook2` expects to be called in an async environment
+pub mod discord;

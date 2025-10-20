@@ -385,7 +385,7 @@ impl<S: num_traits::Float> ScreenNormalizer<S> {
     ///
     /// # Panics
     /// If the dimensions are invalid
-    pub const fn new<A: num_traits::ToPrimitive>(screen_size: (S, S)) -> Self {
+    pub const fn new(screen_size: (S, S)) -> Self {
         Self {
             screen_width: screen_size.0,
             screen_height: screen_size.1,
@@ -404,6 +404,19 @@ impl<S: num_traits::Float> ScreenNormalizer<S> {
         p: S,
     ) -> Option<T> {
         num_traits::NumCast::from(p * self.screen_height)
+    }
+    /// Convert a percentage into screen a coordinate
+    pub fn percentile_to_xy<T: num_traits::Num + num_traits::NumCast>(
+        &self,
+        pxy: (S, S),
+    ) -> Option<(T, T)> {
+        let x = num_traits::NumCast::from(pxy.0 * self.screen_width);
+        let y = num_traits::NumCast::from(pxy.1 * self.screen_height);
+        if x.is_none() || y.is_none() {
+            None
+        } else {
+            unsafe { Some((x.unwrap_unchecked(), y.unwrap_unchecked())) }
+        }
     }
     /// Convert a horizontal screen coordinate into a percentage
     pub fn x_to_percentile<T: num_traits::Num + num_traits::NumCast>(
