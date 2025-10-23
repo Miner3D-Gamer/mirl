@@ -302,8 +302,7 @@ use windows::{
 
 use crate::platform::{Buffer, WindowLevel};
 use crate::system::action::{
-    CpuPriority, Decoration, Default, Misc, ProgressionState, TaskBar,
-    Transparency,
+    CpuPriority, Decoration, Default, Host, Misc, ProgressionState, Screen, TaskBar, Transparency
 };
 
 #[allow(trivial_casts)]
@@ -1169,4 +1168,20 @@ pub fn set_taskbar_progress_value(
         taskbar.SetProgressValue(hwnd, completed, total)?;
     }
     Ok(())
+}
+use winapi::um::winuser::GetSystemMetrics;
+fn get_screen_resolution() -> (i32, i32) {
+    let width = unsafe { GetSystemMetrics(winapi::um::winuser::SM_CXSCREEN) };
+    let height = unsafe { GetSystemMetrics(winapi::um::winuser::SM_CYSCREEN) };
+    (width, height)
+}
+impl Host for WindowsActions{
+    fn get_os_name() -> String {
+        "Windows".to_string()
+    }
+}
+impl Screen for WindowsActions{
+    fn get_screen_resolution() -> (i32, i32) {
+        get_screen_resolution().tuple_2_into()
+    }
 }

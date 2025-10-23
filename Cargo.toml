@@ -1,7 +1,7 @@
 [package]
 # Info
 name = "mirl"
-version = "4.4.1"
+version = "4.5.0"
 description = "Miners Rust Lib - A massive collection of ever growing and changing functions, structs, and enums. Check the description for compatibility and toggleable features! (Most of the lib is controlled by flags/features so the lib can continue to be lightweight despite its size)"
 # Compiler
 rust-version = "1.88.0"
@@ -25,6 +25,9 @@ exclude = ["**/_*", "**/*.py"]
 # Enum stuff - Used for iterating the keycodes
 strum = { version = ">=0.26", optional = true }
 strum_macros = { version = ">=0.26", optional = true }
+
+
+rand = { version = ">=0.8", optional = true }
 
 device_query = { version = ">=4.0.0", optional = true }
 
@@ -110,7 +113,6 @@ wasm-bindgen = "0.2"
 
 
 # Unused
-# rand = "0.8"
 #minifb = "0.27.0"
 # # Make a const value be calculated at compile time
 # lazy_static = "1.4"

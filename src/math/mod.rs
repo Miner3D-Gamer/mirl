@@ -322,3 +322,10 @@ bounded_impl!(f64, f64::MIN, f64::MAX);
 
 mod const_partial_ord;
 pub use const_partial_ord::ConstPartialOrd;
+/// A function that smoothly transitions from 0 to 1
+/// At x 1, the y will be 0.5 if the offset is 0
+/// If the offset is 2 the y will be 2 at x 0.5
+#[must_use]
+pub fn smooth_0_to_1(x: f32, steepness: f32, offset: f32) -> f32 {
+    1.0 / (1.0 + ((x / offset) * steepness).exp() + (-steepness))
+}

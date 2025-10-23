@@ -1,4 +1,71 @@
+// fn generate_random_color(range: ((u32, u32, u32), (u32, u32, u32))) -> u32 {
+//     let red = rand::random_range(range.0.0..range.1.0);
+//     let green = rand::random_range(range.0.1..range.1.1);
+//     let blue = rand::random_range(range.0.2..range.1.2);
+//     rgba_to_u32(red, green, blue, 255)
+// }
+// fn replace_color_with_random_color(
+//     buffer: &mut Buffer,
+//     color: u32,
+//     range: ((u32, u32, u32), (u32, u32, u32)),
+// ) {
+//     for i in &mut buffer.data {
+//         if *i == color {
+//             *i = generate_random_color(range);
+//         }
+//     }
+// }
+// fn range_with_variance<T: NumberWithMonotoneOps + Copy>(
+//     value: T,
+//     variance: T,
+// ) -> (T, T) {
+//     (value - variance, value + variance)
+// }
+// fn color_range_with_variance(
+//     color: (u32, u32, u32),
+//     variance: (u32, u32, u32),
+// ) -> ((u32, u32, u32), (u32, u32, u32)) {
+//     reorder_color_range((
+//         range_with_variance(color.0, variance.0),
+//         range_with_variance(color.1, variance.1),
+//         range_with_variance(color.2, variance.2),
+//     ))
+// }
+// fn reorder_color_range(
+//     color_range: ((u32, u32), (u32, u32), (u32, u32)),
+// ) -> ((u32, u32, u32), (u32, u32, u32)) {
+//     (
+//         (color_range.0.0, color_range.1.0, color_range.2.0),
+//         (color_range.0.1, color_range.1.1, color_range.2.1),
+//     )
+// }
+
+/// A steepness of 15 and offset of 0.8 makes a nice looking icon (Rough estimates based on trail and error)
+pub fn fade_out_buffer(buffer: &Buffer, stepness: f32, offset: f32) {
+    let cx = buffer.width as f32 / 2.0;
+    let cy = buffer.height as f32 / 2.0;
+    let max_dist = cx.hypot(cy);
+
+    for y in 0..buffer.height {
+        for x in 0..buffer.width {
+            let dx = x as f32 - cx;
+            let dy = y as f32 - cy;
+            let dist = dx.hypot(dy) / max_dist;
+            let fade = 1.0 - dist;
+            let fade = 1.0 - crate::math::smooth_0_to_1(fade, stepness, offset);
+            unsafe {
+                let color = *buffer.pointer.add(y * buffer.width + x);
+                *buffer.pointer.add(y * buffer.width + x) = color.with_alpha(
+                    crate::math::interpolate(0_f32, 255_f32, fade) as u32,
+                );
+            };
+        }
+    }
+}
+
 use std::hash::Hasher;
+
+use crate::{graphics::ColorManipulation, Buffer};
 /// Combine 2 strings
 pub fn concatenate<A: AsRef<str>, B: AsRef<str>>(a: A, b: B) -> String {
     let mut result = String::from(a.as_ref());

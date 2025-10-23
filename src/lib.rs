@@ -61,7 +61,6 @@
 /// Directional stuff -> NESW, N NE E SE S SW W NW
 pub mod directions;
 
-
 /// Stuff that should exist by default yet doesn't; use `mirl::extensions::*;` to import all of 'em
 pub mod extensions;
 /// Stuff related to graphics -> Color manipulation
@@ -119,4 +118,8 @@ pub fn disable_traceback() {
 // This little fella is so often used that it only makes sense to reexport it
 pub use platform::Buffer;
 
-// TODO: Add clipboard support
+// TODO: 
+// - Clipboard support
+// - Sound support
+// - Networking support?
+// - Linux Compatibility

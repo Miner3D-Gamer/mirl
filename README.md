@@ -1,31 +1,49 @@
 # Mirl
 
-**Miners Rust Lib** – A library with a little bit of everything:
+**Miners Rust Lib** – A modular utility library for math, graphics, system-level functions, and more. A little bit of everything:
 
-- Math functions (+ basic collision)
-- Graphics / color manipulation based on u32 (argb)
-- Buffer rendering (Text, Lines, Triangles, Blocks, Circles, Images, Outlines)
-- Console functions (+ Console rendering)
-- Modular window/rendering system
-  - Supported: MiniFB (Full), GLFW (Mostly)
-  - Supported functionality: Getting mouse/keyboard input, custom cursor styles (+ builtins), setting cursor styles, setting application icon, etc.
-- Screenshoting
-- Window manipulation - Set/get the position, size, decoration, cpu priority, opacity, z-ordering, visibility, icon state, etc.
-- Rust extensions (e.g., `.is_number()`, `.sign()`, `.average()`, comparing tuples – functionality that _should_ be built-in)
-- Stupid stuff - U1, U2, U4 with num-traits support (More to come)
-- Discord webhook support
-- Misc - Detect/Skip text structures, easy keybinding, useful constants, soon: Minesweeper (Yes, just the full game. Why not)
+## Content
+
+### Math and Geometry
+
+- Core math utilities and extensions
+- Basic collision detection
+- U1, U2, U4 integer types with `num-traits` support
+
+### Graphics and Rendering
+
+- Color manipulation (ARGB `u32`)
+- Buffer rendering for text, lines, triangles, blocks, circles, images, outlines
+- Console rendering utilities
+- Support for generating .bmp, .ico, and .cur
+
+### Windowing System
+
+- Modular rendering backend
+  - **MiniFB** (full support)
+  - **GLFW** (partial support)
+- Input handling (mouse, keyboard)
+- Cursor and icon management (Custom cursors)
+- Window manipulation (position, size, opacity, z-order, visibility, etc.)
+
+### Miscellaneous
+
+- Discord webhook integration
+- Rust extensions (`.is_number()`, `.sign()`, `.average()`, tuple comparison)
+- Screenshot utilities
+- Simple keybinding system
+- etc...
 
 ## Compatibility
 
 | Platform | Status     | Info                                                |
 | -------- | ---------- | --------------------------------------------------- |
 | Windows  | ✅ Full    | Native implementation                               |
-| Linux    | ⚠️ Partial | `system` flag not supported                         |
+| Linux    | ⚠️ Partial | Currently fixing                                    |
 | macOS    | 🚧 Barely  | Untested                                            |
 | Web      | ⚠️ Partial | GLFW and MiniFB backends are automatically disabled |
 
-## Features
+## Features/Flags
 
 ### Default (disabled with `default-features = false`)
 
@@ -50,13 +68,23 @@
 - `cursor_show_hotspot` - A debug option for adding a red dot to the hotspot of a customly loaded cursor
 - `discord_support` - Support for sending stuff to discord webhooks
 
+### Other
+
+This lib is heavily guided by clippy and as such:
+- Almost everything has a short docstring
+- Execution stopping functions/macros like panic! or unwrap() are only ever used in custom panic/unwrap functions
+
 ---
 
 ### Hi there
 
-What brought you to this place?
+What brought you to this strange place?
 
-This is just a little big lib I built for easy function/struct reusability.
+While a lot of the lib is stable and won't be touched again by me again, in the name of speed I will not hesitate to improve what already exists.
+I believe my goal is to create so many functions/structs/etc., that just work no matter what you throw at them, until I'm able to write entire projects in just a few lines of code.
+
+This is just a little big lib I built for easy function/struct/etc. reusability across my never ending stream of unfinished projects.
+Even if most of the functions in here will never be used again, considering there are ~3k functions, ~50 enums, ~100 structs, >200 traits, >1k trait implementations; you are sure to find _something_
 
 You can find the most random yet oddly specific things here.
 Enjoy! Or don't, honestly...

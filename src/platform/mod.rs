@@ -155,7 +155,7 @@ impl WindowSettings {
             borderless: false,
             title_visible: true,
             window_level: WindowLevel::Normal,
-            position: crate::system::info::get_center_of_screen_for_object(
+            position: crate::system::get_center_of_screen_for_object(
                 size.0 as i32,
                 size.1 as i32,
             )
@@ -220,7 +220,7 @@ impl WindowSettings {
     }
     /// Sets the position of the window to be centered on the screen
     pub fn set_position_to_middle_of_screen(&mut self) -> &mut Self {
-        self.position = crate::system::info::get_center_of_screen_for_object(
+        self.position = crate::system::get_center_of_screen_for_object(
             self.size.0 as i32,
             self.size.1 as i32,
         )

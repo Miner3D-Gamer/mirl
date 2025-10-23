@@ -1253,17 +1253,27 @@ pub mod color_presets;
 mod interpolation;
 pub use interpolation::*;
 #[const_trait]
-/// A trait for changing a single channel of a color
+/// A trait for changing or retrieving a single channel of a color
 pub trait ColorManipulation {
     /// Set the alpha channel
     fn with_alpha(&self, alpha: u32) -> u32;
     /// Set the red channel
-    fn with_red(&self, alpha: u32) -> u32;
+    fn with_red(&self, red: u32) -> u32;
     /// Set the green channel
-    fn with_green(&self, alpha: u32) -> u32;
+    fn with_green(&self, green: u32) -> u32;
     /// Set the blue channel
-    fn with_blue(&self, alpha: u32) -> u32;
+    fn with_blue(&self, blue: u32) -> u32;
+
+    /// Get the alpha channel
+    fn alpha(&self) -> u32;
+    /// Get the red channel
+    fn red(&self) -> u32;
+    /// Get the green channel
+    fn green(&self) -> u32;
+    /// Get the blue channel
+    fn blue(&self) -> u32;
 }
+
 impl const ColorManipulation for u32 {
     fn with_alpha(&self, alpha: u32) -> u32 {
         rgba_to_u32(
@@ -1273,6 +1283,7 @@ impl const ColorManipulation for u32 {
             alpha,
         )
     }
+
     fn with_red(&self, red: u32) -> u32 {
         rgba_to_u32(
             red,
@@ -1281,14 +1292,7 @@ impl const ColorManipulation for u32 {
             get_alpha_of_u32(*self),
         )
     }
-    fn with_blue(&self, blue: u32) -> u32 {
-        rgba_to_u32(
-            get_red_of_u32(*self),
-            get_green_of_u32(*self),
-            blue,
-            get_alpha_of_u32(*self),
-        )
-    }
+
     fn with_green(&self, green: u32) -> u32 {
         rgba_to_u32(
             get_red_of_u32(*self),
@@ -1297,7 +1301,33 @@ impl const ColorManipulation for u32 {
             get_alpha_of_u32(*self),
         )
     }
+
+    fn with_blue(&self, blue: u32) -> u32 {
+        rgba_to_u32(
+            get_red_of_u32(*self),
+            get_green_of_u32(*self),
+            blue,
+            get_alpha_of_u32(*self),
+        )
+    }
+
+    fn alpha(&self) -> u32 {
+        get_alpha_of_u32(*self)
+    }
+
+    fn red(&self) -> u32 {
+        get_red_of_u32(*self)
+    }
+
+    fn green(&self) -> u32 {
+        get_green_of_u32(*self)
+    }
+
+    fn blue(&self) -> u32 {
+        get_blue_of_u32(*self)
+    }
 }
+
 #[must_use]
 /// Convert the image the buffer is holding into a bmp
 pub fn create_bmp(image: &Buffer) -> Vec<u8> {

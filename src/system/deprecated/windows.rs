@@ -69,9 +69,9 @@ impl Memory for WindowsInfo {
     }
 }
 impl Screen for WindowsInfo {
-    fn get_os_menu_height() -> i32 {
-        unsafe { GetSystemMetrics(4) }
-    }
+    // fn get_os_menu_height() -> i32 {
+    //     unsafe { GetSystemMetrics(4) }
+    // }
 
     fn get_taskbar_height() -> i32 {
         unsafe {

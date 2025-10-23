@@ -41,8 +41,10 @@ pub fn draw_rectangle<const SAFE: bool>(
         // Calculate actual drawable bounds
         let start_x = pos.0.max(0) as usize;
         let start_y = pos.1.max(0) as usize;
-        let end_x = ((pos.0 + size.0).min(buffer.width as isize)) as usize;
-        let end_y = ((pos.1 + size.1).min(buffer.height as isize)) as usize;
+        let end_x =
+            ((pos.0 + size.0).min(buffer.width as isize)).max(0) as usize;
+        let end_y =
+            ((pos.1 + size.1).min(buffer.height as isize)).max(0) as usize;
 
         if start_x >= buffer.width
             || start_y >= buffer.height
@@ -53,14 +55,16 @@ pub fn draw_rectangle<const SAFE: bool>(
         }
 
         let row_width = end_x - start_x;
+        //println!("end {} - start {}", end_x, start_x);
 
-        // Draw row by row using ptr::write_bytes for better performance
         for y in start_y..end_y {
             let row_start = y * buffer.width + start_x;
             unsafe {
                 let ptr = buffer.pointer.add(row_start);
                 for i in 0..row_width {
+                    //println!("Before {row_width}, {start_x}");
                     *ptr.add(i) = color;
+                    //println!("After");
                 }
             }
         }

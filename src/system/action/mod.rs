@@ -138,6 +138,21 @@ pub trait TaskBar {
         total: u64,
     );
 }
+/// Screen information
+pub trait Screen {
+    /// Get the resolution of the screen in pixels (does not support multiple monitors, multi screen workspaces)
+    fn get_screen_resolution() -> (i32, i32);
+}
+/// Os information
+pub trait Host {
+    /// Get the name of the os
+    /// Windows -> Windows
+    /// Linux (Ubuntu) -> Ubuntu
+    /// Linux (Mint) -> Mint
+    /// Linux (Unknown) -> Linux
+    fn get_os_name() -> String;
+}
+
 // #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 // ///
 // pub struct ToolbarTool {}
@@ -161,24 +176,21 @@ pub enum ProgressionState {
 /// An OS specific library, only use when necessary
 pub mod windows_actions;
 #[cfg(target_os = "windows")]
-pub use windows_actions::WindowsActions as OsActions;
+pub use windows_actions::WindowsActions as Os;
 
 #[cfg(target_os = "linux")]
 /// An OS specific library, only use when necessary
 pub mod linux_actions;
 #[cfg(target_os = "linux")]
-use linux_actions::{
-    capture_desktop_background_raw, capture_screen_raw, get_window_id_by_title,
-};
+pub use linux_actions::LinuxActions as Os;
 
-#[cfg(target_arch = "wasm32")]
-/// An OS specific library, only use when necessary
-pub mod web_actions;
-#[cfg(target_arch = "wasm32")]
-use web_actions::{
-    capture_desktop_background_raw, capture_screen_raw, get_window_id_by_title,
-};
-
+// #[cfg(target_arch = "wasm32")]
+// /// An OS specific library, only use when necessary
+// pub mod web_actions;
+// #[cfg(target_arch = "wasm32")]
+// use web_actions::{
+//     capture_desktop_background_raw, capture_screen_raw, get_window_id_by_title,
+// };
 use crate::platform::{Buffer, WindowLevel};
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 /// The cpu/thread priority a process can have

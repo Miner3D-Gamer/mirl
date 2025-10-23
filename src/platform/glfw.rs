@@ -93,16 +93,16 @@ impl<MouseManagerScrollAccuracy: num_traits::Float> Window
         window.set_mouse_button_polling(true);
 
         window.set_pos(settings.position.0 as i32, settings.position.1 as i32);
-        crate::system::OsActions::set_window_borderless(
+        crate::system::Os::set_window_borderless(
             &get_native_window_handle_from_glfw(&window),
             settings.borderless,
         );
-        crate::system::OsActions::set_window_position(
+        crate::system::Os::set_window_position(
             &get_native_window_handle_from_glfw(&window),
             settings.position.0 as i32,
             settings.position.1 as i32,
         );
-        crate::system::OsActions::set_window_level(
+        crate::system::Os::set_window_level(
             &get_native_window_handle_from_glfw(&window),
             settings.window_level,
         );
@@ -205,7 +205,7 @@ impl<MouseManagerScrollAccuracy: num_traits::Float> ExtendedControl
 {
     #[inline]
     fn set_render_layer(&mut self, level: WindowLevel) {
-        crate::system::OsActions::set_window_level(
+        crate::system::Os::set_window_level(
             &self.get_window_handle(),
             level,
         );
@@ -241,7 +241,7 @@ impl<MouseManagerScrollAccuracy: num_traits::Float> Control
         (x as isize, y as isize)
     }
     fn get_size(&self) -> (isize, isize) {
-        crate::system::OsActions::get_window_size(
+        crate::system::Os::get_window_size(
             &get_native_window_handle_from_glfw(&self.window),
         )
         .tuple_2_into()

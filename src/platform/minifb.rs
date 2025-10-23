@@ -82,11 +82,11 @@ impl Window for Framework {
         };
 
         window.set_position(settings.position.0, settings.position.1);
-        crate::system::OsActions::set_window_borderless(
+        crate::system::Os::set_window_borderless(
             &get_native_window_handle_from_minifb(&window),
             settings.borderless,
         );
-        crate::system::OsActions::set_window_level(
+        crate::system::Os::set_window_level(
             &get_native_window_handle_from_minifb(&window),
             settings.window_level,
         );
@@ -161,7 +161,7 @@ impl Timing for Framework {
 impl ExtendedControl for Framework {
     #[inline]
     fn set_render_layer(&mut self, level: WindowLevel) {
-        crate::system::OsActions::set_window_level(
+        crate::system::Os::set_window_level(
             &self.get_window_handle(),
             level,
         );
@@ -392,7 +392,7 @@ impl Control for Framework {
     }
     #[inline]
     fn get_size(&self) -> (isize, isize) {
-        crate::system::OsActions::get_window_size(
+        crate::system::Os::get_window_size(
             &get_native_window_handle_from_minifb(&self.window),
         )
         .tuple_2_into()

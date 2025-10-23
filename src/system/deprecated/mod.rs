@@ -15,8 +15,8 @@ pub trait Memory {
 #[const_trait]
 /// Basic screen information
 pub trait Screen {
-    /// The os menu on top of windows
-    fn get_os_menu_height() -> i32;
+    // /// The os menu on top of windows
+    // fn get_os_menu_height() -> i32;
     /// Screen resolution
     fn get_screen_resolution() -> (i32, i32);
     /// Height of task bar
@@ -50,41 +50,5 @@ pub trait Network {
     fn is_connected_to_internet(website_connection: Option<String>) -> bool;
 }
 
-#[cfg(target_os = "windows")]
-mod windows;
-#[cfg(target_os = "windows")]
-pub use windows::WindowsInfo as OsInfo;
-#[cfg(target_os = "linux")]
-mod linux;
-#[cfg(target_os = "linux")]
-pub use linux::LinuxInfo as OsInfo;
-#[cfg(target_arch = "wasm32")]
-mod web;
-#[cfg(target_arch = "wasm32")]
-pub use web::WebInfo as OsInfo;
 
 // use crate::graphics::Buffer;
-/// Get the xy coordinates of where to put an object with the specified width and height for it to be centered
-#[must_use] 
-pub fn get_center_of_screen_for_object(width: i32, height: i32) -> (i32, i32) {
-    let title_bat_height = OsInfo::get_os_menu_height();
-    let (screen_width, screen_height) = OsInfo::get_screen_resolution();
-
-    (
-        screen_width / 2 - width / 2,
-        screen_height / 2 - height / 2 - title_bat_height,
-    )
-}
-use crate::platform::Buffer;
-
-/// Get the xy coordinates of where to put the window associated with the [Buffer] for it to be centered
-#[must_use] 
-pub fn get_center_of_screen_of_buffer(buffer: &Buffer) -> (i32, i32) {
-    let title_bat_height = crate::system::info::OsInfo::get_os_menu_height();
-    let (screen_width, screen_height) = OsInfo::get_screen_resolution();
-
-    (
-        screen_width / 2 - buffer.width as i32 / 2,
-        screen_height / 2 - buffer.height as i32 / 2 - title_bat_height,
-    )
-}
