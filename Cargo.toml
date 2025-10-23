@@ -1,8 +1,8 @@
 [package]
 # Info
 name = "mirl"
-version = "4.4.0"
-description = "Miners Rust Lib - A collection of ever growing and changing functions and structs. Check the description for compatibility and toggleable features! (Most of the lib is controlled by flags/features)"
+version = "4.4.1"
+description = "Miners Rust Lib - A massive collection of ever growing and changing functions, structs, and enums. Check the description for compatibility and toggleable features! (Most of the lib is controlled by flags/features so the lib can continue to be lightweight despite its size)"
 # Compiler
 rust-version = "1.88.0"
 edition = "2021"
@@ -26,7 +26,7 @@ exclude = ["**/_*", "**/*.py"]
 strum = { version = ">=0.26", optional = true }
 strum_macros = { version = ">=0.26", optional = true }
 
-device_query = { version = "4.0.0", optional = true }
+device_query = { version = ">=4.0.0", optional = true }
 
 # Discord stuff
 reqwest = { version = "0.12", features = ["json", "blocking"], optional = true }
@@ -35,7 +35,7 @@ serde = { version = "1.0.228", optional = true }
 
 # dear_mirl_gui = { path = "../dear_mirl_gui", optional = true }
 
-parking_lot = "0.12"
+parking_lot = ">=0.12"
 
 # Needed for glyph cache
 once_cell = { version = ">=1.4", optional = true }
@@ -45,7 +45,7 @@ font-kit = { version = "0.11", optional = true }
 
 
 # Rasterize SVG
-resvg = { version = "0.45.1", optional = true }
+resvg = { version = ">=0.45.1", optional = true }
 
 
 # Other window stuff

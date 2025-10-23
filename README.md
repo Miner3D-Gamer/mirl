@@ -2,15 +2,19 @@
 
 **Miners Rust Lib** – A library with a little bit of everything:
 
-- Math functions
-- Graphics / color manipulation
-- Buffer rendering (Text, Lines, Triangles, Blocks, Circles, Images)
-- Console functions
-- Dynamic window/rendering system
+- Math functions (+ basic collision)
+- Graphics / color manipulation based on u32 (argb)
+- Buffer rendering (Text, Lines, Triangles, Blocks, Circles, Images, Outlines)
+- Console functions (+ Console rendering)
+- Modular window/rendering system
   - Supported: MiniFB (Full), GLFW (Mostly)
-- Screenshots and other window manipulations
+  - Supported functionality: Getting mouse/keyboard input, custom cursor styles (+ builtins), setting cursor styles, setting application icon, etc.
+- Screenshoting
+- Window manipulation - Set/get the position, size, decoration, cpu priority, opacity, z-ordering, visibility, icon state, etc.
 - Rust extensions (e.g., `.is_number()`, `.sign()`, `.average()`, comparing tuples – functionality that _should_ be built-in)
-- U1, U2, U4 with num-traits support (More to come)
+- Stupid stuff - U1, U2, U4 with num-traits support (More to come)
+- Discord webhook support
+- Misc - Detect/Skip text structures, easy keybinding, useful constants, soon: Minesweeper (Yes, just the full game. Why not)
 
 ## Compatibility
 
