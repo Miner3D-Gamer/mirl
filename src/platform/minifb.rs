@@ -20,6 +20,7 @@ use crate::platform::keycodes::KeyCode;
 use crate::platform::{MouseButton, WindowLevel};
 use crate::system::action::Decoration;
 use crate::system::action::Default;
+use crate::system::Os;
 /// Backend implementation using `MiniFB`
 #[derive(Debug)]
 pub struct Framework {
@@ -115,7 +116,7 @@ impl Window for Framework {
 #[cfg(not(feature = "do_not_compile_extension_tuple_support"))]
 impl Input for Framework {
     #[inline]
-    fn get_mouse_position(&self) -> Option<(isize, isize)> {
+    fn get_mouse_position(&self) -> Option<(i32, i32)> {
         let value =
             self.window.get_unscaled_mouse_pos(minifb::MouseMode::Pass)?;
 
@@ -157,44 +158,38 @@ impl Timing for Framework {
         super::shared::sleep(time);
     }
 }
+use crate::system::action::Iconized;
 
 impl ExtendedControl for Framework {
     #[inline]
     fn set_render_layer(&mut self, level: WindowLevel) {
-        crate::system::Os::set_window_level(
-            &self.get_window_handle(),
-            level,
-        );
+        crate::system::Os::set_window_level(&self.get_window_handle(), level);
     }
     #[inline]
     fn maximize(&mut self) {
-        super::shared::maximize(&self.window.get_window_handle());
+        Os::maximize(&self.get_window_handle());
     }
     #[inline]
     fn minimize(&mut self) {
-        super::shared::minimize(&self.window.get_window_handle());
+        Os::minimize(&self.get_window_handle());
     }
     #[inline]
     fn restore(&mut self) {
-        super::shared::restore(&self.window.get_window_handle());
+        Os::restore(&self.get_window_handle());
     }
     fn is_maximized(&self) -> bool {
-        super::shared::is_window_maximized(&self.window.get_window_handle())
+        Os::is_maximized(&self.get_window_handle())
     }
     fn is_minimized(&self) -> bool {
-        super::shared::is_window_minimized(&self.window.get_window_handle())
+        Os::is_minimized(&self.get_window_handle())
     }
 }
 
 #[cfg(feature = "device_query")]
 #[cfg(not(feature = "do_not_compile_extension_tuple_support"))]
-impl<MouseManagerScrollAccuracy: num_traits::Float>
-    ExtendedInput<MouseManagerScrollAccuracy> for Framework
-{
+impl ExtendedInput for Framework {
     #[inline]
-    fn get_mouse_scroll(
-        &self,
-    ) -> Option<(MouseManagerScrollAccuracy, MouseManagerScrollAccuracy)> {
+    fn get_mouse_scroll(&self) -> Option<(f32, f32)> {
         let t = self.window.get_scroll_wheel();
 
         let (x, y) = t?;
@@ -385,25 +380,25 @@ fn get_native_window_handle_from_minifb(
 impl Control for Framework {
     #[inline]
     fn set_size(&mut self, buffer: &Buffer) {
-        super::shared::resize(
-            &self.window.get_window_handle(),
-            &(buffer.width as i32, buffer.height as i32),
+        Os::set_window_size(
+            &self.get_window_handle(),
+            (buffer.width as i32, buffer.height as i32),
         );
     }
     #[inline]
-    fn get_size(&self) -> (isize, isize) {
+    fn get_size(&self) -> (i32, i32) {
         crate::system::Os::get_window_size(
             &get_native_window_handle_from_minifb(&self.window),
         )
         .tuple_2_into()
     }
     #[inline]
-    fn set_position(&mut self, xy: (isize, isize)) {
-        self.window.set_position(xy.0, xy.1);
+    fn set_position(&mut self, xy: (i32, i32)) {
+        self.window.set_position(xy.0 as isize, xy.1 as isize);
     }
     #[inline]
-    fn get_position(&self) -> (isize, isize) {
-        self.window.get_position()
+    fn get_position(&self) -> (i32, i32) {
+        self.window.get_position().tuple_2_into()
     }
 }
 

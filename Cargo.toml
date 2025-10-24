@@ -1,7 +1,7 @@
 [package]
 # Info
 name = "mirl"
-version = "4.5.0"
+version = "4.6.0"
 description = "Miners Rust Lib - A massive collection of ever growing and changing functions, structs, and enums. Check the description for compatibility and toggleable features! (Most of the lib is controlled by flags/features so the lib can continue to be lightweight despite its size)"
 # Compiler
 rust-version = "1.88.0"
@@ -139,7 +139,7 @@ full_backend_support = [
     "keycode_support",
 ]
 # Framework backend using minifb (NOT COMPATIBLE WITH WEB)
-minifb_backend = ["minifb", "system", "keycode_support", "keyboard_query"]
+minifb_backend = ["minifb", "system", "keycode_support", "keyboard_query", "svg_support"]
 # Framework backend using glfw (NOT COMPATIBLE WITH WEB)
 glfw_backend = ["glfw", "gl", "system", "keycode_support"]
 # Low level system interactions

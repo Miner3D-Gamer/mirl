@@ -73,6 +73,18 @@ impl Default for WindowsActions {
             _ => (i32::MIN, i32::MIN),
         }
     }
+    fn set_window_size(
+        handle: &raw_window_handle::RawWindowHandle,
+        size: (i32, i32),
+    ) -> bool {
+        match handle {
+            raw_window_handle::RawWindowHandle::Win32(handle) => {
+                resize(handle.hwnd.get() as winapi::shared::windef::HWND, size);
+                true
+            }
+            _ => false,
+        }
+    }
 }
 
 impl Transparency for WindowsActions {
@@ -302,7 +314,8 @@ use windows::{
 
 use crate::platform::{Buffer, WindowLevel};
 use crate::system::action::{
-    CpuPriority, Decoration, Default, Host, Misc, ProgressionState, Screen, TaskBar, Transparency
+    CpuPriority, Decoration, Default, Host, Iconized, Misc, ProgressionState,
+    Screen, TaskBar, Transparency,
 };
 
 #[allow(trivial_casts)]
@@ -1175,13 +1188,161 @@ fn get_screen_resolution() -> (i32, i32) {
     let height = unsafe { GetSystemMetrics(winapi::um::winuser::SM_CYSCREEN) };
     (width, height)
 }
-impl Host for WindowsActions{
+impl Host for WindowsActions {
     fn get_os_name() -> String {
         "Windows".to_string()
     }
 }
-impl Screen for WindowsActions{
+impl Screen for WindowsActions {
     fn get_screen_resolution() -> (i32, i32) {
         get_screen_resolution().tuple_2_into()
+    }
+}
+
+use winapi::um::winuser::{IsIconic, IsZoomed};
+use winapi::um::winuser::{
+    ShowWindow, //HWND_NOTOPMOST, HWND_TOPMOST,
+    // SWP_NOSIZE,
+    // SWP_SHOWWINDOW,
+    SW_MAXIMIZE,
+    SW_MINIMIZE,
+    SW_RESTORE,
+};
+#[allow(clippy::not_unsafe_ptr_arg_deref)]
+/// Maximize the given window -> Expand its borders to fit the screen
+pub fn maximize(hwnd: winapi::shared::windef::HWND) {
+    unsafe {
+        ShowWindow(hwnd, SW_MAXIMIZE);
+    }
+}
+#[allow(clippy::not_unsafe_ptr_arg_deref)]
+/// Hide away the given window
+pub fn minimize(hwnd: winapi::shared::windef::HWND) {
+    unsafe {
+        ShowWindow(hwnd, SW_MINIMIZE);
+    }
+}
+#[allow(clippy::not_unsafe_ptr_arg_deref)]
+/// Unhide un-away the given window
+pub fn restore(hwnd: winapi::shared::windef::HWND) {
+    unsafe {
+        ShowWindow(hwnd, SW_RESTORE);
+    }
+}
+
+// pub fn always_on_top(window: &*mut c_void, always_on_top_bool: bool) {
+//     if always_on_top_bool {
+//         topmost(window);
+//     } else {
+//         not_topmost(window);
+//     }
+// }
+
+// pub fn topmost(window: &*mut c_void) {
+//     let hwnd = *window as HWND;
+//     unsafe {
+//         SetWindowPos(
+//             hwnd,
+//             HWND_TOPMOST,
+//             0,
+//             0,
+//             0,
+//             0,
+//             SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW,
+//         );
+//     }
+// }
+// pub fn not_topmost(window: &*mut c_void) {
+//     let hwnd = *window as HWND;
+//     unsafe {
+//         SetWindowPos(
+//             hwnd,
+//             HWND_NOTOPMOST,
+//             0,
+//             0,
+//             0,
+//             0,
+//             SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW,
+//         );
+//     }
+// }
+/// Resize the current window to the specified size
+#[allow(clippy::not_unsafe_ptr_arg_deref)]
+pub fn resize(hwnd: winapi::shared::windef::HWND, size: (i32, i32)) {
+    unsafe {
+        // Resize the window to the given width and height
+        winapi::um::winuser::SetWindowPos(
+            hwnd,
+            std::ptr::null_mut(), // No changes to the window's position
+            0,
+            0,
+            size.0,
+            size.1,
+            winapi::um::winuser::SWP_NOZORDER | winapi::um::winuser::SWP_NOMOVE, // Keep the current position, just resize
+        );
+    }
+}
+/// Wether the window is minimized on windows
+#[allow(clippy::not_unsafe_ptr_arg_deref)]
+pub fn is_window_minimized(hwnd: winapi::shared::windef::HWND) -> bool {
+    unsafe { IsIconic(hwnd) != 0 }
+}
+// /// Get the numerical value of a window
+// pub const fn get_window_handle(window: &*mut c_void) -> HWND {
+//     *window as winapi::shared::windef::HWND
+// }
+#[allow(clippy::not_unsafe_ptr_arg_deref)]
+/// Wether a window is maximized on windows
+pub fn is_window_maximized(hwnd: winapi::shared::windef::HWND) -> bool {
+    unsafe { IsZoomed(hwnd) != 0 }
+}
+impl Iconized for WindowsActions {
+    fn is_minimized(handle: &raw_window_handle::RawWindowHandle) -> bool {
+        if let raw_window_handle::RawWindowHandle::Win32(handle) = handle {
+            is_window_minimized(
+                handle.hwnd.get() as winapi::shared::windef::HWND
+            );
+            true
+        } else {
+            false
+        }
+    }
+
+    fn is_maximized(handle: &raw_window_handle::RawWindowHandle) -> bool {
+        if let raw_window_handle::RawWindowHandle::Win32(handle) = handle {
+            is_window_maximized(
+                handle.hwnd.get() as winapi::shared::windef::HWND
+            );
+            true
+        } else {
+            false
+        }
+    }
+
+    fn restore(handle: &raw_window_handle::RawWindowHandle) -> bool {
+        if let raw_window_handle::RawWindowHandle::Win32(handle) = handle {
+            restore(handle.hwnd.get() as winapi::shared::windef::HWND);
+            true
+        } else {
+            false
+        }
+    }
+
+    fn minimize(handle: &raw_window_handle::RawWindowHandle) -> bool {
+        if let raw_window_handle::RawWindowHandle::Win32(handle) = handle {
+            minimize(handle.hwnd.get() as winapi::shared::windef::HWND);
+            true
+        } else {
+            false
+        }
+    }
+
+    fn maximize(handle: &raw_window_handle::RawWindowHandle) -> bool {
+        if let raw_window_handle::RawWindowHandle::Win32(handle) = handle {
+            maximize(handle.hwnd.get() as winapi::shared::windef::HWND);
+            true
+        } else {
+            false
+        }
     }
 }

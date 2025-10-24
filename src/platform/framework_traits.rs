@@ -10,24 +10,22 @@ pub trait Framework: Window + Input + Output + Timing {}
 impl<T: Window + Input + Output + Timing> Framework for T {}
 /// Framework with all functionality it could support
 #[const_trait]
-pub trait ExtendedFramework<MouseManagerScrollAccuracy: num_traits::Float>:
+pub trait ExtendedFramework:
     Framework
-    + ExtendedInput<MouseManagerScrollAccuracy>
+    + ExtendedInput
     + ExtendedWindow
     + Control
     + ExtendedControl
     + CursorStyleControl
 {
 }
-impl<T, MouseManagerScrollAccuracy: num_traits::Float>
-    ExtendedFramework<MouseManagerScrollAccuracy> for T
-where
+impl<T> ExtendedFramework for T where
     T: Framework
-        + ExtendedInput<MouseManagerScrollAccuracy>
+        + ExtendedInput
         + ExtendedWindow
         + Control
         + ExtendedControl
-        + CursorStyleControl,
+        + CursorStyleControl
 {
 }
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -53,7 +51,7 @@ pub enum Errors {
         path: String,
     },
     /// Other error
-    Misc(String)
+    Misc(String),
 }
 // impl std::error::Error for Errors {}
 // impl std::fmt::Display for Errors {
@@ -95,7 +93,7 @@ pub trait Window {
 /// Basic input detection
 pub trait Input {
     /// Gets the current mouse position
-    fn get_mouse_position(&self) -> Option<(isize, isize)>;
+    fn get_mouse_position(&self) -> Option<(i32, i32)>;
     /// Checks if the requested key is down.
     /// Warning: Most backends to not support all keys (like 'f25', 'world2', or 'Þ') and will always return false in that case
     fn is_key_down(&self, key: KeyCode) -> bool;
@@ -107,11 +105,11 @@ pub trait Input {
 /// Get the relative mouse position
 pub trait RelativeMousePos {
     /// Get the mouse position relative to the window
-    fn get_mouse_position_relative(&self) -> Option<(isize, isize)>;
+    fn get_mouse_position_relative(&self) -> Option<(i32, i32)>;
 }
 #[cfg(not(feature = "do_not_compile_extension_tuple_support"))]
 impl<T: Input + Control> RelativeMousePos for T {
-    fn get_mouse_position_relative(&self) -> Option<(isize, isize)> {
+    fn get_mouse_position_relative(&self) -> Option<(i32, i32)> {
         let mouse_pos = self.get_mouse_position()?;
         let window_pos = self.get_position();
         Some(mouse_pos.add(window_pos))
@@ -143,11 +141,9 @@ pub trait ExtendedTiming {
 }
 #[const_trait]
 /// More advanced input methods
-pub trait ExtendedInput<MouseManagerScrollAccuracy: num_traits::Float> {
+pub trait ExtendedInput {
     /// Get how much the mouse has been scrolled on its wheel (x, y)
-    fn get_mouse_scroll(
-        &self,
-    ) -> Option<(MouseManagerScrollAccuracy, MouseManagerScrollAccuracy)>;
+    fn get_mouse_scroll(&self) -> Option<(f32, f32)>;
     /// Get all currently pressed keys
     fn get_all_keys_down(&self) -> Vec<KeyCode>;
 }
@@ -194,18 +190,18 @@ pub trait CursorStyleControl {
 /// Simple window management
 pub trait Control {
     /// Set the window position relative to its current position
-    fn move_window(&mut self, xy: (isize, isize)) {
+    fn move_window(&mut self, xy: (i32, i32)) {
         let current = self.get_position();
         self.set_position((current.0 + xy.0, current.1 + xy.1));
     }
     /// Get the position of the window
-    fn get_position(&self) -> (isize, isize);
+    fn get_position(&self) -> (i32, i32);
     /// Set the position of the window
-    fn set_position(&mut self, xy: (isize, isize));
+    fn set_position(&mut self, xy: (i32, i32));
     /// Set the size of the window using the dimensions of a Buffer
     fn set_size(&mut self, buffer: &Buffer);
     /// Get the size of the window
-    fn get_size(&self) -> (isize, isize);
+    fn get_size(&self) -> (i32, i32);
 }
 #[const_trait]
 /// More complex window controls

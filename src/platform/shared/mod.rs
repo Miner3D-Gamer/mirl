@@ -415,11 +415,11 @@ impl KeyManager {
 use strum::IntoEnumIterator;
 
 /// A struct to manage the pressed mouse keys + scroll
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 #[allow(clippy::struct_excessive_bools)]
-pub struct MouseManager<T: num_traits::Float> {
-    scroll_x: T,
-    scroll_y: T,
+pub struct MouseManager {
+    scroll_x: f32,
+    scroll_y: f32,
     left_mouse_button: bool,
     right_mouse_button: bool,
     middle_mouse_button: bool,
@@ -431,19 +431,19 @@ pub struct MouseManager<T: num_traits::Float> {
     extra4_button: bool,
 }
 
-impl<T: num_traits::Float> Default for MouseManager<T> {
+impl Default for MouseManager {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl<T: num_traits::Float> MouseManager<T> {
+impl MouseManager {
     /// Create a new `MouseManager` instance, keep in mind that it doesn't check if any keys are down/scroll itself
     #[must_use]
-    pub fn new() -> Self {
+    pub const fn new() -> Self {
         Self {
-            scroll_x: T::zero(),
-            scroll_y: T::zero(),
+            scroll_x: 0.0,
+            scroll_y: 0.0,
             left_mouse_button: false,
             right_mouse_button: false,
             middle_mouse_button: false,
@@ -454,24 +454,26 @@ impl<T: num_traits::Float> MouseManager<T> {
         }
     }
     /// Set the scroll
-    pub const fn set_scroll(&mut self, xy: (T, T)) {
+    pub const fn set_scroll(&mut self, xy: (f32, f32)) {
         self.scroll_x = xy.0;
         self.scroll_y = xy.1;
     }
     /// Add to the scroll
-    pub fn add_scroll(&mut self, xy: (T, T)) {
-        self.scroll_x = self.scroll_x + xy.0;
-        self.scroll_y = self.scroll_y + xy.1;
+    pub fn add_scroll(&mut self, xy: (f32, f32)) {
+        self.scroll_x += xy.0;
+        self.scroll_y += xy.1;
     }
     /// Reset the scroll
-    pub fn reset_scroll(&mut self) {
-        self.scroll_x = T::zero();
-        self.scroll_y = T::zero();
+    pub const fn reset_scroll(&mut self) {
+        self.scroll_x = 0.0;
+        self.scroll_y = 0.0;
     }
+    #[must_use]
     /// Get the mouse wheel scroll
-    pub const fn get_scroll(&self) -> (T, T) {
+    pub const fn get_scroll(&self) -> (f32, f32) {
         (self.scroll_x, self.scroll_y)
     }
+    #[must_use]
     /// Check if a mouse button is pressed
     pub const fn is_mouse_button_pressed(&self, button: MouseButton) -> bool {
         map_button(button, self)
@@ -487,10 +489,11 @@ impl<T: num_traits::Float> MouseManager<T> {
 }
 use super::MouseButton;
 use crate::platform::keycodes::KeyCode;
+#[must_use]
 /// Get the value [`MouseButton`] of [`MouseManager`]
-pub const fn map_button<MouseManagerScrollAccuracy: num_traits::Float>(
+pub const fn map_button(
     button: MouseButton,
-    mouse_manager: &MouseManager<MouseManagerScrollAccuracy>,
+    mouse_manager: &MouseManager,
 ) -> bool {
     match button {
         MouseButton::Left => mouse_manager.left_mouse_button,
@@ -504,9 +507,9 @@ pub const fn map_button<MouseManagerScrollAccuracy: num_traits::Float>(
     }
 }
 /// Set the value [`MouseButton`] of [`MouseManager`]
-pub const fn set_mouse_button<MouseManagerScrollAccuracy: num_traits::Float>(
+pub const fn set_mouse_button(
     button: MouseButton,
-    mouse_manager: &mut MouseManager<MouseManagerScrollAccuracy>,
+    mouse_manager: &mut MouseManager,
     value: bool,
 ) {
     match button {
@@ -885,7 +888,7 @@ pub const fn set_keycode(
     }
 }
 
-#[cfg(target_os = "windows")]
-mod windows;
-#[cfg(target_os = "windows")]
-pub use windows::*;
+// #[cfg(target_os = "windows")]
+// mod windows;
+// #[cfg(target_os = "windows")]
+// pub use windows::*;

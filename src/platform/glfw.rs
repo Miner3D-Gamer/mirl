@@ -30,7 +30,7 @@ use crate::{
 };
 /// glfw implementation of Framework
 #[derive(Debug)]
-pub struct Framework<MouseManagerScrollAccuracy: num_traits::Float> {
+pub struct Framework {
     glfw: glfw::Glfw,
     width: usize,
     height: usize,
@@ -41,7 +41,7 @@ pub struct Framework<MouseManagerScrollAccuracy: num_traits::Float> {
     vao: u32,
     time: NativeTime,
     keyboard_manager: super::shared::KeyManager,
-    mouse_manager: super::shared::MouseManager<MouseManagerScrollAccuracy>,
+    mouse_manager: super::shared::MouseManager,
     maximized: bool,
     minimized: bool,
 }
@@ -56,9 +56,7 @@ static LOG_ERRORS: Option<glfw::ErrorCallback<()>> = Some(glfw::Callback {
 });
 
 #[cfg(not(feature = "do_not_compile_extension_tuple_support"))]
-impl<MouseManagerScrollAccuracy: num_traits::Float> Window
-    for Framework<MouseManagerScrollAccuracy>
-{
+impl Window for Framework {
     fn new(
         title: &str,
         settings: super::WindowSettings,
@@ -181,9 +179,7 @@ impl<MouseManagerScrollAccuracy: num_traits::Float> Window
     }
 }
 
-impl<MouseManagerScrollAccuracy: num_traits::Float> Timing
-    for Framework<MouseManagerScrollAccuracy>
-{
+impl Timing for Framework {
     #[inline]
     fn get_time(&self) -> Box<dyn Time> {
         super::shared::get_time()
@@ -199,28 +195,26 @@ impl<MouseManagerScrollAccuracy: num_traits::Float> Timing
         super::shared::sleep(time);
     }
 }
-
-impl<MouseManagerScrollAccuracy: num_traits::Float> ExtendedControl
-    for Framework<MouseManagerScrollAccuracy>
+use crate::system::action::Iconized;
+use crate::system::Os;
+impl ExtendedControl
+    for Framework
 {
     #[inline]
     fn set_render_layer(&mut self, level: WindowLevel) {
-        crate::system::Os::set_window_level(
-            &self.get_window_handle(),
-            level,
-        );
+        crate::system::Os::set_window_level(&self.get_window_handle(), level);
     }
     #[inline]
     fn maximize(&mut self) {
-        super::shared::maximize(&self.window.get_win32_window());
+        Os::maximize(&self.get_window_handle());
     }
     #[inline]
     fn minimize(&mut self) {
-        super::shared::minimize(&self.window.get_win32_window());
+        Os::minimize(&self.get_window_handle());
     }
     #[inline]
     fn restore(&mut self) {
-        super::shared::restore(&self.window.get_win32_window());
+        Os::restore(&self.get_window_handle());
     }
     #[inline]
     fn is_maximized(&self) -> bool {
@@ -233,34 +227,29 @@ impl<MouseManagerScrollAccuracy: num_traits::Float> ExtendedControl
 }
 
 #[cfg(not(feature = "do_not_compile_extension_tuple_support"))]
-impl<MouseManagerScrollAccuracy: num_traits::Float> Control
-    for Framework<MouseManagerScrollAccuracy>
-{
-    fn get_position(&self) -> (isize, isize) {
-        let (x, y) = self.window.get_pos();
-        (x as isize, y as isize)
+impl Control for Framework {
+    fn get_position(&self) -> (i32, i32) {
+        self.window.get_pos()
     }
-    fn get_size(&self) -> (isize, isize) {
-        crate::system::Os::get_window_size(
-            &get_native_window_handle_from_glfw(&self.window),
-        )
+    fn get_size(&self) -> (i32, i32) {
+        crate::system::Os::get_window_size(&get_native_window_handle_from_glfw(
+            &self.window,
+        ))
         .tuple_2_into()
     }
     #[allow(clippy::cast_possible_wrap)]
     fn set_size(&mut self, buffer: &super::Buffer) {
         self.window.set_size(buffer.width as i32, buffer.height as i32);
     }
-    fn set_position(&mut self, xy: (isize, isize)) {
-        self.window.set_pos(xy.0 as i32, xy.1 as i32);
+    fn set_position(&mut self, xy: (i32, i32)) {
+        self.window.set_pos(xy.0, xy.1);
     }
 }
 
 #[cfg(not(feature = "do_not_compile_extension_tuple_support"))]
-impl<MouseManagerScrollAccuracy: num_traits::Float> Input
-    for Framework<MouseManagerScrollAccuracy>
-{
+impl Input for Framework {
     /// No, you won't get the real position of the mouse, calculate it yourself
-    fn get_mouse_position(&self) -> Option<(isize, isize)> {
+    fn get_mouse_position(&self) -> Option<(i32, i32)> {
         Some(self.window.get_cursor_pos().tuple_2_into())
         // let (mouse_x, mouse_y): (isize, isize) =
         //     self.window.get_cursor_pos().tuple_2_into();
@@ -276,13 +265,10 @@ impl<MouseManagerScrollAccuracy: num_traits::Float> Input
         self.mouse_manager.is_mouse_button_pressed(button)
     }
 }
-impl<MouseManagerScrollAccuracy: num_traits::Float>
-    ExtendedInput<MouseManagerScrollAccuracy>
-    for Framework<MouseManagerScrollAccuracy>
+impl ExtendedInput
+    for Framework
 {
-    fn get_mouse_scroll(
-        &self,
-    ) -> Option<(MouseManagerScrollAccuracy, MouseManagerScrollAccuracy)> {
+    fn get_mouse_scroll(&self) -> Option<(f32, f32)> {
         Some(self.mouse_manager.get_scroll())
     }
     fn get_all_keys_down(&self) -> Vec<KeyCode> {
@@ -297,9 +283,7 @@ const fn action_to_bool(action: Action) -> Option<bool> {
     }
 }
 
-impl<MouseManagerScrollAccuracy: num_traits::Float> Output
-    for Framework<MouseManagerScrollAccuracy>
-{
+impl Output for Framework {
     fn log(&self, t: &str) {
         super::shared::log(t);
     }
@@ -314,18 +298,15 @@ impl<MouseManagerScrollAccuracy: num_traits::Float> Output
 //     }
 // }
 
-impl<MouseManagerScrollAccuracy: num_traits::Float> ExtendedWindow
-    for Framework<MouseManagerScrollAccuracy>
+impl ExtendedWindow
+    for Framework
 {
     fn set_title(&mut self, title: &str) {
         self.window.set_title(title);
     }
 
     /// Not yet implemented
-    fn set_icon(
-        &mut self,
-        _buffer: &Buffer
-    ) -> Errors {
+    fn set_icon(&mut self, _buffer: &Buffer) -> Errors {
         Errors::NotImplemented
         //panic!("Not yet implemented");
     }
@@ -333,8 +314,8 @@ impl<MouseManagerScrollAccuracy: num_traits::Float> ExtendedWindow
         get_native_window_handle_from_glfw(&self.window)
     }
 }
-impl<MouseManagerScrollAccuracy: num_traits::Float> CursorStyleControl
-    for Framework<MouseManagerScrollAccuracy>
+impl CursorStyleControl
+    for Framework
 {
     #[cfg(feature = "resvg")]
     fn set_cursor_style(&mut self, style: &super::Cursor) -> Errors {
@@ -393,8 +374,8 @@ const FRAGMENT_SHADER_SOURCE: &str = r"
 ";
 
 #[cfg(not(feature = "do_not_compile_extension_tuple_support"))]
-fn process_events<MouseManagerScrollAccuracy: num_traits::Float>(
-    window: &mut Framework<MouseManagerScrollAccuracy>,
+fn process_events(
+    window: &mut Framework,
 ) {
     let events: &std::sync::mpsc::Receiver<(f64, glfw::WindowEvent)> =
         &window.events;

@@ -26,6 +26,11 @@ pub trait Default {
     fn get_window_hitbox_size(
         handle: &raw_window_handle::RawWindowHandle,
     ) -> (i32, i32);
+    /// Resize the desired window to the desired size
+    fn set_window_size(
+        handle: &raw_window_handle::RawWindowHandle,
+        size: (i32, i32),
+    ) -> bool;
 }
 
 #[const_trait]
@@ -138,11 +143,27 @@ pub trait TaskBar {
         total: u64,
     );
 }
+/// The state of a window - Is it here or minimized away into an icon?
+pub trait Iconized {
+    /// Checks wether a window is currently minimized
+    fn is_minimized(handle: &raw_window_handle::RawWindowHandle) -> bool;
+    /// Checks wether a window is currently maximized
+    fn is_maximized(handle: &raw_window_handle::RawWindowHandle) -> bool;
+    /// When a window is minimized, this restores it back to "normal"
+    fn restore(handle: &raw_window_handle::RawWindowHandle) -> bool;
+    /// Minimize/Iconify the given window
+    fn minimize(handle: &raw_window_handle::RawWindowHandle) -> bool;
+    /// Maximize the given window (full screen like)
+    fn maximize(handle: &raw_window_handle::RawWindowHandle) -> bool;
+}
+
+#[const_trait]
 /// Screen information
 pub trait Screen {
     /// Get the resolution of the screen in pixels (does not support multiple monitors, multi screen workspaces)
     fn get_screen_resolution() -> (i32, i32);
 }
+#[const_trait]
 /// Os information
 pub trait Host {
     /// Get the name of the os
