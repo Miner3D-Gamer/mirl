@@ -101,13 +101,12 @@ pub trait Input {
     fn is_mouse_down(&self, button: MouseButton) -> bool;
 }
 #[const_trait]
-#[cfg(not(feature = "do_not_compile_extension_tuple_support"))]
 /// Get the relative mouse position
 pub trait RelativeMousePos {
     /// Get the mouse position relative to the window
     fn get_mouse_position_relative(&self) -> Option<(i32, i32)>;
 }
-#[cfg(not(feature = "do_not_compile_extension_tuple_support"))]
+
 impl<T: Input + Control> RelativeMousePos for T {
     fn get_mouse_position_relative(&self) -> Option<(i32, i32)> {
         let mouse_pos = self.get_mouse_position()?;

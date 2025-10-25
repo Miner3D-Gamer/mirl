@@ -41,7 +41,7 @@
 // }
 
 /// A steepness of 15 and offset of 0.8 makes a nice looking icon (Rough estimates based on trail and error)
-pub fn fade_out_buffer(buffer: &Buffer, stepness: f32, offset: f32) {
+pub fn fade_out_buffer(buffer: &Buffer, steepness: f32, offset: f32) {
     let cx = buffer.width as f32 / 2.0;
     let cy = buffer.height as f32 / 2.0;
     let max_dist = cx.hypot(cy);
@@ -52,7 +52,7 @@ pub fn fade_out_buffer(buffer: &Buffer, stepness: f32, offset: f32) {
             let dy = y as f32 - cy;
             let dist = dx.hypot(dy) / max_dist;
             let fade = 1.0 - dist;
-            let fade = 1.0 - crate::math::smooth_0_to_1(fade, stepness, offset);
+            let fade = 1.0 - crate::math::smooth_0_to_1(fade, steepness, offset);
             unsafe {
                 let color = *buffer.pointer.add(y * buffer.width + x);
                 *buffer.pointer.add(y * buffer.width + x) = color.with_alpha(
@@ -96,10 +96,12 @@ pub const fn corner_type_to_cursor_style(
 ///
 /// Using the corner type from [`mirl::math::collision::rectangle::Rectangle::get_edge_position`](crate::math::collision::rectangle::Rectangle::get_edge_position) converts the given delta into a change of x, y, width, and height of a rectangle
 #[must_use]
-pub const fn corner_type_and_delta_to_metric_change(
+pub const fn corner_type_and_delta_to_metric_change<
+    T: [const] std::ops::Neg<Output = T> + num_traits::ConstZero + Copy,
+>(
     corner: u8,
-    mouse_pos_delta: (isize, isize),
-) -> (isize, isize, isize, isize) {
+    mouse_pos_delta: (T, T),
+) -> (T, T, T, T) {
     match corner {
         0 => (
             mouse_pos_delta.0,
@@ -107,14 +109,18 @@ pub const fn corner_type_and_delta_to_metric_change(
             -mouse_pos_delta.0,
             -mouse_pos_delta.1,
         ),
-        1 => (0, mouse_pos_delta.1, 0, -mouse_pos_delta.1),
-        2 => (0, mouse_pos_delta.1, mouse_pos_delta.0, -mouse_pos_delta.1),
-        3 => (0, 0, mouse_pos_delta.0, 0),
-        4 => (0, 0, mouse_pos_delta.0, mouse_pos_delta.1),
-        5 => (0, 0, 0, mouse_pos_delta.1),
-        6 => (mouse_pos_delta.0, 0, -mouse_pos_delta.0, mouse_pos_delta.1),
-        7 => (mouse_pos_delta.0, 0, -mouse_pos_delta.0, 0),
-        _ => (0, 0, 0, 0),
+        1 => (T::ZERO, mouse_pos_delta.1, T::ZERO, -mouse_pos_delta.1),
+        2 => {
+            (T::ZERO, mouse_pos_delta.1, mouse_pos_delta.0, -mouse_pos_delta.1)
+        }
+        3 => (T::ZERO, T::ZERO, mouse_pos_delta.0, T::ZERO),
+        4 => (T::ZERO, T::ZERO, mouse_pos_delta.0, mouse_pos_delta.1),
+        5 => (T::ZERO, T::ZERO, T::ZERO, mouse_pos_delta.1),
+        6 => {
+            (mouse_pos_delta.0, T::ZERO, -mouse_pos_delta.0, mouse_pos_delta.1)
+        }
+        7 => (mouse_pos_delta.0, T::ZERO, -mouse_pos_delta.0, T::ZERO),
+        _ => (T::ZERO, T::ZERO, T::ZERO, T::ZERO),
     }
 }
 
@@ -458,7 +464,7 @@ pub fn bytes_to_strings(bytes: &[u8]) -> Vec<String> {
 //     let mut mines = 0;
 //     for x in -1..1 {
 //         for y in -1..1 {
-//             let new_pos = position.tuple_2_into().add((x, y));
+//             let new_pos = position.tuple_into().add((x, y));
 //             if new_pos.0 > 0
 //                 && new_pos.1 > 0
 //                 && new_pos.0 < width as isize

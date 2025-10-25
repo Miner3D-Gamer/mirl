@@ -109,7 +109,7 @@ pub fn set_image_size(
 //     }
 // }
 
-#[cfg(not(feature = "do_not_compile_extension_tuple_support"))]
+
 #[must_use]
 #[allow(clippy::unwrap_used, clippy::missing_panics_doc)]
 #[cfg(feature = "svg_support")]
@@ -133,7 +133,7 @@ pub fn pixmap_to_dynamic_image(
                 color.blue(),
                 50.0,
             )
-            .tuple_3_into();
+            .tuple_into();
             let pixel = image::Rgba([r, g, b, color.alpha()]);
             img.put_pixel(x, y, pixel);
         }

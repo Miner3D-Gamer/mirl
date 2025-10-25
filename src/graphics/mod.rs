@@ -1,6 +1,6 @@
 #![allow(clippy::inline_always)]
 #![allow(clippy::cast_lossless)]
-#[cfg(not(feature = "do_not_compile_extension_tuple_support"))]
+
 use crate::extensions::*;
 
 /// Convert an r b g format into u32 argb format
@@ -328,7 +328,7 @@ pub fn hsl_to_rgb_u32(
 //         BrightnessModel::LinearWeighted => {
 //             // Extract color components
 //             let (alpha, red, green, blue): (u32, f32, f32, f32) =
-//                 u32_to_argb(color).tuple_4_into();
+//                 u32_to_argb(color).tuple_into();
 //             // Apply perceptual weights to adjustment
 //             let r_adj = x * 0.2126;
 //             let g_adj = x * 0.7152;
@@ -427,14 +427,14 @@ pub fn shift_color_u32(color: u32, hue_shift: f32) -> u32 {
 
     rgba_to_u32(r_new, g_new, b_new, alpha)
 }
-#[cfg(not(feature = "do_not_compile_extension_tuple_support"))]
+
 #[must_use]
 #[inline]
 #[allow(clippy::cast_sign_loss)]
 /// Adjust the brightness of a rgba u32 color faster than with the function that does it with with human perception in mind
 pub fn adjust_brightness_fast(color: u32, x: i32) -> u32 {
     // Extract color components
-    let (red, green, blue): (i32, i32, i32) = u32_to_rgb(color).tuple_3_into();
+    let (red, green, blue): (i32, i32, i32) = u32_to_rgb(color).tuple_into();
 
     // Calculate new values with clamping
     let r_new = (red + x).clamp(0, 255) as u32;
@@ -902,7 +902,7 @@ pub fn get_unused_color_of_buffer(
     }
     current_color
 }
-#[cfg(not(feature = "do_not_compile_extension_tuple_support"))]
+
 #[must_use]
 #[allow(clippy::cast_sign_loss)]
 #[allow(clippy::cast_precision_loss)]
@@ -917,10 +917,10 @@ pub fn bilinear_interpolate_u32(
     dx: f32,
     dy: f32,
 ) -> u32 {
-    let (r1, g1, b1, a1) = u32_to_rgba_u8(p1).tuple_4_into();
-    let (r2, g2, b2, a2) = u32_to_rgba_u8(p2).tuple_4_into();
-    let (r3, g3, b3, a3) = u32_to_rgba_u8(p3).tuple_4_into();
-    let (r4, g4, b4, a4) = u32_to_rgba_u8(p4).tuple_4_into();
+    let (r1, g1, b1, a1) = u32_to_rgba_u8(p1).tuple_into();
+    let (r2, g2, b2, a2) = u32_to_rgba_u8(p2).tuple_into();
+    let (r3, g3, b3, a3) = u32_to_rgba_u8(p3).tuple_into();
+    let (r4, g4, b4, a4) = u32_to_rgba_u8(p4).tuple_into();
 
     let interpolate_channel = |c1: f32, c2: f32, c3: f32, c4: f32| -> u8 {
         let top = c1.mul_add(1.0 - dx, c2 * dx);

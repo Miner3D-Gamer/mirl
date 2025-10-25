@@ -1,5 +1,4 @@
 #[cfg(feature = "system")]
-#[cfg(not(feature = "do_not_compile_extension_tuple_support"))]
 use crate::extensions::*;
 
 #[const_trait]
@@ -142,7 +141,7 @@ pub struct WindowSettings {
     /// If the window should be considered visible to the user or not
     pub visible: bool,
 }
-#[cfg(not(feature = "do_not_compile_extension_tuple_support"))]
+
 #[cfg(feature = "system")]
 impl WindowSettings {
     /// Get the settings on default settings
@@ -150,7 +149,7 @@ impl WindowSettings {
     /// For position, it will be centered on the screen
     #[must_use]
     pub fn default(buffer: &Buffer) -> Self {
-        let size = (buffer.width, buffer.height).tuple_2_into();
+        let size = (buffer.width, buffer.height).tuple_into();
         Self {
             borderless: false,
             title_visible: true,
@@ -159,7 +158,7 @@ impl WindowSettings {
                 size.0 as i32,
                 size.1 as i32,
             )
-            .tuple_2_into(),
+            .tuple_into(),
 
             resizable: false,
             os_menu: true,
@@ -179,7 +178,7 @@ impl WindowSettings {
     }
     /// Set the size of the window to the size of the given buffer
     pub fn set_size_to_buffer(&mut self, buffer: &Buffer) -> &mut Self {
-        self.size = (buffer.width, buffer.height).tuple_2_into();
+        self.size = (buffer.width, buffer.height).tuple_into();
         self
     }
     /// Set the position of the window
@@ -224,7 +223,7 @@ impl WindowSettings {
             self.size.0 as i32,
             self.size.1 as i32,
         )
-        .tuple_2_into();
+        .tuple_into();
         self
     }
 }
@@ -251,14 +250,12 @@ pub use buffer::Buffer;
 #[cfg(not(target_arch = "wasm32"))]
 #[cfg(feature = "minifb_backend")]
 #[cfg(feature = "keycode_support")]
-#[cfg(not(feature = "do_not_compile_extension_tuple_support"))]
 /// The minifb version of the backend
 pub mod minifb;
 
 #[cfg(not(target_arch = "wasm32"))]
 #[cfg(feature = "glfw_backend")]
 #[cfg(feature = "keycode_support")]
-#[cfg(not(feature = "do_not_compile_extension_tuple_support"))]
 /// The glfw version of the backend
 pub mod glfw;
 

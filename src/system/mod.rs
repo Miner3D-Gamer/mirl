@@ -8,7 +8,7 @@ pub mod deprecated;
 #[must_use]
 pub fn get_center_of_screen_for_object(width: i32, height: i32) -> (i32, i32) {
     let (screen_width, screen_height): (i32, i32) =
-        Os::get_screen_resolution().tuple_2_into();
+        Os::get_screen_resolution().tuple_into();
 
     (screen_width / 2 - width / 2, screen_height / 2 - height / 2)
 }
@@ -18,7 +18,7 @@ use crate::{extensions::Tuple2Into, platform::Buffer, system::action::Screen};
 #[must_use]
 pub fn get_center_of_screen_of_buffer(buffer: &Buffer) -> (i32, i32) {
     let (screen_width, screen_height): (i32, i32) =
-        Os::get_screen_resolution().tuple_2_into();
+        Os::get_screen_resolution().tuple_into();
 
     (
         screen_width / 2 - buffer.width as i32 / 2,

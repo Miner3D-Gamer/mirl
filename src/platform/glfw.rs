@@ -1,13 +1,13 @@
 use std::time::Duration;
 
 use glfw::Action;
-#[cfg(not(feature = "do_not_compile_extension_tuple_support"))]
+
 use glfw::Context;
 
 use super::framework_traits::{
     ExtendedControl, ExtendedInput, ExtendedWindow, Output, Timing,
 };
-#[cfg(not(feature = "do_not_compile_extension_tuple_support"))]
+
 use super::{
     framework_traits::{Control, Input, Window},
     time::NativeTime,
@@ -55,7 +55,7 @@ static LOG_ERRORS: Option<glfw::ErrorCallback<()>> = Some(glfw::Callback {
     data: (),
 });
 
-#[cfg(not(feature = "do_not_compile_extension_tuple_support"))]
+
 impl Window for Framework {
     fn new(
         title: &str,
@@ -226,7 +226,7 @@ impl ExtendedControl
     }
 }
 
-#[cfg(not(feature = "do_not_compile_extension_tuple_support"))]
+
 impl Control for Framework {
     fn get_position(&self) -> (i32, i32) {
         self.window.get_pos()
@@ -235,7 +235,7 @@ impl Control for Framework {
         crate::system::Os::get_window_size(&get_native_window_handle_from_glfw(
             &self.window,
         ))
-        .tuple_2_into()
+        .tuple_into()
     }
     #[allow(clippy::cast_possible_wrap)]
     fn set_size(&mut self, buffer: &super::Buffer) {
@@ -246,13 +246,13 @@ impl Control for Framework {
     }
 }
 
-#[cfg(not(feature = "do_not_compile_extension_tuple_support"))]
+
 impl Input for Framework {
     /// No, you won't get the real position of the mouse, calculate it yourself
     fn get_mouse_position(&self) -> Option<(i32, i32)> {
-        Some(self.window.get_cursor_pos().tuple_2_into())
+        Some(self.window.get_cursor_pos().tuple_into())
         // let (mouse_x, mouse_y): (isize, isize) =
-        //     self.window.get_cursor_pos().tuple_2_into();
+        //     self.window.get_cursor_pos().tuple_into();
         // let (window_x, window_y) = self.window.get_pos();
         // let relative_x = mouse_x - window_x as isize;
         // let relative_y = mouse_y - window_y as isize;
@@ -341,7 +341,7 @@ impl CursorStyleControl
         image: super::Buffer,
         hotspot: (u8, u8),
     ) -> Result<super::mouse::Cursor, String> {
-        Ok(cursor_from_buffer(image, hotspot.tuple_2_into()))
+        Ok(cursor_from_buffer(image, hotspot.tuple_into()))
     }
 }
 
@@ -373,7 +373,7 @@ const FRAGMENT_SHADER_SOURCE: &str = r"
     }
 ";
 
-#[cfg(not(feature = "do_not_compile_extension_tuple_support"))]
+
 fn process_events(
     window: &mut Framework,
 ) {
@@ -391,7 +391,7 @@ fn process_events(
                 }
             }
             glfw::WindowEvent::Scroll(x, y) => {
-                window.mouse_manager.add_scroll((x, y).tuple_2_into());
+                window.mouse_manager.add_scroll((x, y).tuple_into());
             }
             glfw::WindowEvent::Close => {
                 window.window.set_should_close(true);

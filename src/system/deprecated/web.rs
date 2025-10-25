@@ -37,7 +37,7 @@ pub fn get_screen_height() -> i32 {
 }
 
 fn get_screen_resolution_raw() -> (i32, i32) {
-    (screen_width(), screen_height()).tuple_2_into()
+    (screen_width(), screen_height()).tuple_into()
 }
 
 impl Screen for WebInfo {

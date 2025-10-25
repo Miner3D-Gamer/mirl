@@ -1195,7 +1195,7 @@ impl Host for WindowsActions {
 }
 impl Screen for WindowsActions {
     fn get_screen_resolution() -> (i32, i32) {
-        get_screen_resolution().tuple_2_into()
+        get_screen_resolution().tuple_into()
     }
 }
 

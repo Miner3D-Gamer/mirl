@@ -12,10 +12,10 @@
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum NoneOnly {}
 
-#[cfg(not(feature = "do_not_compile_extension_tuple_support"))]
+
 /// More tuple functions
 mod tuple;
-#[cfg(not(feature = "do_not_compile_extension_tuple_support"))]
+
 pub use tuple::*;
 
 mod string;

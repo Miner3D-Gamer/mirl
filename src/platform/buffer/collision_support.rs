@@ -1,10 +1,11 @@
 #![allow(clippy::inline_always)]
 use super::Buffer;
+use crate::extensions::FromPatch;
 
 impl Buffer {
     #[must_use]
     /// Create a collision instance for the current buffer
-    pub const fn create_collision<const CS: bool>(
+    pub const fn create_collision_usize<const CS: bool>(
         &self,
         x: usize,
         y: usize,
@@ -14,16 +15,22 @@ impl Buffer {
     /// Create a collision instance for the current buffer using isize coordinates
     #[must_use]
     #[allow(clippy::cast_possible_wrap)]
-    pub const fn create_collision_isize<const CS: bool>(
+    pub const fn create_collision<
+        const CS: bool,
+        T: [const] FromPatch<usize>
+            + std::ops::Add<Output = T>
+            + PartialOrd
+            + Copy,
+    >(
         &self,
-        x: isize,
-        y: isize,
-    ) -> crate::math::collision::Rectangle<isize, CS> {
+        x: T,
+        y: T,
+    ) -> crate::math::collision::Rectangle<T, CS> {
         crate::math::collision::Rectangle::new(
             x,
             y,
-            self.width as isize,
-            self.height as isize,
+            T::from_number(self.width),
+            T::from_number(self.height),
         )
     }
     #[must_use]

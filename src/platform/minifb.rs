@@ -113,14 +113,14 @@ impl Window for Framework {
     }
 }
 
-#[cfg(not(feature = "do_not_compile_extension_tuple_support"))]
+
 impl Input for Framework {
     #[inline]
     fn get_mouse_position(&self) -> Option<(i32, i32)> {
         let value =
             self.window.get_unscaled_mouse_pos(minifb::MouseMode::Pass)?;
 
-        Some(value.tuple_2_into())
+        Some(value.tuple_into())
     }
     #[inline]
     fn is_key_down(&self, key: KeyCode) -> bool {
@@ -186,14 +186,13 @@ impl ExtendedControl for Framework {
 }
 
 #[cfg(feature = "device_query")]
-#[cfg(not(feature = "do_not_compile_extension_tuple_support"))]
 impl ExtendedInput for Framework {
     #[inline]
     fn get_mouse_scroll(&self) -> Option<(f32, f32)> {
         let t = self.window.get_scroll_wheel();
 
         let (x, y) = t?;
-        Some((x, y).tuple_2_into())
+        Some((x, y).tuple_into())
     }
     fn get_all_keys_down(&self) -> Vec<KeyCode> {
         super::keyboard::get_all_pressed_keys()
@@ -375,7 +374,7 @@ fn get_native_window_handle_from_minifb(
     }
 }
 
-#[cfg(not(feature = "do_not_compile_extension_tuple_support"))]
+
 #[cfg(target_os = "windows")]
 impl Control for Framework {
     #[inline]
@@ -390,7 +389,7 @@ impl Control for Framework {
         crate::system::Os::get_window_size(
             &get_native_window_handle_from_minifb(&self.window),
         )
-        .tuple_2_into()
+        .tuple_into()
     }
     #[inline]
     fn set_position(&mut self, xy: (i32, i32)) {
@@ -398,7 +397,7 @@ impl Control for Framework {
     }
     #[inline]
     fn get_position(&self) -> (i32, i32) {
-        self.window.get_position().tuple_2_into()
+        self.window.get_position().tuple_into()
     }
 }
 

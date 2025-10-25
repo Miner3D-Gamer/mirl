@@ -23,6 +23,7 @@
 #![allow(clippy::fn_params_excessive_bools)]
 #![feature(const_trait_impl)]
 #![feature(const_ops)]
+#![feature(const_convert)]
 //! Miners
 //! Rust
 //! Lib
@@ -118,7 +119,7 @@ pub fn disable_traceback() {
 // This little fella is so often used that it only makes sense to reexport it
 pub use platform::Buffer;
 
-// TODO: 
+// TODO:
 // - Clipboard support
 // - Sound support
 // - Networking support?

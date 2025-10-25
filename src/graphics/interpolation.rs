@@ -28,7 +28,7 @@ pub enum InterpolationMode {
     MitchellNetravali,
 }
 
-#[cfg(not(feature = "do_not_compile_extension_tuple_support"))]
+
 #[must_use]
 #[allow(clippy::cast_sign_loss)]
 #[allow(clippy::cast_precision_loss)]
@@ -309,7 +309,6 @@ pub fn resize_buffer_mitchell_netravali(
 }
 
 #[must_use]
-#[cfg(not(feature = "do_not_compile_extension_tuple_support"))]
 /// Resize a list of u32 to a list of u32s with a different visual size
 pub fn resize_buffer(
     buffer: &[u32],
