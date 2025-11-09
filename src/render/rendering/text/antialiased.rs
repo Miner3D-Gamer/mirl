@@ -14,7 +14,7 @@ use crate::{
 #[allow(clippy::cast_sign_loss)]
 /// Draw text in the specified font
 pub fn draw_text_antialiased<const SAFE: bool>(
-    buffer: &Buffer,
+    buffer: &mut Buffer,
     text: &str,
     xy: (usize, usize),
     color: u32,
@@ -49,7 +49,7 @@ pub fn draw_text_antialiased<const SAFE: bool>(
 
                     if alpha > 0 {
                         unsafe {
-                            let bg = *buffer.pointer.add(index);
+                            let bg = *buffer.pointer().add(index);
                             // Extract RGBA
                             let (br, bg, bb, ba) = (
                                 (bg >> 24) & 0xFF,
@@ -105,10 +105,10 @@ pub fn draw_text_antialiased<const SAFE: bool>(
 }
 
 /// Execute a function at every pixel position
-/// 
+///
 /// function: `fn(original_color: u32, color_under_pixel: u32) -> u32`
 pub fn draw_text_antialiased_execute_at<const SAFE: bool>(
-    buffer: &Buffer,
+    buffer: &mut Buffer,
     text: &str,
     xy: (usize, usize),
     color: u32,
@@ -145,7 +145,7 @@ pub fn draw_text_antialiased_execute_at<const SAFE: bool>(
 
                     if alpha > 0 {
                         unsafe {
-                            let bg = *buffer.pointer.add(index);
+                            let bg = *buffer.pointer().add(index);
                             // Extract RGBA
                             let (br, bg, bb, ba) = (
                                 (bg >> 24) & 0xFF,
@@ -201,7 +201,7 @@ pub fn draw_text_antialiased_execute_at<const SAFE: bool>(
 
 /// Draw text yet stretch the resulting characters
 pub fn draw_text_antialiased_stretched<const SAFE: bool>(
-    buffer: &Buffer,
+    buffer: &mut Buffer,
     text: &str,
     xy: (usize, usize),
     color: u32,
@@ -294,7 +294,7 @@ pub fn draw_text_antialiased_stretched<const SAFE: bool>(
 
 /// Same as [`draw_text_antialiased`] but uses isize for positioning allowing for partially out of bounce text (left and top)
 pub fn draw_text_antialiased_isize<const SAFE: bool>(
-    buffer: &Buffer,
+    buffer: &mut Buffer,
     text: &str,
     xy: (isize, isize),
     color: u32,
@@ -345,7 +345,7 @@ pub fn draw_text_antialiased_isize<const SAFE: bool>(
                         }
 
                         unsafe {
-                            let bg = *buffer.pointer.add(index);
+                            let bg = *buffer.pointer().add(index);
                             // Extract RGBA
                             let (br, bg, bb, ba) = (
                                 (bg >> 24) & 0xFF,
@@ -400,7 +400,7 @@ pub fn draw_text_antialiased_isize<const SAFE: bool>(
 
 /// Same as [`draw_text_antialiased_stretched`] but uses isize for positioning allowing for partially out of bounce text (left and top)
 pub fn draw_text_antialiased_stretched_isize<const SAFE: bool>(
-    buffer: &Buffer,
+    buffer: &mut Buffer,
     text: &str,
     xy: (isize, isize),
     color: u32,
@@ -551,7 +551,7 @@ pub fn draw_text_antialiased_stretched_isize<const SAFE: bool>(
 
 //                     if alpha > 0 {
 //                         unsafe {
-//                             let bg = *buffer.pointer.add(index);
+//                             let bg = *buffer.pointer().add(index);
 //                             // Extract RGBA
 //                             let (br, bg, bb, ba) = (
 //                                 (bg >> 24) & 0xFF,

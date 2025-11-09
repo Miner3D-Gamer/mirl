@@ -1,6 +1,5 @@
 use super::Buffer;
 use crate::graphics::u32_to_rgba_u8;
-
 use crate::{graphics::resize_buffer, graphics::InterpolationMode};
 impl Buffer {
     #[must_use]
@@ -29,7 +28,7 @@ impl Buffer {
         }
         return_list
     }
-    
+
     #[must_use]
     /// Creates a new buffer and copies the contents of the current buffer
     pub fn resize_content(
@@ -38,7 +37,7 @@ impl Buffer {
         height: usize,
         resizing_method: InterpolationMode,
     ) -> Self {
-        let mut new = Self::new_empty(width, height);
+        let mut new = Self::new_empty((width, height));
         let b = resize_buffer(
             self,
             self.width,

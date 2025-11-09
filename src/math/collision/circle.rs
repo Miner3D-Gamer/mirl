@@ -1,6 +1,6 @@
 use crate::math::{ConvenientOps, NumberWithMonotoneOps};
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 /// A simple Rectangle defining computational limits
 #[allow(missing_docs)]
 pub struct Circle<T, const CS: bool> {

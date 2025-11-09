@@ -1,6 +1,6 @@
 use strum_macros::EnumIter;
 
-#[derive(Debug, Clone, Copy, PartialEq, EnumIter, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, EnumIter, Eq, Default, Hash)]
 /// Key code to be interpreted anywhere
 #[allow(missing_docs)]
 pub enum KeyCode {
@@ -196,6 +196,7 @@ pub enum KeyCode {
     KeyPadEqual,
     World1,
     World2,
+    #[default]
     Unknown,
 }
 
@@ -218,7 +219,7 @@ macro_rules! define_keys {
                 }
             }
             #[must_use]
-            /// Converts self to Vec<self>
+            /// Converts self to `[Vec<Self>]`
             pub fn to_vec(&self) -> Vec<Self> {
                 Vec::from([*self])
             }
@@ -266,9 +267,9 @@ macro_rules! define_keys {
     };
 }
 #[const_trait]
-/// Convert from a string to a Vec<KeyCode>
+/// Convert from a string to a `Vec<KeyCode>`
 pub trait StringToKeyCodes {
-    /// Convert from a string to a Vec<KeyCode>
+    /// Convert from a string to a `Vec<KeyCode>`
     fn to_keycodes(&self) -> Vec<KeyCode>;
     /// Converts a single text instance into the corresponding `KeyCode`
     fn to_keycode(&self) -> KeyCode;

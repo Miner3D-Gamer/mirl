@@ -27,6 +27,9 @@ pub fn load_base_cursor_with_file(
     // let adjusted_hotspot_y = ((f64::from(cursor.hot_spot_y) / EXPECTED_SIZE)
     //     * f64::from(wanted_size))
     // .round() as u32;
+    #[cfg(feature = "cursor_show_hotspot")]
+    let mut buffer = pixmap_to_buffer(&image_data);
+    #[cfg(not(feature = "cursor_show_hotspot"))]
     let buffer = pixmap_to_buffer(&image_data);
     #[cfg(feature = "cursor_show_hotspot")]
     buffer.set_pixel_safe(

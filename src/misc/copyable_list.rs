@@ -1,4 +1,3 @@
-
 use crate::extensions::U2;
 use crate::{graphics::switch_red_and_blue, platform::Buffer};
 
@@ -199,9 +198,8 @@ fn copy_list_to_buffer<const N: usize>(
     width: usize,
     height: usize,
 ) -> Buffer {
-    let mut buffer = Buffer::new_empty(width, height);
+    let mut buffer = Buffer::new_empty((width, height));
     buffer.data = list.data.to_vec();
-    buffer.update_pointer();
     buffer
 }
 

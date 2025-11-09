@@ -12,7 +12,7 @@ pub fn draw_buffer_on_buffer<
     const TRANSPARENCY: bool,
     const TRANSPARENCY_CHECK: bool,
 >(
-    canvas: &Buffer,
+    canvas: &mut Buffer,
     texture: &Buffer,
     position: (isize, isize),
     result_dimensions: (usize, usize),
@@ -105,7 +105,7 @@ pub fn draw_buffer_on_buffer_1_to_1<
     const TRANSPARENCY_INTERPOLATION: bool,
     const NICHE_TRANSPARENCY_CHECK: bool,
 >(
-    canvas: &Buffer,
+    canvas: &mut Buffer,
     texture: &Buffer,
     position: (isize, isize),
 ) {

@@ -36,12 +36,32 @@
 
 ## Compatibility
 
-| Platform | Status     | Info                                                |
-| -------- | ---------- | --------------------------------------------------- |
-| Windows  | ✅ Full    | Native implementation                               |
-| Linux    | ⚠️ Partial | Currently fixing                                    |
-| macOS    | 🚧 Barely  | Untested                                            |
-| Web      | ⚠️ Partial | GLFW and MiniFB backends are automatically disabled |
+| Platform | Status     | Info                           |
+| -------- | ---------- | ------------------------------ |
+| Windows  | ✅ Full    | Native implementation         |
+| Linux    | ⚠️ Partial | Currently fixing              |
+| macOS    | 🚧 Barely  | Untested                      |
+| Web      | ⚠️ Partial | Everything but IO should work |
+
+## How to get started (flags: `minifb_backend`/`glfw_backend`/`full_backend_support`):
+```
+use mirl::platform::framework_traits::Window;
+fn main() {
+    let mut buffer = mirl::platform::Buffer::new_empty((800, 600));
+    let mut window = mirl::platform::{minifb/glfw}::Framework::new(
+        "Example window",
+        mirl::platform::WindowSettings::default(&buffer),
+    ).unwrap();
+    while window.is_open() {
+        buffer.clear();
+
+        // Draw here, use mirl::render for simple presets/helper functions
+
+        window.update(&buffer);
+    }
+}
+```
+For a debugging window lib "similar" to `Dear ImGui` you can use the `dear_mirl_gui` crate (which is `RmMode`)
 
 ## Features/Flags
 
@@ -73,17 +93,25 @@ This lib is heavily guided by clippy and as such:
 - Almost everything has a short docstring
 - Execution stopping functions/macros like panic! or unwrap() are only ever used in custom panic/unwrap functions
 
+### When updating (Major.Minor.Patch):
+- Major: You _will_ need to fix something
+- Minor: You may need to fix something
+- Patch: Something changed, if it affected you is up to chance
+
+(This assumes you are using functions all across the lib)
+
 ---
 
 ### Hi there
 
 What brought you to this strange place?
 
-While a lot of the lib is stable and won't be touched again by me again, in the name of speed I will not hesitate to improve what already exists.
-I believe my goal is to create so many functions/structs/etc., that just work no matter what you throw at them, until I'm able to write entire projects in just a few lines of code.
+While a lot of the lib is stable and won't be touched again by me again, in the name of speed I will not hesitate to improve what already exists. 
+
+I believe my goal is to create so many functions/structs/etc., that just work no matter what you throw at them, until I'm able to write entire projects in just a few lines of code. (And modularity! We love utter and absolute modularity, what a pain.)
 
 This is just a little big lib I built for easy function/struct/etc. reusability across my never ending stream of unfinished projects.
-Even if most of the functions in here will never be used again, considering there are ~3k functions, ~50 enums, ~100 structs, >200 traits, >1k trait implementations; you are sure to find _something_
+Even if many of the functions in here will never be used again, considering there are ~3k functions, ~50 enums, ~100 structs, ~100 traits, ~500 trait implementations; you are sure to find _something_ of use
 
 You can find the most random yet oddly specific things here.
 Enjoy! Or don't, honestly...

@@ -5,7 +5,7 @@ use crate::platform::Buffer;
 #[inline]
 #[allow(clippy::cast_sign_loss)]
 pub fn draw_rectangle_old<const SAFE: bool>(
-    buffer: &Buffer,
+    buffer: &mut Buffer,
     pos: (isize, isize),
     size: (isize, isize),
     color: u32,
@@ -28,7 +28,7 @@ pub fn draw_rectangle_old<const SAFE: bool>(
 #[allow(clippy::cast_possible_wrap)]
 /// Draw a simple rectangle
 pub fn draw_rectangle<const SAFE: bool>(
-    buffer: &Buffer,
+    buffer: &mut Buffer,
     pos: (isize, isize),
     size: (isize, isize),
     color: u32,
@@ -60,7 +60,7 @@ pub fn draw_rectangle<const SAFE: bool>(
         for y in start_y..end_y {
             let row_start = y * buffer.width + start_x;
             unsafe {
-                let ptr = buffer.pointer.add(row_start);
+                let ptr = buffer.mut_pointer().add(row_start);
                 for i in 0..row_width {
                     //println!("Before {row_width}, {start_x}");
                     *ptr.add(i) = color;
@@ -77,7 +77,7 @@ pub fn draw_rectangle<const SAFE: bool>(
         for y in start_y..end_y {
             let row_start = y * buffer.width + start_x;
             unsafe {
-                let ptr = buffer.pointer.add(row_start);
+                let ptr = buffer.mut_pointer().add(row_start);
                 if row_width <= 8 {
                     // Manual unrolling for small rectangles
                     match row_width {
@@ -120,11 +120,11 @@ pub fn draw_rectangle<const SAFE: bool>(
 #[allow(clippy::cast_possible_truncation)]
 #[allow(clippy::cast_possible_wrap)]
 pub fn execute_at_rectangle<const SAFE: bool>(
-    buffer: &Buffer,
+    buffer: &mut Buffer,
     pos: (isize, isize),
     size: (isize, isize),
     color: u32,
-    function: impl Fn(&Buffer, (usize, usize), u32),
+    function: impl Fn(&mut Buffer, (usize, usize), u32),
 ) {
     for y in pos.1..pos.1 + size.1 {
         for x in pos.0..pos.0 + size.0 {
@@ -146,7 +146,7 @@ pub fn execute_at_rectangle<const SAFE: bool>(
 #[allow(clippy::cast_possible_truncation)]
 #[allow(clippy::cast_possible_wrap)]
 pub fn draw_rectangle_angled<const SAFE: bool>(
-    buffer: &Buffer,
+    buffer: &mut Buffer,
     pos: (usize, usize),
     size: (isize, isize),
     color: u32,
@@ -197,7 +197,7 @@ pub fn draw_rectangle_angled<const SAFE: bool>(
 #[allow(clippy::cast_possible_truncation)]
 #[allow(clippy::cast_possible_wrap)]
 pub fn draw_rectangle_impl_simd(
-    buffer: &Buffer,
+    buffer: &mut Buffer,
     pos: (isize, isize),
     size: (isize, isize),
     color: u32,
@@ -220,7 +220,7 @@ pub fn draw_rectangle_impl_simd(
     for y in 0..rect_height {
         let row_start = (start_y + y) * buffer.width + start_x;
         unsafe {
-            let mut ptr = buffer.pointer.add(row_start);
+            let mut ptr = buffer.mut_pointer().add(row_start);
             let mut remaining = rect_width;
 
             // Process 4 pixels at a time

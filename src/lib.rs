@@ -33,25 +33,27 @@
 //! ```
 //! use mirl::platform::framework_traits::Window;
 //! fn main() {
-//!     let buffer = mirl::platform::Buffer::new_empty(800, 600);
+//!     let mut buffer = mirl::platform::Buffer::new_empty((800, 600));
 //!     let mut window = mirl::platform::minifb::Framework::new(
 //!         "Example window",
 //!         mirl::platform::WindowSettings::default(&buffer),
-//!     );
+//!     ).unwrap();
 //!     while window.is_open() {
 //!         buffer.clear();
+//! 
+//!         // Draw here, use mirl::render for simple presets/helper functions
 //!
-//!         window.update(&buffer)
+//!         window.update(&buffer);
 //!     }
 //! }
 //! ```
-//! For a debugging window like `Dear ImGui` you can use `dear_mirl_gui` crate
+//! For a debugging window lib "similar" to `Dear ImGui` you can use the `dear_mirl_gui` crate (which is `RmMode`)
 //!
 //! This lib has got a ton to offer but the main attractions are in here:
 //! ## Window/Rendering Bundle (flags: `minifb_backend`/`glfw_backend`/`full_backend_support`):
 //!
 //! - [Frameworks](crate::platform::framework_traits) - What are they capable of? (for [`crate::platform::minifb::Framework`] or [`crate::platform::glfw::Framework`])
-//! - [Buffer](crate::platform::Buffer) - The central struct many other functions rely on
+//! - [Buffer] - The central struct many other functions rely on
 //! - [Rendering](crate::render) - Render simple shapes
 //! - [Platform](crate::platform) - Other neat stuff like [`crate::platform::keycodes::KeyCode`]/[`crate::platform::MouseButton`], or [`crate::platform::ScreenNormalizer`]
 //! - [System interaction](crate::system::action) - Functions that are untypical for usual applications like moving the window, getting/setting the z position, or hiding a window from the taskbar

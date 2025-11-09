@@ -1,47 +1,5 @@
-// fn generate_random_color(range: ((u32, u32, u32), (u32, u32, u32))) -> u32 {
-//     let red = rand::random_range(range.0.0..range.1.0);
-//     let green = rand::random_range(range.0.1..range.1.1);
-//     let blue = rand::random_range(range.0.2..range.1.2);
-//     rgba_to_u32(red, green, blue, 255)
-// }
-// fn replace_color_with_random_color(
-//     buffer: &mut Buffer,
-//     color: u32,
-//     range: ((u32, u32, u32), (u32, u32, u32)),
-// ) {
-//     for i in &mut buffer.data {
-//         if *i == color {
-//             *i = generate_random_color(range);
-//         }
-//     }
-// }
-// fn range_with_variance<T: NumberWithMonotoneOps + Copy>(
-//     value: T,
-//     variance: T,
-// ) -> (T, T) {
-//     (value - variance, value + variance)
-// }
-// fn color_range_with_variance(
-//     color: (u32, u32, u32),
-//     variance: (u32, u32, u32),
-// ) -> ((u32, u32, u32), (u32, u32, u32)) {
-//     reorder_color_range((
-//         range_with_variance(color.0, variance.0),
-//         range_with_variance(color.1, variance.1),
-//         range_with_variance(color.2, variance.2),
-//     ))
-// }
-// fn reorder_color_range(
-//     color_range: ((u32, u32), (u32, u32), (u32, u32)),
-// ) -> ((u32, u32, u32), (u32, u32, u32)) {
-//     (
-//         (color_range.0.0, color_range.1.0, color_range.2.0),
-//         (color_range.0.1, color_range.1.1, color_range.2.1),
-//     )
-// }
-
 /// A steepness of 15 and offset of 0.8 makes a nice looking icon (Rough estimates based on trail and error)
-pub fn fade_out_buffer(buffer: &Buffer, steepness: f32, offset: f32) {
+pub fn fade_out_buffer(buffer: &mut Buffer, steepness: f32, offset: f32) {
     let cx = buffer.width as f32 / 2.0;
     let cy = buffer.height as f32 / 2.0;
     let max_dist = cx.hypot(cy);
@@ -52,12 +10,14 @@ pub fn fade_out_buffer(buffer: &Buffer, steepness: f32, offset: f32) {
             let dy = y as f32 - cy;
             let dist = dx.hypot(dy) / max_dist;
             let fade = 1.0 - dist;
-            let fade = 1.0 - crate::math::smooth_0_to_1(fade, steepness, offset);
+            let fade =
+                1.0 - crate::math::smooth_0_to_1(fade, steepness, offset);
             unsafe {
-                let color = *buffer.pointer.add(y * buffer.width + x);
-                *buffer.pointer.add(y * buffer.width + x) = color.with_alpha(
-                    crate::math::interpolate(0_f32, 255_f32, fade) as u32,
-                );
+                let color = *buffer.pointer().add(y * buffer.width + x);
+                *buffer.mut_pointer().add(y * buffer.width + x) = color
+                    .with_alpha(
+                        crate::math::interpolate(0_f32, 255_f32, fade) as u32
+                    );
             };
         }
     }
@@ -294,7 +254,7 @@ macro_rules! upgrade_type {
 #[allow(clippy::cast_precision_loss)]
 /// A helper function to be used inside a `execute_at` render function
 pub fn invert_color_below(
-    buffer: &crate::platform::Buffer,
+    buffer: &mut crate::platform::Buffer,
     xy: (usize, usize),
     color: u32,
 ) {
@@ -311,7 +271,7 @@ pub fn invert_color_below(
 #[allow(clippy::cast_precision_loss)]
 /// A helper function to be used inside a `execute_at` render function
 pub fn invert_color_if_same(
-    buffer: &crate::platform::Buffer,
+    buffer: &mut crate::platform::Buffer,
     xy: (usize, usize),
     color: u32,
 ) {
@@ -629,3 +589,183 @@ pub fn find_key_by_value<K: Eq + std::hash::Hash + Clone, V: PartialEq>(
 #[cfg(feature = "discord_support")]
 /// Send stuff to discord webhooks, created because `discord-webhooks` kinda sucks and `discord-webhook2` expects to be called in an async environment
 pub mod discord;
+#[must_use]
+/// Get the name of the type of the inputted variable
+pub fn type_name_of_val<T>(_: &T) -> &'static str {
+    std::any::type_name::<T>()
+}
+
+#[allow(clippy::struct_excessive_bools, missing_docs)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Hash)]
+/// A boolean for each simple Direction
+pub struct NormalDirections {
+    pub top: bool,
+    pub bottom: bool,
+    pub left: bool,
+    pub right: bool,
+    pub top_left: bool,
+    pub top_right: bool,
+    pub bottom_left: bool,
+    pub bottom_right: bool,
+}
+impl NormalDirections {
+    #[must_use]
+    #[allow(clippy::fn_params_excessive_bools)] // Really clippy? 4 booleans is excessive in your eyes?
+    /// Create a simple directional boolean struct
+    pub const fn new(top: bool, bottom: bool, left: bool, right: bool) -> Self {
+        Self {
+            top,
+            bottom,
+            left,
+            right,
+            top_left: top && left,
+            top_right: top && right,
+            bottom_left: bottom && left,
+            bottom_right: bottom && right,
+        }
+    }
+    /// "Yes"
+    #[must_use]
+    pub const fn all_true() -> Self {
+        Self {
+            top: true,
+            bottom: true,
+            left: true,
+            right: true,
+            top_left: true,
+            top_right: true,
+            bottom_left: true,
+            bottom_right: true,
+        }
+    }
+    /// "No"
+    #[must_use]
+    pub const fn all_false() -> Self {
+        Self {
+            top: false,
+            bottom: false,
+            left: false,
+            right: false,
+            top_left: false,
+            top_right: false,
+            bottom_left: false,
+            bottom_right: false,
+        }
+    }
+
+    /// Check if a direction is true
+    #[must_use]
+    pub const fn is_direction_allowed_u8(&self, direction: u8) -> bool {
+        match direction {
+            0 => self.top_left,
+            1 => self.top,
+            2 => self.top_right,
+            3 => self.right,
+            4 => self.bottom_right,
+            5 => self.bottom,
+            6 => self.bottom_left,
+            7 => self.left,
+            _ => false,
+        }
+    }
+}
+/// Check if 2 objects are the same
+pub trait Comparable {
+    /// Convert self to `&dyn std::any::Any`
+    fn compare_as_any(&self) -> &dyn std::any::Any;
+    /// Check if this and another object are the same
+    fn is_same(&self, other: &dyn Comparable) -> bool;
+}
+impl<T: 'static + PartialEq> Comparable for T {
+    fn compare_as_any(&self) -> &dyn std::any::Any {
+        self
+    }
+
+    fn is_same(&self, other: &dyn Comparable) -> bool {
+        // Try to downcast `other` to Foo
+        other.compare_as_any().downcast_ref::<Self>() == Some(self)
+    }
+}
+// impl<T: PartialEq> Comparable for T {
+//     fn is_same(&self, other: &Self) -> bool {
+//         self == other
+//     }
+// }
+
+// impl<T: std::hash::Hash> Comparable for T {
+//     fn is_same(&self, other: &Self) -> bool {
+//         let mut own_hasher = std::hash::DefaultHasher::new();
+//         let mut other_hasher = std::hash::DefaultHasher::new();
+//         self.hash(&mut own_hasher);
+//         other.hash(&mut other_hasher);
+//         own_hasher == other_hasher
+//     }
+// }
+#[derive(Debug, Clone, Copy, PartialEq, Default)]
+/// A camera that is bound to a region
+pub struct ScrollableCamera {
+    /// The size of the horizontally scrollable region
+    pub container_width: f32,
+    /// The size of the vertically scrollable region
+    pub container_height: f32,
+    /// The size of the "thing" moving horizontally in the scrollable region
+    pub content_width: f32,
+    /// The size of the "thing" moving vertically in the scrollable region
+    pub content_height: f32,
+    /// The camera offset in the X direction
+    pub offset_x: f32,
+    /// The camera offset in the Y direction
+    pub offset_y: f32,
+    /// When scrolling, by what should the incoming scroll be affected horizontally
+    pub scroll_multiplier_x: f32,
+    /// When scrolling, by what should the incoming scroll be affected vertically
+    pub scroll_multiplier_y: f32,
+    /// When scrolling horizontally instead of vertically, should the scroll multipliers be switched (`x_mul` -> `y_mul`, `y_mul` -> `x_mul`)
+    pub horizontal_context_switch_multipliers: bool,
+    /// If the content inside is also scrollable when the bounds are bigger than the content
+    pub allow_free_scroll: bool,
+}
+impl ScrollableCamera {
+    /// Scroll within the contained region
+    pub fn scroll(&mut self, by: (f32, f32), vertical: bool) {
+        if vertical {
+            self.offset_x += by.0 * self.scroll_multiplier_x;
+            self.offset_y += by.1 * self.scroll_multiplier_y;
+        } else if !self.horizontal_context_switch_multipliers {
+            self.offset_x += by.1 * self.scroll_multiplier_y;
+            self.offset_y += by.0 * self.scroll_multiplier_x;
+        } else {
+            self.offset_x += by.1 * self.scroll_multiplier_x;
+            self.offset_y += by.0 * self.scroll_multiplier_y;
+        }
+
+        self.clamp_to_bounds();
+    }
+    /// Clamp the content to the bounds of the defined region
+    pub fn clamp_to_bounds(&mut self) {
+        let y_range = if self.allow_free_scroll {
+            [self.container_height - self.content_height, 0.0]
+        } else {
+            [(self.container_height - self.content_height).min(0.0), 0.0]
+        };
+
+        let (y_min, y_max) = if y_range[0] <= y_range[1] {
+            (y_range[0], y_range[1])
+        } else {
+            (y_range[1], y_range[0])
+        };
+        self.offset_y = self.offset_y.clamp(y_min, y_max);
+
+        let x_range = if self.allow_free_scroll {
+            [self.container_width - self.content_width, 0.0]
+        } else {
+            [(self.container_width - self.content_width).min(0.0), 0.0]
+        };
+        let (x_min, x_max) = if x_range[0] <= x_range[1] {
+            (x_range[0], x_range[1])
+        } else {
+            (x_range[1], x_range[0])
+        };
+        self.offset_x = self.offset_x.clamp(x_min, x_max);
+    }
+}

@@ -7,7 +7,7 @@ use crate::platform::Buffer;
 #[allow(clippy::cast_sign_loss)]
 #[allow(clippy::cast_possible_wrap)]
 pub fn draw_circle<const SAFE: bool, const FIX_STRAY_PIXEL: bool>(
-    buffer: &Buffer,
+    buffer: &mut Buffer,
     pos: (isize, isize),
     radius: isize,
     color: u32,

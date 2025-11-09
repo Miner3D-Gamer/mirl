@@ -5,7 +5,7 @@ use crate::{platform::Buffer, render::extra::uv_interpolate};
 #[allow(clippy::cast_possible_truncation)]
 #[allow(clippy::cast_possible_wrap)]
 pub fn draw_triangle(
-    buffer: &Buffer,
+    buffer: &mut Buffer,
     width: usize,
     height: usize,
     point1: (isize, isize, f32, f32),
@@ -109,7 +109,7 @@ pub fn draw_triangle(
             }
             if let Some(&color) = texture.data.get(tex_index) {
                 unsafe {
-                    *buffer.pointer.add(index as usize) = color;
+                    *buffer.mut_pointer().add(index as usize) = color;
                 }
             }
         }

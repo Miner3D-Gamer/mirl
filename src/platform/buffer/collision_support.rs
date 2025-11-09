@@ -29,8 +29,8 @@ impl Buffer {
         crate::math::collision::Rectangle::new(
             x,
             y,
-            T::from_number(self.width),
-            T::from_number(self.height),
+            T::from_value(self.width),
+            T::from_value(self.height),
         )
     }
     #[must_use]

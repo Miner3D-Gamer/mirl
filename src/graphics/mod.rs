@@ -3,6 +3,12 @@
 
 use crate::extensions::*;
 
+#[cfg(feature = "random_support")]
+mod random;
+
+#[cfg(feature = "random_support")]
+pub use random::*;
+
 /// Convert an r b g format into u32 argb format
 #[inline(always)]
 #[must_use]
@@ -519,7 +525,7 @@ pub fn pixmap_to_buffer(pixmap: &resvg::tiny_skia::Pixmap) -> Buffer {
         }
     }
     unsafe {
-        Buffer::new(data, pixmap.width() as usize, pixmap.height() as usize)
+        Buffer::new((pixmap.width() as usize, pixmap.height() as usize), data)
             .unwrap_unchecked()
     }
 }
@@ -550,9 +556,8 @@ pub fn buffer_to_pixel_image(buffer: &Buffer) -> glfw::PixelImage {
 #[allow(clippy::missing_panics_doc, clippy::unwrap_used)]
 pub fn pixel_image_to_buffer(pixel_image: &glfw::PixelImage) -> Buffer {
     Buffer::new(
+        (pixel_image.width as usize, pixel_image.height as usize),
         rgba_list_to_argb_list(&pixel_image.pixels),
-        pixel_image.width as usize,
-        pixel_image.height as usize,
     )
     .unwrap()
 }
@@ -883,14 +888,14 @@ pub fn get_unused_color(
 #[must_use]
 /// A function specifically designed and optimized to work with the buffer of this lib
 pub fn get_unused_color_of_buffer(
-    buffer: &Buffer,
+    buffer: &mut Buffer,
     current_color: (u8, u8, u8),
 ) -> (u8, u8, u8) {
     let mut current_color = current_color;
     let mut unique_colors = HashSet::new();
     for index in 0..buffer.total_size {
         unsafe {
-            let i = u32_to_argb_u8(*buffer.pointer.add(index));
+            let i = u32_to_argb_u8(*buffer.pointer().add(index));
             if i.0 != 0 {
                 unique_colors.insert((i.1, i.2, i.3));
             }
@@ -1432,4 +1437,15 @@ pub fn create_ico(image: &Buffer) -> Vec<u8> {
     ico_buffer.extend(bmp_data);
 
     ico_buffer
+}
+
+/// Reorder color from ((r1, r2), (g1, g2), (b1, b2)) to ((r1, g1, b1), (r2, g2, b2))
+#[must_use]
+pub const fn reorder_color_range(
+    color_range: ((u32, u32), (u32, u32), (u32, u32)),
+) -> ((u32, u32, u32), (u32, u32, u32)) {
+    (
+        (color_range.0 .0, color_range.1 .0, color_range.2 .0),
+        (color_range.0 .1, color_range.1 .1, color_range.2 .1),
+    )
 }

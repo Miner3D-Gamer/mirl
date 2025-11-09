@@ -10,7 +10,7 @@ use crate::platform::Buffer;
 #[allow(clippy::cast_possible_truncation)]
 #[allow(clippy::cast_possible_wrap)]
 pub fn draw_line<const SAFE: bool>(
-    buffer: &Buffer,
+    buffer: &mut Buffer,
     start: (usize, usize),
     end: (usize, usize),
     color: u32,
@@ -33,10 +33,10 @@ pub fn draw_line<const SAFE: bool>(
     let sign_y = difference_y.sign();
     let abs_difference_x: i16 = difference_x.abs();
     let abs_difference_y: i16 = difference_y.abs();
-    
+
     let radius = thickness as i16 / 2;
     let radius_sq = radius * radius;
-    
+
     if abs_difference_x > abs_difference_y {
         let mut error: i16 = abs_difference_x / 2;
         while start_x != end_x {
@@ -52,7 +52,11 @@ pub fn draw_line<const SAFE: bool>(
                     if dx * dx + dy * dy <= radius_sq {
                         let new_x = start_x + dx;
                         let new_y = start_y + dy;
-                        draw_pixel(buffer, (new_x as usize, new_y as usize), color);
+                        draw_pixel(
+                            buffer,
+                            (new_x as usize, new_y as usize),
+                            color,
+                        );
                     }
                 }
             }
@@ -72,7 +76,11 @@ pub fn draw_line<const SAFE: bool>(
                     if dx * dx + dy * dy <= radius_sq {
                         let new_x = start_x + dx;
                         let new_y = start_y + dy;
-                        draw_pixel(buffer, (new_x as usize, new_y as usize), color);
+                        draw_pixel(
+                            buffer,
+                            (new_x as usize, new_y as usize),
+                            color,
+                        );
                     }
                 }
             }
@@ -86,7 +94,7 @@ pub fn draw_line<const SAFE: bool>(
 #[allow(clippy::cast_possible_truncation)]
 #[allow(clippy::cast_possible_wrap)]
 pub fn draw_line_straight(
-    buffer: &Buffer,
+    buffer: &mut Buffer,
     start: (usize, usize),
     length: usize,
     vertical: bool,

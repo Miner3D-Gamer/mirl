@@ -7,7 +7,7 @@ use crate::{
 };
 /// Draw text in the specified font
 pub fn draw_text<const SAFE: bool>(
-    buffer: &Buffer,
+    buffer: &mut Buffer,
     text: &str,
     xy: (usize, usize),
     color: u32,
@@ -59,7 +59,7 @@ pub fn draw_text<const SAFE: bool>(
 
 /// Draw text yet stretch the resulting characters
 pub fn draw_text_stretched<const SAFE: bool>(
-    buffer: &Buffer,
+    buffer: &mut Buffer,
     text: &str,
     xy: (usize, usize),
     color: u32,
@@ -115,7 +115,7 @@ pub fn draw_text_stretched<const SAFE: bool>(
 
 /// Same as [`draw_text`] but uses isize for positioning allowing for partially out of bounce text (left and top)
 pub fn draw_text_isize<const SAFE: bool>(
-    buffer: &Buffer,
+    buffer: &mut Buffer,
     text: &str,
     xy: (isize, isize),
     color: u32,
@@ -175,7 +175,7 @@ pub fn draw_text_isize<const SAFE: bool>(
 
 /// Same as [`draw_text_stretched`] but uses isize for positioning allowing for partially out of bounce text (left and top)
 pub fn draw_text_stretch_isize<const SAFE: bool>(
-    buffer: &Buffer,
+    buffer: &mut Buffer,
     text: &str,
     xy: (isize, isize),
     color: u32,

@@ -12,7 +12,7 @@ impl<
 
 //     }
 // }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 /// A simple Rectangle defining computational limits
 #[allow(missing_docs)]
 pub struct Rectangle<T, const CS: bool> {

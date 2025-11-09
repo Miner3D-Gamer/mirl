@@ -1123,7 +1123,7 @@ pub fn use_cursor(
             //panic!("macOS cursor pointer: {:?}", ptr.unwrap());
         }
         Cursor::Glfw(_) => {
-            return Errors::Unknown;
+            return Errors::Misc("Impossible".to_string());
             //panic!("Cannot set GLFW cursor -> Not a GLFW context");
         }
     }

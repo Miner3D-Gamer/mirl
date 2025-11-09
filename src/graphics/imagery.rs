@@ -96,19 +96,6 @@ pub fn set_image_size(
     );
     img
 }
-// use std::path::Path;
-
-// pub fn load_image(file_path: &str) -> image::DynamicImage {
-//     // Convert the string path to a Path
-//     let path = Path::new(file_path);
-
-//     // Open and decode the image, panic if error occurs
-//     match image::open(path) {
-//         Ok(image) => image,
-//         Err(e) => panic!("Failed to load image: {}", e),
-//     }
-// }
-
 
 #[must_use]
 #[allow(clippy::unwrap_used, clippy::missing_panics_doc)]
@@ -149,7 +136,7 @@ pub fn dynamic_image_to_buffer(image: &image::DynamicImage) -> Buffer {
     let width = image.width() as usize;
     let height = image.height() as usize;
 
-    let mut img = Buffer::new_empty(width, height);
+    let mut img = Buffer::new_empty((width, height));
     for y in 0..height {
         for x in 0..width {
             let color = image.get_pixel(x as u32, y as u32);

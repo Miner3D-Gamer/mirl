@@ -12,7 +12,6 @@
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum NoneOnly {}
 
-
 /// More tuple functions
 mod tuple;
 
@@ -52,6 +51,18 @@ where
 }
 impl<T: Sized + Clone> RepeatData for T {
     fn repeat_value(self, amount: usize) -> Vec<T> {
+        // let mut buffer = Vec::with_capacity(total_size);
+        // unsafe {
+        //     let ptr = buffer.as_mut_ptr();
+        //     std::ptr::write(ptr, color);
+        //     let mut filled = 1;
+        //     while filled < total_size {
+        //         let copy_len = std::cmp::min(filled, total_size - filled);
+        //         std::ptr::copy_nonoverlapping(ptr, ptr.add(filled), copy_len);
+        //         filled += copy_len;
+        //     }
+        //     buffer.set_len(total_size);
+        // }
         std::vec::from_elem(self, amount)
     }
 }
@@ -70,3 +81,6 @@ impl<T: Default> SetToDefault for T {
         *self = std::default::Default::default();
     }
 }
+/// An extension to `std::ops::Range`
+pub mod range;
+pub use range::*;

@@ -308,7 +308,6 @@ impl ExtendedWindow
     /// Not yet implemented
     fn set_icon(&mut self, _buffer: &Buffer) -> Errors {
         Errors::NotImplemented
-        //panic!("Not yet implemented");
     }
     fn get_window_handle(&self) -> raw_window_handle::RawWindowHandle {
         get_native_window_handle_from_glfw(&self.window)

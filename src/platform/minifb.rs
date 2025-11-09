@@ -113,7 +113,6 @@ impl Window for Framework {
     }
 }
 
-
 impl Input for Framework {
     #[inline]
     fn get_mouse_position(&self) -> Option<(i32, i32)> {
@@ -235,7 +234,12 @@ impl CursorStyleControl for Framework {
         image: super::Buffer,
         hotspot: (u8, u8),
     ) -> Result<super::mouse::Cursor, String> {
+        #[cfg(feature = "cursor_show_hotspot")]
+        let mut image = image;
         super::mouse::cursors_windows::load_cursor(
+            #[cfg(feature = "cursor_show_hotspot")]
+            &mut image,
+            #[cfg(not(feature = "cursor_show_hotspot"))]
             &image,
             u16::from(hotspot.0),
             u16::from(hotspot.1),
@@ -373,7 +377,6 @@ fn get_native_window_handle_from_minifb(
         raw_window_handle::RawWindowHandle::Wayland(handle)
     }
 }
-
 
 #[cfg(target_os = "windows")]
 impl Control for Framework {

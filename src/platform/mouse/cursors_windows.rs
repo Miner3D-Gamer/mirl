@@ -21,7 +21,8 @@ use crate::platform::Buffer;
 /// When the tempfile could not be deleted
 pub fn load_cursor(
     //size: U2,
-    image_data: &Buffer,
+    #[cfg(feature = "cursor_show_hotspot")] image_data: &mut Buffer,
+    #[cfg(not(feature = "cursor_show_hotspot"))] image_data: &Buffer,
     hotspot_x: u16,
     hotspot_y: u16,
 ) -> std::result::Result<HCURSOR, &'static str> {
@@ -103,6 +104,9 @@ pub fn load_base_cursor_with_file(
     };
 
     match load_cursor(
+        #[cfg(feature = "cursor_show_hotspot")]
+        &mut pixmap_to_buffer(&image_data),
+        #[cfg(not(feature = "cursor_show_hotspot"))]
         &pixmap_to_buffer(&image_data),
         cursor.hot_spot_x,
         cursor.hot_spot_y,
@@ -134,7 +138,8 @@ fn load_cursor_file(
 pub fn create_cursor(
     hotspot_x: u16,
     hotspot_y: u16,
-    image: &Buffer,
+    #[cfg(feature = "cursor_show_hotspot")] image: &mut Buffer,
+    #[cfg(not(feature = "cursor_show_hotspot"))] image: &Buffer,
 ) -> Vec<u8> {
     let mut cursor_buffer: Vec<u8> = Vec::new();
     #[cfg(feature = "cursor_show_hotspot")]

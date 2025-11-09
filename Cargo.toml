@@ -1,7 +1,7 @@
 [package]
 # Info
 name = "mirl"
-version = "4.7.1"
+version = "5.0.0"
 description = "Miners Rust Lib - A massive collection of ever growing and changing functions, structs, and enums. Check the description for compatibility and toggleable features! (Most of the lib is controlled by flags/features so the lib can continue to be lightweight despite its size)"
 # Compiler
 rust-version = "1.88.0"
@@ -27,7 +27,7 @@ strum = { version = ">=0.26", optional = true }
 strum_macros = { version = ">=0.26", optional = true }
 
 
-rand = { version = ">=0.8", optional = true }
+rand = { version = ">=0.9.2", optional = true }
 
 device_query = { version = ">=4.0.0", optional = true }
 
@@ -139,7 +139,13 @@ full_backend_support = [
     "keycode_support",
 ]
 # Framework backend using minifb (NOT COMPATIBLE WITH WEB)
-minifb_backend = ["minifb", "system", "keycode_support", "keyboard_query", "svg_support"]
+minifb_backend = [
+    "minifb",
+    "system",
+    "keycode_support",
+    "keyboard_query",
+    "svg_support",
+]
 # Framework backend using glfw (NOT COMPATIBLE WITH WEB)
 glfw_backend = ["glfw", "gl", "system", "keycode_support"]
 # Low level system interactions
@@ -147,7 +153,13 @@ system = ["x11", "windows", "winapi", "raw-window-handle"]
 # Font/fontdue support
 font_support = ["fontdue", "once_cell", "font-kit"]
 # Enable all features that add content
-all = ["default", "imagery", "full_backend_support", "discord_support"]
+all = [
+    "default",
+    "imagery",
+    "full_backend_support",
+    "discord_support",
+    "random_support",
+]
 # Support for the f128 float type
 f128 = []
 # Support for interacting with they keyboard
@@ -160,6 +172,8 @@ cursor_show_hotspot = []
 # # Enables some extra rendering features for some structs
 # dear_mirl_gui_support = ["dear_mirl_gui"]
 discord_support = ["serde_json", "reqwest", "serde"]
+# Unlock functions that expand on randomness
+random_support = ["rand"]
 
 
 # Get the current state of the keyboard

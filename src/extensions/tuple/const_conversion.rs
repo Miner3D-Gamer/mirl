@@ -13,7 +13,7 @@ where
     Target: [const] FromPatch<Source>,
 {
     fn const_tuple_into(self) -> (Target,) {
-        (Target::from_number(self.0),)
+        (Target::from_value(self.0),)
     }
 }
 
@@ -31,7 +31,7 @@ where
     Target: [const] FromPatch<Source0> + [const] FromPatch<Source1>,
 {
     fn const_tuple_into(self) -> (Target, Target) {
-        (Target::from_number(self.0), Target::from_number(self.1))
+        (Target::from_value(self.0), Target::from_value(self.1))
     }
 }
 
@@ -53,9 +53,9 @@ where
 {
     fn const_tuple_into(self) -> (Target, Target, Target) {
         (
-            Target::from_number(self.0),
-            Target::from_number(self.1),
-            Target::from_number(self.2),
+            Target::from_value(self.0),
+            Target::from_value(self.1),
+            Target::from_value(self.2),
         )
     }
 }
@@ -80,10 +80,10 @@ where
 {
     fn const_tuple_into(self) -> (Target, Target, Target, Target) {
         (
-            Target::from_number(self.0),
-            Target::from_number(self.1),
-            Target::from_number(self.2),
-            Target::from_number(self.3),
+            Target::from_value(self.0),
+            Target::from_value(self.1),
+            Target::from_value(self.2),
+            Target::from_value(self.3),
         )
     }
 }
@@ -110,11 +110,11 @@ where
 {
     fn const_tuple_into(self) -> (Target, Target, Target, Target, Target) {
         (
-            Target::from_number(self.0),
-            Target::from_number(self.1),
-            Target::from_number(self.2),
-            Target::from_number(self.3),
-            Target::from_number(self.4),
+            Target::from_value(self.0),
+            Target::from_value(self.1),
+            Target::from_value(self.2),
+            Target::from_value(self.3),
+            Target::from_value(self.4),
         )
     }
 }
@@ -146,12 +146,12 @@ where
         self,
     ) -> (Target, Target, Target, Target, Target, Target) {
         (
-            Target::from_number(self.0),
-            Target::from_number(self.1),
-            Target::from_number(self.2),
-            Target::from_number(self.3),
-            Target::from_number(self.4),
-            Target::from_number(self.5),
+            Target::from_value(self.0),
+            Target::from_value(self.1),
+            Target::from_value(self.2),
+            Target::from_value(self.3),
+            Target::from_value(self.4),
+            Target::from_value(self.5),
         )
     }
 }
@@ -185,13 +185,13 @@ where
         self,
     ) -> (Target, Target, Target, Target, Target, Target, Target) {
         (
-            Target::from_number(self.0),
-            Target::from_number(self.1),
-            Target::from_number(self.2),
-            Target::from_number(self.3),
-            Target::from_number(self.4),
-            Target::from_number(self.5),
-            Target::from_number(self.6),
+            Target::from_value(self.0),
+            Target::from_value(self.1),
+            Target::from_value(self.2),
+            Target::from_value(self.3),
+            Target::from_value(self.4),
+            Target::from_value(self.5),
+            Target::from_value(self.6),
         )
     }
 }
@@ -236,14 +236,14 @@ where
         self,
     ) -> (Target, Target, Target, Target, Target, Target, Target, Target) {
         (
-            Target::from_number(self.0),
-            Target::from_number(self.1),
-            Target::from_number(self.2),
-            Target::from_number(self.3),
-            Target::from_number(self.4),
-            Target::from_number(self.5),
-            Target::from_number(self.6),
-            Target::from_number(self.7),
+            Target::from_value(self.0),
+            Target::from_value(self.1),
+            Target::from_value(self.2),
+            Target::from_value(self.3),
+            Target::from_value(self.4),
+            Target::from_value(self.5),
+            Target::from_value(self.6),
+            Target::from_value(self.7),
         )
     }
 }
@@ -302,15 +302,15 @@ where
     ) -> (Target, Target, Target, Target, Target, Target, Target, Target, Target)
     {
         (
-            Target::from_number(self.0),
-            Target::from_number(self.1),
-            Target::from_number(self.2),
-            Target::from_number(self.3),
-            Target::from_number(self.4),
-            Target::from_number(self.5),
-            Target::from_number(self.6),
-            Target::from_number(self.7),
-            Target::from_number(self.8),
+            Target::from_value(self.0),
+            Target::from_value(self.1),
+            Target::from_value(self.2),
+            Target::from_value(self.3),
+            Target::from_value(self.4),
+            Target::from_value(self.5),
+            Target::from_value(self.6),
+            Target::from_value(self.7),
+            Target::from_value(self.8),
         )
     }
 }
@@ -383,16 +383,16 @@ where
         Target,
     ) {
         (
-            Target::from_number(self.0),
-            Target::from_number(self.1),
-            Target::from_number(self.2),
-            Target::from_number(self.3),
-            Target::from_number(self.4),
-            Target::from_number(self.5),
-            Target::from_number(self.6),
-            Target::from_number(self.7),
-            Target::from_number(self.8),
-            Target::from_number(self.9),
+            Target::from_value(self.0),
+            Target::from_value(self.1),
+            Target::from_value(self.2),
+            Target::from_value(self.3),
+            Target::from_value(self.4),
+            Target::from_value(self.5),
+            Target::from_value(self.6),
+            Target::from_value(self.7),
+            Target::from_value(self.8),
+            Target::from_value(self.9),
         )
     }
 }
@@ -470,17 +470,17 @@ where
         Target,
     ) {
         (
-            Target::from_number(self.0),
-            Target::from_number(self.1),
-            Target::from_number(self.2),
-            Target::from_number(self.3),
-            Target::from_number(self.4),
-            Target::from_number(self.5),
-            Target::from_number(self.6),
-            Target::from_number(self.7),
-            Target::from_number(self.8),
-            Target::from_number(self.9),
-            Target::from_number(self.10),
+            Target::from_value(self.0),
+            Target::from_value(self.1),
+            Target::from_value(self.2),
+            Target::from_value(self.3),
+            Target::from_value(self.4),
+            Target::from_value(self.5),
+            Target::from_value(self.6),
+            Target::from_value(self.7),
+            Target::from_value(self.8),
+            Target::from_value(self.9),
+            Target::from_value(self.10),
         )
     }
 }
@@ -563,18 +563,18 @@ where
         Target,
     ) {
         (
-            Target::from_number(self.0),
-            Target::from_number(self.1),
-            Target::from_number(self.2),
-            Target::from_number(self.3),
-            Target::from_number(self.4),
-            Target::from_number(self.5),
-            Target::from_number(self.6),
-            Target::from_number(self.7),
-            Target::from_number(self.8),
-            Target::from_number(self.9),
-            Target::from_number(self.10),
-            Target::from_number(self.11),
+            Target::from_value(self.0),
+            Target::from_value(self.1),
+            Target::from_value(self.2),
+            Target::from_value(self.3),
+            Target::from_value(self.4),
+            Target::from_value(self.5),
+            Target::from_value(self.6),
+            Target::from_value(self.7),
+            Target::from_value(self.8),
+            Target::from_value(self.9),
+            Target::from_value(self.10),
+            Target::from_value(self.11),
         )
     }
 }

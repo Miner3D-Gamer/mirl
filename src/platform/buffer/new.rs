@@ -1,17 +1,13 @@
 use super::Buffer;
 use crate::extensions::RepeatData;
-use crate::graphics::{rgb_u8_to_u32, rgba_u8_to_u32};
+use crate::graphics::{rgb_u8_to_u32, rgba_to_u32, rgba_u8_to_u32};
 impl Buffer {
     /// Create a new buffer
     ///
     /// # Errors
     /// When not enough data was provided, an error is returned instead of a Buffer
-    pub fn new(
-        data: Vec<u32>,
-        width: usize,
-        height: usize,
-    ) -> Result<Self, String> {
-        let total_size = width * height;
+    pub fn new(size: (usize, usize), data: Vec<u32>) -> Result<Self, String> {
+        let total_size = size.0 * size.1;
         if data.len() != total_size {
             return Err(format!(
                 "Data length does not match dimensions - Expected: {}, Got: {}",
@@ -19,46 +15,37 @@ impl Buffer {
                 data.len()
             ));
         }
-        let mut t = Self {
+        let t = Self {
             data,
-            pointer: std::ptr::null_mut::<u32>(),
-            width,
-            height,
+            width: size.0,
+            height: size.1,
             total_size,
         };
-        t.update_pointer();
         Ok(t)
     }
 
     #[must_use]
     /// Create a new, empty, [Buffer]
-    pub fn new_empty(width: usize, height: usize) -> Self {
-        let total_size = width * height;
-        let mut buffer = 0u32.repeat_value(total_size);
-        let buffer_pointer = buffer.as_mut_ptr();
+    pub fn new_empty(size: (usize, usize)) -> Self {
+        let total_size = size.0 * size.1;
+        let buffer = 0u32.repeat_value(total_size);
+
         Self {
             data: buffer,
-            pointer: buffer_pointer,
-            width,
-            height,
+            width: size.0,
+            height: size.1,
             total_size,
         }
     }
     #[must_use]
     /// Create a new [Buffer] filled with the specified color
-    pub fn new_empty_with_color(
-        width: usize,
-        height: usize,
-        color: u32,
-    ) -> Self {
-        let total_size = width * height;
-        let mut buffer = vec![color; total_size];
-        let buffer_pointer = buffer.as_mut_ptr();
+    pub fn new_empty_with_color(size: (usize, usize), color: u32) -> Self {
+        let total_size = size.0 * size.1;
+        let buffer = color.repeat_value(total_size);
         Self {
             data: buffer,
-            pointer: buffer_pointer,
-            width,
-            height,
+            width: size.0,
+            height: size.1,
             total_size,
         }
     }
@@ -66,19 +53,15 @@ impl Buffer {
     #[allow(clippy::unwrap_used)]
     #[allow(clippy::missing_panics_doc)]
     /// Generate a error texture with the desired size
-    pub fn generate_fallback(
-        width: usize,
-        height: usize,
-        squares: usize,
-    ) -> Self {
-        let mut data = Vec::with_capacity(width * height);
-        let square_size = width.midpoint(height) / squares;
+    pub fn generate_fallback(size: (usize, usize), squares: usize) -> Self {
+        let mut data = Vec::with_capacity(size.0 * size.1);
+        let square_size = size.0.midpoint(size.1) / squares;
 
-        let purple = rgb_u8_to_u32(128, 0, 128);
-        let black = rgb_u8_to_u32(0, 0, 0);
+        let purple = rgba_to_u32(128, 0, 128, 255);
+        let black = rgba_to_u32(0, 0, 0, 255);
 
-        for y in 0..height {
-            for x in 0..width {
+        for y in 0..size.1 {
+            for x in 0..size.0 {
                 let square_x = x / square_size;
                 let square_y = y / square_size;
 
@@ -92,7 +75,7 @@ impl Buffer {
             }
         }
 
-        Self::new(data, width, height).unwrap()
+        Self::new((size.0, size.1), data).unwrap()
     }
 
     /// Create a buffer from a rgba &[u8]
@@ -110,7 +93,7 @@ impl Buffer {
             let color = rgba_u8_to_u32(i[0], i[1], i[2], i[3]);
             return_list.push(color);
         }
-        Self::new(return_list, width, height)
+        Self::new((width, height), return_list)
     }
 
     #[track_caller]
@@ -130,6 +113,6 @@ impl Buffer {
                 return_list.push(color);
             }
         }
-        Self::new(return_list, width, height)
+        Self::new((width, height), return_list)
     }
 }

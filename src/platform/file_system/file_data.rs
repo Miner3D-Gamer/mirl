@@ -85,7 +85,7 @@ impl FileData {
     }
     #[cfg(not(feature = "do_not_compile_misc"))]
     #[must_use]
-    /// Constructor to load data from a Vec<String>
+    /// Constructor to load data from a `[Vec<String>]`
     pub fn from_list_of_strings(value: &Vec<String>) -> Self {
         Self::from_bytes(
             crate::misc::strings_to_bytes(value),

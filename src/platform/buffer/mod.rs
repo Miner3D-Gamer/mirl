@@ -1,11 +1,11 @@
-// Rewrite to use copyable list instead of Box<[u32]>?
+// Rewrite to use copyable list instead of Vec<[u32]>?
 /// A raw color buffer to be modified and read quickly
-#[derive(PartialEq, Debug, Eq)]
+#[derive(PartialEq, Debug, Eq, Clone, Hash)]
 pub struct Buffer {
     /// Actual color data
     pub data: Vec<u32>,
-    /// Pointer to the color data
-    pub pointer: *mut u32,
+    // /// Pointer to the color data
+    // pub pointer: *mut u32,
     /// Width of the buffer
     pub width: usize,
     /// Height of the buffer
@@ -20,11 +20,11 @@ mod collision_support;
 mod get_converted;
 mod get_pixel;
 mod manipulate;
+mod misc;
 mod new;
 mod set_color;
 mod set_pixel;
 mod trim;
-mod misc;
 
 /// A const buffer making money on more compile time optimizations
 pub mod const_buffer;
@@ -40,29 +40,36 @@ impl Deref for Buffer {
 }
 
 impl Buffer {
-    /// Update internal pointer
-    pub const fn update_pointer(&mut self) {
-        self.pointer = self.data.as_mut_ptr();
+    #[must_use]
+    /// Get the pointer to self.data
+    pub const fn pointer(&self) -> *const u32 {
+        self.data.as_ptr()
     }
+    #[must_use]
+    /// Get the pointer to self.data mutably
+    pub const fn mut_pointer(&mut self) -> *mut u32 {
+        self.data.as_mut_ptr()
+    }
+    // /// Update internal pointer
+    // pub const fn update_pointer(&mut self) {
+    //     self.pointer = self.data.as_mut_ptr();
+    // }
     /// Update the total size of the buffer
     pub const fn update_total_size(&mut self) {
         self.total_size = self.width * self.height;
     }
 }
 
-impl Clone for Buffer {
-    #[allow(clippy::as_ptr_cast_mut)]
-    fn clone(&self) -> Self {
-        let data = self.data.clone();
+// impl Clone for Buffer {
+//     #[allow(clippy::as_ptr_cast_mut)]
+//     fn clone(&self) -> Self {
+//         let data = self.data.clone();
 
-        let pointer = data.as_ptr().cast_mut();
-
-        Self {
-            data,
-            pointer,
-            width: self.width,
-            height: self.height,
-            total_size: self.total_size,
-        }
-    }
-}
+//         Self {
+//             data,
+//             width: self.width,
+//             height: self.height,
+//             total_size: self.total_size,
+//         }
+//     }
+// }

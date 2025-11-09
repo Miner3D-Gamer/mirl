@@ -341,8 +341,8 @@ impl DoubleBuffer {
     #[must_use]
     pub fn new(width: usize, height: usize) -> Self {
         Self {
-            front: Buffer::new_empty(width, height),
-            back: Buffer::new_empty(width, height),
+            front: Buffer::new_empty((width, height)),
+            back: Buffer::new_empty((width, height)),
             front_is_back: std::sync::atomic::AtomicBool::new(false),
         }
     }

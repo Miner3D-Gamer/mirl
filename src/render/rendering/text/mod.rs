@@ -66,7 +66,7 @@ use crate::platform::Buffer;
 
 /// Switch between aliased and antialiased text rendering
 pub fn draw_text_switch<const SAFE: bool>(
-    buffer: &Buffer,
+    buffer: &mut Buffer,
     text: &str,
     xy: (usize, usize),
     color: u32,
@@ -82,7 +82,7 @@ pub fn draw_text_switch<const SAFE: bool>(
 }
 /// Switch between aliased and antialiased text rendering in isize space
 pub fn draw_text_switch_isize<const SAFE: bool>(
-    buffer: &Buffer,
+    buffer: &mut Buffer,
     text: &str,
     xy: (isize, isize),
     color: u32,
@@ -196,9 +196,8 @@ pub fn get_text_width(string: &str, size: f32, font: &fontdue::Font) -> f32 {
     let mut total_width = 0.0;
 
     for ch in string.chars() {
-        
         let metrics = get_character(ch, size, font).0;
-        
+
         total_width += metrics.advance_width;
     }
 
@@ -211,9 +210,8 @@ pub fn get_text_height(string: &str, size: f32, font: &fontdue::Font) -> f32 {
     let mut min_height = 0.0;
 
     for ch in string.chars() {
-        
         let metrics = get_character(ch, size, font).0;
-        
+
         if metrics.height as f32 > max_height {
             max_height = metrics.height as f32;
         }
