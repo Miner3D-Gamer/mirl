@@ -34,7 +34,7 @@ pub fn load_base_cursor_with_file(
     #[cfg(feature = "cursor_show_hotspot")]
     buffer.set_pixel_safe(
         (cursor.hot_spot_x as usize, cursor.hot_spot_y as usize),
-        crate::graphics::color_presets::RED,
+        crate::graphics::colors::RED,
     );
     Ok(cursor_from_buffer(
         buffer,

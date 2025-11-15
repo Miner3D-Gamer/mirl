@@ -49,6 +49,42 @@ pub enum Cursor {
     /// glfw lib, cross-platform
     Glfw((Buffer, u32, u32)),
 }
+/// Set the current value to the new cursor
+pub trait SetSelfToCursor {
+    /// Set the current value to the new cursor
+    fn set(&mut self, cursor: &Cursor);
+}
+impl SetSelfToCursor for Cursor {
+    fn set(&mut self, cursor: &Cursor) {
+        *self = cursor.clone();
+    }
+}
+impl SetSelfToCursor for Option<Cursor> {
+    fn set(&mut self, cursor: &Cursor) {
+        *self = Some(cursor.clone());
+    }
+}
+// /// Set the current value to the new cursor
+// pub trait SetSelfToCursorStyle {
+//     /// Set the current value to the new cursor
+//     fn set(&mut self, cursor: &CursorStyle);
+// }
+// impl SetSelfToCursorStyle for CursorStyle {
+//     fn set(&mut self, cursor: &CursorStyle) {
+//         *self = cursor.clone()
+//     }
+// }
+// impl SetSelfToCursorStyle for Option<CursorStyle> {
+//     fn set(&mut self, cursor: &CursorStyle) {
+//         *self = Some(cursor.clone())
+//     }
+// }
+
+// impl Cursor {
+//     pub fn get(&self) -> Self {
+//         self.clone()
+//     }
+// }
 
 // pub struct CursorData {
 //     buffer_data: Vec<u32>,
@@ -1159,3 +1195,60 @@ pub fn resolution_to_quality(resolution: u8) -> Result<U2, &'static str> {
 }
 /// Mouse position stuff like raw mouse input
 pub mod position;
+
+impl ButtonState {
+    #[must_use]
+    /// Create a new button state -> Pressed, clicked, and released are calculated
+    pub const fn new(current: bool, last: bool) -> Self {
+        Self {
+            down: current,
+            clicked: current && !last,
+            released: !current && last,
+        }
+    }
+    /// Update the current state
+    pub const fn update(&mut self, new: bool) {
+        self.clicked = !self.down && new;
+        self.released = self.down && !new;
+        self.down = new;
+    }
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Hash)]
+/// The current state of a mouse buttons and if they have just been pressed
+#[allow(missing_docs, clippy::struct_excessive_bools)]
+pub struct ButtonState {
+    pub down: bool,
+    pub clicked: bool,
+    pub released: bool,
+}
+#[allow(missing_docs)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Hash)]
+/// The current state of the mouse buttons and if they have just been pressed
+pub struct MouseButtonState {
+    pub left: ButtonState,
+    pub middle: ButtonState,
+    pub right: ButtonState,
+}
+impl MouseButtonState {
+    /// Updates the mouse state
+    pub const fn update(
+        &mut self,
+        left_down: bool,
+        middle_down: bool,
+        right_down: bool,
+    ) {
+        self.left.update(left_down);
+        self.middle.update(middle_down);
+        self.right.update(right_down);
+    }
+}
+
+// pub struct MousePos<T> {
+//     pos: (T, T),
+//     delta_pos: (T, T),
+// }
+
+// pub struct MouseData<T> {
+//     buttons: MouseState,
+//     pos: MousePos<T>,
+// }

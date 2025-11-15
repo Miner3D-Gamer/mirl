@@ -8,6 +8,8 @@ use crate::platform::keycodes::KeyCode;
 /// Most basic of framework functionality
 pub trait Framework: Window + Input + Output + Timing {}
 impl<T: Window + Input + Output + Timing> Framework for T {}
+
+#[cfg(feature = "resvg")]
 /// Framework with all functionality it could support
 #[const_trait]
 pub trait ExtendedFramework:
@@ -19,6 +21,7 @@ pub trait ExtendedFramework:
     + CursorStyleControl
 {
 }
+#[cfg(feature = "resvg")]
 impl<T> ExtendedFramework for T where
     T: Framework
         + ExtendedInput
@@ -26,6 +29,18 @@ impl<T> ExtendedFramework for T where
         + Control
         + ExtendedControl
         + CursorStyleControl
+{
+}
+#[cfg(not(feature = "resvg"))]
+/// Framework with all functionality it could support
+#[const_trait]
+pub trait ExtendedFramework:
+    Framework + ExtendedInput + ExtendedWindow + Control + ExtendedControl
+{
+}
+#[cfg(not(feature = "resvg"))]
+impl<T> ExtendedFramework for T where
+    T: Framework + ExtendedInput + ExtendedWindow + Control + ExtendedControl
 {
 }
 #[derive(Debug, Clone, PartialEq, Eq)]

@@ -735,7 +735,7 @@ mod pixel;
 pub use pixel::*;
 
 #[cfg(feature = "imagery")]
-use crate::platform::file_system::FileSystem;
+use crate::platform::file_system::file_system_traits::FileSystem;
 use crate::platform::Buffer;
 /// Convert u32 argb to hex
 #[inline(always)]
@@ -1253,7 +1253,7 @@ impl TextureManager {
     }
 }
 /// Presets for common colors
-pub mod color_presets;
+pub mod colors;
 
 mod interpolation;
 pub use interpolation::*;

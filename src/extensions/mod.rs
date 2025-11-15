@@ -40,32 +40,9 @@ pub use cell::*;
 mod error;
 pub use error::*;
 
-#[const_trait]
-/// A trait that allows for data to repeat
-pub trait RepeatData
-where
-    Self: Sized + Clone,
-{
-    /// Repeat the given data X times and return a Vec containing the repeated data
-    fn repeat_value(self, times: usize) -> Vec<Self>;
-}
-impl<T: Sized + Clone> RepeatData for T {
-    fn repeat_value(self, amount: usize) -> Vec<T> {
-        // let mut buffer = Vec::with_capacity(total_size);
-        // unsafe {
-        //     let ptr = buffer.as_mut_ptr();
-        //     std::ptr::write(ptr, color);
-        //     let mut filled = 1;
-        //     while filled < total_size {
-        //         let copy_len = std::cmp::min(filled, total_size - filled);
-        //         std::ptr::copy_nonoverlapping(ptr, ptr.add(filled), copy_len);
-        //         filled += copy_len;
-        //     }
-        //     buffer.set_len(total_size);
-        // }
-        std::vec::from_elem(self, amount)
-    }
-}
+mod repeat;
+pub use repeat::*;
+
 /// List operations
 pub mod lists;
 pub use lists::traits::*;

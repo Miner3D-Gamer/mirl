@@ -1,18 +1,20 @@
 use std::io::Read;
 
 use crate::platform::file_system::{
-    file_data::DataType, FileData, FileSystem, FileSystemNew,
+    file_data::DataType, file_system_traits::FileSystem, FileData,
 };
 
 /// Implementation of `FileSystem` for Native use only
+/// This is supposed to make accessing files easier
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct NativeFileSystem {
     exe_path: std::path::PathBuf,
     src_path: Option<std::path::PathBuf>,
 }
-impl FileSystemNew for NativeFileSystem {
-    fn new(
-        required_files: Vec<&'static str>,
+impl NativeFileSystem {
+    /// # Errors
+    /// When the current exe does not have a parent path, or the current exe does not exist. Both of which should not be possible under normal circumstances
+    pub fn new(//required_files: Vec<&'static str>,
     ) -> Result<Self, Box<dyn std::error::Error>> {
         let temp = std::env::current_exe()?;
         let exe_path =
@@ -34,14 +36,14 @@ impl FileSystemNew for NativeFileSystem {
             src_path,
         };
 
-        for i in required_files {
-            assert!(
-                file_system.does_file_exist(i),
-                "Searched: {:?} but could not find {}",
-                file_system.get_searched_folders(),
-                i
-            );
-        }
+        // for i in required_files {
+        //     assert!(
+        //         file_system.does_file_exist(i),
+        //         "Searched: {:?} but could not find {}",
+        //         file_system.get_searched_folders(),
+        //         i
+        //     );
+        // }
 
         Ok(file_system)
     }

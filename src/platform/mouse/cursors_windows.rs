@@ -146,7 +146,7 @@ pub fn create_cursor(
     // Enabling this shows where the cursor will click
     image.set_pixel_safe(
         (hotspot_x as usize, hotspot_y as usize),
-        crate::graphics::color_presets::RED,
+        crate::graphics::colors::RED,
     );
     let width = image.width as u8;
     let height = image.height as u8;

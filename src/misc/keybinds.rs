@@ -41,7 +41,8 @@ impl<T> KeyBind<T> {
         alt_pressed: bool,
         control_pressed: bool,
     ) -> bool {
-        self.keys.iter().all(|k| newly_pressed.contains(k))
+        (self.keys.is_empty()
+            || self.keys.iter().all(|k| newly_pressed.contains(k)))
             && (shift_pressed || !self.requires_shift)
             && (alt_pressed || !self.requires_alt)
             && (control_pressed || !self.requires_control)
@@ -52,6 +53,7 @@ impl<T> KeyBind<T> {
         self.requires_shift as usize
             + self.requires_alt as usize
             + self.requires_control as usize
+            + !self.keys.is_empty() as usize
     }
     /// If another keybind has the same or more keys
     #[must_use]
@@ -93,7 +95,7 @@ pub fn sort_actions<T: Clone>(actions: Vec<KeyBind<T>>) -> Vec<KeyBind<T>> {
 #[must_use]
 #[allow(clippy::ptr_arg)]
 /// Using the available keybinds, newly pressed, and held keys. Determines what keybinds have activated
-/// 
+///
 /// Returns: Activated [`KeyBind`]s, remaining [`KeyCode`]s
 pub fn handle_keycodes<T: Clone>(
     keybinds: &Vec<KeyBind<T>>,

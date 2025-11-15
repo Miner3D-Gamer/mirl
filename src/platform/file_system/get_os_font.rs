@@ -1,4 +1,6 @@
-use crate::platform::file_system::{file_data::DataType, FileData, FileSystem};
+use crate::platform::file_system::{
+    file_data::DataType, file_system_traits::FileSystem, FileData,
+};
 
 struct DefaultFont {
     pub bytes: Option<Vec<u8>>,

@@ -67,6 +67,20 @@ pub fn get_difference_new<'a, T: std::cmp::PartialEq>(
     }
     result
 }
+#[must_use]
+/// Get additions to a list
+pub fn get_difference_new_cloned<T: std::cmp::PartialEq + Clone>(
+    old: &[T],
+    new: &[T],
+) -> Vec<T> {
+    let mut result = Vec::new();
+    for i in new {
+        if !old.contains(i) {
+            result.push(i.clone());
+        }
+    }
+    result
+}
 /// Returns if the list has duplicate values
 #[must_use]
 pub fn has_duplicates<T: std::hash::Hash + Eq>(vec: &Vec<T>) -> bool {
@@ -82,7 +96,8 @@ pub fn has_duplicates<T: std::hash::Hash + Eq>(vec: &Vec<T>) -> bool {
 pub mod traits {
     use crate::extensions::lists::{
         add_item_to_max_sized_list, average, combined, find_in_list,
-        get_difference_new, get_sub_vec_of_vec, has_duplicates,
+        get_difference_new, get_difference_new_cloned, get_sub_vec_of_vec,
+        has_duplicates,
     };
 
     #[const_trait]
@@ -142,6 +157,14 @@ pub mod traits {
         /// Get what is new in the other list compared to this one
         fn get_old_items(&'a self, new: &'a [T]) -> Vec<&'a T>;
     }
+    #[const_trait]
+    /// Get the difference between 2 lists
+    pub trait ListGetNewItemsCloned<T: std::cmp::PartialEq + Clone> {
+        /// Get what is new in the list compared to another
+        fn get_new_items_cloned(&self, old: &[T]) -> Vec<T>;
+        /// Get what is new in the other list compared to this one
+        fn get_old_items_cloned(&self, new: &[T]) -> Vec<T>;
+    }
     impl<T> ListPushOrReplaceOnMaxSize<T> for Vec<T> {
         fn push_or_replace_on_max_size(&mut self, max_size: usize, item: T) {
             add_item_to_max_sized_list(self, max_size, item);
@@ -177,6 +200,15 @@ pub mod traits {
         }
         fn get_old_items(&'a self, new: &'a [T]) -> Vec<&'a T> {
             get_difference_new(self, new)
+        }
+    }
+    #[allow(clippy::use_self)] // No clippy, Self is not allowed in this context
+    impl<T: std::cmp::PartialEq + Clone> ListGetNewItemsCloned<T> for Vec<T> {
+        fn get_new_items_cloned(&self, old: &[T]) -> Vec<T> {
+            get_difference_new_cloned(old, self)
+        }
+        fn get_old_items_cloned(&self, new: &[T]) -> Vec<T> {
+            get_difference_new_cloned(self, new)
         }
     }
 

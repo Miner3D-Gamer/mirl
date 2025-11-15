@@ -1,6 +1,6 @@
-# Mirl
+# [Mirl](https://github.com/Miner3D-Gamer/mirl)
 
-**Miners Rust Lib** – A modular utility library for math, graphics, system-level functions, and more. A little bit of everything:
+[**Miners Rust Lib**](https://crates.io/crates/mirl) – A modular utility library for math, graphics, system-level functions, and more. A little bit of everything:
 
 ## Content
 
@@ -20,8 +20,8 @@
 ### Windowing System
 
 - Modular rendering backend
-  - **MiniFB** (full support)
-  - **GLFW** (partial support)
+  - [**MiniFB**](https://crates.io/crates/minifb) (full support)
+  - [**GLFW**](https://crates.io/crates/glfw) (partial support)
 - Input handling (mouse, keyboard)
 - Cursor and icon management (Custom cursors)
 - Window manipulation (position, size, opacity, z-order, visibility, etc.)
@@ -44,7 +44,8 @@
 | Web      | ⚠️ Partial | Everything but IO should work |
 
 ## How to get started (flags: `minifb_backend`/`glfw_backend`/`full_backend_support`):
-```
+MiniFB is recommended but every backend has their own unique limitations/quirks which is the reason this lib exists in the first place
+``` rust
 use mirl::platform::framework_traits::Window;
 fn main() {
     let mut buffer = mirl::platform::Buffer::new_empty((800, 600));
@@ -61,7 +62,7 @@ fn main() {
     }
 }
 ```
-For a debugging window lib "similar" to `Dear ImGui` you can use the `dear_mirl_gui` crate (which is `RmMode`)
+For a debugging window lib "similar" to `Dear ImGui` you can use the [`dear_mirl_gui`](https://crates.io/crates/dear_mirl_gui) crate (which is `RmMode`)
 
 ## Features/Flags
 
@@ -100,6 +101,12 @@ This lib is heavily guided by clippy and as such:
 
 (This assumes you are using functions all across the lib)
 
+### To add:
+- Clipboard support
+- Sound support
+- More terminal functionality
+- Network support
+
 ---
 
 ### Hi there
@@ -115,3 +122,5 @@ Even if many of the functions in here will never be used again, considering ther
 
 You can find the most random yet oddly specific things here.
 Enjoy! Or don't, honestly...
+
+If you use the lib in a public project, let me know; I like seeing what other people create/make of the lib

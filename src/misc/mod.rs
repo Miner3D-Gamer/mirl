@@ -769,3 +769,11 @@ impl ScrollableCamera {
         self.offset_x = self.offset_x.clamp(x_min, x_max);
     }
 }
+#[derive(Debug)]
+/// Choose between 2 values
+pub enum TwoOptions<O1, O2> {
+    /// Select the first of 2 options
+    Option1(O1),
+    /// Select the second of 2 options
+    Option2(O2),
+}

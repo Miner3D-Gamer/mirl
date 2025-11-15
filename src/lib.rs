@@ -121,8 +121,14 @@ pub fn disable_traceback() {
 // This little fella is so often used that it only makes sense to reexport it
 pub use platform::Buffer;
 
+/// Defaults
+pub mod prelude;
+
 // TODO:
 // - Clipboard support
 // - Sound support
 // - Networking support?
 // - Linux Compatibility
+
+// TODON'T:
+// - Mac support
