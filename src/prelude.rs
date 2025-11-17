@@ -10,6 +10,8 @@ pub use crate::platform::file_system::get_default_font;
 #[cfg(feature = "std")]
 pub use crate::platform::file_system::FileSystem;
 #[cfg(feature = "std")]
+#[cfg(feature = "system")]
+#[cfg(feature = "keycodes")]
 pub use crate::platform::framework_traits::*;
 #[cfg(feature = "minifb")]
 #[cfg(feature = "std")]
