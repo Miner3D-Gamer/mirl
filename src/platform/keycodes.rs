@@ -200,6 +200,7 @@ pub enum KeyCode {
     Unknown,
 }
 
+#[cfg(feature = "std")]
 macro_rules! define_keys {
     ( $( $ident:ident => $name:expr ),* $(,)? ) => {
          impl KeyCode {
@@ -267,6 +268,7 @@ macro_rules! define_keys {
     };
 }
 #[const_trait]
+#[cfg(feature = "std")]
 /// Convert from a string to a `Vec<KeyCode>`
 pub trait StringToKeyCodes {
     /// Convert from a string to a `Vec<KeyCode>`
@@ -644,12 +646,14 @@ impl KeyCode {
     //     }
     // }
 }
+#[cfg(feature = "std")]
 impl std::fmt::Display for KeyCode {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let value = self.to_string();
         write!(f, "{value}")
     }
 }
+#[cfg(feature = "std")]
 define_keys!(
             // Letters
             A => "A",
@@ -845,6 +849,7 @@ define_keys!(
             Unknown => "Unknown",);
 
 #[must_use]
+#[cfg(feature = "std")]
 /// Convert a list of keycodes into a String and return the ones that weren't convertible
 pub fn keycodes_to_str(keycodes: &Vec<KeyCode>) -> (String, Vec<KeyCode>) {
     let mut functions = Vec::new();

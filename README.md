@@ -1,51 +1,21 @@
 # [Mirl](https://github.com/Miner3D-Gamer/mirl)
 
-[**Miners Rust Lib**](https://crates.io/crates/mirl) – A modular utility library for math, graphics, system-level functions, and more. A little bit of everything:
-
-## Content
-
-### Math and Geometry
-
-- Core math utilities and extensions
-- Basic collision detection
-- U1, U2, U4 integer types with `num-traits` support
-
-### Graphics and Rendering
-
-- Color manipulation (ARGB `u32`)
-- Buffer rendering for text, lines, triangles, blocks, circles, images, outlines
-- Console rendering utilities
-- Support for generating .bmp, .ico, and .cur
-
-### Windowing System
-
-- Modular rendering backend
-  - [**MiniFB**](https://crates.io/crates/minifb) (full support)
-  - [**GLFW**](https://crates.io/crates/glfw) (partial support)
-- Input handling (mouse, keyboard)
-- Cursor and icon management (Custom cursors)
-- Window manipulation (position, size, opacity, z-order, visibility, etc.)
-
-### Miscellaneous
-
-- Discord webhook integration
-- Rust extensions (`.is_number()`, `.sign()`, `.average()`, tuple comparison)
-- Screenshot utilities
-- Simple keybinding system
-- etc...
+[**Miners Rust Lib**](https://crates.io/crates/mirl) – A modular utility library featuring windowing, 2D rendering, input handling, color manipulation, system integration, math utilities, and extensive type extensions. Overview at the bottom
 
 ## Compatibility
 
-| Platform | Status     | Info                           |
-| -------- | ---------- | ------------------------------ |
+| Platform | Status     | Info                          |
+| -------- | ---------- | ----------------------------- |
 | Windows  | ✅ Full    | Native implementation         |
 | Linux    | ⚠️ Partial | Currently fixing              |
 | macOS    | 🚧 Barely  | Untested                      |
 | Web      | ⚠️ Partial | Everything but IO should work |
 
-## How to get started (flags: `minifb_backend`/`glfw_backend`/`full_backend_support`):
+## How to get started (flags: `minifb`/`glfw`/`all_backends`):
+
 MiniFB is recommended but every backend has their own unique limitations/quirks which is the reason this lib exists in the first place
-``` rust
+
+```rust
 use mirl::platform::framework_traits::Window;
 fn main() {
     let mut buffer = mirl::platform::Buffer::new_empty((800, 600));
@@ -62,6 +32,7 @@ fn main() {
     }
 }
 ```
+
 For a debugging window lib "similar" to `Dear ImGui` you can use the [`dear_mirl_gui`](https://crates.io/crates/dear_mirl_gui) crate (which is `RmMode`)
 
 ## Features/Flags
@@ -73,35 +44,29 @@ For a debugging window lib "similar" to `Dear ImGui` you can use the [`dear_mirl
 ### Optional
 
 - `imagery` – Enables support for the `image` crate for image loading
-- `svg_support` – Enables SVG rendering via the `resvg` and `tempfile` crates (used for things like cursor support)
-- `wayland` – Placeholder for Linux Wayland support (not yet implemented)
-- `minifb_backend` – Enables the framework backend using `minifb` and requires low-level system access
-- `glfw_backend` – Enables the framework backend using `glfw`, OpenGL, and requires low-level system access
+- `svg` – Enables SVG rendering via the `resvg` and `tempfile` crates (used for things like cursor support)
+- `minifb` – Enables the framework backend using `minifb` and requires low-level system access
+- `glfw` – Enables the framework backend using `glfw`, OpenGL, and requires low-level system access
 - `font_support` – Adds support for `fontdue` and `once_cell` for font rendering
 - `system` – Low-level system interaction using platform-specific crates (`x11`, `windows`, `winapi`, `raw-window-handle`)
-- `full_backend_support` – Enables all major backends: `minifb_backend`, `glfw_backend`, `keycode_support`, and `svg_support`
+- `all_backends` – Enables all major backends: `minifb_backend`, `glfw_backend`, `keycode_support`, and `svg`
 - `all` – Enables all commonly used features: `default`, `imagery`, and `full_backend_support`
 - `f128`- Enables support for 128-bit floating point numbers since they are not yet stable
-- `keycode_support` - Enables the ability to interact with keyboard
+- `keycodes` - Enables the ability to interact with keyboard
 - `do_not_compile_misc` - Stops the experimental misc module from compiling
 - `keyboard_query` - Get the currently pressed keys -> Required for MiniFB
 - `cursor_show_hotspot` - A debug option for adding a red dot to the hotspot of a customly loaded cursor
-- `discord_support` - Support for sending stuff to discord webhooks
+- `discord` - Support for sending stuff to discord webhooks
 
 ### Other
 
 This lib is heavily guided by clippy and as such:
+
 - Almost everything has a short docstring
 - Execution stopping functions/macros like panic! or unwrap() are only ever used in custom panic/unwrap functions
 
-### When updating (Major.Minor.Patch):
-- Major: You _will_ need to fix something
-- Minor: You may need to fix something
-- Patch: Something changed, if it affected you is up to chance
-
-(This assumes you are using functions all across the lib)
-
 ### To add:
+
 - Clipboard support
 - Sound support
 - More terminal functionality
@@ -109,18 +74,117 @@ This lib is heavily guided by clippy and as such:
 
 ---
 
+## Content
+
+### Core Types & Buffer Management
+
+- `Buffer` - ARGB `u32` pixel buffer with manipulation operations
+- Pixel-level operations (safe/unsafe accessors)
+- Buffer transformations (flip, rotate, trim, resize)
+- Collision detection from buffers
+
+### Windowing & Platform
+
+- Multi-backend window system
+  - [**MiniFB**](https://crates.io/crates/minifb) (full support)
+  - [**GLFW**](https://crates.io/crates/glfw) (partial support)
+- Window manipulation (position, size, opacity, z-order, visibility, borderless, etc.)
+- Input handling (keyboard, mouse, raw input)
+- Custom cursor loading and management
+- File system abstraction
+- Platform-specific features (Windows focus)
+
+### Graphics & Rendering
+
+- **2D Rendering**
+  - Text (standard, antialiased, stretched)
+  - Shapes (rectangles, circles, triangles, lines)
+  - Buffer-to-buffer blitting
+- **Color Utilities**
+  - RGB/HSL conversion and manipulation
+  - Hex/ARGB conversion
+  - Color interpolation and shifting
+  - Brightness and saturation adjustment
+- **Image Processing**
+  - Multiple interpolation modes (Nearest, Linear, Cubic, Lanczos, Gaussian, etc.)
+  - Image resizing and filtering
+  - SVG rasterization
+  - Format conversion (BMP, ICO, CUR generation)
+- **Texture Management**
+  - Lazy loading and caching
+  - Automatic cleanup of unused textures
+
+### System Integration
+
+- **Window Control** (Windows-specific)
+  - Window positioning and sizing
+  - Minimization, maximization, restoration
+  - Z-order and window level management
+  - Opacity and click-through
+  - Taskbar progress indicators
+- **System Actions**
+  - Screen capture (full screen, desktop background)
+  - CPU priority control
+  - Screen resolution queries
+
+### Math & Geometry
+
+- **Collision Detection**
+  - Rectangle-rectangle intersection
+  - Circle-rectangle collision
+  - Point containment tests
+- **Number Types**
+  - `U1`, `U2`, `U4` - sub-byte unsigned integers with `num-traits` support
+  - `UniformRange` - normalized [0.0, 1.0] float representation
+- **Math Extensions**
+  - Vector normalization and interpolation
+  - Bounded type traits
+  - Angle conversions (degrees/radians)
+
+### Extensions & Utilities
+
+- **List Operations**
+  - Finding differences, duplicates, regions
+  - Push-or-replace for max-sized lists
+  - Averaging and combining
+- **String Extensions**
+  - Text justification and centering
+  - Tab expansion
+  - Number validation
+- **Cell & Tuple Operations**
+  - Saturating arithmetic
+  - Clamping and sign manipulation
+  - Tuple-wise operations and comparisons
+- **Type Conversions**
+  - Tuple into conversions (const and runtime)
+  - Result mapping helpers
+  - Sign/unsigned mapping
+
+### Miscellaneous
+
+- **Discord Integration** - Webhook payloads with embeds, components, and attachments
+- **Keybinding System** - Action-based keybind handling with priority
+- **Direction Types** - Cardinal and extended directions with rotation
+- **Scrollable Camera** - 2D viewport with scroll bounds
+- **Console Utilities** - Colored output and input handling
+- **Time Constants** - Duration conversion helpers
+
 ### Hi there
 
 What brought you to this strange place?
 
-While a lot of the lib is stable and won't be touched again by me again, in the name of speed I will not hesitate to improve what already exists. 
-
-I believe my goal is to create so many functions/structs/etc., that just work no matter what you throw at them, until I'm able to write entire projects in just a few lines of code. (And modularity! We love utter and absolute modularity, what a pain.)
-
 This is just a little big lib I built for easy function/struct/etc. reusability across my never ending stream of unfinished projects.
 Even if many of the functions in here will never be used again, considering there are ~3k functions, ~50 enums, ~100 structs, ~100 traits, ~500 trait implementations; you are sure to find _something_ of use
+
+My philosophy follows 3 things:
+
+- Modularity: Why put a limit on things?
+- Usability What is something worth when it's unusable?
+- Speed: No questions. More speed more better.
 
 You can find the most random yet oddly specific things here.
 Enjoy! Or don't, honestly...
 
-If you use the lib in a public project, let me know; I like seeing what other people create/make of the lib
+If you use the lib in a public project, let me know; I'd genuinely love to see what other people create with the lib
+
+---

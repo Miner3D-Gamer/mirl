@@ -1,4 +1,5 @@
 #[cfg(feature = "system")]
+#[cfg(feature = "std")]
 use crate::extensions::*;
 
 #[const_trait]
@@ -115,7 +116,7 @@ pub enum MouseButton {
     /// You can't expect to be able to expect everything ¯\_(ツ)_/¯
     Unsupported,
 }
-#[cfg(feature = "keycode_support")]
+#[cfg(feature = "keycodes")]
 /// Represents digital keys using `KeyCodes` of which there should be plenty enough to pretty all libraries that use their own `KeyCodes`
 pub mod keycodes;
 
@@ -131,9 +132,9 @@ pub struct WindowSettings {
     /// Window render level -> Topmost, normal, bottommost
     pub window_level: WindowLevel,
     /// Position on screen
-    pub position: (isize, isize),
+    pub position: (i32, i32),
     /// Size of the spawning window
-    pub size: (isize, isize),
+    pub size: (i32, i32),
     /// If the window should be resizable
     pub resizable: bool,
     /// If the window should have the default os menu around it (fullscreen, minimize, close). The border however will still retain
@@ -143,22 +144,22 @@ pub struct WindowSettings {
 }
 
 #[cfg(feature = "system")]
+#[cfg(feature = "std")]
 impl WindowSettings {
     /// Get the settings on default settings
     /// For size a buffer is required
     /// For position, it will be centered on the screen
     #[must_use]
     pub fn default(buffer: &Buffer) -> Self {
-        let size = (buffer.width, buffer.height).tuple_into();
+        let size =
+            (buffer.width, buffer.height).try_tuple_into().unwrap_or_default();
         Self {
             borderless: false,
             title_visible: true,
             window_level: WindowLevel::Normal,
             position: crate::system::get_center_of_screen_for_object(
-                size.0 as i32,
-                size.1 as i32,
-            )
-            .tuple_into(),
+                size.0, size.1,
+            ),
 
             resizable: false,
             os_menu: true,
@@ -167,63 +168,67 @@ impl WindowSettings {
         }
     }
     /// Set the visibility of the window
-    pub const fn set_visible(&mut self, visible: bool) -> &mut Self {
+    #[must_use]
+    pub const fn set_visible(mut self, visible: bool) -> Self {
         self.visible = visible;
         self
     }
     /// Set the size of the window
-    pub const fn set_size(&mut self, size: (isize, isize)) -> &mut Self {
+    #[must_use]
+    pub const fn set_size(mut self, size: (i32, i32)) -> Self {
         self.size = size;
         self
     }
+    #[must_use]
     /// Set the size of the window to the size of the given buffer
-    pub fn set_size_to_buffer(&mut self, buffer: &Buffer) -> &mut Self {
-        self.size = (buffer.width, buffer.height).tuple_into();
+    pub fn set_size_to_buffer(mut self, buffer: &Buffer) -> Self {
+        self.size =
+            (buffer.width, buffer.height).try_tuple_into().unwrap_or_default();
         self
     }
+    #[must_use]
     /// Set the position of the window
-    pub const fn set_position(
-        &mut self,
-        position: (isize, isize),
-    ) -> &mut Self {
+    pub const fn set_position(mut self, position: (i32, i32)) -> Self {
         self.position = position;
         self
     }
+    #[must_use]
     /// Set if the title should be visible
-    pub const fn set_title_visible(&mut self, title: bool) -> &mut Self {
+    pub const fn set_title_visible(mut self, title: bool) -> Self {
         self.title_visible = title;
         self
     }
+    #[must_use]
     /// Sets if the border should be hidden
-    pub const fn set_borderless(&mut self, borderless: bool) -> &mut Self {
+    pub const fn set_borderless(mut self, borderless: bool) -> Self {
         self.borderless = borderless;
         self
     }
+    #[must_use]
     /// Set the render level of the window (topmost, normal, bottommost)
-    pub const fn set_window_level(
-        &mut self,
-        window_level: WindowLevel,
-    ) -> &mut Self {
+    pub const fn set_window_level(mut self, window_level: WindowLevel) -> Self {
         self.window_level = window_level;
         self
     }
+    #[must_use]
     /// Set if the window should be resizable by the user
-    pub const fn set_resizable(&mut self, resizable: bool) -> &mut Self {
+    pub const fn set_resizable(mut self, resizable: bool) -> Self {
         self.resizable = resizable;
         self
     }
+    #[must_use]
     /// Set if the default os decoration should be visible (fullscreen, minimize, close)
-    pub const fn set_os_menu(&mut self, os_menu: bool) -> &mut Self {
+    pub const fn set_os_menu(mut self, os_menu: bool) -> Self {
         self.os_menu = os_menu;
         self
     }
+    #[must_use]
     /// Sets the position of the window to be centered on the screen
-    pub fn set_position_to_middle_of_screen(&mut self) -> &mut Self {
+    pub fn set_position_to_middle_of_screen(mut self) -> Self {
         self.position = crate::system::get_center_of_screen_for_object(
-            self.size.0 as i32,
-            self.size.1 as i32,
-        )
-        .tuple_into();
+            self.size.0,
+            self.size.1,
+        );
         self
     }
 }
@@ -239,41 +244,49 @@ pub enum WindowLevel {
     AlwaysOnTop,
 }
 
-#[cfg(feature = "keycode_support")]
-#[cfg(all(feature = "resvg", feature = "system"))]
+#[cfg(feature = "keycodes")]
+#[cfg(all(feature = "svg", feature = "system"))]
+#[cfg(feature = "std")]
 pub use mouse::Cursor;
 
+#[cfg(feature = "std")]
 mod buffer;
-pub use buffer::Buffer;
+#[cfg(feature = "std")]
+pub use buffer::*;
 
 // Windows
 #[cfg(not(target_arch = "wasm32"))]
-#[cfg(feature = "minifb_backend")]
-#[cfg(feature = "keycode_support")]
+#[cfg(feature = "minifb")]
+#[cfg(feature = "keycodes")]
+#[cfg(feature = "std")]
 /// The minifb version of the backend
 pub mod minifb;
 
 #[cfg(not(target_arch = "wasm32"))]
-#[cfg(feature = "glfw_backend")]
-#[cfg(feature = "keycode_support")]
+#[cfg(feature = "glfw")]
+#[cfg(feature = "keycodes")]
+#[cfg(feature = "std")]
 /// The glfw version of the backend
 pub mod glfw;
 
 #[cfg(feature = "system")]
-#[cfg(feature = "keycode_support")]
+#[cfg(feature = "keycodes")]
+#[cfg(feature = "std")]
 /// Traits used by the backends
 pub mod framework_traits;
-#[cfg(all(feature = "resvg", feature = "system"))]
-#[cfg(feature = "keycode_support")]
+#[cfg(all(feature = "svg", feature = "system"))]
+#[cfg(feature = "keycodes")]
+#[cfg(feature = "std")]
 // Window associates
 /// Everything do to with cursors
 pub mod mouse;
 
 /// A modular system of accessing files/folders
+#[cfg(feature = "std")]
 pub mod file_system;
 
 #[cfg(feature = "system")]
-#[cfg(feature = "keycode_support")]
+#[cfg(feature = "keycodes")]
 /// There is a lot of duplicate functionality between backends, why not share them?
 pub mod shared;
 /// Time related stuff, it's not a lot I Reckon
@@ -281,11 +294,9 @@ pub mod time;
 
 /// The standart key-board/code detection
 #[cfg(feature = "system")]
-#[cfg(feature = "keycode_support")]
-#[cfg(feature = "device_query")]
+#[cfg(feature = "keycodes")]
+#[cfg(feature = "keyboard_query")]
 pub mod keyboard;
-
-pub use buffer::const_buffer;
 
 // struct Camera {
 //     pub x: f64,
@@ -330,12 +341,14 @@ pub use buffer::const_buffer;
 
 /// A thread safe double buffer when fast isn't fast enough
 #[derive(Debug)]
+#[cfg(feature = "std")]
 pub struct DoubleBuffer {
     front: Buffer,
     back: Buffer,
     front_is_back: std::sync::atomic::AtomicBool, // true if front buffer is the "back" buffer
 }
 
+#[cfg(feature = "std")]
 impl DoubleBuffer {
     /// Creates a new instance of the double buffer starting out empty
     #[must_use]

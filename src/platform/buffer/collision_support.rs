@@ -1,6 +1,6 @@
 #![allow(clippy::inline_always)]
 use super::Buffer;
-use crate::extensions::FromPatch;
+use crate::extensions::TryFromPatch;
 
 impl Buffer {
     #[must_use]
@@ -17,7 +17,7 @@ impl Buffer {
     #[allow(clippy::cast_possible_wrap)]
     pub const fn create_collision<
         const CS: bool,
-        T: [const] FromPatch<usize>
+        T: [const] TryFromPatch<usize>
             + std::ops::Add<Output = T>
             + PartialOrd
             + Copy,
@@ -25,13 +25,13 @@ impl Buffer {
         &self,
         x: T,
         y: T,
-    ) -> crate::math::collision::Rectangle<T, CS> {
-        crate::math::collision::Rectangle::new(
+    ) -> Option<crate::math::collision::Rectangle<T, CS>> {
+        Some(crate::math::collision::Rectangle::new(
             x,
             y,
-            T::from_value(self.width),
-            T::from_value(self.height),
-        )
+            T::try_from_value(self.width)?,
+            T::try_from_value(self.height)?,
+        ))
     }
     #[must_use]
     #[inline(always)]

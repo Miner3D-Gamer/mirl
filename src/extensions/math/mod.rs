@@ -69,6 +69,7 @@ impl_sqrt!(i64);
 impl_sqrt!(i128);
 impl_sqrt!(isize);
 
+#[cfg(feature = "std")]
 use num_traits::{bounds, cast, identities, sign};
 
 #[const_trait]
@@ -86,6 +87,7 @@ pub trait AddSign<T> {
     fn saturated_add_sign(&self, value: T) -> Self;
 }
 
+#[cfg(feature = "std")]
 impl<U, S> AddSign<S> for U
 where
     U: sign::Unsigned

@@ -14,6 +14,7 @@
 //     }
 // }
 #[must_use]
+#[cfg(feature = "std")]
 /// Converts u128 nanoseconds into a `Duration`
 pub const fn from_nanos_u128(nanos: u128) -> std::time::Duration {
     let secs = (nanos / 1_000_000_000) as u64;
@@ -21,6 +22,7 @@ pub const fn from_nanos_u128(nanos: u128) -> std::time::Duration {
     std::time::Duration::new(secs, subnanos)
 }
 #[must_use]
+#[cfg(feature = "std")]
 /// Converts u128 microseconds into a `Duration`
 pub const fn from_micros_u128(micros: u128) -> std::time::Duration {
     let secs = (micros / 1_000_000) as u64;
@@ -28,6 +30,7 @@ pub const fn from_micros_u128(micros: u128) -> std::time::Duration {
     std::time::Duration::new(secs, nanos)
 }
 #[must_use]
+#[cfg(feature = "std")]
 /// Converts u128 milliseconds into a `Duration`
 pub const fn from_millis_u128(millis: u128) -> std::time::Duration {
     let secs = (millis / 1_000) as u64;

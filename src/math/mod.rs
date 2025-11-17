@@ -9,22 +9,26 @@
 //         .collect()
 // }
 
-#[allow(clippy::unwrap_used)]
 /// Convert angle degrees into angle radians
 ///
 /// # Panics
 /// If somehow `T` doesn't support casting from a float this errors
-pub fn radians<T: num_traits::Float>(angle_degrees: T) -> T {
-    angle_degrees
-        * num_traits::NumCast::from(0.017_453_292_519_943_295).unwrap() //PI / 180.0
+#[cfg(feature = "std")]
+pub fn radians<T: TryFromPatch<f64> + std::ops::Mul<Output = T>>(
+    angle_degrees: T,
+) -> Option<T> {
+    Some(angle_degrees * T::try_from_value(0.017_453_292_519_943_295)?) //PI / 180.0
 }
-#[allow(clippy::unwrap_used)]
+
 /// Convert angle radians into angle degrees
 ///
 /// # Panics
 /// If somehow `T` doesn't support casting from a float this errors
-pub fn degrees<T: num_traits::Float>(angle_radians: T) -> T {
-    angle_radians * num_traits::NumCast::from(57.295_779_513_082_32).unwrap() //180.0 / PI
+#[cfg(feature = "std")]
+pub fn degrees<T: TryFromPatch<f64> + std::ops::Mul<Output = T>>(
+    angle_radians: T,
+) -> Option<T> {
+    Some(angle_radians * T::try_from_value(57.295_779_513_082_32)?) //180.0 / PI
 }
 /// Sets the length of the vector to 1 changing the direction it's facing
 pub fn normalize_vector<T: num_traits::Float>(x: T, y: T, z: T) -> (T, T, T) {
@@ -33,6 +37,7 @@ pub fn normalize_vector<T: num_traits::Float>(x: T, y: T, z: T) -> (T, T, T) {
 }
 
 #[const_trait]
+#[cfg(feature = "std")]
 /// A trait for defining a number
 pub trait NumberWithMonotoneOps:
     std::cmp::PartialOrd
@@ -45,6 +50,7 @@ pub trait NumberWithMonotoneOps:
 {
 }
 
+#[cfg(feature = "std")]
 // What's up with this formatting?
 impl<
         T: std::cmp::PartialOrd
@@ -59,6 +65,7 @@ impl<
 }
 #[allow(missing_docs)]
 #[const_trait]
+#[cfg(feature = "std")]
 pub trait TwoTillTen<T: num_traits::One + std::ops::Add<Output = T>> {
     fn two() -> T;
     fn three() -> T;
@@ -71,6 +78,7 @@ pub trait TwoTillTen<T: num_traits::One + std::ops::Add<Output = T>> {
     fn ten() -> T;
 }
 
+#[cfg(feature = "std")]
 impl<T> TwoTillTen<T> for T
 where
     T: num_traits::One + std::ops::Add<Output = T> + Copy,
@@ -118,6 +126,7 @@ pub trait ConstTwoTillTen {
     const NINE: Self;
     const TEN: Self;
 }
+#[cfg(feature = "std")]
 impl<T: num_traits::ConstOne + const std::ops::Add<Output = T>> const
     ConstTwoTillTen for T
 {
@@ -160,6 +169,7 @@ impl<T: num_traits::ConstOne + const std::ops::Add<Output = T>> const
 }
 
 #[const_trait]
+#[cfg(feature = "std")]
 /// A trait for simple but useful operations that weirdly enough do not exist in std
 pub trait ConvenientOps: UpperBounded + Copy + std::cmp::PartialOrd {
     /// Get the half of a value
@@ -168,6 +178,7 @@ pub trait ConvenientOps: UpperBounded + Copy + std::cmp::PartialOrd {
     /// Checks if a value is more than half its maximum
     fn more_than_half(&self) -> bool;
 }
+#[cfg(feature = "std")]
 impl<
         T: ConstTwoTillTen
             + NumberWithMonotoneOps
@@ -188,6 +199,7 @@ impl<
 /// A collision extension focusing on 2d rectangles
 pub mod collision;
 
+#[cfg(feature = "std")]
 /// Progress must be between 0 and 1 for this to work as intended most of the times
 pub fn interpolate<T: NumberWithMonotoneOps + Copy + num_traits::One>(
     start: T,
@@ -196,6 +208,7 @@ pub fn interpolate<T: NumberWithMonotoneOps + Copy + num_traits::One>(
 ) -> T {
     start * (T::one() - progress) + end * progress
 }
+#[cfg(feature = "std")]
 /// Get the position of area A if you wanted to center it in area B
 pub fn get_center_position_of_object_for_object<
     T: std::ops::Div<Output = T> + std::ops::Sub<Output = T> + ConstTwoTillTen,
@@ -212,7 +225,9 @@ pub fn get_center_position_of_object_for_object<
     )
 }
 
+#[cfg(feature = "std")]
 mod uniform_range;
+#[cfg(feature = "std")]
 pub use uniform_range::*;
 
 /// A trait for getting the smallest value >0 and the biggest value <1
@@ -320,8 +335,13 @@ bounded_impl!(i128, i128::MIN, i128::MAX);
 bounded_impl!(f32, f32::MIN, f32::MAX);
 bounded_impl!(f64, f64::MIN, f64::MAX);
 
+#[cfg(feature = "std")]
 mod const_partial_ord;
+#[cfg(feature = "std")]
 pub use const_partial_ord::ConstPartialOrd;
+
+#[cfg(feature = "std")]
+use crate::prelude::TryFromPatch;
 
 /// A function that smoothly transitions from 0 to 1
 /// At x 1, the y will be 0.5 if the offset is 0
@@ -330,6 +350,7 @@ pub use const_partial_ord::ConstPartialOrd;
 pub fn smooth_0_to_1(x: f32, steepness: f32, offset: f32) -> f32 {
     1.0 / (1.0 + ((x / offset) * steepness).exp() + (-steepness))
 }
+#[cfg(feature = "std")]
 /// A value of 10 with a variance of 5 will return (5, 15)
 pub fn range_with_variance<T: NumberWithMonotoneOps + Copy>(
     value: T,

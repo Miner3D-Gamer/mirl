@@ -1,5 +1,6 @@
 use crate::graphics::{
-    self, get_alpha_of_u32_in_u8, get_blue_of_u32_in_u8, get_green_of_u32_in_u8, get_red_of_u32_in_u8,
+    self, get_alpha_of_u32_in_u8, get_blue_of_u32_in_u8,
+    get_green_of_u32_in_u8, get_red_of_u32_in_u8,
 };
 
 // #[cfg(feature = "imagery")]
@@ -16,20 +17,20 @@ impl FileData {
     #[must_use]
     pub fn to_printable(&self) -> String {
         match self.expected_data_type {
-            DataType::Text => format!("Text: {:?}", self.as_string()),
+            DataType::Text => format!("Text: {:?}", self.to_string()),
             #[cfg(feature = "font_support")]
-            DataType::Font => self.as_font().map_or_else(
+            DataType::Font => self.to_font().map_or_else(
                 |_| "Not a font.".into(),
                 |font| format!("Font: {font:?}"),
             ),
             #[cfg(feature = "imagery")]
-            DataType::Image => format!("Bytes: {:?}", self.as_image()),
+            DataType::Image => format!("Bytes: {:?}", self.to_image()),
             DataType::Audio => format!("Audio: {:?}", "<Unsupported>"),
             #[cfg(not(feature = "do_not_compile_misc"))]
             DataType::ListOfText => {
-                format!("List of text: {:#?}", self.as_list_of_strings())
+                format!("List of text: {:#?}", self.to_list_of_strings())
             }
-            DataType::Color => self.as_color().map_or_else(
+            DataType::Color => self.to_color().map_or_else(
                 || "Not a color.".into(),
                 |color| {
                     format!(
@@ -99,7 +100,7 @@ impl FileData {
     ///
     /// # Errors
     /// If the data is not in utf8 format
-    pub fn as_string(&self) -> Result<String, std::string::FromUtf8Error> {
+    pub fn to_string(&self) -> Result<String, std::string::FromUtf8Error> {
         String::from_utf8(self.raw_data.clone())
     }
     // #[must_use]
@@ -118,7 +119,7 @@ impl FileData {
     ///
     /// # Errors
     /// When not a font it will error
-    pub fn as_font(&self) -> Result<fontdue::Font, Box<dyn std::error::Error>> {
+    pub fn to_font(&self) -> Result<fontdue::Font, Box<dyn std::error::Error>> {
         let font = fontdue::Font::from_bytes(
             self.raw_data.clone(),
             fontdue::FontSettings::default(),
@@ -130,7 +131,7 @@ impl FileData {
     /// # Errors
     /// When unable to load the image from memory
     #[cfg(feature = "imagery")]
-    pub fn as_image(
+    pub fn to_image(
         &self,
     ) -> Result<image::DynamicImage, Box<dyn std::error::Error>> {
         // Decode the raw bytes as an image
@@ -146,7 +147,7 @@ impl FileData {
     #[cfg(not(feature = "do_not_compile_misc"))]
     /// Get the list of strings/file paths
     #[must_use]
-    pub fn as_list_of_strings(&self) -> Option<Vec<String>> {
+    pub fn to_list_of_strings(&self) -> Option<Vec<String>> {
         let data = crate::misc::bytes_to_strings(&self.raw_data.clone());
         if data.is_empty() {
             None
@@ -159,7 +160,7 @@ impl FileData {
     /// Three bytes: RGB assumed
     /// Four bytes: RGBA assumed
     #[must_use]
-    pub fn as_color(&self) -> Option<u32> {
+    pub fn to_color(&self) -> Option<u32> {
         match self.raw_data.len() {
             1 => Some(graphics::rgb_u8_to_u32(
                 self.raw_data[0],

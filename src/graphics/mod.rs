@@ -3,10 +3,12 @@
 
 use crate::extensions::*;
 
-#[cfg(feature = "random_support")]
+#[cfg(feature = "random")]
+#[cfg(feature = "std")]
 mod random;
 
-#[cfg(feature = "random_support")]
+#[cfg(feature = "random")]
+#[cfg(feature = "std")]
 pub use random::*;
 
 /// Convert an r b g format into u32 argb format
@@ -147,10 +149,13 @@ pub const fn get_blue_of_u32(color: u32) -> u32 {
 }
 /// Image support for mirl
 #[cfg(feature = "imagery")]
+#[cfg(feature = "std")]
 pub mod imagery;
+#[cfg(feature = "std")]
 use std::collections::HashSet;
 
 #[cfg(feature = "imagery")]
+#[cfg(feature = "std")]
 pub use imagery::*;
 
 #[inline]
@@ -334,7 +339,7 @@ pub fn hsl_to_rgb_u32(
 //         BrightnessModel::LinearWeighted => {
 //             // Extract color components
 //             let (alpha, red, green, blue): (u32, f32, f32, f32) =
-//                 u32_to_argb(color).tuple_into();
+//                 u32_to_argb(color).try_tuple_into();
 //             // Apply perceptual weights to adjustment
 //             let r_adj = x * 0.2126;
 //             let g_adj = x * 0.7152;
@@ -440,7 +445,8 @@ pub fn shift_color_u32(color: u32, hue_shift: f32) -> u32 {
 /// Adjust the brightness of a rgba u32 color faster than with the function that does it with with human perception in mind
 pub fn adjust_brightness_fast(color: u32, x: i32) -> u32 {
     // Extract color components
-    let (red, green, blue): (i32, i32, i32) = u32_to_rgb(color).tuple_into();
+    let (red, green, blue): (i32, i32, i32) =
+        u32_to_rgb(color).try_tuple_into().unwrap_or((0, 0, 0));
 
     // Calculate new values with clamping
     let r_new = (red + x).clamp(0, 255) as u32;
@@ -479,23 +485,23 @@ pub fn desaturate_fast(color: u32, amount: f32) -> u32 {
 }
 #[allow(clippy::missing_errors_doc)]
 /// Rasterize an svg in the desired dimensions
-#[cfg(feature = "resvg")]
+#[cfg(feature = "svg")]
 pub fn rasterize_svg(
     svg_data: &[u8],
     width: u32,
     height: u32,
-) -> Result<resvg::tiny_skia::Pixmap, String> {
+) -> Result<resvg::tiny_skia::Pixmap, Option<resvg::usvg::Error>> {
     let opt = resvg::usvg::Options::default();
     //let fontdb = usvg::fontdb::Database::new();
 
     let tree = match resvg::usvg::Tree::from_data(svg_data, &opt) {
         Ok(value) => value,
-        Err(error) => return Err(error.to_string()),
+        Err(error) => return Err(Some(error)),
     };
 
     // Create a pixmap with desired size (from SVG's size)
-    let mut pixmap = resvg::tiny_skia::Pixmap::new(width, height)
-        .ok_or("Failed to create pixmap")?;
+    let mut pixmap =
+        resvg::tiny_skia::Pixmap::new(width, height).ok_or(None)?;
 
     // Render the SVG
     resvg::render(
@@ -506,9 +512,10 @@ pub fn rasterize_svg(
 
     Ok(pixmap)
 }
-#[cfg(feature = "resvg")]
+#[cfg(feature = "svg")]
+#[cfg(feature = "std")]
 #[allow(clippy::unwrap_used, clippy::missing_panics_doc)]
-/// To use this function, enable the "`svg_support`" feature
+/// To use this function, enable the "`svg`" feature
 /// Converts a `resvg::tiny_skia::Pixmap` to a `mirl::Buffer`
 #[must_use]
 pub fn pixmap_to_buffer(pixmap: &resvg::tiny_skia::Pixmap) -> Buffer {
@@ -531,16 +538,18 @@ pub fn pixmap_to_buffer(pixmap: &resvg::tiny_skia::Pixmap) -> Buffer {
 }
 
 #[cfg(not(target_arch = "wasm32"))]
-#[cfg(feature = "glfw_backend")]
+#[cfg(feature = "glfw")]
+#[cfg(feature = "std")]
 use glfw::PixelImage;
 #[cfg(not(target_arch = "wasm32"))]
-#[cfg(feature = "glfw_backend")]
+#[cfg(feature = "glfw")]
 /// Convert a Buffer into a `glfw::PixelImage`
 #[inline(always)]
 #[must_use]
 #[allow(clippy::cast_precision_loss)]
 #[allow(clippy::cast_possible_truncation)]
 #[allow(clippy::cast_sign_loss)]
+#[cfg(feature = "std")]
 pub fn buffer_to_pixel_image(buffer: &Buffer) -> glfw::PixelImage {
     glfw::PixelImage {
         width: buffer.width as u32,
@@ -549,10 +558,11 @@ pub fn buffer_to_pixel_image(buffer: &Buffer) -> glfw::PixelImage {
     }
 }
 /// Convert a `glfw::PixelImage` into a Buffer
-#[cfg(feature = "glfw_backend")]
+#[cfg(feature = "glfw")]
 #[cfg(not(target_arch = "wasm32"))]
 #[inline(always)]
 #[must_use]
+#[cfg(feature = "std")]
 #[allow(clippy::missing_panics_doc, clippy::unwrap_used)]
 pub fn pixel_image_to_buffer(pixel_image: &glfw::PixelImage) -> Buffer {
     Buffer::new(
@@ -735,11 +745,14 @@ mod pixel;
 pub use pixel::*;
 
 #[cfg(feature = "imagery")]
+#[cfg(feature = "std")]
 use crate::platform::file_system::file_system_traits::FileSystem;
+#[cfg(feature = "std")]
 use crate::platform::Buffer;
 /// Convert u32 argb to hex
 #[inline(always)]
 #[must_use]
+#[cfg(feature = "std")]
 pub fn u32_to_hex_without_alpha(color: u32) -> String {
     let (r, g, b) = u32_to_rgb_u8(color);
     format!("{r:02x}{g:02x}{b:02x}")
@@ -747,6 +760,7 @@ pub fn u32_to_hex_without_alpha(color: u32) -> String {
 /// Convert u32 argb to hex
 #[inline(always)]
 #[must_use]
+#[cfg(feature = "std")]
 pub fn u32_to_hex(color: u32) -> String {
     let (r, g, b, a) = u32_to_rgba_u8(color);
     format!("{r:02x}{g:02x}{b:02x}{a:02x}")
@@ -757,6 +771,7 @@ pub fn u32_to_hex(color: u32) -> String {
 /// # Errors
 /// If the hex is not valid - The function expects for there to not be a # before the hex values
 #[inline(always)]
+#[cfg(feature = "std")]
 pub fn hex_to_u32(hex: &str) -> Result<u32, std::num::ParseIntError> {
     let alpha = u8::from_str_radix(&hex[0..2], 16)?;
     let red = u8::from_str_radix(&hex[2..4], 16)?;
@@ -770,6 +785,7 @@ pub fn hex_to_u32(hex: &str) -> Result<u32, std::num::ParseIntError> {
 /// # Errors
 /// If the hex is not valid - The function expects for there to not be a # before the hex values
 #[inline(always)]
+#[cfg(feature = "std")]
 pub fn hex_to_u32_rgba(hex: &str) -> Result<u32, std::num::ParseIntError> {
     let red = u8::from_str_radix(&hex[0..2], 16)?;
     let green = u8::from_str_radix(&hex[2..4], 16)?;
@@ -783,6 +799,7 @@ pub fn hex_to_u32_rgba(hex: &str) -> Result<u32, std::num::ParseIntError> {
 /// # Errors
 /// If the hex is not valid - The function expects for there to not be a # before the hex values
 #[inline(always)]
+#[cfg(feature = "std")]
 pub fn hex_to_u32_rgb(hex: &str) -> Result<u32, std::num::ParseIntError> {
     let red = u8::from_str_radix(&hex[2..4], 16)?;
     let green = u8::from_str_radix(&hex[4..6], 16)?;
@@ -792,6 +809,7 @@ pub fn hex_to_u32_rgb(hex: &str) -> Result<u32, std::num::ParseIntError> {
 #[must_use]
 /// Converts rgb into hex
 #[inline(always)]
+#[cfg(feature = "std")]
 pub fn rgb_to_hex(r: u8, g: u8, b: u8) -> String {
     format!("{r:02x}{g:02x}{b:02x}")
 }
@@ -816,36 +834,42 @@ pub const fn switch_alpha_and_blue(color: u32) -> u32 {
 #[must_use]
 /// Converts a list of argb to rgba and vice versa
 #[inline(always)]
+#[cfg(feature = "std")]
 pub fn switch_alpha_and_blue_list(input: &[u32]) -> Vec<u32> {
     input.iter().map(|&argb| switch_alpha_and_blue(argb)).collect()
 }
 #[must_use]
 /// Converts a list of argb to rgba and vice versa
 #[inline(always)]
+#[cfg(feature = "std")]
 pub fn switch_red_and_blue_list(input: &[u32]) -> Vec<u32> {
     input.iter().map(|&argb| switch_red_and_blue(argb)).collect()
 }
 #[must_use]
 /// Converts a list of argb to rgba and vice versa
 #[inline(always)]
+#[cfg(feature = "std")]
 pub fn argb_list_to_rgba_list(input: &[u32]) -> Vec<u32> {
     input.iter().map(|&argb| argb_to_rgba(argb)).collect()
 }
 #[must_use]
+#[cfg(feature = "std")]
 /// Converts a list of rgba to argb and vice versa
 pub fn rgba_list_to_argb_list(input: &[u32]) -> Vec<u32> {
     argb_list_to_rgba_list(input)
 }
 
+#[cfg(feature = "std")]
 #[cfg(not(target_arch = "wasm32"))]
-#[cfg(feature = "glfw_backend")]
+#[cfg(feature = "glfw")]
 impl From<Buffer> for glfw::PixelImage {
     fn from(buffer: Buffer) -> Self {
         buffer_to_pixel_image(&buffer)
     }
 }
 
-#[cfg(feature = "glfw_backend")]
+#[cfg(feature = "std")]
+#[cfg(feature = "glfw")]
 #[cfg(not(target_arch = "wasm32"))]
 impl From<glfw::PixelImage> for Buffer {
     fn from(pixel_image: PixelImage) -> Self {
@@ -854,7 +878,8 @@ impl From<glfw::PixelImage> for Buffer {
 }
 #[must_use]
 #[inline]
-const fn advance_color(red: u8, green: u8, blue: u8) -> (u8, u8, u8) {
+/// Get the next color in line
+pub const fn advance_color(red: u8, green: u8, blue: u8) -> (u8, u8, u8) {
     if blue == 255 {
         if green == 255 {
             if red == 255 {
@@ -867,6 +892,7 @@ const fn advance_color(red: u8, green: u8, blue: u8) -> (u8, u8, u8) {
     (red, green, blue + 1)
 }
 #[must_use]
+#[cfg(feature = "std")]
 /// This is quite expensive
 pub fn get_unused_color(
     buffer: &[u8],
@@ -886,6 +912,7 @@ pub fn get_unused_color(
     current_color
 }
 #[must_use]
+#[cfg(feature = "std")]
 /// A function specifically designed and optimized to work with the buffer of this lib
 pub fn get_unused_color_of_buffer(
     buffer: &mut Buffer,
@@ -922,10 +949,14 @@ pub fn bilinear_interpolate_u32(
     dx: f32,
     dy: f32,
 ) -> u32 {
-    let (r1, g1, b1, a1) = u32_to_rgba_u8(p1).tuple_into();
-    let (r2, g2, b2, a2) = u32_to_rgba_u8(p2).tuple_into();
-    let (r3, g3, b3, a3) = u32_to_rgba_u8(p3).tuple_into();
-    let (r4, g4, b4, a4) = u32_to_rgba_u8(p4).tuple_into();
+    let (r1, g1, b1, a1) =
+        u32_to_rgba_u8(p1).try_tuple_into().unwrap_or((0.0, 0.0, 0.0, 0.0));
+    let (r2, g2, b2, a2) =
+        u32_to_rgba_u8(p2).try_tuple_into().unwrap_or((0.0, 0.0, 0.0, 0.0));
+    let (r3, g3, b3, a3) =
+        u32_to_rgba_u8(p3).try_tuple_into().unwrap_or((0.0, 0.0, 0.0, 0.0));
+    let (r4, g4, b4, a4) =
+        u32_to_rgba_u8(p4).try_tuple_into().unwrap_or((0.0, 0.0, 0.0, 0.0));
 
     let interpolate_channel = |c1: f32, c2: f32, c3: f32, c4: f32| -> u8 {
         let top = c1.mul_add(1.0 - dx, c2 * dx);
@@ -991,6 +1022,7 @@ pub const fn interpolate_color_rgb_f64(
 
     (r << 24) | (g << 16) | (b << 8) | 0xFF
 }
+#[cfg(feature = "std")]
 macro_rules! interpolate_color_rgb_u32 {
     ($t:ty, $name:ident) => {
         /// Interpolate between 2 colors linearly based on a scale of 0 to 1
@@ -1009,7 +1041,9 @@ macro_rules! interpolate_color_rgb_u32 {
         }
     };
 }
+#[cfg(feature = "std")]
 interpolate_color_rgb_u32!(f32, interpolate_color_rgb_u32_f32);
+#[cfg(feature = "std")]
 interpolate_color_rgb_u32!(f64, interpolate_color_rgb_u32_f64);
 
 /// Inverts the rgb channels of the given color
@@ -1043,6 +1077,7 @@ pub const fn invert_color(color: u32) -> u32 {
 ///
 /// `texture_manager_cleanup` - Grands accessability to `cleanup_unused`
 #[derive(Debug, Clone, PartialEq, Eq)]
+#[cfg(feature = "std")]
 pub struct TextureManager {
     /// The raw images in Buffer form
     pub textures: Vec<Option<Buffer>>,
@@ -1069,6 +1104,7 @@ pub struct TextureManager {
     #[cfg(feature = "texture_manager_cleanup")]
     pub current_frame: u64,
 }
+#[cfg(feature = "std")]
 impl Default for TextureManager {
     fn default() -> Self {
         Self {
@@ -1092,6 +1128,7 @@ impl Default for TextureManager {
     }
 }
 
+#[cfg(feature = "std")]
 impl TextureManager {
     #[must_use]
     /// Create a texture manager -> Request textures for visual applications
@@ -1175,7 +1212,7 @@ impl TextureManager {
         file_system: &dyn FileSystem,
     ) -> Result<Buffer, Box<dyn std::error::Error>> {
         let file = file_system.get_file_contents(file_path)?;
-        let img = file.as_image()?;
+        let img = file.to_image()?;
         Ok(img.into())
     }
     /// Manually insert a texture with a corresponding name into cache
@@ -1255,7 +1292,9 @@ impl TextureManager {
 /// Presets for common colors
 pub mod colors;
 
+#[cfg(feature = "std")]
 mod interpolation;
+#[cfg(feature = "std")]
 pub use interpolation::*;
 #[const_trait]
 /// A trait for changing or retrieving a single channel of a color
@@ -1334,6 +1373,7 @@ impl const ColorManipulation for u32 {
 }
 
 #[must_use]
+#[cfg(feature = "std")]
 /// Convert the image the buffer is holding into a bmp
 pub fn create_bmp(image: &Buffer) -> Vec<u8> {
     let mut bmp_buffer: Vec<u8> = Vec::new();
@@ -1379,6 +1419,7 @@ pub fn create_bmp(image: &Buffer) -> Vec<u8> {
     bmp_buffer
 }
 #[must_use]
+#[cfg(feature = "std")]
 /// Convert the image the buffer is holding into a .cur
 pub fn create_ico(image: &Buffer) -> Vec<u8> {
     let mut ico_buffer: Vec<u8> = Vec::new();

@@ -7,6 +7,7 @@ pub struct TextPosition {
     pub column: usize,
 }
 
+#[cfg(feature = "std")]
 impl Ord for TextPosition {
     fn min(self, other: Self) -> Self
     where
@@ -49,6 +50,7 @@ impl Ord for TextPosition {
     }
 }
 
+#[cfg(feature = "std")]
 impl PartialOrd for TextPosition {
     fn ge(&self, other: &Self) -> bool {
         self.gt(other) || self == other
@@ -86,6 +88,7 @@ impl TextPosition {
         }
     }
 }
+#[cfg(feature = "std")]
 impl Default for TextPosition {
     fn default() -> Self {
         Self {

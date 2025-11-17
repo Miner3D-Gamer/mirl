@@ -1,18 +1,18 @@
 use std::time::Duration;
 
 use glfw::Action;
-
 use glfw::Context;
 
 use super::framework_traits::{
     ExtendedControl, ExtendedInput, ExtendedWindow, Output, Timing,
 };
-
 use super::{
     framework_traits::{Control, Input, Window},
     time::NativeTime,
     MouseButton, Time,
 };
+#[cfg(feature = "svg")]
+use crate::platform::mouse::LoadCursorError;
 #[cfg(target_os = "windows")]
 use crate::platform::WindowLevel;
 use crate::Buffer;
@@ -55,7 +55,6 @@ static LOG_ERRORS: Option<glfw::ErrorCallback<()>> = Some(glfw::Callback {
     data: (),
 });
 
-
 impl Window for Framework {
     fn new(
         title: &str,
@@ -90,15 +89,15 @@ impl Window for Framework {
         window.set_scroll_polling(true);
         window.set_mouse_button_polling(true);
 
-        window.set_pos(settings.position.0 as i32, settings.position.1 as i32);
+        window.set_pos(settings.position.0, settings.position.1);
         crate::system::Os::set_window_borderless(
             &get_native_window_handle_from_glfw(&window),
             settings.borderless,
         );
         crate::system::Os::set_window_position(
             &get_native_window_handle_from_glfw(&window),
-            settings.position.0 as i32,
-            settings.position.1 as i32,
+            settings.position.0,
+            settings.position.1,
         );
         crate::system::Os::set_window_level(
             &get_native_window_handle_from_glfw(&window),
@@ -197,9 +196,7 @@ impl Timing for Framework {
 }
 use crate::system::action::Iconized;
 use crate::system::Os;
-impl ExtendedControl
-    for Framework
-{
+impl ExtendedControl for Framework {
     #[inline]
     fn set_render_layer(&mut self, level: WindowLevel) {
         crate::system::Os::set_window_level(&self.get_window_handle(), level);
@@ -226,7 +223,6 @@ impl ExtendedControl
     }
 }
 
-
 impl Control for Framework {
     fn get_position(&self) -> (i32, i32) {
         self.window.get_pos()
@@ -235,7 +231,8 @@ impl Control for Framework {
         crate::system::Os::get_window_size(&get_native_window_handle_from_glfw(
             &self.window,
         ))
-        .tuple_into()
+        .try_tuple_into()
+        .unwrap_or((0, 0))
     }
     #[allow(clippy::cast_possible_wrap)]
     fn set_size(&mut self, buffer: &super::Buffer) {
@@ -246,13 +243,12 @@ impl Control for Framework {
     }
 }
 
-
 impl Input for Framework {
     /// No, you won't get the real position of the mouse, calculate it yourself
     fn get_mouse_position(&self) -> Option<(i32, i32)> {
-        Some(self.window.get_cursor_pos().tuple_into())
+        self.window.get_cursor_pos().try_tuple_into()
         // let (mouse_x, mouse_y): (isize, isize) =
-        //     self.window.get_cursor_pos().tuple_into();
+        //     self.window.get_cursor_pos().try_tuple_into();
         // let (window_x, window_y) = self.window.get_pos();
         // let relative_x = mouse_x - window_x as isize;
         // let relative_y = mouse_y - window_y as isize;
@@ -265,9 +261,7 @@ impl Input for Framework {
         self.mouse_manager.is_mouse_button_pressed(button)
     }
 }
-impl ExtendedInput
-    for Framework
-{
+impl ExtendedInput for Framework {
     fn get_mouse_scroll(&self) -> Option<(f32, f32)> {
         Some(self.mouse_manager.get_scroll())
     }
@@ -298,9 +292,7 @@ impl Output for Framework {
 //     }
 // }
 
-impl ExtendedWindow
-    for Framework
-{
+impl ExtendedWindow for Framework {
     fn set_title(&mut self, title: &str) {
         self.window.set_title(title);
     }
@@ -313,34 +305,37 @@ impl ExtendedWindow
         get_native_window_handle_from_glfw(&self.window)
     }
 }
-impl CursorStyleControl
-    for Framework
-{
-    #[cfg(feature = "resvg")]
+impl CursorStyleControl for Framework {
+    #[cfg(feature = "svg")]
     fn set_cursor_style(&mut self, style: &super::Cursor) -> Errors {
         //println!("Setting cursor style");
         super::mouse::use_cursor(style, Some(&mut self.window))
     }
-    #[cfg(feature = "resvg")]
+    #[cfg(feature = "svg")]
     fn load_custom_cursors(
         &mut self,
         size: crate::extensions::U2,
         main_color: u32,
         secondary_color: u32,
-    ) -> Result<super::mouse::Cursors, String> {
+    ) -> Result<super::mouse::Cursors, LoadCursorError> {
         super::mouse::Cursors::load(
             size,
             main_color,
             secondary_color,
             super::mouse::cursor_glfw::load_base_cursor_with_file,
         )
+        .map_err(|x| {
+            LoadCursorError::InvalidImageData(format!("Unable to access {x}"))
+        })
     }
     fn load_custom_cursor(
         &mut self,
         image: super::Buffer,
         hotspot: (u8, u8),
-    ) -> Result<super::mouse::Cursor, String> {
-        Ok(cursor_from_buffer(image, hotspot.tuple_into()))
+    ) -> Result<super::mouse::Cursor, LoadCursorError> {
+        Ok(cursor_from_buffer(image, unsafe {
+            hotspot.try_tuple_into().unwrap_unchecked()
+        }))
     }
 }
 
@@ -372,10 +367,7 @@ const FRAGMENT_SHADER_SOURCE: &str = r"
     }
 ";
 
-
-fn process_events(
-    window: &mut Framework,
-) {
+fn process_events(window: &mut Framework) {
     let events: &std::sync::mpsc::Receiver<(f64, glfw::WindowEvent)> =
         &window.events;
     window.mouse_manager.reset_scroll();
@@ -390,7 +382,9 @@ fn process_events(
                 }
             }
             glfw::WindowEvent::Scroll(x, y) => {
-                window.mouse_manager.add_scroll((x, y).tuple_into());
+                window
+                    .mouse_manager
+                    .add_scroll((x, y).try_tuple_into().unwrap_or_default());
             }
             glfw::WindowEvent::Close => {
                 window.window.set_should_close(true);
@@ -558,18 +552,18 @@ pub const fn map_glfw_key_to_keycode(key: glfw::Key) -> KeyCode {
         glfw::Key::Unknown => KeyCode::Unknown,
     }
 }
-#[allow(clippy::unwrap_used)]
+
 unsafe fn create_shader_program() -> u32 {
     let vertex_shader = gl::CreateShader(gl::VERTEX_SHADER);
     let c_str_vert =
-        std::ffi::CString::new(VERTEX_SHADER_SOURCE.as_bytes()).unwrap();
+        std::ffi::CString::new(VERTEX_SHADER_SOURCE.as_bytes()).unwrap_unchecked();
     gl::ShaderSource(vertex_shader, 1, &c_str_vert.as_ptr(), std::ptr::null());
     gl::CompileShader(vertex_shader);
     check_shader_errors(vertex_shader, "VERTEX");
 
     let fragment_shader = gl::CreateShader(gl::FRAGMENT_SHADER);
     let c_str_frag =
-        std::ffi::CString::new(FRAGMENT_SHADER_SOURCE.as_bytes()).unwrap();
+        std::ffi::CString::new(FRAGMENT_SHADER_SOURCE.as_bytes()).unwrap_unchecked();
     gl::ShaderSource(
         fragment_shader,
         1,
@@ -812,19 +806,19 @@ pub fn get_native_window_handle_from_glfw(
         raw_window_handle::RawWindowHandle::AppKit(handle)
     }
 
-    #[cfg(all(target_os = "linux", not(feature = "wayland")))]
-    {
-        let mut handle = raw_window_handle::XlibWindowHandle::empty();
-        handle.window = window.get_x11_window();
-        handle.display = window.get_x11_display().cast();
-        raw_window_handle::RawWindowHandle::Xlib(handle)
-    }
+    // #[cfg(all(target_os = "linux", not(feature = "wayland")))]
+    // {
+    //     let mut handle = raw_window_handle::XlibWindowHandle::empty();
+    //     handle.window = window.get_x11_window();
+    //     handle.display = window.get_x11_display().cast();
+    //     raw_window_handle::RawWindowHandle::Xlib(handle)
+    // }
 
-    #[cfg(all(target_os = "linux", feature = "wayland"))]
-    {
-        let mut handle = raw_window_handle::WaylandWindowHandle::empty();
-        handle.surface = window.get_wayland_window();
-        handle.display = window.get_wayland_display();
-        raw_window_handle::RawWindowHandle::Wayland(handle)
-    }
+    // #[cfg(all(target_os = "linux", feature = "wayland"))]
+    // {
+    //     let mut handle = raw_window_handle::WaylandWindowHandle::empty();
+    //     handle.surface = window.get_wayland_window();
+    //     handle.display = window.get_wayland_display();
+    //     raw_window_handle::RawWindowHandle::Wayland(handle)
+    // }
 }

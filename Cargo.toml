@@ -1,7 +1,7 @@
 [package]
-# Info
+# General Info
 name = "mirl"
-version = "5.1.0"
+version = "6.0.0"
 description = "Miners Rust Lib - A massive collection of ever growing and changing functions, structs, and enums. Check the description for compatibility and toggleable features! (Most of the lib is controlled by flags/features so the lib can continue to be lightweight despite its size)"
 # Compiler
 rust-version = "1.88.0"
@@ -32,7 +32,10 @@ rand = { version = ">=0.9.2", optional = true }
 device_query = { version = ">=4.0.0", optional = true }
 
 # Discord stuff
-reqwest = { version = "0.12", features = ["json", "blocking"], optional = true }
+reqwest = { version = ">=0.12", features = [
+    "json",
+    "blocking",
+], optional = true }
 serde_json = { version = ">=1.0", optional = true }
 serde = { version = ">=1.0", optional = true }
 
@@ -52,7 +55,7 @@ resvg = { version = ">=0.45.1", optional = true }
 
 
 # Other window stuff
-raw-window-handle = { version = "0.6.2", optional = true }
+raw-window-handle = { version = ">=0.6.2", optional = true }
 
 
 # graphics & render
@@ -94,7 +97,7 @@ x11 = { "version" = ">=2.18.0", optional = true }
 # crossterm = ">=0.28"
 
 # Fast hashing, used by texture manager
-ahash = "0.8.12"
+ahash = ">=0.8.12"
 
 # Create temp files, used by icon changing function
 tempfile = { version = ">=3", optional = true }
@@ -121,59 +124,43 @@ wasm-bindgen = "0.2"
 
 [features]
 # Features enabled by default
-default = ["texture_manager_cleanup"]
+default = ["texture_manager_cleanup", "std"]
 # Image lib support
-imagery = ["image"]
-# Linux wayland support (Not yet supported)
-wayland = []
+imagery = ["dep:image"]
+# # Linux wayland support (Not yet supported)
+# wayland = []
 # Extra cleanup functions for the texture manager
-texture_manager_cleanup = []
+texture_manager_cleanup = ["std"]
 # SVG/resvg support
-svg_support = ["resvg", "tempfile"]
+svg = ["dep:resvg", "dep:tempfile"]
 # Enable all available backends
-full_backend_support = [
-    "minifb_backend",
-    "glfw_backend",
-    "svg_support",
-    "font_support",
-    "keycode_support",
-]
+all_backends = ["minifb", "glfw", "svg", "font_support", "keycodes", "std"]
 # Framework backend using minifb (NOT COMPATIBLE WITH WEB)
-minifb_backend = [
-    "minifb",
-    "system",
-    "keycode_support",
-    "keyboard_query",
-    "svg_support",
-]
+minifb = ["dep:minifb", "system", "keycodes", "keyboard_query", "svg", "std"]
 # Framework backend using glfw (NOT COMPATIBLE WITH WEB)
-glfw_backend = ["glfw", "gl", "system", "keycode_support"]
+glfw = ["dep:glfw", "dep:gl", "system", "keycodes", "std"]
 # Low level system interactions
-system = ["x11", "windows", "winapi", "raw-window-handle"]
+system = ["x11", "dep:windows", "dep:winapi", "dep:raw-window-handle", "std"]
 # Font/fontdue support
-font_support = ["fontdue", "once_cell", "font-kit"]
+font_support = ["dep:fontdue", "dep:once_cell", "dep:font-kit", "std"]
 # Enable all features that add content
-all = [
-    "default",
-    "imagery",
-    "full_backend_support",
-    "discord_support",
-    "random_support",
-]
+all = ["default", "imagery", "all_backends", "discord", "random"]
 # Support for the f128 float type
 f128 = []
 # Support for interacting with they keyboard
-keycode_support = ["strum", "strum_macros"]
+keycodes = ["dep:strum", "dep:strum_macros", "std"]
 # If set, the misc module will be disabled
 do_not_compile_misc = []
-keyboard_query = ["device_query"]
+keyboard_query = ["dep:device_query", "std"]
 # A debug option for showing where the current cursor style will click
 cursor_show_hotspot = []
 # # Enables some extra rendering features for some structs
 # dear_mirl_gui_support = ["dear_mirl_gui"]
-discord_support = ["serde_json", "reqwest", "serde"]
+discord = ["dep:serde_json", "dep:reqwest", "dep:serde", "std"]
 # Unlock functions that expand on randomness
-random_support = ["rand"]
+random = ["dep:rand", "std"]
+# Unbind rust from any os specific features
+std = []
 
 
 # Get the current state of the keyboard

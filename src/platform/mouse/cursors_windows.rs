@@ -8,6 +8,7 @@ use windows::{
 use super::{cursor_resolution, BaseCursor, Cursor};
 use crate::extensions::*;
 use crate::graphics::{pixmap_to_buffer, rasterize_svg, u32_to_rgba_u8};
+use crate::platform::mouse::LoadCursorError;
 use crate::platform::Buffer;
 
 /// Load a custom cursor
@@ -25,21 +26,21 @@ pub fn load_cursor(
     #[cfg(not(feature = "cursor_show_hotspot"))] image_data: &Buffer,
     hotspot_x: u16,
     hotspot_y: u16,
-) -> std::result::Result<HCURSOR, &'static str> {
+) -> std::result::Result<HCURSOR, LoadCursorError> {
     //let size = cursor_resolution(size);
 
     let Ok((file_path, temp_file)) =
         create_temp_file(&create_cursor(hotspot_x, hotspot_y, image_data))
     else {
-        return Err("Unable to create a tempfile");
+        return Err(LoadCursorError::UnableToCreateTempfile);
     };
     let _ = temp_file.keep();
 
     let temp = load_cursor_file(&file_path);
     if delete_temp_file(&file_path).is_err() {
-        return Err("Unable to delete the cursor tempfile");
+        return Err(LoadCursorError::UnableToDeleteTempfile);
     }
-    temp.map_or(Err("Unable to load cursor (problem with os?)"), Ok)
+    temp.map_or(Err(LoadCursorError::OsError), Ok)
 }
 
 // fn load_base_cursor(
@@ -92,7 +93,7 @@ pub fn load_base_cursor_with_file(
     cursor: BaseCursor,
     size: U2,
     svg_data: String,
-) -> std::result::Result<Cursor, String> {
+) -> std::result::Result<Cursor, LoadCursorError> {
     let wanted_size = cursor_resolution(size);
 
     let Ok(image_data) = rasterize_svg(
@@ -100,7 +101,9 @@ pub fn load_base_cursor_with_file(
         u32::from(wanted_size),
         u32::from(wanted_size),
     ) else {
-        return Err("Unable to rasterize svg".to_string());
+        return Err(LoadCursorError::InvalidImageData(
+            "Unable to rasterize svg".to_string(),
+        ));
     };
 
     match load_cursor(
@@ -112,7 +115,7 @@ pub fn load_base_cursor_with_file(
         cursor.hot_spot_y,
     ) {
         Ok(v) => Ok(Cursor::Win(v)),
-        Err(e) => Err(e.to_string()),
+        Err(e) => Err(e),
     }
 }
 

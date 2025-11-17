@@ -66,7 +66,7 @@ else:
     path_data.sort(key=lambda x: (x[2], x[1], x[0]))
     sort_criteria = "length (then depth)"
 
-if True:
+if False:
     max_path_width = max(len(path) for path, _, _ in path_data)
     max_path_width = max(max_path_width, len("Path"))
 

@@ -17,7 +17,9 @@ mod tuple;
 
 pub use tuple::*;
 
+#[cfg(feature = "std")]
 mod string;
+#[cfg(feature = "std")]
 pub use string::*;
 
 mod u4;
@@ -34,30 +36,42 @@ mod small_u_support;
 mod math;
 pub use math::*;
 
+#[cfg(feature = "std")]
 mod cell;
+#[cfg(feature = "std")]
 pub use cell::*;
 
+#[cfg(feature = "std")]
 mod error;
+#[cfg(feature = "std")]
 pub use error::*;
 
+#[cfg(feature = "std")]
 mod repeat;
+#[cfg(feature = "std")]
 pub use repeat::*;
 
 /// List operations
+#[cfg(feature = "std")]
 pub mod lists;
+#[cfg(feature = "std")]
 pub use lists::traits::*;
 
+#[cfg(feature = "std")]
 #[const_trait]
 /// Writing out {variable} = `std::default::Default::default()`; is annoying, if only there was a function you could call from the variable itself.
 pub trait SetToDefault {
     /// Set the value to its default form
     fn restore_default(&mut self);
 }
+#[cfg(feature = "std")]
 impl<T: Default> SetToDefault for T {
     fn restore_default(&mut self) {
         *self = std::default::Default::default();
     }
 }
 /// An extension to `std::ops::Range`
+#[cfg(feature = "std")]
 pub mod range;
+#[cfg(feature = "std")]
 pub use range::*;

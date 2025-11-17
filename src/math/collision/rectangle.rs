@@ -1,3 +1,4 @@
+#[cfg(feature = "std")]
 impl<
         T: std::ops::Add<Output = T> + std::marker::Copy + std::cmp::PartialOrd,
         const CS: bool,
@@ -22,6 +23,7 @@ pub struct Rectangle<T, const CS: bool> {
     pub height: T,
 }
 
+#[cfg(feature = "std")]
 impl<T, const BOTTOM_HIGHER: bool> Rectangle<T, BOTTOM_HIGHER>
 where
     T: std::ops::Add<Output = T> + PartialOrd + Copy,
@@ -109,6 +111,7 @@ where
     //     }
     // }
 }
+#[cfg(feature = "std")]
 macro_rules! impl_const_rectangle_ops {
     ($t:ty) => {
         impl<const CS: bool> Rectangle<$t, CS> {
@@ -161,7 +164,7 @@ macro_rules! impl_const_rectangle_ops {
                 let (x, y) = point;
                 x >= self.left()
                     && x <= self.right()
-                    && if !CS  {
+                    && if !CS {
                         y >= self.top() && y <= self.bottom()
                     } else {
                         y <= self.top() && y >= self.bottom()
@@ -316,18 +319,31 @@ macro_rules! impl_const_rectangle_ops {
         }
     };
 }
-
+#[cfg(feature = "std")]
 impl_const_rectangle_ops!(i8);
+#[cfg(feature = "std")]
 impl_const_rectangle_ops!(i16);
+#[cfg(feature = "std")]
 impl_const_rectangle_ops!(i32);
+#[cfg(feature = "std")]
 impl_const_rectangle_ops!(i64);
+#[cfg(feature = "std")]
 impl_const_rectangle_ops!(i128);
+#[cfg(feature = "std")]
 impl_const_rectangle_ops!(isize);
+#[cfg(feature = "std")]
 impl_const_rectangle_ops!(u8);
+#[cfg(feature = "std")]
 impl_const_rectangle_ops!(u16);
+#[cfg(feature = "std")]
 impl_const_rectangle_ops!(u32);
+#[cfg(feature = "std")]
 impl_const_rectangle_ops!(u64);
+#[cfg(feature = "std")]
 impl_const_rectangle_ops!(u128);
+#[cfg(feature = "std")]
 impl_const_rectangle_ops!(usize);
+#[cfg(feature = "std")]
 impl_const_rectangle_ops!(f32);
+#[cfg(feature = "std")]
 impl_const_rectangle_ops!(f64);

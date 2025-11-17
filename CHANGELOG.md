@@ -1,15 +1,102 @@
+# Version 6.0.0:
+
+> This is an attempt of stabilizing the library for future releases.
+
+## Breaking Changes:
+
+### Big changes:
+
+- Renamed traits (for better error handling):
+  | Old Name | New Name |
+  |-|-|
+  | FromPatch | TryFromPatch |
+  | TupleInto | TryTupleInto |
+  | ConstTupleInto | ConstTryTupleInto |
+- Some `FileData` functions are now prepended `to_` instead of `as_`
+- `Buffer::create_collision` now returns `Option<mirl::math::collision::Rectangle>` instead of `mirl::math::collision::Rectangle`, None is returned when `T` cannot hold the usize size of the buffer
+- Renamed flags:
+  | Old Flag Name | New Flag Name |
+  |-|-|
+  | svg_support | svg |
+  | full_backend_support | all_backends |
+  | minifb_backend | minifb |
+  | glfw_backend | glfw |
+  | discord_support | discord |
+  | random_support | random |
+  | keycode_support | keycodes |
+
+### Minor changes:
+
+- `pixmap_to_dynamic_image` now returns `Option<image::DynamicImage>` instead of `image::DynamicImage`
+- `RangeExtension` trait now returns `Option<T>` instead of `T`
+- `radians` and `degrees` inside `crate::math` now return `Option<T>` instead of `T`
+- Loading cursors now returns `std::result::Result<Cursor, LoadCursorError>` instead of `std::result::Result<Cursor, String>`
+- `mirl::platform::framework_traits` now uses i32 instead of isize
+- Removed unused `wayland` flag
+
+## Migration Guide
+
+- **Update traits:**
+
+  - Replace `FromPatch` → `TryFromPatch`
+  - Replace `TupleInto` → `TryTupleInto`
+  - Replace `ConstTupleInto` → `ConstTryTupleInto`
+
+- **Update `FileData` methods:**
+
+  - Functions previously prefixed with `as_` may now be `to_`
+
+- **Adjust for optional returns:**
+
+  - `Buffer::create_collision` now returns `Option<Rectangle>`
+  - `pixmap_to_dynamic_image` now returns `Option<DynamicImage>`
+  - `RangeExtension` methods now return `Option<T>`
+  - `crate::math::degrees` methods now return `Option<T>`
+  - `crate::math::radians` methods now return `Option<T>`
+
+- **Cursor loading:**
+
+  - Now returns `Result<Cursor, LoadCursorError>` instead of `Result<Cursor, String>`
+
+- **Platform trait updates:**
+
+  - `mirl::platform::framework_traits` now uses `i32` instead of `isize`
+
+- **Update feature flags:**
+
+  - `svg_support` → `svg`
+  - `full_backend_support` → `all_backends`
+  - `minifb_backend` → `minifb`
+  - `glfw_backend` → `glfw`
+  - `discord_support` → `discord`
+  - `random_support` → `random`
+  - `keycode_support` → `keycodes`
+
+- **Removed:**
+  - `wayland` flag
+
+## Added:
+
+- Experimental 'std' flag, when disabled 90% of the library does so as well to be able to compile
+
+---
+
 # Version 5.1.0:
 
 Added:
+
 - RepeatDataInContainer trait inside crate::extensions, examples: Box<T> -> Box<Vec<T>>, Option<T> -> Option<Vec<T>>
 - mirl::prelude with some frequently used and useful stuff
 - ListGetNewItemsCloned trait inside crate::extensions that returns Vec<T> instead of Vec<&T>
 
 Changed:
+
 - File System trait moved to own file
 - File System trait no longer asks for a list of required files
 - Renamed crate::graphics::color_presets to crate::graphics::colors
 - Loosened version requirements for serde and serde_json
+
+---
 
 # Version 5.0.0:
 
@@ -28,11 +115,15 @@ Misc:
 
 - Un-note worthy changes across the lib
 
+---
+
 # Version 4.7.1:
 
 Removed:
 
 - tuple ops after 12 as they aren't even supported by the default std
+
+---
 
 # Version 4.7.0:
 
@@ -51,6 +142,8 @@ Removed:
 
 - Got rid of the 'do_not_compile_extension_tuple_support' flag since the new impl isn't as long
 
+---
+
 # Version 4.6.0:
 
 Added:
@@ -61,6 +154,8 @@ Added:
 Removed:
 
 - MouseManagerScrollAccuracy from all framework traits as it was annoying. f32 is enough accuracy for the scroll wheel.
+
+---
 
 # Version 4.5.0:
 
@@ -77,11 +172,15 @@ Changed
 - Fixed rectangles with invalid input values causing crashes when the `SAFE` flag is set
 - Overhauled `README.md` again in the hopes to improve clarity and intuitiveness
 
+---
+
 # Version 4.4.1:
 
 Changes:
 
 - Loosened dependencies
+
+---
 
 # Version 4.4.0:
 
@@ -91,7 +190,7 @@ Added
 - Added the ability to set the CPU priority of a running process [Windows]
 - Added functions to set color channels of a `u32`: `with_alpha`, `with_red`, `with_blue`, and `with_green`
 - Added utility functions for sending data to Discord webhooks
-- Added functions for converting a buffer to `.bmp` and `.ico`, and made the `.cur` conversion function public in `crate::platform:🐭:cursors_windows`
+- Added functions for converting a buffer to `.bmp` and `.ico`, and made the `.cur` conversion function public in `crate::platform::mouse::cursors_windows`
 
 Changed
 
@@ -104,6 +203,8 @@ Changed
 Removed
 
 - Removed the now-obsolete `ico_support` flag. A single custom function now replaces all functionality of its previous library and fixes its alpha channel bug.
+
+---
 
 # Earlier versions:
 

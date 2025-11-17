@@ -1,9 +1,7 @@
 use image::{GenericImage, GenericImageView};
 
-use crate::{
-    graphics::{rgba_u8_to_u32, u32_to_rgba_u8},
-    platform::Buffer,
-};
+use crate::graphics::{rgba_u8_to_u32, u32_to_rgba_u8};
+use crate::platform::Buffer;
 /// Convert a [u32] argb format into an [`image::Rgba<u8>`]
 #[must_use]
 pub const fn u32_to_image_rgba(color: u32) -> image::Rgba<u8> {
@@ -99,11 +97,11 @@ pub fn set_image_size(
 
 #[must_use]
 #[allow(clippy::unwrap_used, clippy::missing_panics_doc)]
-#[cfg(feature = "svg_support")]
+#[cfg(feature = "svg")]
 /// Converts between [`resvg::tiny_skia::Pixmap`] and [`image::DynamicImage`]
 pub fn pixmap_to_dynamic_image(
     ras: &resvg::tiny_skia::Pixmap,
-) -> image::DynamicImage {
+) -> Option<image::DynamicImage> {
     let mut img = image::DynamicImage::new(
         ras.width(),
         ras.height(),
@@ -120,12 +118,12 @@ pub fn pixmap_to_dynamic_image(
                 color.blue(),
                 50.0,
             )
-            .tuple_into();
+            .try_tuple_into()?;
             let pixel = image::Rgba([r, g, b, color.alpha()]);
             img.put_pixel(x, y, pixel);
         }
     }
-    img
+    Some(img)
 }
 #[allow(clippy::cast_precision_loss)]
 #[allow(clippy::cast_possible_truncation)]

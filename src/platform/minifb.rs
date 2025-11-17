@@ -2,12 +2,12 @@
 // use ico::{IconDir, IconDirEntry, IconImage, ResourceType};
 
 use super::framework_traits::{
-    Control, ExtendedControl, ExtendedInput, ExtendedTiming, ExtendedWindow,
-    Input, Output, Timing, Window,
+    Control, ExtendedControl, ExtendedTiming, ExtendedWindow, Input, Output,
+    Timing, Window,
 };
-#[cfg(feature = "resvg")]
+#[cfg(feature = "svg")]
 use super::mouse::load_base_cursor_with_file;
-#[cfg(feature = "resvg")]
+#[cfg(feature = "svg")]
 use super::mouse::Cursor;
 use super::Time;
 use super::{time::NativeTime, Buffer};
@@ -17,7 +17,11 @@ use crate::extensions::*;
 use crate::platform::framework_traits::CursorStyleControl;
 use crate::platform::framework_traits::Errors;
 use crate::platform::keycodes::KeyCode;
+#[cfg(feature = "svg")]
+use crate::platform::mouse::LoadCursorError;
 use crate::platform::{MouseButton, WindowLevel};
+#[cfg(feature = "keyboard_query")]
+use crate::prelude::ExtendedInput;
 use crate::system::action::Decoration;
 use crate::system::action::Default;
 use crate::system::Os;
@@ -26,7 +30,7 @@ use crate::system::Os;
 pub struct Framework {
     window: minifb::Window,
     time: NativeTime,
-    #[cfg(feature = "resvg")]
+    #[cfg(feature = "svg")]
     cursor_subclassed: bool,
 }
 
@@ -82,7 +86,10 @@ impl Window for Framework {
             }
         };
 
-        window.set_position(settings.position.0, settings.position.1);
+        window.set_position(
+            settings.position.0 as isize,
+            settings.position.1 as isize,
+        );
         crate::system::Os::set_window_borderless(
             &get_native_window_handle_from_minifb(&window),
             settings.borderless,
@@ -94,7 +101,7 @@ impl Window for Framework {
         Ok(Self {
             window,
             time: NativeTime::new(),
-            #[cfg(feature = "resvg")]
+            #[cfg(feature = "svg")]
             cursor_subclassed: false,
         })
     }
@@ -119,7 +126,7 @@ impl Input for Framework {
         let value =
             self.window.get_unscaled_mouse_pos(minifb::MouseMode::Pass)?;
 
-        Some(value.tuple_into())
+        value.try_tuple_into()
     }
     #[inline]
     fn is_key_down(&self, key: KeyCode) -> bool {
@@ -184,21 +191,21 @@ impl ExtendedControl for Framework {
     }
 }
 
-#[cfg(feature = "device_query")]
+#[cfg(feature = "keyboard_query")]
 impl ExtendedInput for Framework {
     #[inline]
     fn get_mouse_scroll(&self) -> Option<(f32, f32)> {
         let t = self.window.get_scroll_wheel();
 
         let (x, y) = t?;
-        Some((x, y).tuple_into())
+        (x, y).try_tuple_into()
     }
     fn get_all_keys_down(&self) -> Vec<KeyCode> {
         super::keyboard::get_all_pressed_keys()
     }
 }
 
-#[cfg(feature = "resvg")]
+#[cfg(feature = "svg")]
 impl CursorStyleControl for Framework {
     #[inline]
     fn set_cursor_style(&mut self, style: &Cursor) -> Errors {
@@ -221,19 +228,22 @@ impl CursorStyleControl for Framework {
         size: crate::extensions::U2,
         main_color: u32,
         secondary_color: u32,
-    ) -> Result<super::mouse::Cursors, String> {
+    ) -> Result<super::mouse::Cursors, LoadCursorError> {
         super::mouse::Cursors::load(
             size,
             main_color,
             secondary_color,
             load_base_cursor_with_file,
         )
+        .map_err(|x| {
+            LoadCursorError::InvalidImageData(format!("Unable to access {x}"))
+        })
     }
     fn load_custom_cursor(
         &mut self,
         image: super::Buffer,
         hotspot: (u8, u8),
-    ) -> Result<super::mouse::Cursor, String> {
+    ) -> Result<super::mouse::Cursor, LoadCursorError> {
         #[cfg(feature = "cursor_show_hotspot")]
         let mut image = image;
         super::mouse::cursors_windows::load_cursor(
@@ -348,9 +358,12 @@ fn get_native_window_handle_from_minifb(
 
     #[cfg(target_os = "windows")]
     {
-        #[allow(clippy::unwrap_used)]
         let handle = raw_window_handle::Win32WindowHandle::new(
-            std::num::NonZero::new(window_handle as isize).unwrap(),
+            // The window handle cannot be 0
+            unsafe {
+                std::num::NonZero::new(window_handle as isize)
+                    .unwrap_unchecked()
+            },
         );
         raw_window_handle::RawWindowHandle::Win32(handle)
     }
@@ -361,21 +374,21 @@ fn get_native_window_handle_from_minifb(
         raw_window_handle::RawWindowHandle::AppKit(handle)
     }
 
-    #[cfg(all(target_os = "linux", not(feature = "wayland")))]
-    {
-        let mut handle = raw_window_handle::XlibWindowHandle::empty();
-        handle.window = window_handle;
-        //handle.display = window.get_x11_display().cast();
-        raw_window_handle::RawWindowHandle::Xlib(handle)
-    }
+    // #[cfg(all(target_os = "linux", not(feature = "wayland")))]
+    // {
+    //     let mut handle = raw_window_handle::XlibWindowHandle::empty();
+    //     handle.window = window_handle;
+    //     //handle.display = window.get_x11_display().cast();
+    //     raw_window_handle::RawWindowHandle::Xlib(handle)
+    // }
 
-    #[cfg(all(target_os = "linux", feature = "wayland"))]
-    {
-        let mut handle = raw_window_handle::WaylandWindowHandle::empty();
-        handle.surface = window_handle;
-        //handle.display = window.get_wayland_display();
-        raw_window_handle::RawWindowHandle::Wayland(handle)
-    }
+    // #[cfg(all(target_os = "linux", feature = "wayland"))]
+    // {
+    //     let mut handle = raw_window_handle::WaylandWindowHandle::empty();
+    //     handle.surface = window_handle;
+    //     //handle.display = window.get_wayland_display();
+    //     raw_window_handle::RawWindowHandle::Wayland(handle)
+    // }
 }
 
 #[cfg(target_os = "windows")]
@@ -392,7 +405,6 @@ impl Control for Framework {
         crate::system::Os::get_window_size(
             &get_native_window_handle_from_minifb(&self.window),
         )
-        .tuple_into()
     }
     #[inline]
     fn set_position(&mut self, xy: (i32, i32)) {
@@ -400,7 +412,10 @@ impl Control for Framework {
     }
     #[inline]
     fn get_position(&self) -> (i32, i32) {
-        self.window.get_position().tuple_into()
+        // MiniFB uses i32 before converting to isize meaning it is 100% safe to reconvert it to i32
+        unsafe {
+            self.window.get_position().try_tuple_into().unwrap_unchecked()
+        }
     }
 }
 

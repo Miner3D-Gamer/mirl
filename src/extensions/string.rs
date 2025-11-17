@@ -79,7 +79,6 @@ impl StringExtensions for str {
             fill.to_string().repeat(right_pad)
         )
     }
-    #[allow(clippy::unwrap_used)]
     fn expand_tabs(&self) -> String {
         self.replace('\t', "    ")
     }

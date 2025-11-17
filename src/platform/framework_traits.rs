@@ -1,15 +1,17 @@
-#[cfg(feature = "resvg")]
+#[cfg(feature = "svg")]
 use super::mouse::Cursor;
 use super::{Buffer, MouseButton, Time};
 use crate::extensions::*;
 use crate::platform::keycodes::KeyCode;
+#[cfg(feature = "svg")]
+use crate::platform::mouse::LoadCursorError;
 
 #[const_trait]
 /// Most basic of framework functionality
 pub trait Framework: Window + Input + Output + Timing {}
 impl<T: Window + Input + Output + Timing> Framework for T {}
 
-#[cfg(feature = "resvg")]
+#[cfg(feature = "svg")]
 /// Framework with all functionality it could support
 #[const_trait]
 pub trait ExtendedFramework:
@@ -21,7 +23,7 @@ pub trait ExtendedFramework:
     + CursorStyleControl
 {
 }
-#[cfg(feature = "resvg")]
+#[cfg(feature = "svg")]
 impl<T> ExtendedFramework for T where
     T: Framework
         + ExtendedInput
@@ -31,14 +33,14 @@ impl<T> ExtendedFramework for T where
         + CursorStyleControl
 {
 }
-#[cfg(not(feature = "resvg"))]
+#[cfg(not(feature = "svg"))]
 /// Framework with all functionality it could support
 #[const_trait]
 pub trait ExtendedFramework:
     Framework + ExtendedInput + ExtendedWindow + Control + ExtendedControl
 {
 }
-#[cfg(not(feature = "resvg"))]
+#[cfg(not(feature = "svg"))]
 impl<T> ExtendedFramework for T where
     T: Framework + ExtendedInput + ExtendedWindow + Control + ExtendedControl
 {
@@ -93,7 +95,7 @@ pub trait Window {
     fn new(
         title: &str,
         settings: super::WindowSettings,
-        // #[cfg(feature = "resvg")] cursor: Option<Cursor>,
+        // #[cfg(feature = "svg")] cursor: Option<Cursor>,
     ) -> Result<Self, Errors>
     where
         Self: Sized;
@@ -173,7 +175,7 @@ pub trait ExtendedWindow {
     fn get_window_handle(&self) -> raw_window_handle::RawWindowHandle;
 }
 #[const_trait]
-#[cfg(feature = "resvg")]
+#[cfg(feature = "svg")]
 /// Control over the cursor style while the mouse of hovering over it
 pub trait CursorStyleControl {
     /// Set what cursors the os should display on the current window
@@ -187,7 +189,7 @@ pub trait CursorStyleControl {
         size: U2,
         main_color: u32,
         secondary_color: u32,
-    ) -> Result<super::mouse::Cursors, String>;
+    ) -> Result<super::mouse::Cursors, LoadCursorError>;
     /// Load your own custom cursor
     /// Just make sure the size of the buffer is 32x32, 64x64, 128x128 or 256x256
     ///
@@ -197,7 +199,7 @@ pub trait CursorStyleControl {
         &mut self,
         image: super::Buffer,
         hotspot: (u8, u8),
-    ) -> Result<super::mouse::Cursor, String>;
+    ) -> Result<super::mouse::Cursor, LoadCursorError>;
 }
 
 #[const_trait]

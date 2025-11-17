@@ -1,7 +1,8 @@
+#[cfg(feature = "std")]
+use crate::Buffer;
 use crate::{
     graphics::{reorder_color_range, rgba_to_u32},
     math::range_with_variance,
-    Buffer,
 };
 #[must_use]
 /// Get a random color within the given color range
@@ -11,6 +12,7 @@ pub fn generate_random_color(range: ((u32, u32, u32), (u32, u32, u32))) -> u32 {
     let blue = rand::random_range(range.0 .2..range.1 .2);
     rgba_to_u32(red, green, blue, 255)
 }
+#[cfg(feature = "std")]
 /// Replace a color in the buffer with a random color within the given color range
 pub fn replace_color_with_random_color(
     buffer: &mut Buffer,

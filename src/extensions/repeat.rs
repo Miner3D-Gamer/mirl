@@ -28,7 +28,7 @@ impl<T: Sized + Clone> RepeatData for T {
 #[const_trait]
 /// A trait that allows for data to repeat inside another container
 pub trait RepeatDataInContainer {
-    /// The output type of Self<T> should be Self<Vec<T>>
+    /// The output type of `Self<T>` should be `Self<Vec<T>>`
     type Output;
     /// Repeat the given data X times and return a Vec containing the repeated data
     fn repeat_value_inside(self, times: usize) -> Self::Output;

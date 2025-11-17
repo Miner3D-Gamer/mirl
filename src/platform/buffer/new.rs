@@ -50,7 +50,6 @@ impl Buffer {
         }
     }
     #[must_use]
-    #[allow(clippy::unwrap_used)]
     #[allow(clippy::missing_panics_doc)]
     /// Generate a error texture with the desired size
     pub fn generate_fallback(size: (usize, usize), squares: usize) -> Self {
@@ -74,8 +73,8 @@ impl Buffer {
                 data.push(color);
             }
         }
-
-        Self::new((size.0, size.1), data).unwrap()
+        // We manually created all data meaning all data exists
+        unsafe { Self::new((size.0, size.1), data).unwrap_unchecked() }
     }
 
     /// Create a buffer from a rgba &[u8]

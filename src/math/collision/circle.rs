@@ -1,4 +1,7 @@
-use crate::math::{ConvenientOps, NumberWithMonotoneOps};
+#[cfg(feature = "std")]
+use crate::math::ConvenientOps;
+#[cfg(feature = "std")]
+use crate::math::NumberWithMonotoneOps;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 /// A simple Rectangle defining computational limits
@@ -9,6 +12,7 @@ pub struct Circle<T, const CS: bool> {
     pub radius: T,
     pub half_radius: T,
 }
+#[cfg(feature = "std")]
 impl<const CS: bool, T: NumberWithMonotoneOps + Copy + ConvenientOps>
     Circle<T, CS>
 {
@@ -23,6 +27,7 @@ impl<const CS: bool, T: NumberWithMonotoneOps + Copy + ConvenientOps>
     }
 }
 
+#[cfg(feature = "std")]
 impl<const CS: bool, T: NumberWithMonotoneOps + Copy> Circle<T, CS> {
     /// Checks if a point is inside the radius of the circle
     pub fn does_area_contain_point(&self, point: (T, T)) -> bool {
@@ -32,6 +37,7 @@ impl<const CS: bool, T: NumberWithMonotoneOps + Copy> Circle<T, CS> {
     }
 }
 
+#[cfg(feature = "std")]
 impl<
         const CS: bool,
         T: NumberWithMonotoneOps + Copy + num_traits::Zero + num_traits::Float,

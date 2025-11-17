@@ -1,3 +1,4 @@
+#[cfg(feature = "std")]
 /// A steepness of 15 and offset of 0.8 makes a nice looking icon (Rough estimates based on trail and error)
 pub fn fade_out_buffer(buffer: &mut Buffer, steepness: f32, offset: f32) {
     let cx = buffer.width as f32 / 2.0;
@@ -23,15 +24,21 @@ pub fn fade_out_buffer(buffer: &mut Buffer, steepness: f32, offset: f32) {
     }
 }
 
+#[cfg(feature = "std")]
 use std::hash::Hasher;
 
-use crate::{graphics::ColorManipulation, Buffer};
+#[cfg(feature = "std")]
+use crate::graphics::ColorManipulation;
+#[cfg(feature = "std")]
+use crate::Buffer;
+#[cfg(feature = "std")]
 /// Combine 2 strings
 pub fn concatenate<A: AsRef<str>, B: AsRef<str>>(a: A, b: B) -> String {
     let mut result = String::from(a.as_ref());
     result.push_str(b.as_ref());
     result
 }
+#[cfg(feature = "std")]
 /// Hash a value
 pub fn hash_value<T: std::hash::Hash>(value: &T) -> u64 {
     let mut s = std::hash::DefaultHasher::new();
@@ -56,6 +63,7 @@ pub const fn corner_type_to_cursor_style(
 ///
 /// Using the corner type from [`mirl::math::collision::rectangle::Rectangle::get_edge_position`](crate::math::collision::rectangle::Rectangle::get_edge_position) converts the given delta into a change of x, y, width, and height of a rectangle
 #[must_use]
+#[cfg(feature = "std")]
 pub const fn corner_type_and_delta_to_metric_change<
     T: [const] std::ops::Neg<Output = T> + num_traits::ConstZero + Copy,
 >(
@@ -87,6 +95,7 @@ pub const fn corner_type_and_delta_to_metric_change<
 /// A windows only section for misc function
 #[cfg(target_os = "windows")]
 #[cfg(feature = "system")]
+#[cfg(feature = "std")]
 pub mod windows {
     // use windows::Win32::System::Diagnostics::Debug::GetThreadContext;
     // use windows::Win32::System::Memory::{
@@ -251,6 +260,7 @@ macro_rules! upgrade_type {
         f128
     };
 }
+#[cfg(feature = "std")]
 #[allow(clippy::cast_precision_loss)]
 /// A helper function to be used inside a `execute_at` render function
 pub fn invert_color_below(
@@ -268,6 +278,7 @@ pub fn invert_color_below(
     crate::render::draw_pixel_safe(buffer, xy, new);
 }
 
+#[cfg(feature = "std")]
 #[allow(clippy::cast_precision_loss)]
 /// A helper function to be used inside a `execute_at` render function
 pub fn invert_color_if_same(
@@ -289,11 +300,13 @@ pub fn invert_color_if_same(
     crate::render::draw_pixel_safe(buffer, xy, color);
 }
 /// Lists but copyable
+#[cfg(feature = "std")]
 pub mod copyable_list;
 
 #[allow(clippy::cast_possible_truncation)] // Formats need to be consistent
 /// Convert a list of strings into a list of u8
 #[must_use]
+#[cfg(feature = "std")]
 pub fn strings_to_bytes(strings: &Vec<String>) -> Vec<u8> {
     let mut bytes = Vec::new();
 
@@ -309,6 +322,7 @@ pub fn strings_to_bytes(strings: &Vec<String>) -> Vec<u8> {
 }
 
 #[allow(clippy::cast_possible_truncation)] // Formats need to be consistent
+#[cfg(feature = "std")]
 /// Convert a list of u8 into a list of Strings
 #[must_use]
 pub fn bytes_to_strings(bytes: &[u8]) -> Vec<String> {
@@ -424,7 +438,7 @@ pub fn bytes_to_strings(bytes: &[u8]) -> Vec<String> {
 //     let mut mines = 0;
 //     for x in -1..1 {
 //         for y in -1..1 {
-//             let new_pos = position.tuple_into().add((x, y));
+//             let new_pos = position.try_tuple_into().add((x, y));
 //             if new_pos.0 > 0
 //                 && new_pos.1 > 0
 //                 && new_pos.0 < width as isize
@@ -536,6 +550,7 @@ pub fn bytes_to_strings(bytes: &[u8]) -> Vec<String> {
 //     Mine,
 // }
 /// Horizontal Arrow + Control behavior
+#[cfg(feature = "std")]
 pub mod skipping_text_type;
 
 #[derive(Debug, Clone, Copy)]
@@ -557,7 +572,8 @@ pub struct Point3D<T> {
     /// Coordinate on the z axis
     pub z: T,
 }
-#[cfg(feature = "keycode_support")]
+#[cfg(feature = "keycodes")]
+#[cfg(feature = "std")]
 /// A few lines of helper code for easier keybind handling time
 pub mod keybinds;
 
@@ -574,6 +590,7 @@ macro_rules! compile_warn {
     };
 }
 #[allow(clippy::implicit_hasher)]
+#[cfg(feature = "std")]
 /// Instead of key -> value, value -> key
 pub fn find_key_by_value<K: Eq + std::hash::Hash + Clone, V: PartialEq>(
     map: &std::collections::HashMap<K, V>,
@@ -586,10 +603,12 @@ pub fn find_key_by_value<K: Eq + std::hash::Hash + Clone, V: PartialEq>(
     }
     None
 }
-#[cfg(feature = "discord_support")]
+#[cfg(feature = "discord")]
+#[cfg(feature = "std")]
 /// Send stuff to discord webhooks, created because `discord-webhooks` kinda sucks and `discord-webhook2` expects to be called in an async environment
 pub mod discord;
 #[must_use]
+#[cfg(feature = "std")]
 /// Get the name of the type of the inputted variable
 pub fn type_name_of_val<T>(_: &T) -> &'static str {
     std::any::type_name::<T>()
@@ -670,12 +689,14 @@ impl NormalDirections {
     }
 }
 /// Check if 2 objects are the same
+#[cfg(feature = "std")]
 pub trait Comparable {
     /// Convert self to `&dyn std::any::Any`
     fn compare_as_any(&self) -> &dyn std::any::Any;
     /// Check if this and another object are the same
     fn is_same(&self, other: &dyn Comparable) -> bool;
 }
+#[cfg(feature = "std")]
 impl<T: 'static + PartialEq> Comparable for T {
     fn compare_as_any(&self) -> &dyn std::any::Any {
         self

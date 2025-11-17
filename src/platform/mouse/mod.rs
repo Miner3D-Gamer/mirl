@@ -195,7 +195,7 @@ impl Cursors {
         load_base_cursor_with_file: F,
     ) -> Result<Self, String>
     where
-        F: Fn(BaseCursor, U2, String) -> Result<Cursor, String>,
+        F: Fn(BaseCursor, U2, String) -> Result<Cursor, LoadCursorError>,
     {
         let default = load_base_cursor_with_file(
             BaseCursor {
@@ -1101,13 +1101,13 @@ pub struct BaseCursor {
 /// Set the cursor of the current window
 pub fn use_cursor(
     cursor: &Cursor,
-    #[cfg(all(feature = "glfw_backend", not(target_arch = "wasm32")))]
+    #[cfg(all(feature = "glfw", not(target_arch = "wasm32")))]
     glfw_window: Option<&mut glfw::Window>,
-    #[cfg(not(all(feature = "glfw_backend", not(target_arch = "wasm32"))))]
+    #[cfg(not(all(feature = "glfw", not(target_arch = "wasm32"))))]
     _glfw_window: std::option::Option<NoneOnly>,
 ) -> Errors {
     #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "glfw_backend")]
+    #[cfg(feature = "glfw")]
     if let Some(additional_info) = glfw_window {
         if let Cursor::Glfw(new_cursor) = cursor {
             use crate::graphics::buffer_to_pixel_image;
@@ -1252,3 +1252,19 @@ impl MouseButtonState {
 //     buttons: MouseState,
 //     pos: MousePos<T>,
 // }
+#[derive(Debug, Clone, PartialEq, Eq)]
+/// Things that could go wrong while loading a cursor
+pub enum LoadCursorError {
+    /// Image data corrupt
+    InvalidImageData(String),
+    /// Unknown
+    Misc(String),
+    /// A tempfile could not be created
+    UnableToCreateTempfile,
+    /// A tempfile could not be removed
+    UnableToDeleteTempfile,
+    /// Os could not load the cursor even though the cursor data has been constructed
+    OsError,
+    /// When the hotspot is in an invalid position
+    InvalidHotspot,
+}

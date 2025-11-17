@@ -6,10 +6,8 @@
 #![warn(unreachable_pub)]
 #![warn(clippy::pedantic)]
 #![warn(clippy::nursery)]
-#![warn(clippy::unwrap_used)]
 #![warn(clippy::expect_used)]
 #![warn(clippy::todo)]
-#![warn(clippy::panic)]
 #![allow(clippy::cast_precision_loss)]
 #![allow(clippy::cast_possible_truncation)]
 #![allow(clippy::cast_sign_loss)]
@@ -24,6 +22,8 @@
 #![feature(const_trait_impl)]
 #![feature(const_ops)]
 #![feature(const_convert)]
+#![feature(const_try)]
+#![cfg_attr(not(feature = "std"), no_std)]
 //! Miners
 //! Rust
 //! Lib
@@ -40,7 +40,7 @@
 //!     ).unwrap();
 //!     while window.is_open() {
 //!         buffer.clear();
-//! 
+//!
 //!         // Draw here, use mirl::render for simple presets/helper functions
 //!
 //!         window.update(&buffer);
@@ -50,7 +50,7 @@
 //! For a debugging window lib "similar" to `Dear ImGui` you can use the `dear_mirl_gui` crate (which is `RmMode`)
 //!
 //! This lib has got a ton to offer but the main attractions are in here:
-//! ## Window/Rendering Bundle (flags: `minifb_backend`/`glfw_backend`/`full_backend_support`):
+//! ## Window/Rendering Bundle (flags: `minifb`/`glfw`/`all_backends`):
 //!
 //! - [Frameworks](crate::platform::framework_traits) - What are they capable of? (for [`crate::platform::minifb::Framework`] or [`crate::platform::glfw::Framework`])
 //! - [Buffer] - The central struct many other functions rely on
@@ -82,6 +82,7 @@ pub mod misc;
 ///
 /// For basic collision, use [`mirl::math::collision`](crate::math::collision)
 pub mod platform;
+#[cfg(feature = "std")]
 /// Rendering stuff, simple but powerful (on [`mirl::platform::Buffer`](crate::platform::Buffer))
 ///
 /// For color stuff, use [`mirl::graphics`](crate::graphics)
@@ -90,34 +91,39 @@ pub mod render;
 pub mod time;
 
 /// Terminal stuff
+#[cfg(feature = "std")]
 #[cfg(not(target_arch = "wasm32"))]
 pub mod console;
 
 /// Unified os specific features
+#[cfg(feature = "std")]
 #[cfg(feature = "system")]
 pub mod system;
 
 /// Useful constants -> std contains some of these internally yet doesn't expose them for anyone else to use
 pub mod constants;
-
+#[cfg(feature = "std")]
 /// Enables the rust traceback by setting the environment variable `RUST_BACKTRACE` to `1`
 pub fn enable_traceback() {
     unsafe {
         std::env::set_var("RUST_BACKTRACE", "1");
     }
 }
+#[cfg(feature = "std")]
 /// Enables the extended rust traceback by setting the environment variable `RUST_BACKTRACE` to `FULL`
 pub fn enable_traceback_detailed() {
     unsafe {
         std::env::set_var("RUST_BACKTRACE", "FULL");
     }
 }
+#[cfg(feature = "std")]
 /// Disables the rust traceback by setting the environment variable `RUST_BACKTRACE` to `0`
 pub fn disable_traceback() {
     unsafe {
         std::env::set_var("RUST_BACKTRACE", "0");
     }
 }
+#[cfg(feature = "std")]
 // This little fella is so often used that it only makes sense to reexport it
 pub use platform::Buffer;
 

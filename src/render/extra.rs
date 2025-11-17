@@ -7,7 +7,9 @@ pub fn rotate_x_vertex_3d(
     rotation_center: Point3D,
     vertex: &mut Vertex3D,
 ) {
-    let angle_radians = radians(angle_degrees);
+    let Some(angle_radians) = radians(angle_degrees) else {
+        return;
+    };
     let cos_a = angle_radians.cos();
     let sin_a = angle_radians.sin();
     let (cx, cy, cz) =
@@ -64,7 +66,9 @@ pub fn rotate_y_vertex_3d(
     rotation_center: Point3D,
     vertex: &mut Vertex3D,
 ) {
-    let angle_radians = radians(angle_degrees);
+    let Some(angle_radians) = radians(angle_degrees) else {
+        return;
+    };
     let cos_a = angle_radians.cos();
     let sin_a = angle_radians.sin();
     let (cx, cy, cz) =
@@ -91,7 +95,9 @@ pub fn rotate_z_vertex_3d(
     rotation_center: Point3D,
     vertex: &mut Vertex3D,
 ) {
-    let angle_radians = radians(angle_degrees);
+    let Some(angle_radians) = radians(angle_degrees) else {
+        return;
+    };
     let cos_a = angle_radians.cos();
     let sin_a = angle_radians.sin();
     let (cx, cy, cz) =

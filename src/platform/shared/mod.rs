@@ -1,22 +1,29 @@
-use super::{time::NativeTime, Time};
+#[cfg(feature = "std")]
+use super::time::NativeTime;
+#[cfg(feature = "std")]
+use super::Time;
 /// Get the boxed native time struct
 #[inline(always)]
 #[must_use]
+#[cfg(feature = "std")]
 pub fn get_time() -> Box<dyn Time> {
     // Native environment: using SystemTime to get current time
     Box::new(NativeTime::new())
 }
 /// Sample fps, needs to be called continuously to work properly
 #[inline(always)]
+#[cfg(feature = "std")]
 pub fn sample_fps<T: Time>(since: &T) -> (NativeTime, f64) {
     let delta_time = since.get_elapsed_time();
     (NativeTime::new(), delta_time)
 }
+#[cfg(feature = "std")]
 /// Make the thread suspend the current program for the duration of the duration
 #[inline(always)]
 pub fn sleep(time: std::time::Duration) {
     std::thread::sleep(time);
 }
+#[cfg(feature = "std")]
 /// Log the given object to the console, not good but it works
 #[inline(always)]
 pub fn log(t: &str) {
@@ -401,6 +408,7 @@ impl KeyManager {
     }
     /// Get every pressed key (by checking if every single one is pressed)
     #[must_use]
+    #[cfg(feature = "std")]
     pub fn get_all_pressed_keys(&self) -> Vec<KeyCode> {
         let mut key_codes = Vec::new();
         for variant in KeyCode::iter() {
@@ -412,6 +420,7 @@ impl KeyManager {
     }
 }
 
+#[cfg(feature = "std")]
 use strum::IntoEnumIterator;
 
 /// A struct to manage the pressed mouse keys + scroll
