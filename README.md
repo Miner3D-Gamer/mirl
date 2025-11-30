@@ -1,6 +1,6 @@
 # [Mirl](https://github.com/Miner3D-Gamer/mirl)
 
-[**Miners Rust Lib**](https://crates.io/crates/mirl) – A modular utility library featuring windowing, 2D rendering, input handling, color manipulation, system integration, math utilities, and extensive type extensions. Overview at the bottom
+[**Miners Rust Lib**](https://crates.io/crates/mirl) – A modular utility library featuring <a href="#windowing--platform" style="color: inherit; text-decoration: underline;">windowing & platform</a>, <a href="#graphics--rendering" style="color: inherit; text-decoration: underline;">2D rendering</a>, <a href="#windowing--platform" style="color: inherit; text-decoration: underline;">input handling</a>, <a href="#graphics--rendering" style="color: inherit; text-decoration: underline;">color manipulation</a>, <a href="#system-integration" style="color: inherit; text-decoration: underline;">system integration</a>, <a href="#math--geometry" style="color: inherit; text-decoration: underline;">math utilities</a>, <a href="#extensions--utilities" style="color: inherit; text-decoration: underline;">extensive type extensions</a>, _and <a href="#miscellaneous" style="color: inherit; text-decoration: underline;">more</a>_.
 
 ## Compatibility
 
@@ -41,6 +41,13 @@ For a debugging window lib "similar" to `Dear ImGui` you can use the [`dear_mirl
 
 - `texture_manager_cleanup` – Adds extra cleanup logic for 'automatic' texture unloading
 
+## Features/Flags
+
+### Default (disabled with `default-features = false`)
+
+- `texture_manager_cleanup` – Adds extra cleanup logic for 'automatic' texture unloading
+- `num_traits` – Enables `num-traits` dependency which is relied on by many functions and structs for modular number support
+
 ### Optional
 
 - `imagery` – Enables support for the `image` crate for image loading
@@ -53,10 +60,12 @@ For a debugging window lib "similar" to `Dear ImGui` you can use the [`dear_mirl
 - `all` – Enables all commonly used features: `default`, `imagery`, and `full_backend_support`
 - `f128`- Enables support for 128-bit floating point numbers since they are not yet stable
 - `keycodes` - Enables the ability to interact with keyboard
-- `do_not_compile_misc` - Stops the experimental misc module from compiling
 - `keyboard_query` - Get the currently pressed keys -> Required for MiniFB
 - `cursor_show_hotspot` - A debug option for adding a red dot to the hotspot of a customly loaded cursor
 - `discord` - Support for sending stuff to discord webhooks
+- `parking_lot` - Enables the `parking_lot` dependency for more efficient synchronization primitives
+- `ahash` - Enables the `ahash` dependency for faster HashMap implementations
+- `random` - Enables random number generation support
 
 ### Other
 
@@ -140,6 +149,8 @@ This lib is heavily guided by clippy and as such:
   - Vector normalization and interpolation
   - Bounded type traits
   - Angle conversions (degrees/radians)
+- **Positioning**
+  - `Point2D` and `Point3D` - 2D and 3D point structures
 
 ### Extensions & Utilities
 
@@ -159,6 +170,7 @@ This lib is heavily guided by clippy and as such:
   - Tuple into conversions (const and runtime)
   - Result mapping helpers
   - Sign/unsigned mapping
+  - `TryFromPatch` with Number, HashMap, BTreeMap, Vec, and String conversions
 
 ### Miscellaneous
 
@@ -168,13 +180,25 @@ This lib is heavily guided by clippy and as such:
 - **Scrollable Camera** - 2D viewport with scroll bounds
 - **Console Utilities** - Colored output and input handling
 - **Time Constants** - Duration conversion helpers
+- **Map Trait** - Unified interface for working with different map types
+- **Unsafe Option Unwrapping** - `EasyUnwrapUnchecked`, used when you know that a value isn't None using `.easy_unwrap_unchecked` (Skips the unsafe {} step)
+
+### Updating
+
+<sup>What do the version numbers mean?</sup>
+
+- Major: Changes have been made across the library that are almost sure to affect anyone using it
+- Minor: Changes to specific areas that only may affect your use case
+- Patch: No breaking API change, only fixes and additions
+
+> Note that these rules do not apply to modules (and sub modules) named `misc`, they are collections of objects that have not yet been assigned a proper place to stay
 
 ### Hi there
 
 What brought you to this strange place?
 
 This is just a little big lib I built for easy function/struct/etc. reusability across my never ending stream of unfinished projects.
-Even if many of the functions in here will never be used again, considering there are ~3k functions, ~50 enums, ~100 structs, ~100 traits, ~500 trait implementations; you are sure to find _something_ of use
+Even if many of the functions in here will never be used again, considering there are ~1.5k free standing functions, ~40 enums, ~60 structs, ~100 traits, ~500 trait implementations; you are sure to find _something_ of use
 
 My philosophy follows 3 things:
 
