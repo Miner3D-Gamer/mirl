@@ -53,9 +53,9 @@ pub use repeat::*;
 
 /// List operations
 #[cfg(feature = "std")]
-pub mod lists;
+mod lists;
 #[cfg(feature = "std")]
-pub use lists::traits::*;
+pub use lists::*;
 
 #[cfg(feature = "std")]
 #[const_trait]

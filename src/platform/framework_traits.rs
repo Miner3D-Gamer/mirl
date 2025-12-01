@@ -2,6 +2,7 @@
 use super::mouse::Cursor;
 use super::{Buffer, MouseButton, Time};
 use crate::extensions::*;
+#[cfg(feature = "keycodes")]
 use crate::platform::keycodes::KeyCode;
 #[cfg(feature = "svg")]
 use crate::platform::mouse::{CursorResolution, LoadCursorError};
@@ -111,6 +112,7 @@ pub trait Window {
 pub trait Input {
     /// Gets the current mouse position
     fn get_mouse_position(&self) -> Option<(i32, i32)>;
+    #[cfg(feature = "keycodes")]
     /// Checks if the requested key is down.
     /// Warning: Most backends to not support all keys (like 'f25', 'world2', or 'Þ') and will always return false in that case
     fn is_key_down(&self, key: KeyCode) -> bool;
@@ -160,6 +162,7 @@ pub trait ExtendedTiming {
 pub trait ExtendedInput {
     /// Get how much the mouse has been scrolled on its wheel (x, y)
     fn get_mouse_scroll(&self) -> Option<(f32, f32)>;
+    #[cfg(feature = "keycodes")]
     /// Get all currently pressed keys
     fn get_all_keys_down(&self) -> Vec<KeyCode>;
 }

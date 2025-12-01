@@ -1,15 +1,24 @@
 #[cfg(all(feature = "system", target_os = "windows"))]
+#[cfg(feature = "svg")]
 pub use cursors_windows::load_base_cursor_with_file;
 
+use crate::{extensions::*, platform::Buffer};
+#[cfg(feature = "keycodes")]
 use crate::{
-    extensions::*,
     graphics,
-    platform::{framework_traits::Errors, Buffer, CursorStyle},
+    platform::{framework_traits::Errors, CursorStyle},
 };
 
 // Damn past me, why so sassy?
 /// Cursor stuff of glfw bc glfw is a bitch
+#[cfg(feature = "svg")]
 pub mod cursor_glfw;
+/// Implementation for cursors on windows
+#[cfg(target_os = "windows")]
+#[cfg(feature = "svg")]
+pub mod cursors_windows;
+/// Mouse position stuff like raw mouse input
+pub mod position;
 /// The Cursor Manager provides a way of easily loading cursors based on a Buffer or the default cursors that come with this lib
 #[const_trait]
 pub trait CursorManager {
@@ -89,9 +98,7 @@ impl SetSelfToCursor for Option<Cursor> {
 // pub struct CursorData {
 //     buffer_data: Vec<u32>,
 // }
-/// Implementation for cursors on windows
-#[cfg(target_os = "windows")]
-pub mod cursors_windows;
+
 
 /// Default cursors this lib provides
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -181,7 +188,7 @@ pub struct Cursors {
     /// Magnifying glass with minus
     pub zoom_out: Cursor,
 }
-
+#[cfg(feature = "svg")]
 impl Cursors {
     #[allow(clippy::too_many_lines)]
     /// Load all defaultly supported cursors
@@ -1102,6 +1109,7 @@ pub struct BaseCursor {
     hot_spot_y: u16,
 }
 #[must_use]
+#[cfg(feature = "keycodes")]
 /// Set the cursor of the current window
 pub fn use_cursor(
     cursor: &Cursor,
@@ -1170,36 +1178,34 @@ pub fn use_cursor(
     Errors::AllGood
 }
 
-/// Converts the U2 into the actual cursor size, up to 255
-#[must_use]
-#[cfg(feature = "num_traits")]
-pub fn cursor_resolution(quality: U2) -> u8 {
-    let t: u32 = quality.into();
-    2u8.pow(t + 5)
-}
-/// Converts a desired resolution into U2
-///
-/// # Errors
-/// When quality +1 isn't a power of two
-/// When resolution is bigger than 255
-pub fn resolution_to_quality(resolution: u8) -> Result<U2, &'static str> {
-    let val = u32::from(resolution) + 1;
+// /// Converts the U2 into the actual cursor size, up to 255
+// #[must_use]
+// #[cfg(feature = "num_traits")]
+// pub fn cursor_resolution(quality: U2) -> u8 {
+//     let t: u32 = quality.into();
+//     2u8.pow(t + 5)
+// }
+// /// Converts a desired resolution into U2
+// ///
+// /// # Errors
+// /// When quality +1 isn't a power of two
+// /// When resolution is bigger than 255
+// pub fn resolution_to_quality(resolution: u8) -> Result<U2, &'static str> {
+//     let val = u32::from(resolution) + 1;
 
-    if !val.is_power_of_two() {
-        return Err("Resolution + 1 is not a power of two");
-    }
+//     if !val.is_power_of_two() {
+//         return Err("Resolution + 1 is not a power of two");
+//     }
 
-    let t =
-        val.trailing_zeros().checked_sub(5).ok_or("Resolution too small")?;
+//     let t =
+//         val.trailing_zeros().checked_sub(5).ok_or("Resolution too small")?;
 
-    if t > 3 {
-        return Err("Resolution too large");
-    }
+//     if t > 3 {
+//         return Err("Resolution too large");
+//     }
 
-    Ok(U2::new(t as u8))
-}
-/// Mouse position stuff like raw mouse input
-pub mod position;
+//     Ok(U2::new(t as u8))
+// }
 
 impl ButtonState {
     #[must_use]

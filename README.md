@@ -1,12 +1,14 @@
 # [Mirl](https://github.com/Miner3D-Gamer/mirl)
 
-[**Miners Rust Lib**](https://crates.io/crates/mirl) - A modular utility library featuring [<a href="#windowing--platform" style="color: inherit; text-decoration: none;">windowing</a>](#windowing--platform), [<a href="#graphics--rendering" style="color: inherit; text-decoration: none;">2D rendering</a>](#graphics--rendering), [<a href="#windowing--platform" style="color: inherit; text-decoration: none;">input handling</a>](#windowing--platform), [<a href="#graphics--rendering" style="color: inherit; text-decoration: none;">color manipulation</a>](#graphics--rendering), [<a href="#system-integration" style="color: inherit; text-decoration: none;">system integration</a>](#system-integration), [<a href="#math--geometry" style="color: inherit; text-decoration: none;">math utilities</a>](#math--geometry), [<a href="#extensions--utilities" style="color: inherit; text-decoration: none;">extensive type extensions</a>](#extensions--utilities), _and [<a href="#miscellaneous" style="color: inherit; text-decoration: none;">more</a>](#miscellaneous)_. [<a href="#miscellaneous" style="color: inherit; text-decoration: none;">Content is listed at the bottom</a>](#content).
+[**Miners Rust Lib**](https://crates.io/crates/mirl) - A modular utility library featuring [<a href="#windowing--platform" style="color: inherit; text-decoration: none;">windowing</a>](#windowing--platform), [<a href="#graphics--rendering" style="color: inherit; text-decoration: none;">2D rendering</a>](#graphics--rendering), [<a href="#windowing--platform" style="color: inherit; text-decoration: none;">input handling</a>](#windowing--platform), [<a href="#graphics--rendering" style="color: inherit; text-decoration: none;">color manipulation</a>](#graphics--rendering), [<a href="#system-integration" style="color: inherit; text-decoration: none;">system integration</a>](#system-integration), [<a href="#math--geometry" style="color: inherit; text-decoration: none;">math utilities</a>](#math--geometry), [<a href="#extensions--utilities" style="color: inherit; text-decoration: none;">extensive type extensions</a>](#extensions--utilities), _and [<a href="#miscellaneous" style="color: inherit; text-decoration: none;">more</a>](#miscellaneous)_. [<a href="#miscellaneous" style="color: inherit; text-decoration: none;">Content is listed at the <u>bottom</u></a>](#content).
 
 <!-- HTML clean version:
-[**Miners Rust Lib**](https://crates.io/crates/mirl) - A modular utility library featuring [windowing](#windowing--platform), [2D rendering](#graphics--rendering), [input handling](#windowing--platform), [color manipulation](#graphics--rendering), [system integration](#system-integration), [math utilities](#math--geometry), [extensive type extensions](#extensions--utilities), _and [more](#miscellaneous)_. [Content is listed at the bottom](#content)
+[**Miners Rust Lib**](https://crates.io/crates/mirl) - A modular utility library featuring [windowing](#windowing--platform), [2D rendering](#graphics--rendering), [input handling](#windowing--platform), [color manipulation](#graphics--rendering), [system integration](#system-integration), [math utilities](#math--geometry), [extensive type extensions](#extensions--utilities), _and [more](#miscellaneous)_. [Content is listed at the <u>bottom</u>](#content)
 -->
 
 ## How to get started (flags: `minifb`/`glfw`/`all_backends`):
+
+> If you want to enable everything this library has to offer you can use the `all` flag
 
 MiniFB is recommended but every backend has their own unique limitations/quirks which is the reason this lib exists in the first place
 
@@ -192,7 +194,7 @@ This lib is heavily guided by clippy and as such:
 <sup>What do the version numbers mean?</sup>
 
 - Major: Changes have been made across the library that are almost sure to affect anyone using it
-- Minor: Changes to specific areas that only may affect your use case
+- Minor: A breaking change has been made but it is likely not be to the area of the library you're working with
 - Patch: No breaking API change, only fixes and additions
 
 > Note that these rules do not apply to modules (and sub modules) named `misc`, they are collections of objects that have not yet been assigned a proper place to stay

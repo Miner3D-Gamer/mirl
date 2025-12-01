@@ -145,6 +145,7 @@ pub enum TwoOptions<O1, O2> {
     /// Select the second of 2 options
     Option2(O2),
 }
+
 /// I am already aware it is unsafe, just let me unwrap it!
 pub trait EasyUnwrapUnchecked<T> {
     /// I am already aware it is unsafe, just let me unwrap it!

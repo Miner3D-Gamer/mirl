@@ -270,13 +270,15 @@ pub mod minifb;
 pub mod glfw;
 
 #[cfg(feature = "system")]
-#[cfg(feature = "keycodes")]
 #[cfg(feature = "std")]
 /// Traits used by the backends
 pub mod framework_traits;
-#[cfg(all(feature = "svg", feature = "system"))]
-#[cfg(feature = "keycodes")]
-#[cfg(feature = "std")]
+#[cfg(all(
+    //feature = "svg",
+    feature = "system",
+    //feature = "keycodes",
+    feature = "std"
+))]
 // Window associates
 /// Everything do to with cursors
 pub mod mouse;

@@ -1,3 +1,33 @@
+# Version 7.1.0
+
+> Fewer flag restrictions and smarter dependency flagging
+
+## Breaking Changes:
+
+- Moved items to new modules:
+  | Item | Old Location | New Location |
+  |-|-|-|
+  | List functions | `mirl::extensions::list` | mirl::extensions::lists::helper_functions` |
+
+- `mirl::platform::mouse` now compiles even when the `keycodes` and `svg` features are disabled
+- `mirl::platform::framework_traits` now compiles even when the `keycodes` feature is disabled
+
+## Migration Guide
+
+- **Update module imports:**
+
+  - `mirl::extensions::list::*` → `mirl::extensions::lists::helper_functions::*`
+
+- **Removed:**
+  - `mirl::platform::mouse::cursor_resolution` - No longer needed
+  - `mirl::platform::mouse::resolution_to_quality` - No longer needed
+
+## Changes:
+
+- Disabled optional/default features from dependencies for faster compile times
+
+---
+
 # Version 7.0.0
 
 > This is another step towards stabilizing the library for future releases
