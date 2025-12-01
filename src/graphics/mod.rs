@@ -169,7 +169,7 @@ pub fn get_hue_of_rgb(r: f32, g: f32, b: f32) -> f32 {
     if max == min {
         0.0
     } else if max == r {
-        ((g - b) / (max - min)).rem_euclid(6.0) * 60.0
+        ((g - b) / core::f32::math::rem_euclid(max - min, 6.0)) * 60.0
     } else if max == g {
         ((b - r) / (max - min) + 2.0) * 60.0
     } else {
@@ -273,7 +273,7 @@ pub fn hsl_to_rgb_u32(
     let l_norm = lightness / 100.0;
 
     if s_norm < 0.0001 {
-        let gray = (l_norm * 255.0).round() as u32;
+        let gray = core::f32::math::round(l_norm * 255.0) as u32;
         return (gray, gray, gray);
     }
 
@@ -287,11 +287,11 @@ pub fn hsl_to_rgb_u32(
         };
 
         if t_adj < 1.0 / 6.0 {
-            ((q - p) * 6.0).mul_add(t_adj, p)
+            core::f32::math::mul_add((q - p) * 6.0, t_adj, p)
         } else if t_adj < 1.0 / 2.0 {
             q
         } else if t_adj < 2.0 / 3.0 {
-            ((q - p) * (2.0 / 3.0 - t_adj)).mul_add(6.0, p)
+            core::f32::math::mul_add((q - p) * (2.0 / 3.0 - t_adj), 6.0, p)
         } else {
             p
         }
@@ -300,17 +300,17 @@ pub fn hsl_to_rgb_u32(
     let q = if l_norm < 0.5 {
         l_norm * (1.0 + s_norm)
     } else {
-        l_norm.mul_add(-s_norm, l_norm + s_norm)
+        core::f32::math::mul_add(l_norm, -s_norm, l_norm + s_norm)
     };
-    let p = 2.0f32.mul_add(l_norm, -q);
+    let p = core::f32::math::mul_add(2.0f32, l_norm, -q);
 
     let red = hue_to_rgb(p, q, h_norm + 1.0 / 3.0);
     let green = hue_to_rgb(p, q, h_norm);
     let blue = hue_to_rgb(p, q, h_norm - 1.0 / 3.0);
 
-    let r_8bit = (red * 255.0).round() as u32;
-    let g_8bit = (green * 255.0).round() as u32;
-    let b_8bit = (blue * 255.0).round() as u32;
+    let r_8bit = core::f32::math::round(red * 255.0) as u32;
+    let g_8bit = core::f32::math::round(green * 255.0) as u32;
+    let b_8bit = core::f32::math::round(blue * 255.0) as u32;
 
     (r_8bit, g_8bit, b_8bit)
 }
@@ -379,10 +379,10 @@ pub fn shift_color_rgb(
 
     let new_s = if l_norm > 0.5 {
         // Brighter colors - reduce saturation as lightness increases
-        s_norm * (l_norm - 0.5).mul_add(-2.0, 1.0) * 100.0
+        s_norm * core::f32::math::mul_add(l_norm - 0.5, -2.0, 1.0) * 100.0
     } else {
         // Darker colors - reduce saturation as lightness decreases
-        s_norm * (0.5 - l_norm).mul_add(-2.0, 1.0) * 100.0
+        s_norm * core::f32::math::mul_add(0.5 - l_norm, -2.0, 1.0) * 100.0
     };
 
     let new_l = if l_norm > 0.5 {
@@ -470,15 +470,19 @@ pub fn desaturate_fast(color: u32, amount: f32) -> u32 {
     let blue = (color & 0xFF) as f32;
 
     // Compute grayscale (luminance approximation)
-    let gray = 0.114f32.mul_add(blue, 0.299f32.mul_add(red, 0.587 * green));
+    let gray = core::f32::math::mul_add(
+        0.114f32,
+        blue,
+        core::f32::math::mul_add(0.299f32, red, 0.587 * green),
+    );
 
     // Interpolate between color and gray based on amount (0.0 to 1.0)
-    let r_new =
-        red.mul_add(1.0 - amount, gray * amount).clamp(0.0, 255.0) as u32;
-    let g_new =
-        green.mul_add(1.0 - amount, gray * amount).clamp(0.0, 255.0) as u32;
-    let b_new =
-        blue.mul_add(1.0 - amount, gray * amount).clamp(0.0, 255.0) as u32;
+    let r_new = core::f32::math::mul_add(red, 1.0 - amount, gray * amount)
+        .clamp(0.0, 255.0) as u32;
+    let g_new = core::f32::math::mul_add(green, 1.0 - amount, gray * amount)
+        .clamp(0.0, 255.0) as u32;
+    let b_new = core::f32::math::mul_add(blue, 1.0 - amount, gray * amount)
+        .clamp(0.0, 255.0) as u32;
 
     // Recombine
     (r_new << 16) | (g_new << 8) | b_new
@@ -748,7 +752,7 @@ pub use pixel::*;
 #[cfg(feature = "std")]
 use crate::platform::file_system::file_system_traits::FileSystem;
 #[cfg(feature = "std")]
-use crate::platform::Buffer;
+use crate::{platform::Buffer, settings::MapType};
 /// Convert u32 argb to hex
 #[inline(always)]
 #[must_use]
@@ -959,10 +963,10 @@ pub fn bilinear_interpolate_u32(
         u32_to_rgba_u8(p4).try_tuple_into().unwrap_or((0.0, 0.0, 0.0, 0.0));
 
     let interpolate_channel = |c1: f32, c2: f32, c3: f32, c4: f32| -> u8 {
-        let top = c1.mul_add(1.0 - dx, c2 * dx);
-        let bottom = c3.mul_add(1.0 - dx, c4 * dx);
-        let result = top.mul_add(1.0 - dy, bottom * dy);
-        result.round().clamp(0.0, 255.0) as u8
+        let top = core::f32::math::mul_add(c1, 1.0 - dx, c2 * dx);
+        let bottom = core::f32::math::mul_add(c3, 1.0 - dx, c4 * dx);
+        let result = core::f32::math::mul_add(top, 1.0 - dy, bottom * dy);
+        core::f32::math::round(result).clamp(0.0, 255.0) as u8
     };
 
     let red = interpolate_channel(r1, r2, r3, r4);
@@ -1023,6 +1027,7 @@ pub const fn interpolate_color_rgb_f64(
     (r << 24) | (g << 16) | (b << 8) | 0xFF
 }
 #[cfg(feature = "std")]
+#[cfg(feature = "num_traits")]
 macro_rules! interpolate_color_rgb_u32 {
     ($t:ty, $name:ident) => {
         /// Interpolate between 2 colors linearly based on a scale of 0 to 1
@@ -1042,8 +1047,10 @@ macro_rules! interpolate_color_rgb_u32 {
     };
 }
 #[cfg(feature = "std")]
+#[cfg(feature = "num_traits")]
 interpolate_color_rgb_u32!(f32, interpolate_color_rgb_u32_f32);
 #[cfg(feature = "std")]
+#[cfg(feature = "num_traits")]
 interpolate_color_rgb_u32!(f64, interpolate_color_rgb_u32_f64);
 
 /// Inverts the rgb channels of the given color
@@ -1076,56 +1083,25 @@ pub const fn invert_color(color: u32) -> u32 {
 /// `imagery` - Grands access to automatic texture lookup -> Define a filepath for a texture and lazy load it
 ///
 /// `texture_manager_cleanup` - Grands accessability to `cleanup_unused`
+#[cfg_attr(feature = "std", derive(Default))]
 #[derive(Debug, Clone, PartialEq, Eq)]
 #[cfg(feature = "std")]
 pub struct TextureManager {
     /// The raw images in Buffer form
     pub textures: Vec<Option<Buffer>>,
-    /// A fast lookup -> Map texture indexes to String
-    #[cfg(not(target_arch = "wasm32"))]
-    pub lookup: ahash::AHashMap<String, usize>,
     /// Map texture indexes to String
-    #[cfg(target_arch = "wasm32")]
-    pub lookup: std::collections::HashMap<String, usize>,
+    pub lookup: MapType<String, usize>,
     /// A list of empty spaces -> Images cannot be popped when removed as that would move their index
     pub free_list: Vec<usize>,
-    /// Map textures to files to lazy loading
-    #[cfg(not(target_arch = "wasm32"))]
-    #[cfg(feature = "imagery")]
-    pub texture_lookup: ahash::AHashMap<String, String>,
-    #[cfg(target_arch = "wasm32")]
     #[cfg(feature = "imagery")]
     /// Map textures to files to lazy loading
-    pub texture_lookup: std::collections::HashMap<String, String>,
+    pub texture_lookup: MapType<String, String>,
     /// A list of timestamps for when a texture has last been used
     #[cfg(feature = "texture_manager_cleanup")]
     pub last_used: Vec<u64>,
     /// 'Current' frame time for the textures to compare to
     #[cfg(feature = "texture_manager_cleanup")]
     pub current_frame: u64,
-}
-#[cfg(feature = "std")]
-impl Default for TextureManager {
-    fn default() -> Self {
-        Self {
-            textures: Vec::new(),
-            #[cfg(not(target_arch = "wasm32"))]
-            lookup: ahash::AHashMap::new(),
-            #[cfg(target_arch = "wasm32")]
-            lookup: std::collections::HashMap::new(),
-            free_list: Vec::new(),
-            #[cfg(not(target_arch = "wasm32"))]
-            #[cfg(feature = "imagery")]
-            texture_lookup: ahash::AHashMap::new(),
-            #[cfg(target_arch = "wasm32")]
-            #[cfg(feature = "imagery")]
-            texture_lookup: std::collections::HashMap::new(),
-            #[cfg(feature = "texture_manager_cleanup")]
-            last_used: Vec::new(),
-            #[cfg(feature = "texture_manager_cleanup")]
-            current_frame: 0,
-        }
-    }
 }
 
 #[cfg(feature = "std")]
@@ -1135,17 +1111,10 @@ impl TextureManager {
     pub fn new() -> Self {
         Self {
             textures: Vec::new(),
-            #[cfg(not(target_arch = "wasm32"))]
-            lookup: ahash::AHashMap::new(),
-            #[cfg(target_arch = "wasm32")]
-            lookup: std::collections::HashMap::new(),
+            lookup: MapType::new(),
             free_list: Vec::new(),
-            #[cfg(not(target_arch = "wasm32"))]
             #[cfg(feature = "imagery")]
-            texture_lookup: ahash::AHashMap::new(),
-            #[cfg(target_arch = "wasm32")]
-            #[cfg(feature = "imagery")]
-            texture_lookup: std::collections::HashMap::new(),
+            texture_lookup: MapType::new(),
             #[cfg(feature = "texture_manager_cleanup")]
             last_used: Vec::new(),
             #[cfg(feature = "texture_manager_cleanup")]
@@ -1293,8 +1262,10 @@ impl TextureManager {
 pub mod colors;
 
 #[cfg(feature = "std")]
+#[cfg(feature = "num_traits")]
 mod interpolation;
 #[cfg(feature = "std")]
+#[cfg(feature = "num_traits")]
 pub use interpolation::*;
 #[const_trait]
 /// A trait for changing or retrieving a single channel of a color

@@ -30,6 +30,7 @@ pub fn degrees<T: TryFromPatch<f64> + std::ops::Mul<Output = T>>(
 ) -> Option<T> {
     Some(angle_radians * T::try_from_value(57.295_779_513_082_32)?) //180.0 / PI
 }
+#[cfg(feature = "num_traits")]
 /// Sets the length of the vector to 1 changing the direction it's facing
 pub fn normalize_vector<T: num_traits::Float>(x: T, y: T, z: T) -> (T, T, T) {
     let v = (x * x + y * y + z * z).abs().sqrt();
@@ -38,6 +39,7 @@ pub fn normalize_vector<T: num_traits::Float>(x: T, y: T, z: T) -> (T, T, T) {
 
 #[const_trait]
 #[cfg(feature = "std")]
+#[cfg(feature = "num_traits")]
 /// A trait for defining a number
 pub trait NumberWithMonotoneOps:
     std::cmp::PartialOrd
@@ -51,6 +53,7 @@ pub trait NumberWithMonotoneOps:
 }
 
 #[cfg(feature = "std")]
+#[cfg(feature = "num_traits")]
 // What's up with this formatting?
 impl<
         T: std::cmp::PartialOrd
@@ -66,6 +69,7 @@ impl<
 #[allow(missing_docs)]
 #[const_trait]
 #[cfg(feature = "std")]
+#[cfg(feature = "num_traits")]
 pub trait TwoTillTen<T: num_traits::One + std::ops::Add<Output = T>> {
     fn two() -> T;
     fn three() -> T;
@@ -77,7 +81,7 @@ pub trait TwoTillTen<T: num_traits::One + std::ops::Add<Output = T>> {
     fn nine() -> T;
     fn ten() -> T;
 }
-
+#[cfg(feature = "num_traits")]
 #[cfg(feature = "std")]
 impl<T> TwoTillTen<T> for T
 where
@@ -127,6 +131,7 @@ pub trait ConstTwoTillTen {
     const TEN: Self;
 }
 #[cfg(feature = "std")]
+#[cfg(feature = "num_traits")]
 impl<T: num_traits::ConstOne + const std::ops::Add<Output = T>> const
     ConstTwoTillTen for T
 {
@@ -179,6 +184,7 @@ pub trait ConvenientOps: UpperBounded + Copy + std::cmp::PartialOrd {
     fn more_than_half(&self) -> bool;
 }
 #[cfg(feature = "std")]
+#[cfg(feature = "num_traits")]
 impl<
         T: ConstTwoTillTen
             + NumberWithMonotoneOps
@@ -200,6 +206,7 @@ impl<
 pub mod collision;
 
 #[cfg(feature = "std")]
+#[cfg(feature = "num_traits")]
 /// Progress must be between 0 and 1 for this to work as intended most of the times
 pub fn interpolate<T: NumberWithMonotoneOps + Copy + num_traits::One>(
     start: T,
@@ -226,8 +233,10 @@ pub fn get_center_position_of_object_for_object<
 }
 
 #[cfg(feature = "std")]
+#[cfg(feature = "num_traits")]
 mod uniform_range;
 #[cfg(feature = "std")]
+#[cfg(feature = "num_traits")]
 pub use uniform_range::*;
 
 /// A trait for getting the smallest value >0 and the biggest value <1
@@ -256,7 +265,7 @@ impl UniformPreviousNext for f64 {
         Self::MIN_POSITIVE
     }
 }
-#[cfg(feature = "f128")]
+
 impl UniformPreviousNext for f128 {
     fn biggest_smaller_than_one(&self) -> Self {
         1.0f128.next_down()
@@ -348,9 +357,12 @@ use crate::prelude::TryFromPatch;
 /// If the offset is 2 the y will be 2 at x 0.5
 #[must_use]
 pub fn smooth_0_to_1(x: f32, steepness: f32, offset: f32) -> f32 {
-    1.0 / (1.0 + ((x / offset) * steepness).exp() + (-steepness))
+    1.0 / (1.0
+        + unsafe { core::intrinsics::expf32((x / offset) * steepness) }
+        + (-steepness))
 }
 #[cfg(feature = "std")]
+#[cfg(feature = "num_traits")]
 /// A value of 10 with a variance of 5 will return (5, 15)
 pub fn range_with_variance<T: NumberWithMonotoneOps + Copy>(
     value: T,
@@ -358,3 +370,6 @@ pub fn range_with_variance<T: NumberWithMonotoneOps + Copy>(
 ) -> (T, T) {
     (value - variance, value + variance)
 }
+
+/// Structs for positioning data in 2d and 3d space
+pub mod positioning;

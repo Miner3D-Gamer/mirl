@@ -1,5 +1,4 @@
 // I despise how much duplicate code is present in the text rendering functions
-use std::collections::HashMap;
 
 use parking_lot::RwLock;
 
@@ -7,7 +6,7 @@ use parking_lot::RwLock;
 ///
 /// See [`GlyphCache`] for the composition of this type
 pub static GLYPH_CACHE: GlyphCache =
-    std::sync::LazyLock::new(|| RwLock::new(HashMap::new()));
+    std::sync::LazyLock::new(|| RwLock::new(MapType::new()));
 
 /// ### Key:
 ///
@@ -24,7 +23,7 @@ pub static GLYPH_CACHE: GlyphCache =
 ///
 /// `Vec<u8>`: Rasterized font data (alpha)
 pub type GlyphCache = std::sync::LazyLock<
-    RwLock<HashMap<(char, u32, usize), (fontdue::Metrics, Vec<u8>)>>,
+    RwLock<MapType<(char, u32, usize), (fontdue::Metrics, Vec<u8>)>>,
 >;
 
 /// Get a glyph from the cache if it exists
@@ -62,7 +61,7 @@ mod antialiased;
 pub use aliased::*;
 pub use antialiased::*;
 
-use crate::platform::Buffer;
+use crate::{platform::Buffer, settings::MapType};
 
 /// Switch between aliased and antialiased text rendering
 pub fn draw_text_switch<const SAFE: bool>(

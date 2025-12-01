@@ -1,4 +1,3 @@
-use std::collections::HashMap;
 use std::mem;
 use std::ptr;
 use std::sync::{Arc, Mutex, OnceLock};
@@ -14,12 +13,13 @@ use winapi::um::winuser::{
 };
 
 use super::{MouseDelta, RawMouseInputTrait};
+use crate::settings::MapType;
 
 /// Global mouse delta storage (since there's only one mouse)
 static GLOBAL_MOUSE_DELTA: OnceLock<Arc<Mutex<MouseDelta>>> = OnceLock::new();
 
 /// Global storage for original window procedures
-static ORIGINAL_PROCS: OnceLock<Arc<Mutex<HashMap<isize, WNDPROC>>>> =
+static ORIGINAL_PROCS: OnceLock<Arc<Mutex<MapType<isize, WNDPROC>>>> =
     OnceLock::new();
 
 /// Get or initialize the global mouse delta storage
@@ -29,8 +29,8 @@ fn get_global_delta() -> &'static Arc<Mutex<MouseDelta>> {
 }
 
 /// Get or initialize the original procedures storage
-fn get_original_procs() -> &'static Arc<Mutex<HashMap<isize, WNDPROC>>> {
-    ORIGINAL_PROCS.get_or_init(|| Arc::new(Mutex::new(HashMap::new())))
+fn get_original_procs() -> &'static Arc<Mutex<MapType<isize, WNDPROC>>> {
+    ORIGINAL_PROCS.get_or_init(|| Arc::new(Mutex::new(MapType::new())))
 }
 
 /// Update the global mouse delta
@@ -216,7 +216,9 @@ impl RawMouseInputTrait for RawMouseInputWindows {
     }
 
     fn get_delta(&self) -> (i32, i32) {
-        let delta = get_global_delta().lock().map_or_else(|_| MouseDelta::default(), |buffer| *buffer);
+        let delta = get_global_delta()
+            .lock()
+            .map_or_else(|_| MouseDelta::default(), |buffer| *buffer);
 
         // Reset delta after reading (so each call gets the accumulated delta since last call)
         reset_global_delta();

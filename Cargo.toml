@@ -1,7 +1,7 @@
 [package]
 # General Info
 name = "mirl"
-version = "6.0.0"
+version = "7.0.0"
 description = "Miners Rust Lib - A massive collection of ever growing and changing functions, structs, and enums. Check the description for compatibility and toggleable features! (Most of the lib is controlled by flags/features so the lib can continue to be lightweight despite its size)"
 # Compiler
 rust-version = "1.88.0"
@@ -9,7 +9,7 @@ edition = "2021"
 # Credit/Misc
 license = "MIT"
 authors = ["Miner3D"]
-keywords = []
+keywords = ["utilities", "graphics", "windowing", "extensions", "system"]
 repository = "https://github.com/Miner3D-Gamer/mirl"
 # Keep cursor files when uploading
 include = [
@@ -22,13 +22,16 @@ include = [
 exclude = ["**/_*", "**/*.py"]
 
 [dependencies]
+# For locking/releasing a global variable (Font rendering)
+parking_lot = { version = ">=0.12", optional = true }
 # Enum stuff - Used for iterating the keycodes
 strum = { version = ">=0.26", optional = true }
 strum_macros = { version = ">=0.26", optional = true }
 
-
+# For random numbers
 rand = { version = ">=0.9.2", optional = true }
 
+# For detecting key strokes
 device_query = { version = ">=4.0.0", optional = true }
 
 # Discord stuff
@@ -38,10 +41,6 @@ reqwest = { version = ">=0.12", features = [
 ], optional = true }
 serde_json = { version = ">=1.0", optional = true }
 serde = { version = ">=1.0", optional = true }
-
-# dear_mirl_gui = { path = "../dear_mirl_gui", optional = true }
-
-parking_lot = ">=0.12"
 
 # Needed for glyph cache
 once_cell = { version = ">=1.4", optional = true }
@@ -63,7 +62,7 @@ image = { version = ">=0.25.6", optional = true }
 
 
 # This lib is pretty useful
-num-traits = ">=0.2"
+num-traits = { version = ">=0.2", optional = true }
 
 # system
 [target.'cfg(target_os = "windows")'.dependencies]
@@ -97,7 +96,7 @@ x11 = { "version" = ">=2.18.0", optional = true }
 # crossterm = ">=0.28"
 
 # Fast hashing, used by texture manager
-ahash = ">=0.8.12"
+ahash = { version = ">=0.8.12", optional = true }
 
 # Create temp files, used by icon changing function
 tempfile = { version = ">=3", optional = true }
@@ -124,17 +123,19 @@ wasm-bindgen = "0.2"
 
 [features]
 # Features enabled by default
-default = ["texture_manager_cleanup", "std"]
+default = ["texture_manager_cleanup", "num_traits"]
 # Image lib support
 imagery = ["dep:image"]
 # # Linux wayland support (Not yet supported)
 # wayland = []
 # Extra cleanup functions for the texture manager
 texture_manager_cleanup = ["std"]
+# If ahash::AHashMap should be used rather than std::collection::HashMap
+ahash = ["dep:ahash"]
 # SVG/resvg support
 svg = ["dep:resvg", "dep:tempfile"]
 # Enable all available backends
-all_backends = ["minifb", "glfw", "svg", "font_support", "keycodes", "std"]
+all_backends = ["minifb", "glfw", "font_support"]
 # Framework backend using minifb (NOT COMPATIBLE WITH WEB)
 minifb = ["dep:minifb", "system", "keycodes", "keyboard_query", "svg", "std"]
 # Framework backend using glfw (NOT COMPATIBLE WITH WEB)
@@ -142,15 +143,18 @@ glfw = ["dep:glfw", "dep:gl", "system", "keycodes", "std"]
 # Low level system interactions
 system = ["x11", "dep:windows", "dep:winapi", "dep:raw-window-handle", "std"]
 # Font/fontdue support
-font_support = ["dep:fontdue", "dep:once_cell", "dep:font-kit", "std"]
+font_support = [
+    "dep:fontdue",
+    "dep:once_cell",
+    "dep:font-kit",
+    "std",
+    "dep:parking_lot",
+]
 # Enable all features that add content
 all = ["default", "imagery", "all_backends", "discord", "random"]
-# Support for the f128 float type
-f128 = []
 # Support for interacting with they keyboard
 keycodes = ["dep:strum", "dep:strum_macros", "std"]
-# If set, the misc module will be disabled
-do_not_compile_misc = []
+# Support for pulling the current state of the keyboard
 keyboard_query = ["dep:device_query", "std"]
 # A debug option for showing where the current cursor style will click
 cursor_show_hotspot = []
@@ -161,9 +165,15 @@ discord = ["dep:serde_json", "dep:reqwest", "dep:serde", "std"]
 random = ["dep:rand", "std"]
 # Unbind rust from any os specific features
 std = []
+# # If nightly features are to be enabled
+# nightly = []
+num_traits = ["dep:num-traits", "std"]
 
 
 # Get the current state of the keyboard
 [lib]
 name = "mirl"
 path = "src/lib.rs"
+
+# [build-dependencies]
+# rustc_version = "0.4"

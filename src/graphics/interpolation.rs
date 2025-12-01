@@ -609,8 +609,8 @@ pub fn gaussian_sample(
 ) -> u32 {
     const RADIUS: i32 = 2;
     const SIGMA: f32 = 1.0;
-    let x_int = x.round() as i32;
-    let y_int = y.round() as i32;
+    let x_int = core::f32::math::round(x) as i32;
+    let y_int = core::f32::math::round(y) as i32;
 
     let mut r = 0.0;
     let mut g = 0.0;

@@ -19,10 +19,14 @@
 #![allow(clippy::overly_complex_bool_expr)]
 #![allow(clippy::too_many_lines)]
 #![allow(clippy::fn_params_excessive_bools)]
+#![allow(internal_features)]
 #![feature(const_trait_impl)]
 #![feature(const_ops)]
 #![feature(const_convert)]
 #![feature(const_try)]
+#![feature(core_float_math)]
+#![feature(f128)]
+#![feature(core_intrinsics)]
 #![cfg_attr(not(feature = "std"), no_std)]
 //! Miners
 //! Rust
@@ -73,7 +77,7 @@ pub mod graphics;
 
 /// Math and collision focused stuff
 pub mod math;
-#[cfg(not(feature = "do_not_compile_misc"))]
+
 /// Stuff I didn't know how to categorize -> Expect these objects to be moved in the future
 pub mod misc;
 /// Window creation/managing, file system creation/managing
@@ -99,6 +103,9 @@ pub mod console;
 #[cfg(feature = "std")]
 #[cfg(feature = "system")]
 pub mod system;
+
+/// Functions for interacting with computers outside this one
+pub mod network;
 
 /// Useful constants -> std contains some of these internally yet doesn't expose them for anyone else to use
 pub mod constants;
@@ -129,6 +136,9 @@ pub use platform::Buffer;
 
 /// Defaults
 pub mod prelude;
+
+/// Settings to be applied throughout the lib
+pub mod settings;
 
 // TODO:
 // - Clipboard support

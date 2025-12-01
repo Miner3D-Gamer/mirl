@@ -113,7 +113,7 @@ pub fn draw_text_stretched<const SAFE: bool>(
     }
 }
 
-/// Same as [`draw_text`] but uses isize for positioning allowing for partially out of bounce text (left and top)
+/// Same as [`draw_text`] but uses isize for positioning allowing for partially out of bounds text (left and top)
 pub fn draw_text_isize<const SAFE: bool>(
     buffer: &mut Buffer,
     text: &str,
@@ -173,7 +173,7 @@ pub fn draw_text_isize<const SAFE: bool>(
     }
 }
 
-/// Same as [`draw_text_stretched`] but uses isize for positioning allowing for partially out of bounce text (left and top)
+/// Same as [`draw_text_stretched`] but uses isize for positioning allowing for partially out of bounds text (left and top)
 pub fn draw_text_stretch_isize<const SAFE: bool>(
     buffer: &mut Buffer,
     text: &str,

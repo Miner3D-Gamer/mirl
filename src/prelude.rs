@@ -17,7 +17,7 @@ pub use crate::platform::framework_traits::*;
 #[cfg(feature = "std")]
 pub use crate::platform::minifb::Framework;
 #[cfg(all(feature = "glfw", not(feature = "minifb")))]
-pub use crate::platform::minifb::Framework;
+pub use crate::platform::glfw::Framework;
 #[cfg(feature = "std")]
 pub use crate::platform::Buffer;
 #[cfg(feature = "std")]

@@ -384,12 +384,13 @@ impl DoubleBuffer {
 }
 
 #[derive(Clone, Copy, Debug)]
+#[cfg(feature = "num_traits")]
 /// A struct to convert between 0.0-1.0 and the metrics of the screen
 pub struct ScreenNormalizer<S: num_traits::Float> {
     screen_width: S,
     screen_height: S,
 }
-
+#[cfg(feature = "num_traits")]
 impl<S: num_traits::Float> ScreenNormalizer<S> {
     /// Recommended is using [`crate::math::UniformRange`] in conjunction with this struct
     ///

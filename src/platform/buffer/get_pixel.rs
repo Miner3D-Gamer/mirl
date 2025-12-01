@@ -1,7 +1,7 @@
 #![allow(clippy::inline_always)]
 use super::Buffer;
 impl Buffer {
-    /// Safely get the pixel color of the buffer at the specified x and y, returns 0 if the pixel is out of bounce
+    /// Safely get the pixel color of the buffer at the specified x and y, returns 0 if the pixel is out of bounds
     /// For a custom return number use [`get_pixel_fallback`](Buffer::get_pixel_fallback)
     /// For getting the pixel without bounds checking use [`get_pixel_unsafe`](Buffer::get_pixel_unsafe)
     #[inline(always)]
@@ -13,7 +13,19 @@ impl Buffer {
         let index = xy.1 * self.width + xy.0;
         unsafe { *self.data.as_ptr().add(index) }
     }
-    /// Safely get the pixel color of the buffer at the specified x and y, returns the fallback input if the pixel is out of bounce
+    /// Safely get the pixel color of the buffer at the specified x and y, returns 0 if the pixel is out of bounds
+    /// For a custom return number use [`get_pixel_fallback`](Buffer::get_pixel_fallback)
+    /// For getting the pixel without bounds checking use [`get_pixel_unsafe`](Buffer::get_pixel_unsafe)
+    #[inline(always)]
+    #[must_use]
+    pub const fn get_pixel_option(&self, xy: (usize, usize)) -> Option<u32> {
+        if xy.0 >= self.width || xy.1 >= self.height {
+            return None;
+        }
+        let index = xy.1 * self.width + xy.0;
+        Some(unsafe { *self.data.as_ptr().add(index) })
+    }
+    /// Safely get the pixel color of the buffer at the specified x and y, returns the fallback input if the pixel is out of bounds
     #[inline(always)]
     #[must_use]
     pub const fn get_pixel_fallback(
@@ -39,7 +51,23 @@ impl Buffer {
     #[inline(always)]
     #[must_use]
     #[allow(clippy::cast_sign_loss)]
-    pub fn get_pixel_isize(&self, xy: (isize, isize)) -> Option<u32> {
+    pub fn get_pixel_isize(&self, xy: (isize, isize)) -> u32 {
+        if xy.0 < 0 || xy.1 < 0 {
+            return 0;
+        }
+        let y = xy.1 as usize;
+        let x = xy.0 as usize;
+        if x >= self.width || y >= self.height {
+            return 0;
+        }
+        let index = y * self.width + x;
+        self.data[index]
+    }
+    /// Get the pixel color at a position in a buffer yet before that check if it is in the range of the buffer
+    #[inline(always)]
+    #[must_use]
+    #[allow(clippy::cast_sign_loss)]
+    pub fn get_pixel_isize_option(&self, xy: (isize, isize)) -> Option<u32> {
         if xy.0 < 0 || xy.1 < 0 {
             return None;
         }

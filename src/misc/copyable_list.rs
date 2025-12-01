@@ -45,7 +45,7 @@ where
     /// # Set the value at the index
     ///
     /// # Errors
-    /// Index out of bounce
+    /// Index out of bounds
     pub const fn set(
         &mut self,
         index: usize,
@@ -179,7 +179,7 @@ where
     /// # Set the value at the index
     ///
     /// # Errors
-    /// Index out of bounce
+    /// Index out of bounds
     pub const fn set(
         &mut self,
         index: usize,

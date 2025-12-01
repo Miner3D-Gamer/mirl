@@ -4,7 +4,7 @@ use super::{Buffer, MouseButton, Time};
 use crate::extensions::*;
 use crate::platform::keycodes::KeyCode;
 #[cfg(feature = "svg")]
-use crate::platform::mouse::LoadCursorError;
+use crate::platform::mouse::{CursorResolution, LoadCursorError};
 
 #[const_trait]
 /// Most basic of framework functionality
@@ -186,7 +186,7 @@ pub trait CursorStyleControl {
     /// If it was unable to load the custom cursors, it returns the file name of the cursor that failed - This should only ever happen when a file corrupted
     fn load_custom_cursors(
         &mut self,
-        size: U2,
+        size: CursorResolution,
         main_color: u32,
         secondary_color: u32,
     ) -> Result<super::mouse::Cursors, LoadCursorError>;

@@ -20,7 +20,7 @@ where
 /// Converts a tuple of size 2 into a another tuple of size 2 yet with a different unified output
 pub const trait ConstTuple2Into<T> {
     /// The tuple version of `into()`
-    fn const_tuple_into(self) -> Option<(T, T)>;
+    fn const_try_tuple_into(self) -> Option<(T, T)>;
 }
 
 impl<Target, Source0, Source1> const ConstTuple2Into<Target>
@@ -31,7 +31,7 @@ where
     Target:
         Copy + [const] TryFromPatch<Source0> + [const] TryFromPatch<Source1>,
 {
-    fn const_tuple_into(self) -> Option<(Target, Target)> {
+    fn const_try_tuple_into(self) -> Option<(Target, Target)> {
         Some((Target::try_from_value(self.0)?, Target::try_from_value(self.1)?))
     }
 }
@@ -65,7 +65,7 @@ where
 /// Converts a tuple of size 4 into a another tuple of size 4 yet with a different unified output
 pub const trait ConstTuple4Into<T> {
     /// The tuple version of `into()`
-    fn const_tuple_into(self) -> Option<(T, T, T, T)>;
+    fn const_try_tuple_into(self) -> Option<(T, T, T, T)>;
 }
 
 impl<Target, Source0, Source1, Source2, Source3> const ConstTuple4Into<Target>
@@ -81,7 +81,7 @@ where
         + [const] TryFromPatch<Source2>
         + [const] TryFromPatch<Source3>,
 {
-    fn const_tuple_into(self) -> Option<(Target, Target, Target, Target)> {
+    fn const_try_tuple_into(self) -> Option<(Target, Target, Target, Target)> {
         Some((
             Target::try_from_value(self.0)?,
             Target::try_from_value(self.1)?,
@@ -94,7 +94,7 @@ where
 /// Converts a tuple of size 5 into a another tuple of size 5 yet with a different unified output
 pub const trait ConstTuple5Into<T> {
     /// The tuple version of `into()`
-    fn const_tuple_into(self) -> Option<(T, T, T, T, T)>;
+    fn const_try_tuple_into(self) -> Option<(T, T, T, T, T)>;
 }
 
 impl<Target, Source0, Source1, Source2, Source3, Source4> const
@@ -112,7 +112,7 @@ where
         + [const] TryFromPatch<Source3>
         + [const] TryFromPatch<Source4>,
 {
-    fn const_tuple_into(
+    fn const_try_tuple_into(
         self,
     ) -> Option<(Target, Target, Target, Target, Target)> {
         Some((
@@ -128,7 +128,7 @@ where
 /// Converts a tuple of size 6 into a another tuple of size 6 yet with a different unified output
 pub const trait ConstTuple6Into<T> {
     /// The tuple version of `into()`
-    fn const_tuple_into(self) -> Option<(T, T, T, T, T, T)>;
+    fn const_try_tuple_into(self) -> Option<(T, T, T, T, T, T)>;
 }
 
 impl<Target, Source0, Source1, Source2, Source3, Source4, Source5> const
@@ -149,7 +149,7 @@ where
         + [const] TryFromPatch<Source4>
         + [const] TryFromPatch<Source5>,
 {
-    fn const_tuple_into(
+    fn const_try_tuple_into(
         self,
     ) -> Option<(Target, Target, Target, Target, Target, Target)> {
         Some((
@@ -166,7 +166,7 @@ where
 /// Converts a tuple of size 7 into a another tuple of size 7 yet with a different unified output
 pub const trait ConstTuple7Into<T> {
     /// The tuple version of `into()`
-    fn const_tuple_into(self) -> Option<(T, T, T, T, T, T, T)>;
+    fn const_try_tuple_into(self) -> Option<(T, T, T, T, T, T, T)>;
 }
 
 impl<Target, Source0, Source1, Source2, Source3, Source4, Source5, Source6> const
@@ -189,7 +189,7 @@ where
         + [const] TryFromPatch<Source5>
         + [const] TryFromPatch<Source6>,
 {
-    fn const_tuple_into(
+    fn const_try_tuple_into(
         self,
     ) -> Option<(Target, Target, Target, Target, Target, Target, Target)> {
         Some((
@@ -207,7 +207,7 @@ where
 /// Converts a tuple of size 8 into a another tuple of size 8 yet with a different unified output
 pub const trait ConstTuple8Into<T> {
     /// The tuple version of `into()`
-    fn const_tuple_into(self) -> Option<(T, T, T, T, T, T, T, T)>;
+    fn const_try_tuple_into(self) -> Option<(T, T, T, T, T, T, T, T)>;
 }
 
 impl<
@@ -241,7 +241,7 @@ where
         + [const] TryFromPatch<Source6>
         + [const] TryFromPatch<Source7>,
 {
-    fn const_tuple_into(
+    fn const_try_tuple_into(
         self,
     ) -> Option<(Target, Target, Target, Target, Target, Target, Target, Target)>
     {
@@ -261,7 +261,7 @@ where
 /// Converts a tuple of size 9 into a another tuple of size 9 yet with a different unified output
 pub const trait ConstTuple9Into<T> {
     /// The tuple version of `into()`
-    fn const_tuple_into(self) -> Option<(T, T, T, T, T, T, T, T, T)>;
+    fn const_try_tuple_into(self) -> Option<(T, T, T, T, T, T, T, T, T)>;
 }
 
 impl<
@@ -308,7 +308,7 @@ where
         + [const] TryFromPatch<Source7>
         + [const] TryFromPatch<Source8>,
 {
-    fn const_tuple_into(
+    fn const_try_tuple_into(
         self,
     ) -> Option<(
         Target,
@@ -338,7 +338,7 @@ where
 /// Converts a tuple of size 10 into a another tuple of size 10 yet with a different unified output
 pub const trait ConstTuple10Into<T> {
     /// The tuple version of `into()`
-    fn const_tuple_into(self) -> Option<(T, T, T, T, T, T, T, T, T, T)>;
+    fn const_try_tuple_into(self) -> Option<(T, T, T, T, T, T, T, T, T, T)>;
 }
 
 impl<
@@ -389,7 +389,7 @@ where
         + [const] TryFromPatch<Source8>
         + [const] TryFromPatch<Source9>,
 {
-    fn const_tuple_into(
+    fn const_try_tuple_into(
         self,
     ) -> Option<(
         Target,
@@ -421,7 +421,7 @@ where
 /// Converts a tuple of size 11 into a another tuple of size 11 yet with a different unified output
 pub const trait ConstTuple11Into<T> {
     /// The tuple version of `into()`
-    fn const_tuple_into(self) -> Option<(T, T, T, T, T, T, T, T, T, T, T)>;
+    fn const_try_tuple_into(self) -> Option<(T, T, T, T, T, T, T, T, T, T, T)>;
 }
 
 impl<
@@ -476,7 +476,7 @@ where
         + [const] TryFromPatch<Source9>
         + [const] TryFromPatch<Source10>,
 {
-    fn const_tuple_into(
+    fn const_try_tuple_into(
         self,
     ) -> Option<(
         Target,
@@ -510,7 +510,7 @@ where
 /// Converts a tuple of size 12 into a another tuple of size 12 yet with a different unified output
 pub const trait ConstTuple12Into<T> {
     /// The tuple version of `into()`
-    fn const_tuple_into(self) -> Option<(T, T, T, T, T, T, T, T, T, T, T, T)>;
+    fn const_try_tuple_into(self) -> Option<(T, T, T, T, T, T, T, T, T, T, T, T)>;
 }
 
 impl<
@@ -569,7 +569,7 @@ where
         + [const] TryFromPatch<Source10>
         + [const] TryFromPatch<Source11>,
 {
-    fn const_tuple_into(
+    fn const_try_tuple_into(
         self,
     ) -> Option<(
         Target,

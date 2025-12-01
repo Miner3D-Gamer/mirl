@@ -75,3 +75,7 @@ impl<T: Default> SetToDefault for T {
 pub mod range;
 #[cfg(feature = "std")]
 pub use range::*;
+
+mod try_from_patch;
+pub use try_from_patch::*;
+mod macro_fun;

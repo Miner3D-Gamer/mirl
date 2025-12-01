@@ -35,6 +35,8 @@ pub trait FileSystem {
     fn join(&self, path1: &str, path2: &str) -> String;
     /// Checks if a file exists
     fn does_file_exist(&self, path: &str) -> bool;
+    /// Check if a folder exists
+    fn does_folder_exist(&self, path: &str) -> bool;
     /// Debug function to see what folders the implementation searched in
     fn get_searched_folders(&self) -> Vec<String>;
 }

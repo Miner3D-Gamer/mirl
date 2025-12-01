@@ -1,6 +1,7 @@
 #![allow(clippy::cast_lossless)]
 #![allow(clippy::cast_possible_truncation)]
 #![allow(clippy::cast_sign_loss)]
+#[cfg(feature = "num_traits")]
 use num_traits::{NumCast, ToPrimitive};
 
 use super::U4;
@@ -13,6 +14,7 @@ pub struct U2 {
     /// Un-lower byte
     pub b1: bool,
 }
+#[cfg(feature = "num_traits")]
 impl ToPrimitive for U2 {
     fn to_f32(&self) -> Option<f32> {
         Some(self.value().into())
@@ -54,9 +56,8 @@ impl ToPrimitive for U2 {
         Some(self.value())
     }
 }
-
+#[cfg(feature = "num_traits")]
 impl NumCast for U2 {
-    
     fn from<T: num_traits::ToPrimitive>(n: T) -> Option<Self> {
         Some(Self::new(unsafe { n.to_u8().unwrap_unchecked() }))
     }
@@ -237,7 +238,7 @@ macro_rules! impl_u2_conversion {
                     }
                 }
             }
-
+#[cfg(feature = "num_traits")]
             // From U2 -> {type}
             impl From<U2> for $t {
                 fn from(val: U2) -> Self {
@@ -251,7 +252,7 @@ macro_rules! impl_u2_conversion {
 
 macro_rules! impl_u2_float_conversion {
     ($($f:ty),* $(,)?) => {
-        $(
+        $(#[cfg(feature = "std")]
             impl From<$f> for U2 {
                 fn from(val: $f) -> Self {
                     assert!(val.is_finite(), "Cannot convert non-finite float to U2");
@@ -288,6 +289,7 @@ impl std::ops::Rem for U2 {
         Self::from_u8_trunc(self.value() % rhs.value())
     }
 }
+#[cfg(feature = "num_traits")]
 #[cfg(feature = "std")]
 impl num_traits::One for U2 {
     fn is_one(&self) -> bool
@@ -301,6 +303,7 @@ impl num_traits::One for U2 {
     }
 }
 #[cfg(feature = "std")]
+#[cfg(feature = "num_traits")]
 impl num_traits::Zero for U2 {
     fn zero() -> Self {
         Self::from_u8_trunc(0)
@@ -311,6 +314,7 @@ impl num_traits::Zero for U2 {
 }
 
 #[cfg(feature = "std")]
+#[cfg(feature = "num_traits")]
 impl num_traits::Num for U2 {
     fn from_str_radix(
         str: &str,

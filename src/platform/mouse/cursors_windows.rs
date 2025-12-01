@@ -5,10 +5,12 @@ use windows::{
     Win32::UI::WindowsAndMessaging::*,
 };
 
-use super::{cursor_resolution, BaseCursor, Cursor};
-use crate::extensions::*;
+use super::{BaseCursor, Cursor};
+// #[cfg(feature = "num_traits")]
+// use crate::extensions::*;
 use crate::graphics::{pixmap_to_buffer, rasterize_svg, u32_to_rgba_u8};
-use crate::platform::mouse::LoadCursorError;
+use crate::misc::EasyUnwrapUnchecked;
+use crate::platform::mouse::{CursorResolution, LoadCursorError};
 use crate::platform::Buffer;
 
 /// Load a custom cursor
@@ -91,15 +93,15 @@ pub fn load_cursor(
 #[allow(clippy::needless_pass_by_value)]
 pub fn load_base_cursor_with_file(
     cursor: BaseCursor,
-    size: U2,
+    size: CursorResolution,
     svg_data: String,
 ) -> std::result::Result<Cursor, LoadCursorError> {
-    let wanted_size = cursor_resolution(size);
+    let wanted_size: u32 = size.get_size().easy_unwrap_unchecked(); // This will never error because u32 is bigger than u8
 
     let Ok(image_data) = rasterize_svg(
         svg_data.as_bytes(),
-        u32::from(wanted_size),
-        u32::from(wanted_size),
+        wanted_size,
+        wanted_size,
     ) else {
         return Err(LoadCursorError::InvalidImageData(
             "Unable to rasterize svg".to_string(),

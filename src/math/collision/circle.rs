@@ -1,6 +1,8 @@
 #[cfg(feature = "std")]
+#[cfg(feature = "num_traits")]
 use crate::math::ConvenientOps;
 #[cfg(feature = "std")]
+#[cfg(feature = "num_traits")]
 use crate::math::NumberWithMonotoneOps;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -13,6 +15,7 @@ pub struct Circle<T, const CS: bool> {
     pub half_radius: T,
 }
 #[cfg(feature = "std")]
+#[cfg(feature = "num_traits")]
 impl<const CS: bool, T: NumberWithMonotoneOps + Copy + ConvenientOps>
     Circle<T, CS>
 {
@@ -28,6 +31,7 @@ impl<const CS: bool, T: NumberWithMonotoneOps + Copy + ConvenientOps>
 }
 
 #[cfg(feature = "std")]
+#[cfg(feature = "num_traits")]
 impl<const CS: bool, T: NumberWithMonotoneOps + Copy> Circle<T, CS> {
     /// Checks if a point is inside the radius of the circle
     pub fn does_area_contain_point(&self, point: (T, T)) -> bool {
@@ -36,7 +40,7 @@ impl<const CS: bool, T: NumberWithMonotoneOps + Copy> Circle<T, CS> {
         dx * dx + dy * dy <= self.radius * self.radius
     }
 }
-
+#[cfg(feature = "num_traits")]
 #[cfg(feature = "std")]
 impl<
         const CS: bool,

@@ -1,3 +1,87 @@
+# Version 7.0.0
+
+> This is another step towards stabilizing the library for future releases
+
+## Breaking Changes:
+
+### Big changes:
+
+- Moved multiple items to new modules:
+  | Item | Old Location | New Location |
+  |-|-|-|
+  | `corner_type_to_cursor_style` | `mirl::misc` | `mirl::directions::misc` |
+  | `corner_type_and_delta_to_metric_change` | `mirl::misc` | `mirl::directions::misc` |
+  | `NormalDirections` | `mirl::misc` | `mirl::directions` |
+  | `invert_color_below` | `mirl::misc` | `Buffer::invert_color_below` |
+  | `invert_color_if_same` | `mirl::misc` | `Buffer::invert_color_if_same` |
+  | `fade_out_edges` | `mirl::misc` | `Buffer::fade_out_edges` |
+  | `Point2D` | `mirl::misc` | `mirl::math::positioning` |
+  | `Point3D` | `mirl::misc` | `mirl::math::positioning` |
+  | `discord` | `mirl::misc` | `mirl::network` |
+
+- `mirl::platform::framework_traits::CursorStyleControl` now uses `mirl::platform::mouse::CursorResolution` for cursor resolution instead of `mirl::extensions::u2::U2`
+
+### Minor changes:
+
+- `Buffer::get_pixel_isize` now returns 0 when out of bounds
+- `mirl::platform::file_system::native::NativeFileSystem` will now also scan the src folder for files/folders
+- Dependencies are now optional:
+  - `parking_lot` is now optional and only imported when needed
+  - `ahash` is now optional and replaces `std::collections::HashMap` under the `ahash` flag
+  - `num-traits` is now optional and enabled by default using the `num_traits` flag
+
+## Migration Guide
+
+- **Update module imports:**
+
+  - `mirl::misc::corner_type_to_cursor_style` → `mirl::directions::misc::corner_type_to_cursor_style`
+  - `mirl::misc::corner_type_and_delta_to_metric_change` → `mirl::directions::misc::corner_type_and_delta_to_metric_change`
+  - `mirl::misc::NormalDirections` → `mirl::directions::NormalDirections`
+  - `mirl::misc::invert_color_below` → `Buffer::invert_color_below`
+  - `mirl::misc::invert_color_if_same` → `Buffer::invert_color_if_same`
+  - `mirl::misc::fade_out_edges` → `Buffer::fade_out_edges`
+  - `mirl::misc::Point2D` → `mirl::math::positioning::Point2D`
+  - `mirl::misc::Point3D` → `mirl::math::positioning::Point3D`
+  - `mirl::misc::discord` → `mirl::network::discord`
+
+- **Update cursor style control:**
+
+  - Replace `mirl::extensions::u2::U2` with `mirl::platform::mouse::CursorResolution` for cursor resolution
+
+- **Update feature flags:**
+
+  - Enable `ahash` flag to use ahash-based HashMaps
+  - `num_traits` flag is enabled by default
+
+- **Removed:**
+  - `do_not_compile_misc` flag
+  - `f128` flag (Now always supported)
+
+## Added:
+
+- `Buffer::get_pixel_option` - Get pixel with `Option` return type
+- `Buffer::get_pixel_isize_option` - Get pixel at signed coordinates with `Option` return type
+- `Map` trait to `mirl::misc` - Unifies interaction with underlying map types
+- `line_and_column_from_offset` to `mirl::misc` - Convert text offset to line/column position
+- `mirl::misc::TextPosition` methods:
+  - `advance_char` - Advance position by one character
+  - `advance_char_by` - Advance position by N characters
+  - `advance_line` - Advance position by one line
+  - `advance_line_by` - Advance position by N lines
+- `mirl::misc::EasyUnwrapUnchecked` trait for `Option<T>` - Unsafe unwrap for known non-None values
+- Enhanced `mirl::extensions::TryFromPatch` support:
+  - `HashMap<K1, V1>` to `HashMap<K2, V2>` conversion
+  - `BTreeMap<K1, V1>` to `BTreeMap<K2, V2>` conversion
+  - String to Number conversion
+  - `Vec<T1>` to `Vec<T2>` conversion
+- Added `mirl::settings` for more global crate settings in the future
+
+## Changes:
+
+- Certain flag/feature combinations will no longer error - Objects relying on disabled objects are now also properly disabled
+
+---
+
 # Version 6.0.0:
 
 > This is an attempt of stabilizing the library for future releases.
@@ -29,7 +113,7 @@
 
 - `pixmap_to_dynamic_image` now returns `Option<image::DynamicImage>` instead of `image::DynamicImage`
 - `RangeExtension` trait now returns `Option<T>` instead of `T`
-- `radians` and `degrees` inside `crate::math` now return `Option<T>` instead of `T`
+- `radians` and `degrees` inside `mirl::math` now return `Option<T>` instead of `T`
 - Loading cursors now returns `std::result::Result<Cursor, LoadCursorError>` instead of `std::result::Result<Cursor, String>`
 - `mirl::platform::framework_traits` now uses i32 instead of isize
 - Removed unused `wayland` flag
@@ -51,8 +135,8 @@
   - `Buffer::create_collision` now returns `Option<Rectangle>`
   - `pixmap_to_dynamic_image` now returns `Option<DynamicImage>`
   - `RangeExtension` methods now return `Option<T>`
-  - `crate::math::degrees` methods now return `Option<T>`
-  - `crate::math::radians` methods now return `Option<T>`
+  - `mirl::math::degrees` methods now return `Option<T>`
+  - `mirl::math::radians` methods now return `Option<T>`
 
 - **Cursor loading:**
 
@@ -85,15 +169,15 @@
 
 Added:
 
-- RepeatDataInContainer trait inside crate::extensions, examples: Box<T> -> Box<Vec<T>>, Option<T> -> Option<Vec<T>>
+- RepeatDataInContainer trait inside mirl::extensions, examples: Box<T> -> Box<Vec<T>>, Option<T> -> Option<Vec<T>>
 - mirl::prelude with some frequently used and useful stuff
-- ListGetNewItemsCloned trait inside crate::extensions that returns Vec<T> instead of Vec<&T>
+- ListGetNewItemsCloned trait inside mirl::extensions that returns Vec<T> instead of Vec<&T>
 
 Changed:
 
 - File System trait moved to own file
 - File System trait no longer asks for a list of required files
-- Renamed crate::graphics::color_presets to crate::graphics::colors
+- Renamed mirl::graphics::color_presets to mirl::graphics::colors
 - Loosened version requirements for serde and serde_json
 
 ---
@@ -149,7 +233,7 @@ Removed:
 Added:
 
 - Ability to set the size of a window
-- Moved functions related to Iconifying from the awkward crate::platform::shared to the Os struct in crate::system
+- Moved functions related to Iconifying from the awkward mirl::platform::shared to the Os struct in mirl::system
 
 Removed:
 
@@ -190,7 +274,7 @@ Added
 - Added the ability to set the CPU priority of a running process [Windows]
 - Added functions to set color channels of a `u32`: `with_alpha`, `with_red`, `with_blue`, and `with_green`
 - Added utility functions for sending data to Discord webhooks
-- Added functions for converting a buffer to `.bmp` and `.ico`, and made the `.cur` conversion function public in `crate::platform::mouse::cursors_windows`
+- Added functions for converting a buffer to `.bmp` and `.ico`, and made the `.cur` conversion function public in `mirl::platform::mouse::cursors_windows`
 
 Changed
 

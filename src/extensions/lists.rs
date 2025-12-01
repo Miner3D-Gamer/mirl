@@ -38,10 +38,29 @@ pub fn combined<T: Clone + Sized>(vec: &[T], other: T) -> Vec<T> {
     new_vec.push(other);
     new_vec
 }
+/// Returns what it would be if T was pushed onto [`Vec<T>`]
+pub fn combined_list<T: Clone + Sized>(vec: &[T], other: &[T]) -> Vec<T> {
+    let mut new_vec = vec.to_vec();
+    new_vec.extend_from_slice(other);
+    new_vec
+}
+#[must_use]
+/// Returns what it would be if T was pushed onto [`Vec<T>`]
+pub fn combined_contents<T: Clone + Sized>(
+    vec: Vec<T>,
+    other: Vec<T>,
+) -> Vec<T> {
+    let mut new = vec;
+    for i in other {
+        new.push(i);
+    }
+    new
+}
 /// Get the average value of a list
 ///
 /// Returns None if the length of the input is 0
 #[must_use]
+#[cfg(feature = "num_traits")]
 pub fn average<T: num_traits::Num + num_traits::NumCast + Copy>(
     vec: &[T],
 ) -> Option<T> {
@@ -94,10 +113,11 @@ pub fn has_duplicates<T: std::hash::Hash + Eq>(vec: &Vec<T>) -> bool {
 }
 /// Traits for easy function usage
 pub mod traits {
+    #[cfg(feature = "num_traits")]
+    use crate::extensions::lists::average;
     use crate::extensions::lists::{
-        add_item_to_max_sized_list, average, combined, find_in_list,
-        get_difference_new, get_difference_new_cloned, get_sub_vec_of_vec,
-        has_duplicates,
+        add_item_to_max_sized_list, combined, find_in_list, get_difference_new,
+        get_difference_new_cloned, get_sub_vec_of_vec, has_duplicates,
     };
 
     #[const_trait]
@@ -126,6 +146,7 @@ pub mod traits {
         fn combined(&self, other: T) -> Vec<T>;
     }
     #[const_trait]
+    #[cfg(feature = "num_traits")]
     /// Get additions to a list
     pub trait ListAverage<T: num_traits::Num + num_traits::NumCast + Copy> {
         /// Get additions to a list
@@ -217,6 +238,7 @@ pub mod traits {
             combined(self, other)
         }
     }
+    #[cfg(feature = "num_traits")]
     impl<T: num_traits::Num + num_traits::NumCast + Copy> ListAverage<T>
         for Vec<T>
     {
@@ -231,4 +253,26 @@ pub fn find_in_list<T: std::cmp::PartialEq>(
     item: &T,
 ) -> Option<usize> {
     vec.iter().position(|x| *x == *item)
+}
+
+/// A trait for turning `Vec<Option<T>>` into `Option<Vec<T>>`
+pub trait CollectOptions
+where
+    Self: Sized,
+{
+    /// `Option<Vec<T>>`
+    type Output;
+    /// Turn `Vec<Option<T>>` into `Option<Vec<T>>`
+    fn collect_options(self) -> Self::Output;
+}
+impl<T> CollectOptions for Vec<Option<T>> {
+    type Output = Option<Vec<T>>;
+    fn collect_options(self) -> Self::Output {
+        self.into_iter().collect()
+    }
+}
+#[must_use]
+/// Turn `Vec<Option<T>>` into `Option<Vec<T>>`
+pub fn collect_options<T>(vec: Vec<Option<T>>) -> Option<Vec<T>> {
+    vec.into_iter().collect()
 }

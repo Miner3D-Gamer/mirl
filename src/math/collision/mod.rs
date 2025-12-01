@@ -5,17 +5,19 @@ pub mod rectangle;
 
 pub use circle::Circle;
 #[cfg(feature = "std")]
+#[cfg(feature = "num_traits")]
 use num_traits::clamp;
 pub use rectangle::Rectangle;
 
 #[cfg(feature = "std")]
+#[cfg(feature = "num_traits")]
 use crate::math::NumberWithMonotoneOps;
 
 /// When the bottom of the collision is mathematically higher
 pub const BOTTOM_HIGHER: bool = true;
 /// When the top of the collision is mathematically higher
 pub const BOTTOM_LOWER: bool = false;
-
+#[cfg(feature = "num_traits")]
 #[cfg(feature = "std")]
 /// Check if a circle and a rectangle collide
 pub fn do_circle_and_rectangle_collide<

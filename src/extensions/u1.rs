@@ -8,8 +8,9 @@ pub struct U1 {
     /// Yep, that's the bool right there
     pub b0: bool,
 }
+#[cfg(feature = "num_traits")]
 use num_traits::{NumCast, ToPrimitive};
-
+#[cfg(feature = "num_traits")]
 impl ToPrimitive for U1 {
     fn to_f32(&self) -> Option<f32> {
         Some(self.value().into())
@@ -51,9 +52,8 @@ impl ToPrimitive for U1 {
         Some(self.value())
     }
 }
-
+#[cfg(feature = "num_traits")]
 impl NumCast for U1 {
-    
     fn from<T: num_traits::ToPrimitive>(n: T) -> Option<Self> {
         Some(Self::new(unsafe { n.to_u8().unwrap_unchecked() }))
     }
@@ -238,7 +238,7 @@ macro_rules! impl_u1_conversion {
                     }
                 }
             }
-
+#[cfg(feature = "num_traits")]
             // From U1 -> {type}
             impl From<U1> for $t {
                 fn from(val: U1) -> Self {
@@ -253,7 +253,7 @@ macro_rules! impl_u1_conversion {
 
 macro_rules! impl_u1_float_conversion {
     ($($f:ty),* $(,)?) => {
-        $(
+        $(#[cfg(feature = "std")]
             impl From<$f> for U1 {
                 fn from(val: $f) -> Self {
                     assert!(val.is_finite(), "Cannot convert non-finite float to U1");
@@ -276,7 +276,6 @@ macro_rules! impl_u1_float_conversion {
         )*
     };
 }
-
 impl_u1_conversion!(u8, u16, u32, u64, u128, usize);
 impl_u1_conversion!(i8, i16, i32, i64, i128, isize);
 impl_u1_float_conversion!(f32, f64);
@@ -290,6 +289,7 @@ impl std::ops::Rem for U1 {
     }
 }
 #[cfg(feature = "std")]
+#[cfg(feature = "num_traits")]
 impl num_traits::One for U1 {
     fn is_one(&self) -> bool
     where
@@ -302,6 +302,7 @@ impl num_traits::One for U1 {
     }
 }
 #[cfg(feature = "std")]
+#[cfg(feature = "num_traits")]
 impl num_traits::Zero for U1 {
     fn zero() -> Self {
         Self::from_u8_trunc(0)
@@ -311,6 +312,7 @@ impl num_traits::Zero for U1 {
     }
 }
 #[cfg(feature = "std")]
+#[cfg(feature = "num_traits")]
 impl num_traits::Num for U1 {
     fn from_str_radix(
         str: &str,

@@ -189,13 +189,17 @@ impl Cursors {
     /// # Errors
     /// When a cursor cannot be loaded, it returns the name of the cursor that failed to load
     pub fn load<F>(
-        size: U2,
+        size: CursorResolution,
         main_color: u32,
         secondary_color: u32,
         load_base_cursor_with_file: F,
     ) -> Result<Self, String>
     where
-        F: Fn(BaseCursor, U2, String) -> Result<Cursor, LoadCursorError>,
+        F: Fn(
+            BaseCursor,
+            CursorResolution,
+            String,
+        ) -> Result<Cursor, LoadCursorError>,
     {
         let default = load_base_cursor_with_file(
             BaseCursor {
@@ -1168,6 +1172,7 @@ pub fn use_cursor(
 
 /// Converts the U2 into the actual cursor size, up to 255
 #[must_use]
+#[cfg(feature = "num_traits")]
 pub fn cursor_resolution(quality: U2) -> u8 {
     let t: u32 = quality.into();
     2u8.pow(t + 5)
@@ -1267,4 +1272,31 @@ pub enum LoadCursorError {
     OsError,
     /// When the hotspot is in an invalid position
     InvalidHotspot,
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+/// The resolution/size of the given cursor
+pub enum CursorResolution {
+    /// 16x16
+    X16,
+    /// 32x32
+    X32,
+    /// 64x64
+    X64,
+    /// 128x128
+    X128,
+    /// 256x256
+    X256,
+}
+impl CursorResolution {
+    #[must_use]
+    /// Get the size of the cursor in pixels
+    pub fn get_size<T: TryFromPatch<u8>>(&self) -> Option<T> {
+        match self {
+            Self::X16 => 15.try_into_value(),
+            Self::X32 => 31.try_into_value(),
+            Self::X64 => 63.try_into_value(),
+            Self::X128 => 127.try_into_value(),
+            Self::X256 => 255.try_into_value(),
+        }
+    }
 }

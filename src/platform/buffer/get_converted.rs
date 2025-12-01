@@ -1,5 +1,6 @@
 use super::Buffer;
 use crate::graphics::u32_to_rgba_u8;
+#[cfg(feature = "num_traits")]
 use crate::{graphics::resize_buffer, graphics::InterpolationMode};
 impl Buffer {
     #[must_use]
@@ -30,6 +31,7 @@ impl Buffer {
     }
 
     #[must_use]
+    #[cfg(feature = "num_traits")]
     /// Creates a new buffer and copies the contents of the current buffer
     pub fn resize_content(
         &self,

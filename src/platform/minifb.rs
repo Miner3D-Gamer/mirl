@@ -18,6 +18,8 @@ use crate::platform::framework_traits::CursorStyleControl;
 use crate::platform::framework_traits::Errors;
 use crate::platform::keycodes::KeyCode;
 #[cfg(feature = "svg")]
+use crate::platform::mouse::CursorResolution;
+#[cfg(feature = "svg")]
 use crate::platform::mouse::LoadCursorError;
 use crate::platform::{MouseButton, WindowLevel};
 #[cfg(feature = "keyboard_query")]
@@ -225,7 +227,7 @@ impl CursorStyleControl for Framework {
     }
     fn load_custom_cursors(
         &mut self,
-        size: crate::extensions::U2,
+        size: CursorResolution,
         main_color: u32,
         secondary_color: u32,
     ) -> Result<super::mouse::Cursors, LoadCursorError> {

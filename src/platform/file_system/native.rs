@@ -23,7 +23,11 @@ impl NativeFileSystem {
         let src_path;
         if let Some(build_folder) = exe_path.parent() {
             if let Some(src_parent) = build_folder.parent() {
-                src_path = Some(src_parent.join("src"));
+                if let Some(x) = src_parent.parent() {
+                    src_path = Some(x.join("src"));
+                } else {
+                    src_path = None;
+                }
             } else {
                 src_path = None;
             }
@@ -98,13 +102,36 @@ impl FileSystem for NativeFileSystem {
                     }
                 }
             }
+        } else if let Some(origin) = &self.src_path {
+            if let Ok(entries) = std::fs::read_dir(origin.join(path)) {
+                for entry in entries.filter_map(Result::ok) {
+                    let entry_path = entry.path();
+                    if entry_path.is_file() {
+                        if let Some(file_name) = entry_path.file_name() {
+                            files.push(file_name.to_string_lossy().to_string());
+                        }
+                    }
+                }
+            }
         }
         files
     }
 
     fn get_folders_in_folder(&self, path: &str) -> Vec<String> {
         let mut folders = Vec::new();
+
         if let Ok(entries) = std::fs::read_dir(self.exe_path.join(path)) {
+            for entry in entries.filter_map(Result::ok) {
+                let entry_path = entry.path();
+                if entry_path.is_dir() {
+                    if let Some(folder_name) = entry_path.file_name() {
+                        folders.push(folder_name.to_string_lossy().to_string());
+                    }
+                }
+            }
+        } else if let Ok(entries) = std::fs::read_dir(
+            self.src_path.clone().unwrap_or_default().join(path),
+        ) {
             for entry in entries.filter_map(Result::ok) {
                 let entry_path = entry.path();
                 if entry_path.is_dir() {
@@ -125,6 +152,15 @@ impl FileSystem for NativeFileSystem {
         }
         if let Some(src_path) = &self.src_path {
             return std::fs::metadata(src_path.join(path)).is_ok();
+        }
+        false
+    }
+    fn does_folder_exist(&self, path: &str) -> bool {
+        if std::fs::exists(self.exe_path.join(path)).is_ok() {
+            return true;
+        }
+        if let Some(src_path) = &self.src_path {
+            return std::fs::exists(src_path.join(path)).is_ok();
         }
         false
     }

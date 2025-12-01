@@ -6,6 +6,7 @@ pub trait SetCellToZero {
     /// Zero out cell's value
     fn set_zero(&self);
 }
+#[cfg(feature = "num_traits")]
 impl<T: num_traits::ConstZero> SetCellToZero for std::cell::Cell<T> {
     fn set_zero(&self) {
         self.replace(T::ZERO);

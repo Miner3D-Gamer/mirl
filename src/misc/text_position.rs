@@ -87,6 +87,31 @@ impl TextPosition {
             column,
         }
     }
+    /// Move column by one
+    pub const fn advance_char(&mut self) {
+        self.column += 1;
+    }
+    /// Move column by one
+    pub const fn advance_char_by(&mut self, by: usize) {
+        self.column += by;
+    }
+    /// Move line by one and reset column
+    pub const fn advance_line(&mut self) {
+        self.line += 1;
+        self.column = 0;
+    }
+    /// Move line by one and reset column
+    pub const fn advance_line_by(&mut self, by: usize) {
+        self.line += by;
+        self.column = 0;
+    }
+    #[must_use]
+    /// Get the line and offset from the given offset
+    pub fn from_offset(offset: usize, text: &str) -> Self {
+        let (line, col) = line_and_column_from_offset(offset, text);
+
+        Self::new(line, col)
+    }
 }
 #[cfg(feature = "std")]
 impl Default for TextPosition {
@@ -96,4 +121,48 @@ impl Default for TextPosition {
             column: usize::MAX,
         }
     }
+}
+
+// #[cfg_attr(feature = "std", derive(PartialOrd, Ord))]
+// /// A text position range
+// #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+// pub struct PositionRange {
+//     /// The start of the range
+//     pub start: TextPosition,
+//     /// The end of the range
+//     pub end: TextPosition,
+// }
+
+// impl PositionRange {
+//     /// Create a new range based on start and end points
+//     #[must_use]
+//     pub const fn new(start: TextPosition, end: TextPosition) -> Self {
+//         Self {
+//             start,
+//             end,
+//         }
+//     }
+// }
+#[must_use]
+/// Get the line and offset from the given offset
+pub fn line_and_column_from_offset(
+    offset: usize,
+    text: &str,
+) -> (usize, usize) {
+    let mut line = 1;
+    let mut col = 1;
+
+    for (i, ch) in text.char_indices() {
+        if i >= offset {
+            break;
+        }
+        if ch == '\n' {
+            line += 1;
+            col = 1;
+        } else {
+            col += 1;
+        }
+    }
+
+    (line, col)
 }

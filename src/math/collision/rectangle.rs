@@ -22,6 +22,16 @@ pub struct Rectangle<T, const CS: bool> {
     pub width: T,
     pub height: T,
 }
+impl<T: Default, const CS: bool> Default for Rectangle<T, CS> {
+    fn default() -> Self {
+        Self {
+            x: T::default(),
+            y: T::default(),
+            width: T::default(),
+            height: T::default(),
+        }
+    }
+}
 
 #[cfg(feature = "std")]
 impl<T, const BOTTOM_HIGHER: bool> Rectangle<T, BOTTOM_HIGHER>

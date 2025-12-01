@@ -48,7 +48,7 @@ pub trait Sqrt {
     #[must_use]
     fn sqrt(self) -> Self;
 }
-
+#[cfg(feature = "std")]
 macro_rules! impl_sqrt {
     ($($t:ty),*) => {
         $(
@@ -62,14 +62,21 @@ macro_rules! impl_sqrt {
     };
 }
 
+#[cfg(feature = "std")]
 impl_sqrt!(i8);
+#[cfg(feature = "std")]
 impl_sqrt!(i16);
+#[cfg(feature = "std")]
 impl_sqrt!(i32);
+#[cfg(feature = "std")]
 impl_sqrt!(i64);
+#[cfg(feature = "std")]
 impl_sqrt!(i128);
+#[cfg(feature = "std")]
 impl_sqrt!(isize);
 
 #[cfg(feature = "std")]
+#[cfg(feature = "num_traits")]
 use num_traits::{bounds, cast, identities, sign};
 
 #[const_trait]
@@ -88,6 +95,7 @@ pub trait AddSign<T> {
 }
 
 #[cfg(feature = "std")]
+#[cfg(feature = "num_traits")]
 impl<U, S> AddSign<S> for U
 where
     U: sign::Unsigned
@@ -301,6 +309,3 @@ impl_sign_mapping!(i128, u128);
 //     for T
 // {
 // }
-
-mod from;
-pub use from::*;

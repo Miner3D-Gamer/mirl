@@ -1,9 +1,10 @@
+#[cfg(feature = "num_traits")]
+use crate::graphics::reorder_color_range;
+use crate::graphics::rgba_to_u32;
+#[cfg(feature = "num_traits")]
+use crate::math::range_with_variance;
 #[cfg(feature = "std")]
 use crate::Buffer;
-use crate::{
-    graphics::{reorder_color_range, rgba_to_u32},
-    math::range_with_variance,
-};
 #[must_use]
 /// Get a random color within the given color range
 pub fn generate_random_color(range: ((u32, u32, u32), (u32, u32, u32))) -> u32 {
@@ -26,6 +27,7 @@ pub fn replace_color_with_random_color(
     }
 }
 #[must_use]
+#[cfg(feature = "num_traits")]
 /// Create a range of colors based on a variance
 pub fn color_range_with_variance(
     color: (u32, u32, u32),

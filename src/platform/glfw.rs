@@ -12,21 +12,21 @@ use super::{
     MouseButton, Time,
 };
 #[cfg(feature = "svg")]
+use crate::platform::framework_traits::CursorStyleControl;
+#[cfg(feature = "svg")]
+use crate::platform::mouse::CursorResolution;
+#[cfg(feature = "svg")]
+use crate::platform::mouse::cursor_glfw::cursor_from_buffer;
+#[cfg(feature = "svg")]
 use crate::platform::mouse::LoadCursorError;
 #[cfg(target_os = "windows")]
 use crate::platform::WindowLevel;
+use crate::system::action::{Decoration, Default};
 use crate::Buffer;
 use crate::{
     extensions::*,
     graphics,
-    platform::{
-        framework_traits::Errors, keycodes::KeyCode,
-        mouse::cursor_glfw::cursor_from_buffer,
-    },
-};
-use crate::{
-    platform::framework_traits::CursorStyleControl,
-    system::action::{Decoration, Default},
+    platform::{framework_traits::Errors, keycodes::KeyCode},
 };
 /// glfw implementation of Framework
 #[derive(Debug)]
@@ -305,16 +305,15 @@ impl ExtendedWindow for Framework {
         get_native_window_handle_from_glfw(&self.window)
     }
 }
+#[cfg(feature = "svg")]
 impl CursorStyleControl for Framework {
-    #[cfg(feature = "svg")]
     fn set_cursor_style(&mut self, style: &super::Cursor) -> Errors {
         //println!("Setting cursor style");
         super::mouse::use_cursor(style, Some(&mut self.window))
     }
-    #[cfg(feature = "svg")]
     fn load_custom_cursors(
         &mut self,
-        size: crate::extensions::U2,
+        size: CursorResolution,
         main_color: u32,
         secondary_color: u32,
     ) -> Result<super::mouse::Cursors, LoadCursorError> {
@@ -555,15 +554,15 @@ pub const fn map_glfw_key_to_keycode(key: glfw::Key) -> KeyCode {
 
 unsafe fn create_shader_program() -> u32 {
     let vertex_shader = gl::CreateShader(gl::VERTEX_SHADER);
-    let c_str_vert =
-        std::ffi::CString::new(VERTEX_SHADER_SOURCE.as_bytes()).unwrap_unchecked();
+    let c_str_vert = std::ffi::CString::new(VERTEX_SHADER_SOURCE.as_bytes())
+        .unwrap_unchecked();
     gl::ShaderSource(vertex_shader, 1, &c_str_vert.as_ptr(), std::ptr::null());
     gl::CompileShader(vertex_shader);
     check_shader_errors(vertex_shader, "VERTEX");
 
     let fragment_shader = gl::CreateShader(gl::FRAGMENT_SHADER);
-    let c_str_frag =
-        std::ffi::CString::new(FRAGMENT_SHADER_SOURCE.as_bytes()).unwrap_unchecked();
+    let c_str_frag = std::ffi::CString::new(FRAGMENT_SHADER_SOURCE.as_bytes())
+        .unwrap_unchecked();
     gl::ShaderSource(
         fragment_shader,
         1,

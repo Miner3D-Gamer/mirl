@@ -1,3 +1,4 @@
+#[cfg(feature = "num_traits")]
 use crate::prelude::TryFromPatch;
 
 /// Additional functions for `std::ops::Range` (val..val)
@@ -7,7 +8,7 @@ pub trait RangeExtension<T, F> {
     /// If the range goes from 10 to 20 and a 15 is inputted, 0.5 is returned
     fn get_percent_from_value(&self, value: T) -> Option<F>;
 }
-
+#[cfg(feature = "num_traits")]
 impl<T: TryFromPatch<F> + Copy, F: num_traits::Float + TryFromPatch<T>>
     RangeExtension<T, F> for std::ops::Range<T>
 {

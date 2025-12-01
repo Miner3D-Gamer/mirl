@@ -1,6 +1,7 @@
 import subprocess
 from typing import Any, Optional
 from collections import defaultdict
+import json
 
 filter_name = "mirl"
 
@@ -12,139 +13,279 @@ result = subprocess.run(
     encoding="utf-8",
     errors="replace",
 )
-
+print("Processing")
 file = (result.stdout or "") + (result.stderr or "")
 
 data = file.split("\n")
 
-stuff = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ|_!1234567890"
 
-paths: list[str] = []
+search = {
+    "functions": ["pub fn", "pub const fn", "pub unsafe fn", "pub unsafe system fn"],
+    "implementations": "impl",
+    "traits": "pub trait",
+    "macros": "pub macro",
+    "constants": "pub const",
+    "types": "pub type",
+    "structs": "pub struct",
+    "enum": "pub enum",
+    "modules": "pub mod",
+    "statics": "pub static",
+}
+
+collected_impl: list[str] = []
+
+found = {}
+
+further = []
+for name, allowed_variants in search.items():
+    found[name] = {}
+    if isinstance(allowed_variants, str):
+        found[name] = 0
+    else:
+        found[name][">total"] = 0
+        for variant in allowed_variants:
+            found[name][variant] = 0
+
+blacklisted_functions = [
+    "hash",
+    "fmt",
+    "eq",
+    "deref",
+    "deref_mut",
+    "borrow",
+    "borrow_mut",
+    "type_id",
+    "to_owned",
+    "clone_into",
+    "try_into",
+    "try_from",
+    "into",
+    "try_into_value",
+    "equivilant",
+    "drop",
+    "clone",
+    "or",
+    "and",
+    "Hasher>",
+    "repeat_value",
+    "init",
+    "equivalent",
+    "pointer",
+    "mut_pointer",
+    "Copy>",
+    "vzip",
+    "clone_to_uninit",
+    "le",
+    "cmp",
+    "gt",
+    "lt",
+    "ge",
+]
+
+
+def get_function_name(line: str) -> str:
+    values = line.split("::")
+    for got in values:
+        if got.__contains__("("):
+            got = got.split("(")[0]
+            break
+    if got.__contains__("<"):
+        got = got.split("<")[0]
+    if got == "pub fn ":
+        got = get_function_name(line[8:])
+        # print("Special:", got, line[8:])
+    return got
+
+
 for line in data:
-    if not line.startswith("pub"):
+    if line == "":
+        continue
+    if line[0] == " ":
+        continue
+    hit = False
+    for name, allowed_variants in search.items():
+        if isinstance(allowed_variants, str):
+            singular = True
+            allowed_variants = [allowed_variants]
+        else:
+            singular = False
+
+        for variant in allowed_variants:
+            if line.startswith(variant):
+                for variant in allowed_variants:
+                    if line.__contains__(variant):
+                        if name == "functions":
+                            # print(line)
+                            function_name = get_function_name(line)
+                            if function_name in blacklisted_functions:
+                                break
+                            # print("'%s'" % function_name)
+                        if variant == "impl":
+                            collected_impl.append(line)
+                        if singular:
+                            found[name] += 1
+                        else:
+                            found[name][variant] += 1
+                            found[name][">total"] += 1
+                        hit = True
+                        break
+                break
+        if hit:
+            break
+
+    if hit:
         continue
 
-    cleaned_line = line
-    while "<" in cleaned_line and ">" in cleaned_line:
-        start = cleaned_line.find("<")
-        end = cleaned_line.find(">", start)
-        if end != -1:
-            cleaned_line = cleaned_line[:start] + cleaned_line[end + 1 :]
+    further.append(line)
+
+
+# print("\n".join(collected_impl))
+
+
+found["struct_fields"] = len(further)
+
+
+self_impl: list[str] = []
+other_impl: list[tuple[str, str]] = []
+other_optional_impl: list[tuple[str, str, str]] = []
+
+for impl in collected_impl:
+    impl = impl[4:]
+    if impl.startswith("<"):
+        depth = 0
+        i = 0
+        while i < len(impl):
+            if impl[i] == "<":
+                depth += 1
+            elif impl[i] == ">":
+                depth -= 1
+                if depth == 0:
+                    i += 1
+                    break
+            i += 1
+        impl = impl[i:]
+    else:
+        impl = impl[1:]
+    impl = impl.lstrip(" !")
+
+    if not impl.__contains__(" for "):
+        self_impl.append(impl)
+        continue
+
+    trait, more = impl.split(" for ")
+    if not more.__contains__(" where "):
+        other_impl.append((trait, more))
+        continue
+
+    struct, condition = more.split(" where ")
+    other_optional_impl.append((trait, struct, condition))
+
+doesnt_count = [
+    "core::marker::Copy",
+    "core::fmt::Debug",
+    "core::cmp::Eq",
+    "core::cmp::PartialEq",
+    "core::clone::Clone",
+    "core::marker::Freeze",
+    "core::marker::Sync",
+    "core::marker::Unpin",
+    "core::panic::unwind_safe::RefUnwindSafe",
+    "core::panic::unwind_safe::UnwindSafe",
+    "core::marker::StructuralPartialEq",
+    "core::marker::Send",
+    "core::cmp::PartialOrd",
+    "core::cmp::Ord",
+    "core::hash::Hash",
+    "core::default::Default",
+]
+my_impl = ["mirl", "core", "num_traits"]
+
+blacklist = ["crossbeam_epoch", "tracing", "either", "strum", "serde"]
+
+impls = {}
+inside = 0
+outside = 0
+self = "mirl"
+
+for i in other_impl:
+    if i[0] in doesnt_count:
+        continue
+    if any([i[0].startswith(x) for x in blacklist]):
+        continue
+    if not any([i[0].startswith(x) for x in my_impl]):
+        print(f"Impl '{i[0]}' for '{i[1]}'")
+        quit()
+    # print(f"Impl '{i[0]}' for '{i[1]}'")
+    crate = i[0].split("::")[0]
+    if impls.get(crate) == None:
+        impls[crate] = 0
+    impls[crate] += 1
+    if i[1].startswith(self):
+        inside += 1
+    else:
+        outside += 1
+
+
+def divide_dict_values(d, x):
+    for key, value in d.items():
+        if isinstance(value, dict):
+            divide_dict_values(value, x)
+        elif isinstance(value, (int, float)):
+            d[key] = value / x
+
+
+def mul_dict_values(d, x):
+    for key, value in d.items():
+        if isinstance(value, dict):
+            mul_dict_values(value, x)
+        elif isinstance(value, (int, float)):
+            d[key] = value * x
+
+
+found["implementations"] = {
+    ">total": inside + outside,
+    "origin": impls,
+    "for_structs_inside": inside,
+    "for_structs_outside": outside,
+}
+from copy import deepcopy
+
+to_be_divided = deepcopy(found)
+
+days = 355
+year = 365
+
+divide_dict_values(to_be_divided, days)
+to_be_multiplied = deepcopy(to_be_divided)
+mul_dict_values(to_be_multiplied, year)
+
+print(json.dumps(found, indent=4))
+print(json.dumps(to_be_divided, indent=4))
+print(json.dumps(to_be_multiplied, indent=4))
+
+
+def add(dict) -> int:
+    if isinstance(dict, int):
+        return dict
+    total = 0
+
+    for key, item in dict.items():
+        if isinstance(item, int):
+            total += item
         else:
-            break
+            total += item[">total"]
+    return total
 
-    name = ""
-    potentials = cleaned_line.split(" ")
-    for i in potentials:
-        if not i.__contains__("::"):
-            continue
-        name = i.replace("::", "|")
-        break
+for_percentage = deepcopy(found)
+for_percentage.pop("struct_fields")
+for_percentage.pop("modules")
+total = add(for_percentage)
 
-    refined = ""
-    for i in name:
-        if not i in stuff:
-            break
-        refined += i
+for key, items in for_percentage.items():
+    if isinstance(items, int):
+        amount = items
+    else:
+        amount = items[">total"]
 
-    if refined:
-        paths.append(refined.replace("|", "::"))
-
-paths = list(set(paths))
-sort_by_depth = True
-
-depth = [x.count("::") + 1 for x in paths]
-length = [len(x) - x.count("::") * 2 for x in paths]
-path_data = list(zip(paths, depth, length))
-
-if sort_by_depth:
-    # Primary sort by depth, secondary sort by length
-    path_data.sort(key=lambda x: (x[1], x[2], x[0]))
-    sort_criteria = "depth (then length)"
-else:
-    # Primary sort by length, secondary sort by depth
-    path_data.sort(key=lambda x: (x[2], x[1], x[0]))
-    sort_criteria = "length (then depth)"
-
-if False:
-    max_path_width = max(len(path) for path, _, _ in path_data)
-    max_path_width = max(max_path_width, len("Path"))
-
-    print(f"Paths sorted by {sort_criteria}:")
-    print("-" * (max_path_width + 20))
-    print(f"{'Path'.ljust(max_path_width)} {'Depth'.rjust(8)} {'Length'.rjust(8)}")
-    print("-" * (max_path_width + 20))
-
-    for path, d, l in path_data:
-        print(f"{path.ljust(max_path_width)} {str(d).rjust(8)} {str(l).rjust(8)}")
-    quit()
-
-from typing import Any, Optional
-
-
-if False:
-    import collections
-    import json
-
-    def create_dict_from_paths(paths: list[str]):
-        result: collections.OrderedDict[Any, Any] = collections.OrderedDict()
-
-        for path in paths:
-            parts = path.split("::")
-
-            current = result
-            for part in parts[:-1]:
-                if part not in current:
-                    current[part] = {}
-                current = current[part]
-
-            current[parts[-1]] = {}
-
-        return result
-
-    value = create_dict_from_paths(paths)
-
-    print(json.dumps(value, indent=4))
-    quit()
-
-from collections import defaultdict
-
-
-# type: ignore, my beloved
-def visualize_paths(
-    paths: list[str], prefix: str = "", lines: Optional[list[str]] = None
-) -> list[str]:
-    if lines is None:
-        lines = []
-
-    # Build a nested dict/tree
-    tree = lambda: defaultdict(tree)  # type: ignore
-    root = tree()  # type: ignore
-    for path in paths:
-        parts = path.split("::")
-        node = root  # type: ignore
-        for part in parts:
-            node = node[part]  # type: ignore
-
-    def _walk(node, root, prefix=""):  # type: ignore
-        keys = list(node.keys())  # type: ignore
-        for i, key in enumerate(keys):  # type: ignore
-            is_last = i == len(keys) - 1  # type: ignore
-            if root:
-                # Root node: print without └── / ├──
-                lines.append(f"{key}")
-                new_prefix = ""
-            else:
-                marker = "└──" if is_last else "├──"
-                lines.append(f"{prefix}{marker} {key}")
-                new_prefix = prefix + ("    " if is_last else "│   ")
-            _walk(node[key], False, new_prefix)  # type: ignore
-
-    _walk(root, True)
-    return lines
-
-
-full = "\n".join(visualize_paths([p for p in paths if p.startswith(filter_name)]))
-
-with open("paths.txt", "w", encoding="utf-8") as f:
-    f.write(full)
+    percentage = amount / total
+    print("%s is taking up %s percent" % (key, percentage * 100))
