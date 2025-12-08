@@ -1,3 +1,22 @@
+# Version 7.1.1
+
+## Changes
+
+- `mirl::platform::file_system::native::NativeFileSystem::{get_files_in_folder, get_folders_in_folders}` now searches paths in this order until an element is found:
+
+  1. Provided path
+  2. Executable path
+  3. Current working directory
+  4. `src` directory
+
+- `mirl::platform::WindowSettings` is no longer gated behind the `system` feature.
+
+- When the `font_support` feature is active, `fontdue` is re-exported through `mirl::prelude`.
+
+- `mirl::platform::WindowSettings` is now included in `mirl::prelude`.
+
+---
+
 # Version 7.1.0
 
 > Fewer flag restrictions and smarter dependency flagging

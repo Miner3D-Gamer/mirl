@@ -1,3 +1,5 @@
+// TODO: Add a middle step from data -> BaseInfoCursor -> Actual cursor used by os/framwork
+
 #[cfg(all(feature = "system", target_os = "windows"))]
 #[cfg(feature = "svg")]
 pub use cursors_windows::load_base_cursor_with_file;

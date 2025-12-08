@@ -93,54 +93,53 @@ impl FileSystem for NativeFileSystem {
     }
     fn get_files_in_folder(&self, path: &str) -> Vec<String> {
         let mut files = Vec::new();
-        if let Ok(entries) = std::fs::read_dir(self.exe_path.join(path)) {
-            for entry in entries.filter_map(Result::ok) {
-                let entry_path = entry.path();
-                if entry_path.is_file() {
-                    if let Some(file_name) = entry_path.file_name() {
-                        files.push(file_name.to_string_lossy().to_string());
-                    }
-                }
-            }
-        } else if let Some(origin) = &self.src_path {
-            if let Ok(entries) = std::fs::read_dir(origin.join(path)) {
-                for entry in entries.filter_map(Result::ok) {
-                    let entry_path = entry.path();
-                    if entry_path.is_file() {
-                        if let Some(file_name) = entry_path.file_name() {
-                            files.push(file_name.to_string_lossy().to_string());
-                        }
-                    }
-                }
+        files.extend(get_elements_in_folder::<_, false>(path));
+        if !files.is_empty() {
+            return files;
+        }
+        files.extend(get_elements_in_folder::<_, false>(
+            self.exe_path.join(path),
+        ));
+        if !files.is_empty() {
+            return files;
+        }
+        if let Ok(val) = std::env::current_dir() {
+            files.extend(get_elements_in_folder::<_, false>(val.join(path)));
+            if !files.is_empty() {
+                return files;
             }
         }
+
+        files.extend(get_elements_in_folder::<_, false>(
+            self.src_path.clone().unwrap_or_default().join(path),
+        ));
+
         files
     }
 
     fn get_folders_in_folder(&self, path: &str) -> Vec<String> {
         let mut folders = Vec::new();
+        folders.extend(get_elements_in_folder::<_, true>(path));
+        if !folders.is_empty() {
+            return folders;
+        }
+        folders.extend(get_elements_in_folder::<_, true>(
+            self.exe_path.join(path),
+        ));
+        if !folders.is_empty() {
+            return folders;
+        }
 
-        if let Ok(entries) = std::fs::read_dir(self.exe_path.join(path)) {
-            for entry in entries.filter_map(Result::ok) {
-                let entry_path = entry.path();
-                if entry_path.is_dir() {
-                    if let Some(folder_name) = entry_path.file_name() {
-                        folders.push(folder_name.to_string_lossy().to_string());
-                    }
-                }
-            }
-        } else if let Ok(entries) = std::fs::read_dir(
-            self.src_path.clone().unwrap_or_default().join(path),
-        ) {
-            for entry in entries.filter_map(Result::ok) {
-                let entry_path = entry.path();
-                if entry_path.is_dir() {
-                    if let Some(folder_name) = entry_path.file_name() {
-                        folders.push(folder_name.to_string_lossy().to_string());
-                    }
-                }
+        if let Ok(val) = std::env::current_dir() {
+            folders.extend(get_elements_in_folder::<_, true>(val.join(path)));
+            if !folders.is_empty() {
+                return folders;
             }
         }
+        folders.extend(get_elements_in_folder::<_, true>(
+            self.src_path.clone().unwrap_or_default().join(path),
+        ));
+
         folders
     }
     fn join(&self, path1: &str, path2: &str) -> String {
@@ -173,4 +172,27 @@ impl FileSystem for NativeFileSystem {
         }
         vec
     }
+}
+
+fn get_elements_in_folder<
+    P: core::convert::AsRef<std::path::Path>,
+    const FOLDERS: bool,
+>(
+    path: P,
+) -> Vec<String> {
+    let mut folders = Vec::new();
+
+    if let Ok(entries) = std::fs::read_dir(path) {
+        for entry in entries.filter_map(Result::ok) {
+            let entry_path = entry.path();
+            if (entry_path.is_dir() && FOLDERS)
+                || (!FOLDERS && entry_path.is_file())
+            {
+                if let Some(folder_name) = entry_path.file_name() {
+                    folders.push(folder_name.to_string_lossy().to_string());
+                }
+            }
+        }
+    }
+    folders
 }

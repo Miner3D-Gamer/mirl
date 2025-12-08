@@ -24,9 +24,10 @@
 #![feature(const_ops)]
 #![feature(const_convert)]
 #![feature(const_try)]
+#![feature(core_intrinsics)]
+#![feature(const_option_ops)]
 #![feature(core_float_math)]
 #![feature(f128)]
-#![feature(core_intrinsics)]
 #![cfg_attr(not(feature = "std"), no_std)]
 //! Miners
 //! Rust

@@ -1,7 +1,7 @@
 [package]
 # General Info
 name = "mirl"
-version = "7.1.0"
+version = "7.1.1"
 description = "Miners Rust Lib - A massive collection of ever growing and changing functions, structs, and enums. Check the description for compatibility and toggleable features! (Most of the lib is controlled by flags/features so the lib can continue to be lightweight despite its size)"
 # Compiler
 rust-version = "1.88.0"
