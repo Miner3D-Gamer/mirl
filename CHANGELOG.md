@@ -1,3 +1,9 @@
+# Version 7.1.2
+
+Fixed some oversights which prevented some flag combinations from compiling.
+
+---
+
 # Version 7.1.1
 
 ## Changes

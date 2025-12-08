@@ -101,9 +101,9 @@ for x in total_combinations:
     final_combinations.extend(comb)
 
 
-print("With duplicates:", len(final_combinations))
+print("With duplicates:", len(final_combinations) + 1)
 final_combinations = list(set(final_combinations))
-print("Without duplicates:", len(final_combinations))
+print("Without duplicates:", len(final_combinations) + 1)
 final_combinations.append([])
 
 import subprocess

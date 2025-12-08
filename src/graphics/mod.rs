@@ -1083,7 +1083,7 @@ pub const fn invert_color(color: u32) -> u32 {
 /// `imagery` - Grands access to automatic texture lookup -> Define a filepath for a texture and lazy load it
 ///
 /// `texture_manager_cleanup` - Grands accessability to `cleanup_unused`
-#[cfg_attr(feature = "std", derive(Default))]
+#[cfg_attr(all(feature = "std", not(feature = "ahash")), derive(Default))]
 #[derive(Debug, Clone, PartialEq, Eq)]
 #[cfg(feature = "std")]
 pub struct TextureManager {

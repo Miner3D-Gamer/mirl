@@ -4,12 +4,13 @@
 #[cfg(feature = "svg")]
 pub use cursors_windows::load_base_cursor_with_file;
 
-use crate::{extensions::*, platform::Buffer};
+#[cfg(any(feature = "svg", all(feature = "glfw", feature = "keycodes")))]
+use crate::graphics;
 #[cfg(feature = "keycodes")]
-use crate::{
-    graphics,
-    platform::{framework_traits::Errors, CursorStyle},
-};
+use crate::platform::framework_traits::Errors;
+#[cfg(feature = "svg")]
+use crate::platform::CursorStyle;
+use crate::{extensions::*, platform::Buffer};
 
 // Damn past me, why so sassy?
 /// Cursor stuff of glfw bc glfw is a bitch
@@ -50,6 +51,7 @@ pub trait CursorManager {
 pub enum Cursor {
     /// Windows
     #[cfg(target_os = "windows")]
+    #[cfg(feature = "svg")]
     Win(windows::Win32::UI::WindowsAndMessaging::HCURSOR),
     /// Linux using X11, wayland support will be added later
     #[cfg(target_os = "linux")]
@@ -100,7 +102,6 @@ impl SetSelfToCursor for Option<Cursor> {
 // pub struct CursorData {
 //     buffer_data: Vec<u32>,
 // }
-
 
 /// Default cursors this lib provides
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -1150,6 +1151,7 @@ pub fn use_cursor(
     }
     match cursor {
         #[cfg(target_os = "windows")]
+        #[cfg(feature = "svg")]
         Cursor::Win(cursor) => {
             unsafe {
                 // Update the passive cursor provider windows uses
