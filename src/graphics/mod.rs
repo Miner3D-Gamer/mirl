@@ -5,12 +5,23 @@ use crate::extensions::*;
 
 #[cfg(feature = "random")]
 #[cfg(feature = "std")]
+#[cfg(not(target_arch = "wasm32"))]
 mod random;
 
 #[cfg(feature = "random")]
 #[cfg(feature = "std")]
+#[cfg(not(target_arch = "wasm32"))]
 pub use random::*;
 
+/// Presets for common colors
+pub mod colors;
+
+#[cfg(feature = "std")]
+#[cfg(feature = "num_traits")]
+mod interpolation;
+#[cfg(feature = "std")]
+#[cfg(feature = "num_traits")]
+pub use interpolation::*;
 /// Convert an r b g format into u32 argb format
 #[inline(always)]
 #[must_use]
@@ -1247,8 +1258,8 @@ impl TextureManager {
             .map(|(name, _)| name.clone())
             .collect();
 
-        for name in to_remove {
-            self.unload_texture(&name);
+        for name in &to_remove {
+            self.unload_texture(name);
         }
     }
     #[allow(arithmetic_overflow)]
@@ -1258,15 +1269,6 @@ impl TextureManager {
         self.current_frame += 1;
     }
 }
-/// Presets for common colors
-pub mod colors;
-
-#[cfg(feature = "std")]
-#[cfg(feature = "num_traits")]
-mod interpolation;
-#[cfg(feature = "std")]
-#[cfg(feature = "num_traits")]
-pub use interpolation::*;
 #[const_trait]
 /// A trait for changing or retrieving a single channel of a color
 pub trait ColorManipulation {

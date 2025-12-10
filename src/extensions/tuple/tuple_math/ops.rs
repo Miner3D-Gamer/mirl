@@ -1,1 +1,55 @@
-#![allow(missing_docs)]use std::ops::{Add,Div,Mul,Sub};pub trait TupleOps<Rhs=Self>{type Output;fn add(self,rhs:Rhs)->Self::Output;fn sub(self,rhs:Rhs)->Self::Output;fn mul(self,rhs:Rhs)->Self::Output;fn div(self,rhs:Rhs)->Self::Output;}macro_rules!tuple_ops{($($n:tt),+)=>{impl<T>TupleOps for($(impl_helper!(@type$n T),)+)where T:Add<Output=T>+Sub<Output=T>+Mul<Output=T>+Div<Output=T>+Copy{type Output=($(impl_helper!(@type$n T),)+);fn add(self,rhs:Self)->Self::Output{($(self.$n+rhs.$n,)+)}fn sub(self,rhs:Self)->Self::Output{($(self.$n-rhs.$n,)+)}fn mul(self,rhs:Self)->Self::Output{($(self.$n*rhs.$n,)+)}fn div(self,rhs:Self)->Self::Output{($(self.$n/rhs.$n,)+)}}};}macro_rules!impl_helper{(@type $_:tt$t:ty)=>($t);}tuple_ops!{0,1}tuple_ops!{0,1,2}tuple_ops!{0,1,2,3}tuple_ops!{0,1,2,3,4}tuple_ops!{0,1,2,3,4,5}tuple_ops!{0,1,2,3,4,5,6}tuple_ops!{0,1,2,3,4,5,6,7}tuple_ops!{0,1,2,3,4,5,6,7,8}tuple_ops!{0,1,2,3,4,5,6,7,8,9}tuple_ops!{0,1,2,3,4,5,6,7,8,9,10}tuple_ops!{0,1,2,3,4,5,6,7,8,9,10,11}
+#![allow(missing_docs)]
+use std::ops::{Add, Div, Mul, Sub};
+pub const trait TupleOps<Rhs = Self> {
+    type Output;
+    fn add(self, rhs: Rhs) -> Self::Output;
+    fn sub(self, rhs: Rhs) -> Self::Output;
+    fn mul(self, rhs: Rhs) -> Self::Output;
+    fn div(self, rhs: Rhs) -> Self::Output;
+}
+macro_rules! tuple_ops {
+    ( $($n:tt),+ ) => {
+        impl<T> const TupleOps for ( $( impl_helper!(@type $n T), )+ )
+        where
+            T: [const] Add<Output = T>
+                + [const] Sub<Output = T>
+                + [const] Mul<Output = T>
+                + [const] Div<Output = T>
+                + Copy
+        {
+            type Output = ( $( impl_helper!(@type $n T), )+ );
+
+            fn add(self, rhs: Self) -> Self::Output {
+                ( $( self.$n + rhs.$n, )+ )
+            }
+
+            fn sub(self, rhs: Self) -> Self::Output {
+                ( $( self.$n - rhs.$n, )+ )
+            }
+
+            fn mul(self, rhs: Self) -> Self::Output {
+                ( $( self.$n * rhs.$n, )+ )
+            }
+
+            fn div(self, rhs: Self) -> Self::Output {
+                ( $( self.$n / rhs.$n, )+ )
+            }
+        }
+    };
+}
+macro_rules! impl_helper {
+    (@type $_:tt$t:ty) => {
+        $t
+    };
+}
+tuple_ops! {0,1}
+tuple_ops! {0,1,2}
+tuple_ops! {0,1,2,3}
+tuple_ops! {0,1,2,3,4}
+tuple_ops! {0,1,2,3,4,5}
+tuple_ops! {0,1,2,3,4,5,6}
+tuple_ops! {0,1,2,3,4,5,6,7}
+tuple_ops! {0,1,2,3,4,5,6,7,8}
+tuple_ops! {0,1,2,3,4,5,6,7,8,9}
+tuple_ops! {0,1,2,3,4,5,6,7,8,9,10}
+tuple_ops! {0,1,2,3,4,5,6,7,8,9,10,11}

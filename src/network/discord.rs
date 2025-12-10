@@ -423,12 +423,9 @@ use reqwest::blocking::Client;
 /// fn function() {
 ///     let url = "{Your webhook}";
 ///     let payload = mirl::misc::discord::WebhookPayload::default()
-///                     .with_content("This message will be send :)");
-///     mirl::misc::discord::send_discord_message(
-///                url,
-///                &payload,
-///            ).unwrap();
-///     }
+///         .with_content("This message will be send :)");
+///     mirl::misc::discord::send_discord_message(url, &payload).unwrap();
+/// }
 /// ```
 /// # Errors
 /// When unable to send the message or when the server gives a non 2xx return code

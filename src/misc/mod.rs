@@ -55,7 +55,6 @@ pub mod windows {
     /// Check the stack use
     ///
     /// # Errors
-    ///
     pub fn get_actual_stack_info() {
         unsafe {
             let current_sp = (&0 as *const i32).cast::<std::ffi::c_void>(); // &0 as *const i32 as *const std::ffi::c_void
@@ -91,9 +90,12 @@ pub mod windows {
 /// Create a compile time warning using deprecation
 macro_rules! compile_warn {
     ($msg:expr) => {
-        #[deprecated(note = $msg)]
-        const fn deprecated_trigger() {}
-        let _ = deprecated_trigger;
+        #[allow(dead_code)]
+        fn deprecated_container() {
+            #[deprecated(note = $msg)]
+            const fn deprecated_trigger() {}
+            let _ = deprecated_trigger;
+        }
     };
 }
 #[must_use]

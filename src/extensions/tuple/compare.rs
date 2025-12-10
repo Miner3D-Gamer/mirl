@@ -1,4 +1,3 @@
-
 use std::cmp::Ordering;
 
 #[const_trait]
@@ -16,10 +15,10 @@ pub trait TupleCmp<Rhs = Self> {
     fn cmp(self, rhs: Rhs) -> Ordering;
 }
 macro_rules! impl_helper {
-    (@type $_:tt $t:ty) => ($t);
+    (@type $_:tt $t:ty) => {
+        $t
+    };
 }
-
-
 
 macro_rules! tuple_cmp {
     ($($n:tt),+) => {
@@ -30,19 +29,19 @@ macro_rules! tuple_cmp {
             fn lt(self, rhs: Self) -> bool {
                 tuple_cmp_helper!(@lt self, rhs; $($n),+)
             }
-            
+
             fn le(self, rhs: Self) -> bool {
                 tuple_cmp_helper!(@le self, rhs; $($n),+)
             }
-            
+
             fn gt(self, rhs: Self) -> bool {
                 tuple_cmp_helper!(@gt self, rhs; $($n),+)
             }
-            
+
             fn ge(self, rhs: Self) -> bool {
                 tuple_cmp_helper!(@ge self, rhs; $($n),+)
             }
-            
+
             fn cmp(self, rhs: Self) -> Ordering {
                 tuple_cmp_helper!(@cmp self, rhs; $($n),+)
             }
@@ -59,7 +58,7 @@ macro_rules! tuple_cmp_helper {
         }
     };
     (@lt $self:expr, $rhs:expr;) => { false };
-    
+
     (@le $self:expr, $rhs:expr; $first:tt $(, $rest:tt)*) => {
         match $self.$first.partial_cmp(&$rhs.$first) {
             Some(Ordering::Less) => true,
@@ -69,7 +68,7 @@ macro_rules! tuple_cmp_helper {
         }
     };
     (@le $self:expr, $rhs:expr;) => { true };
-    
+
     (@gt $self:expr, $rhs:expr; $first:tt $(, $rest:tt)*) => {
         match $self.$first.partial_cmp(&$rhs.$first) {
             Some(Ordering::Greater) => true,
@@ -78,7 +77,7 @@ macro_rules! tuple_cmp_helper {
         }
     };
     (@gt $self:expr, $rhs:expr;) => { false };
-    
+
     (@ge $self:expr, $rhs:expr; $first:tt $(, $rest:tt)*) => {
         match $self.$first.partial_cmp(&$rhs.$first) {
             Some(Ordering::Greater) => true,
@@ -88,7 +87,7 @@ macro_rules! tuple_cmp_helper {
         }
     };
     (@ge $self:expr, $rhs:expr;) => { true };
-    
+
     (@cmp $self:expr, $rhs:expr; $first:tt $(, $rest:tt)*) => {
         match $self.$first.partial_cmp(&$rhs.$first) {
             Some(Ordering::Equal) => tuple_cmp_helper!(@cmp $self, $rhs; $($rest),*),
@@ -98,7 +97,6 @@ macro_rules! tuple_cmp_helper {
     };
     (@cmp $self:expr, $rhs:expr;) => { Ordering::Equal };
 }
-
 
 tuple_cmp!(0);
 tuple_cmp!(0, 1);
@@ -119,16 +117,53 @@ tuple_cmp!(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15);
 tuple_cmp!(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
 tuple_cmp!(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17);
 tuple_cmp!(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18);
-tuple_cmp!(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19);
-tuple_cmp!(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20);
-tuple_cmp!(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21);
-tuple_cmp!(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22);
-tuple_cmp!(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23);
-tuple_cmp!(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24);
-tuple_cmp!(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25);
-tuple_cmp!(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26);
-tuple_cmp!(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27);
-tuple_cmp!(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28);
-tuple_cmp!(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29);
-tuple_cmp!(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30);
-tuple_cmp!(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31);
+tuple_cmp!(
+    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19
+);
+tuple_cmp!(
+    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20
+);
+tuple_cmp!(
+    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+    21
+);
+tuple_cmp!(
+    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+    21, 22
+);
+tuple_cmp!(
+    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+    21, 22, 23
+);
+tuple_cmp!(
+    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+    21, 22, 23, 24
+);
+tuple_cmp!(
+    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+    21, 22, 23, 24, 25
+);
+tuple_cmp!(
+    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+    21, 22, 23, 24, 25, 26
+);
+tuple_cmp!(
+    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+    21, 22, 23, 24, 25, 26, 27
+);
+tuple_cmp!(
+    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+    21, 22, 23, 24, 25, 26, 27, 28
+);
+tuple_cmp!(
+    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+    21, 22, 23, 24, 25, 26, 27, 28, 29
+);
+tuple_cmp!(
+    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+    21, 22, 23, 24, 25, 26, 27, 28, 29, 30
+);
+tuple_cmp!(
+    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+    21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31
+);

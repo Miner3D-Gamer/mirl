@@ -1,7 +1,9 @@
 use image::{GenericImage, GenericImageView};
 
-use crate::graphics::{rgba_u8_to_u32, u32_to_rgba_u8};
-use crate::platform::Buffer;
+use crate::{
+    graphics::{rgba_u8_to_u32, u32_to_rgba_u8},
+    platform::Buffer,
+};
 /// Convert a [u32] argb format into an [`image::Rgba<u8>`]
 #[must_use]
 pub const fn u32_to_image_rgba(color: u32) -> image::Rgba<u8> {

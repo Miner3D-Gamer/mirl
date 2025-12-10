@@ -42,7 +42,8 @@
 //!     let mut window = mirl::platform::minifb::Framework::new(
 //!         "Example window",
 //!         mirl::platform::WindowSettings::default(&buffer),
-//!     ).unwrap();
+//!     )
+//!     .unwrap();
 //!     while window.is_open() {
 //!         buffer.clear();
 //!
@@ -149,3 +150,8 @@ pub mod settings;
 
 // TODON'T:
 // - Mac support
+
+mod compile_time_dependency_errors;
+
+// Web support
+// Incompatible: ahash, device_query

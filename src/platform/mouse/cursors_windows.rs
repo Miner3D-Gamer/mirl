@@ -9,9 +9,13 @@ use super::{BaseCursor, Cursor};
 // #[cfg(feature = "num_traits")]
 // use crate::extensions::*;
 use crate::graphics::{pixmap_to_buffer, rasterize_svg, u32_to_rgba_u8};
-use crate::misc::EasyUnwrapUnchecked;
-use crate::platform::mouse::{CursorResolution, LoadCursorError};
-use crate::platform::Buffer;
+use crate::{
+    misc::EasyUnwrapUnchecked,
+    platform::{
+        mouse::{CursorResolution, LoadCursorError},
+        Buffer,
+    },
+};
 
 /// Load a custom cursor
 // /// Size:
@@ -98,11 +102,9 @@ pub fn load_base_cursor_with_file(
 ) -> std::result::Result<Cursor, LoadCursorError> {
     let wanted_size: u32 = size.get_size().easy_unwrap_unchecked(); // This will never error because u32 is bigger than u8
 
-    let Ok(image_data) = rasterize_svg(
-        svg_data.as_bytes(),
-        wanted_size,
-        wanted_size,
-    ) else {
+    let Ok(image_data) =
+        rasterize_svg(svg_data.as_bytes(), wanted_size, wanted_size)
+    else {
         return Err(LoadCursorError::InvalidImageData(
             "Unable to rasterize svg".to_string(),
         ));

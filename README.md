@@ -34,12 +34,12 @@ fn main() {
 
 ## Compatibility
 
-| Platform | Status     | Info                                         |
-| -------- | ---------- | -------------------------------------------- |
-| Windows  | ✅ Full    | Native implementation                        |
-| Linux    | ⚠️ Partial | Currently fixing (`system` flag unsupported) |
-| macOS    | 🚧 Barely  | Untested                                     |
-| Web      | ⚠️ Partial | Everything but IO should work                |
+| Platform | Status     | Info                            |
+| -------- | ---------- | ------------------------------- |
+| Windows  | ✅ Full    | Native implementation           |
+| Linux    | ❌ Partial | Currently fixing                |
+| macOS    | ❓ Partial | Untested; `cargo check` passes. |
+| Web      | ❓ Partial | Untested; `cargo check` passes. |
 
 ## Features/Flags
 
@@ -197,6 +197,17 @@ This lib is heavily guided by clippy and as such:
 - Minor: A breaking change has been made but it is likely not be to the area of the library you're working with
 - Patch: No breaking API change, only fixes and additions
 
+<sup>
+> Or in summary:
+
+- Patch: You can update the lib without any changes to your code
+
+- Minor: You can probably update safely _but there is a chance of something erroring_
+
+- Major: You will most likely have to fix something
+
+  </sup>
+
 > Note that these rules do not apply to modules (and sub modules) named `misc`, they are collections of objects that have not yet been assigned a proper place to stay
 
 ---
@@ -206,7 +217,7 @@ This lib is heavily guided by clippy and as such:
 What brought you to this strange place?
 
 This is just a little big lib I built for easy function/struct/etc. reusability across my never ending stream of unfinished projects.
-Even if many of the functions in here will never be used again, considering there are ~5.8k functions, ~25 enums, ~60 structs, ~450 traits, ~4.3 trait implementations; you are sure to find _something_ of use
+Even if many of the functions in here will never be used again, considering there are ~3.5k functions, ~25 enums, ~60 structs, ~200 traits, ~1.3 trait implementations; you are sure to find _something_ of use
 
 My philosophy follows 3 things:
 

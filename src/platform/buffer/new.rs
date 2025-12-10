@@ -1,6 +1,8 @@
 use super::Buffer;
-use crate::extensions::RepeatData;
-use crate::graphics::{rgb_u8_to_u32, rgba_to_u32, rgba_u8_to_u32};
+use crate::{
+    extensions::RepeatData,
+    graphics::{rgb_u8_to_u32, rgba_to_u32, rgba_u8_to_u32},
+};
 impl Buffer {
     /// Create a new buffer
     ///

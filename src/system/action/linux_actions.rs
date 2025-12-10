@@ -208,8 +208,7 @@
 //     }
 // }
 
-use std::ffi::CString;
-use std::ptr;
+use std::{ffi::CString, ptr};
 
 use x11::xlib::*;
 

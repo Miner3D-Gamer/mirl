@@ -1,4 +1,3 @@
-
 // i8
 impl const TryFromPatch<Self> for i8 {
     fn try_from_value(v: Self) -> Option<Self> {
@@ -69,4 +68,5 @@ impl const TryFromPatch<i8> for f64 {
     fn try_from_value(v: i8) -> Option<Self> {
         Some(v as Self)
     }
-}use crate::extensions::TryFromPatch;
+}
+use crate::extensions::TryFromPatch;

@@ -1,13 +1,11 @@
-// TODO: Add a middle step from data -> BaseInfoCursor -> Actual cursor used by os/framwork
+// TODO: Add a middle step from data -> BaseInfoCursor -> Actual cursor used by os/framework
 
 #[cfg(all(feature = "system", target_os = "windows"))]
 #[cfg(feature = "svg")]
 pub use cursors_windows::load_base_cursor_with_file;
 
-#[cfg(any(feature = "svg", all(feature = "glfw", feature = "keycodes")))]
-use crate::graphics;
 #[cfg(feature = "keycodes")]
-use crate::platform::framework_traits::Errors;
+use crate::platform::frameworks::WindowError;
 #[cfg(feature = "svg")]
 use crate::platform::CursorStyle;
 use crate::{extensions::*, platform::Buffer};
@@ -221,11 +219,11 @@ impl Cursors {
                 .to_string()
                 .replace(
                     "{main}",
-                    &graphics::u32_to_hex_without_alpha(main_color),
+                    &crate::graphics::u32_to_hex_without_alpha(main_color),
                 )
                 .replace(
                     "{secondary}",
-                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                    &crate::graphics::u32_to_hex_without_alpha(secondary_color),
                 ),
         )
         .map_err(|_| "default.svg".to_string())?;
@@ -240,11 +238,11 @@ impl Cursors {
                 .to_string()
                 .replace(
                     "{main}",
-                    &graphics::u32_to_hex_without_alpha(main_color),
+                    &crate::graphics::u32_to_hex_without_alpha(main_color),
                 )
                 .replace(
                     "{secondary}",
-                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                    &crate::graphics::u32_to_hex_without_alpha(secondary_color),
                 ),
         )
         .map_err(|_| "alias.svg".to_string())?;
@@ -259,11 +257,11 @@ impl Cursors {
                 .to_string()
                 .replace(
                     "{main}",
-                    &graphics::u32_to_hex_without_alpha(main_color),
+                    &crate::graphics::u32_to_hex_without_alpha(main_color),
                 )
                 .replace(
                     "{secondary}",
-                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                    &crate::graphics::u32_to_hex_without_alpha(secondary_color),
                 ),
         )
         .map_err(|_| "all-scroll.svg".to_string())?;
@@ -278,11 +276,11 @@ impl Cursors {
                 .to_string()
                 .replace(
                     "{main}",
-                    &graphics::u32_to_hex_without_alpha(main_color),
+                    &crate::graphics::u32_to_hex_without_alpha(main_color),
                 )
                 .replace(
                     "{secondary}",
-                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                    &crate::graphics::u32_to_hex_without_alpha(secondary_color),
                 ),
         )
         .map_err(|_| "bottom_left_corner.svg".to_string())?;
@@ -297,11 +295,11 @@ impl Cursors {
                 .to_string()
                 .replace(
                     "{main}",
-                    &graphics::u32_to_hex_without_alpha(main_color),
+                    &crate::graphics::u32_to_hex_without_alpha(main_color),
                 )
                 .replace(
                     "{secondary}",
-                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                    &crate::graphics::u32_to_hex_without_alpha(secondary_color),
                 ),
         )
         .map_err(|_| "bottom_right_corner.svg".to_string())?;
@@ -316,11 +314,11 @@ impl Cursors {
                 .to_string()
                 .replace(
                     "{main}",
-                    &graphics::u32_to_hex_without_alpha(main_color),
+                    &crate::graphics::u32_to_hex_without_alpha(main_color),
                 )
                 .replace(
                     "{secondary}",
-                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                    &crate::graphics::u32_to_hex_without_alpha(secondary_color),
                 ),
         )
         .map_err(|_| "bottom_side.svg".to_string())?;
@@ -335,11 +333,11 @@ impl Cursors {
                 .to_string()
                 .replace(
                     "{main}",
-                    &graphics::u32_to_hex_without_alpha(main_color),
+                    &crate::graphics::u32_to_hex_without_alpha(main_color),
                 )
                 .replace(
                     "{secondary}",
-                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                    &crate::graphics::u32_to_hex_without_alpha(secondary_color),
                 ),
         )
         .map_err(|_| "cell.svg".to_string())?;
@@ -354,11 +352,11 @@ impl Cursors {
                 .to_string()
                 .replace(
                     "{main}",
-                    &graphics::u32_to_hex_without_alpha(main_color),
+                    &crate::graphics::u32_to_hex_without_alpha(main_color),
                 )
                 .replace(
                     "{secondary}",
-                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                    &crate::graphics::u32_to_hex_without_alpha(secondary_color),
                 ),
         )
         .map_err(|_| "center_ptr.svg".to_string())?;
@@ -373,11 +371,11 @@ impl Cursors {
                 .to_string()
                 .replace(
                     "{main}",
-                    &graphics::u32_to_hex_without_alpha(main_color),
+                    &crate::graphics::u32_to_hex_without_alpha(main_color),
                 )
                 .replace(
                     "{secondary}",
-                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                    &crate::graphics::u32_to_hex_without_alpha(secondary_color),
                 ),
         )
         .map_err(|_| "col-resize.svg".to_string())?;
@@ -392,11 +390,11 @@ impl Cursors {
                 .to_string()
                 .replace(
                     "{main}",
-                    &graphics::u32_to_hex_without_alpha(main_color),
+                    &crate::graphics::u32_to_hex_without_alpha(main_color),
                 )
                 .replace(
                     "{secondary}",
-                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                    &crate::graphics::u32_to_hex_without_alpha(secondary_color),
                 ),
         )
         .map_err(|_| "color-picker.svg".to_string())?;
@@ -411,11 +409,11 @@ impl Cursors {
                 .to_string()
                 .replace(
                     "{main}",
-                    &graphics::u32_to_hex_without_alpha(main_color),
+                    &crate::graphics::u32_to_hex_without_alpha(main_color),
                 )
                 .replace(
                     "{secondary}",
-                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                    &crate::graphics::u32_to_hex_without_alpha(secondary_color),
                 ),
         )
         .map_err(|_| "context-menu.svg".to_string())?;
@@ -430,11 +428,11 @@ impl Cursors {
                 .to_string()
                 .replace(
                     "{main}",
-                    &graphics::u32_to_hex_without_alpha(main_color),
+                    &crate::graphics::u32_to_hex_without_alpha(main_color),
                 )
                 .replace(
                     "{secondary}",
-                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                    &crate::graphics::u32_to_hex_without_alpha(secondary_color),
                 ),
         )
         .map_err(|_| "copy.svg".to_string())?;
@@ -449,11 +447,11 @@ impl Cursors {
                 .to_string()
                 .replace(
                     "{main}",
-                    &graphics::u32_to_hex_without_alpha(main_color),
+                    &crate::graphics::u32_to_hex_without_alpha(main_color),
                 )
                 .replace(
                     "{secondary}",
-                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                    &crate::graphics::u32_to_hex_without_alpha(secondary_color),
                 ),
         )
         .map_err(|_| "crosshair.svg".to_string())?;
@@ -468,11 +466,11 @@ impl Cursors {
                 .to_string()
                 .replace(
                     "{main}",
-                    &graphics::u32_to_hex_without_alpha(main_color),
+                    &crate::graphics::u32_to_hex_without_alpha(main_color),
                 )
                 .replace(
                     "{secondary}",
-                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                    &crate::graphics::u32_to_hex_without_alpha(secondary_color),
                 ),
         )
         .map_err(|_| "closed-hand.svg".to_string())?;
@@ -487,11 +485,11 @@ impl Cursors {
                 .to_string()
                 .replace(
                     "{main}",
-                    &graphics::u32_to_hex_without_alpha(main_color),
+                    &crate::graphics::u32_to_hex_without_alpha(main_color),
                 )
                 .replace(
                     "{secondary}",
-                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                    &crate::graphics::u32_to_hex_without_alpha(secondary_color),
                 ),
         )
         .map_err(|_| "closed-hand-no-drop.svg".to_string())?;
@@ -506,11 +504,11 @@ impl Cursors {
                 .to_string()
                 .replace(
                     "{main}",
-                    &graphics::u32_to_hex_without_alpha(main_color),
+                    &crate::graphics::u32_to_hex_without_alpha(main_color),
                 )
                 .replace(
                     "{secondary}",
-                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                    &crate::graphics::u32_to_hex_without_alpha(secondary_color),
                 ),
         )
         .map_err(|_| "down-arrow.svg".to_string())?;
@@ -525,11 +523,11 @@ impl Cursors {
                 .to_string()
                 .replace(
                     "{main}",
-                    &graphics::u32_to_hex_without_alpha(main_color),
+                    &crate::graphics::u32_to_hex_without_alpha(main_color),
                 )
                 .replace(
                     "{secondary}",
-                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                    &crate::graphics::u32_to_hex_without_alpha(secondary_color),
                 ),
         )
         .map_err(|_| "draft.svg".to_string())?;
@@ -544,11 +542,11 @@ impl Cursors {
                 .to_string()
                 .replace(
                     "{main}",
-                    &graphics::u32_to_hex_without_alpha(main_color),
+                    &crate::graphics::u32_to_hex_without_alpha(main_color),
                 )
                 .replace(
                     "{secondary}",
-                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                    &crate::graphics::u32_to_hex_without_alpha(secondary_color),
                 ),
         )
         .map_err(|_| "fleur.svg".to_string())?;
@@ -563,11 +561,11 @@ impl Cursors {
                 .to_string()
                 .replace(
                     "{main}",
-                    &graphics::u32_to_hex_without_alpha(main_color),
+                    &crate::graphics::u32_to_hex_without_alpha(main_color),
                 )
                 .replace(
                     "{secondary}",
-                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                    &crate::graphics::u32_to_hex_without_alpha(secondary_color),
                 ),
         )
         .map_err(|_| "help.svg".to_string())?;
@@ -582,11 +580,11 @@ impl Cursors {
                 .to_string()
                 .replace(
                     "{main}",
-                    &graphics::u32_to_hex_without_alpha(main_color),
+                    &crate::graphics::u32_to_hex_without_alpha(main_color),
                 )
                 .replace(
                     "{secondary}",
-                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                    &crate::graphics::u32_to_hex_without_alpha(secondary_color),
                 ),
         )
         .map_err(|_| "left-arrow.svg".to_string())?;
@@ -601,11 +599,11 @@ impl Cursors {
                 .to_string()
                 .replace(
                     "{main}",
-                    &graphics::u32_to_hex_without_alpha(main_color),
+                    &crate::graphics::u32_to_hex_without_alpha(main_color),
                 )
                 .replace(
                     "{secondary}",
-                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                    &crate::graphics::u32_to_hex_without_alpha(secondary_color),
                 ),
         )
         .map_err(|_| "left_side.svg".to_string())?;
@@ -620,11 +618,11 @@ impl Cursors {
                 .to_string()
                 .replace(
                     "{main}",
-                    &graphics::u32_to_hex_without_alpha(main_color),
+                    &crate::graphics::u32_to_hex_without_alpha(main_color),
                 )
                 .replace(
                     "{secondary}",
-                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                    &crate::graphics::u32_to_hex_without_alpha(secondary_color),
                 ),
         )
         .map_err(|_| "no-drop.svg".to_string())?;
@@ -639,11 +637,11 @@ impl Cursors {
                 .to_string()
                 .replace(
                     "{main}",
-                    &graphics::u32_to_hex_without_alpha(main_color),
+                    &crate::graphics::u32_to_hex_without_alpha(main_color),
                 )
                 .replace(
                     "{secondary}",
-                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                    &crate::graphics::u32_to_hex_without_alpha(secondary_color),
                 ),
         )
         .map_err(|_| "not-allowed.svg".to_string())?;
@@ -658,11 +656,11 @@ impl Cursors {
                 .to_string()
                 .replace(
                     "{main}",
-                    &graphics::u32_to_hex_without_alpha(main_color),
+                    &crate::graphics::u32_to_hex_without_alpha(main_color),
                 )
                 .replace(
                     "{secondary}",
-                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                    &crate::graphics::u32_to_hex_without_alpha(secondary_color),
                 ),
         )
         .map_err(|_| "open-hand.svg".to_string())?;
@@ -677,11 +675,11 @@ impl Cursors {
                 .to_string()
                 .replace(
                     "{main}",
-                    &graphics::u32_to_hex_without_alpha(main_color),
+                    &crate::graphics::u32_to_hex_without_alpha(main_color),
                 )
                 .replace(
                     "{secondary}",
-                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                    &crate::graphics::u32_to_hex_without_alpha(secondary_color),
                 ),
         )
         .map_err(|_| "pencil.svg".to_string())?;
@@ -696,11 +694,11 @@ impl Cursors {
                 .to_string()
                 .replace(
                     "{main}",
-                    &graphics::u32_to_hex_without_alpha(main_color),
+                    &crate::graphics::u32_to_hex_without_alpha(main_color),
                 )
                 .replace(
                     "{secondary}",
-                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                    &crate::graphics::u32_to_hex_without_alpha(secondary_color),
                 ),
         )
         .map_err(|_| "pirate.svg".to_string())?;
@@ -715,11 +713,11 @@ impl Cursors {
                 .to_string()
                 .replace(
                     "{main}",
-                    &graphics::u32_to_hex_without_alpha(main_color),
+                    &crate::graphics::u32_to_hex_without_alpha(main_color),
                 )
                 .replace(
                     "{secondary}",
-                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                    &crate::graphics::u32_to_hex_without_alpha(secondary_color),
                 ),
         )
         .map_err(|_| "pointer.svg".to_string())?;
@@ -734,11 +732,11 @@ impl Cursors {
                 .to_string()
                 .replace(
                     "{main}",
-                    &graphics::u32_to_hex_without_alpha(main_color),
+                    &crate::graphics::u32_to_hex_without_alpha(main_color),
                 )
                 .replace(
                     "{secondary}",
-                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                    &crate::graphics::u32_to_hex_without_alpha(secondary_color),
                 ),
         )
         .map_err(|_| "right-arrow.svg".to_string())?;
@@ -753,11 +751,11 @@ impl Cursors {
                 .to_string()
                 .replace(
                     "{main}",
-                    &graphics::u32_to_hex_without_alpha(main_color),
+                    &crate::graphics::u32_to_hex_without_alpha(main_color),
                 )
                 .replace(
                     "{secondary}",
-                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                    &crate::graphics::u32_to_hex_without_alpha(secondary_color),
                 ),
         )
         .map_err(|_| "right_ptr.svg".to_string())?;
@@ -772,11 +770,11 @@ impl Cursors {
                 .to_string()
                 .replace(
                     "{main}",
-                    &graphics::u32_to_hex_without_alpha(main_color),
+                    &crate::graphics::u32_to_hex_without_alpha(main_color),
                 )
                 .replace(
                     "{secondary}",
-                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                    &crate::graphics::u32_to_hex_without_alpha(secondary_color),
                 ),
         )
         .map_err(|_| "right_side.svg".to_string())?;
@@ -791,11 +789,11 @@ impl Cursors {
                 .to_string()
                 .replace(
                     "{main}",
-                    &graphics::u32_to_hex_without_alpha(main_color),
+                    &crate::graphics::u32_to_hex_without_alpha(main_color),
                 )
                 .replace(
                     "{secondary}",
-                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                    &crate::graphics::u32_to_hex_without_alpha(secondary_color),
                 ),
         )
         .map_err(|_| "size_nesw.svg".to_string())?;
@@ -810,11 +808,11 @@ impl Cursors {
                 .to_string()
                 .replace(
                     "{main}",
-                    &graphics::u32_to_hex_without_alpha(main_color),
+                    &crate::graphics::u32_to_hex_without_alpha(main_color),
                 )
                 .replace(
                     "{secondary}",
-                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                    &crate::graphics::u32_to_hex_without_alpha(secondary_color),
                 ),
         )
         .map_err(|_| "size_nwse.svg".to_string())?;
@@ -829,11 +827,11 @@ impl Cursors {
                 .to_string()
                 .replace(
                     "{main}",
-                    &graphics::u32_to_hex_without_alpha(main_color),
+                    &crate::graphics::u32_to_hex_without_alpha(main_color),
                 )
                 .replace(
                     "{secondary}",
-                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                    &crate::graphics::u32_to_hex_without_alpha(secondary_color),
                 ),
         )
         .map_err(|_| "size_hor.svg".to_string())?;
@@ -848,11 +846,11 @@ impl Cursors {
                 .to_string()
                 .replace(
                     "{main}",
-                    &graphics::u32_to_hex_without_alpha(main_color),
+                    &crate::graphics::u32_to_hex_without_alpha(main_color),
                 )
                 .replace(
                     "{secondary}",
-                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                    &crate::graphics::u32_to_hex_without_alpha(secondary_color),
                 ),
         )
         .map_err(|_| "size_ver.svg".to_string())?;
@@ -867,11 +865,11 @@ impl Cursors {
                 .to_string()
                 .replace(
                     "{main}",
-                    &graphics::u32_to_hex_without_alpha(main_color),
+                    &crate::graphics::u32_to_hex_without_alpha(main_color),
                 )
                 .replace(
                     "{secondary}",
-                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                    &crate::graphics::u32_to_hex_without_alpha(secondary_color),
                 ),
         )
         .map_err(|_| "text.svg".to_string())?;
@@ -886,11 +884,11 @@ impl Cursors {
                 .to_string()
                 .replace(
                     "{main}",
-                    &graphics::u32_to_hex_without_alpha(main_color),
+                    &crate::graphics::u32_to_hex_without_alpha(main_color),
                 )
                 .replace(
                     "{secondary}",
-                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                    &crate::graphics::u32_to_hex_without_alpha(secondary_color),
                 ),
         )
         .map_err(|_| "top_left_corner.svg".to_string())?;
@@ -905,11 +903,11 @@ impl Cursors {
                 .to_string()
                 .replace(
                     "{main}",
-                    &graphics::u32_to_hex_without_alpha(main_color),
+                    &crate::graphics::u32_to_hex_without_alpha(main_color),
                 )
                 .replace(
                     "{secondary}",
-                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                    &crate::graphics::u32_to_hex_without_alpha(secondary_color),
                 ),
         )
         .map_err(|_| "top_right_corner.svg".to_string())?;
@@ -924,11 +922,11 @@ impl Cursors {
                 .to_string()
                 .replace(
                     "{main}",
-                    &graphics::u32_to_hex_without_alpha(main_color),
+                    &crate::graphics::u32_to_hex_without_alpha(main_color),
                 )
                 .replace(
                     "{secondary}",
-                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                    &crate::graphics::u32_to_hex_without_alpha(secondary_color),
                 ),
         )
         .map_err(|_| "top_side.svg".to_string())?;
@@ -943,11 +941,11 @@ impl Cursors {
                 .to_string()
                 .replace(
                     "{main}",
-                    &graphics::u32_to_hex_without_alpha(main_color),
+                    &crate::graphics::u32_to_hex_without_alpha(main_color),
                 )
                 .replace(
                     "{secondary}",
-                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                    &crate::graphics::u32_to_hex_without_alpha(secondary_color),
                 ),
         )
         .map_err(|_| "up-arrow.svg".to_string())?;
@@ -962,11 +960,11 @@ impl Cursors {
                 .to_string()
                 .replace(
                     "{main}",
-                    &graphics::u32_to_hex_without_alpha(main_color),
+                    &crate::graphics::u32_to_hex_without_alpha(main_color),
                 )
                 .replace(
                     "{secondary}",
-                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                    &crate::graphics::u32_to_hex_without_alpha(secondary_color),
                 ),
         )
         .map_err(|_| "vertical-text.svg".to_string())?;
@@ -981,11 +979,11 @@ impl Cursors {
                 .to_string()
                 .replace(
                     "{main}",
-                    &graphics::u32_to_hex_without_alpha(main_color),
+                    &crate::graphics::u32_to_hex_without_alpha(main_color),
                 )
                 .replace(
                     "{secondary}",
-                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                    &crate::graphics::u32_to_hex_without_alpha(secondary_color),
                 ),
         )
         .map_err(|_| "zoom-in.svg".to_string())?;
@@ -1000,11 +998,11 @@ impl Cursors {
                 .to_string()
                 .replace(
                     "{main}",
-                    &graphics::u32_to_hex_without_alpha(main_color),
+                    &crate::graphics::u32_to_hex_without_alpha(main_color),
                 )
                 .replace(
                     "{secondary}",
-                    &graphics::u32_to_hex_without_alpha(secondary_color),
+                    &crate::graphics::u32_to_hex_without_alpha(secondary_color),
                 ),
         )
         .map_err(|_| "zoom-out.svg".to_string())?;
@@ -1111,19 +1109,23 @@ pub struct BaseCursor {
     hot_spot_x: u16,
     hot_spot_y: u16,
 }
-#[must_use]
+
 #[cfg(feature = "keycodes")]
 /// Set the cursor of the current window
+///
+/// # Errors
+/// See [Errors]
 pub fn use_cursor(
     cursor: &Cursor,
     #[cfg(all(feature = "glfw", not(target_arch = "wasm32")))]
     glfw_window: Option<&mut glfw::Window>,
     #[cfg(not(all(feature = "glfw", not(target_arch = "wasm32"))))]
     _glfw_window: std::option::Option<NoneOnly>,
-) -> Errors {
+) -> Result<(), WindowError> {
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "glfw")]
     if let Some(additional_info) = glfw_window {
+        #[allow(irrefutable_let_patterns)]
         if let Cursor::Glfw(new_cursor) = cursor {
             use crate::graphics::buffer_to_pixel_image;
 
@@ -1136,18 +1138,23 @@ pub fn use_cursor(
             if given.1 == 0 || given.2 == 0 || given.1 > 1024 || given.2 > 1024
             {
                 //println!("Error: Invalid cursor dimensions");
-                return Errors::IncorrectSize((1, 1));
+                return Err(WindowError::IncorrectSize(
+                    (given.1, given.2).try_tuple_into().unwrap_or_default(),
+                ));
             }
             let new = glfw::Cursor::create_from_pixels(pixel, given.1, given.2);
 
             additional_info.set_cursor(Some(new));
         } else {
-            use crate::platform::framework_traits::Errors;
+            use crate::platform::frameworks::WindowError;
 
-            return Errors::Unknown;
+            return Err(WindowError::Misc(format!(
+                "Cursor of type Cursor::Glfw expected but got {cursor:?} instead"
+            )));
             //panic!("Cannot set GLFW cursor -> No cursors provided");
         }
-        return Errors::AllGood;
+        #[allow(unreachable_code)]
+        return Ok(());
     }
     match cursor {
         #[cfg(target_os = "windows")]
@@ -1163,23 +1170,24 @@ pub fn use_cursor(
 
         #[cfg(target_os = "linux")]
         Cursor::X11(xcursor_id) => {
-            return Errors::NotImplemented;
+            return Err(WindowError::NotImplemented);
             // Use the X11 cursor ID
             panic!("X11 cursor id: {}", xcursor_id.unwrap());
         }
 
         #[cfg(target_os = "macos")]
-        Cursor::Mac(ptr) => {
-            return Errors::NotImplemented;
+        Cursor::Mac(_ptr) => {
+            return Err(WindowError::NotImplemented);
             // Use macOS cursor pointer (e.g., NSCursor*)
             //panic!("macOS cursor pointer: {:?}", ptr.unwrap());
         }
         Cursor::Glfw(_) => {
-            return Errors::Misc("Impossible".to_string());
+            return Err(WindowError::Misc("Impossible".to_string()));
             //panic!("Cannot set GLFW cursor -> Not a GLFW context");
         }
     }
-    Errors::AllGood
+    #[allow(unreachable_code)]
+    Ok(())
 }
 
 // /// Converts the U2 into the actual cursor size, up to 255

@@ -1,5 +1,4 @@
-use std::collections::HashMap;
-use std::hash::BuildHasher;
+use std::{collections::HashMap, hash::BuildHasher};
 
 use crate::extensions::TryFromPatch;
 

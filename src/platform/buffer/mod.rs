@@ -17,6 +17,7 @@ unsafe impl std::marker::Send for Buffer {}
 unsafe impl std::marker::Sync for Buffer {}
 
 mod collision_support;
+mod draw;
 mod get_converted;
 mod get_pixel;
 mod manipulate;
@@ -25,7 +26,6 @@ mod new;
 mod set_color;
 mod set_pixel;
 mod trim;
-mod draw;
 
 /// A const buffer making money on more compile time optimizations
 pub mod const_buffer;

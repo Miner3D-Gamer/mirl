@@ -1,6 +1,5 @@
 use super::{draw_pixel_safe, draw_pixel_unsafe, DrawPixelFunction};
-use crate::extensions::*;
-use crate::platform::Buffer;
+use crate::{extensions::*, platform::Buffer};
 
 /// Draw a filled circle by checking if every pixel is inside the radius
 #[inline]

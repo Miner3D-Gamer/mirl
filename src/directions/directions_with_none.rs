@@ -30,9 +30,7 @@ impl RotateDirections for DirectionsWithNone {
     }
     fn rotate_180(&self) -> Self {
         match self {
-            Self::Base(direction) => {
-                Self::Base(direction.rotate_180())
-            }
+            Self::Base(direction) => Self::Base(direction.rotate_180()),
             Self::Special(SpecialDirections::None) => {
                 Self::Special(SpecialDirections::None)
             }

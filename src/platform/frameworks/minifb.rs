@@ -1,43 +1,55 @@
 // #[cfg(feature = "ico")]
 // use ico::{IconDir, IconDirEntry, IconImage, ResourceType};
 
-use super::framework_traits::{
-    Control, ExtendedControl, ExtendedTiming, ExtendedWindow, Input, Output,
-    Timing, Window,
+#[cfg(feature = "svg")]
+use super::super::mouse::load_base_cursor_with_file;
+#[cfg(feature = "svg")]
+use super::super::mouse::Cursor;
+#[cfg(feature = "keyboard_query")]
+use super::traits::ExtendedMouseInput;
+use super::{
+    super::{Buffer, Time},
+    traits::{
+        Control, ExtendedTiming, ExtendedWindow, MouseInput, Output, Timing,
+        Visibility, Window,
+    },
 };
-#[cfg(feature = "svg")]
-use super::mouse::load_base_cursor_with_file;
-#[cfg(feature = "svg")]
-use super::mouse::Cursor;
-use super::Time;
-use super::{time::NativeTime, Buffer};
-use crate::extensions::*;
 // #[cfg(feature = "ico")]
 // use crate::graphics::u32_to_rgba_u8;
-use crate::platform::framework_traits::CursorStyleControl;
-use crate::platform::framework_traits::Errors;
-use crate::platform::keycodes::KeyCode;
+use crate::platform::frameworks::traits::LoadCursorStyle;
 #[cfg(feature = "svg")]
 use crate::platform::mouse::CursorResolution;
 #[cfg(feature = "svg")]
 use crate::platform::mouse::LoadCursorError;
-use crate::platform::{MouseButton, WindowLevel};
 #[cfg(feature = "keyboard_query")]
-use crate::prelude::ExtendedInput;
-use crate::system::action::Decoration;
-use crate::system::action::Default;
-use crate::system::Os;
+use crate::prelude::ExtendedKeyboardInput;
+use crate::prelude::RenderLayer;
+#[cfg(feature = "svg")]
+use crate::prelude::UseCursorStyle;
+use crate::{
+    extensions::*,
+    platform::{
+        frameworks::{WindowError, WindowCreationError, WindowUpdateError},
+        keycodes::KeyCode,
+        shared, MouseButton, WindowLevel,
+    },
+    prelude::{IconControl, KeyboardInput, WindowSettings},
+    system::{
+        action::{Decoration, Default},
+        Os,
+    },
+};
 /// Backend implementation using `MiniFB`
 #[derive(Debug)]
 pub struct Framework {
     window: minifb::Window,
-    time: NativeTime,
     #[cfg(feature = "svg")]
     cursor_subclassed: bool,
 }
-
-fn minifb_window_options_from_options(
-    window_options: &super::WindowSettings,
+#[must_use]
+/// Convert [`WindowSettings`](WindowSettings) to [`WindowOptions`](minifb::WindowOptions)
+pub fn minifb_window_options_from_options(
+    window_options: &WindowSettings,
 ) -> minifb::WindowOptions {
     minifb::WindowOptions {
         borderless: window_options.borderless,
@@ -51,13 +63,83 @@ fn minifb_window_options_from_options(
     }
 }
 #[must_use]
-const fn minifb_error_to_error(error: &minifb::Error) -> Errors {
+/// Translate the minifb string error into an enum variant is possible
+pub fn minifb_window_creation_error_to_error(
+    error: &str,
+) -> WindowCreationError {
     match error {
-        minifb::Error::MenuExists(_) => Errors::DuplicateWindow,
-        minifb::Error::MenusNotSupported => Errors::OsNotSupported,
-        minifb::Error::UpdateFailed(_) | minifb::Error::WindowCreate(_) => {
-            Errors::Unknown
+        "Window transparency requires the borderless property" => {
+            WindowCreationError::TransparencyRequiresBorderlessProperty
         }
+        "Unable to create Window" => WindowCreationError::OsFailed,
+        _ => WindowCreationError::Misc(error.to_string()),
+    }
+}
+#[must_use]
+/// The update error "Buffer too small" string is a little more complicated because it's a formatted string
+pub fn parse_update_buffer_size_mismatch_error(
+    input: &str,
+) -> Option<(usize, usize, usize, usize, usize)> {
+    let prefix =
+        "Update failed because input buffer is too small. Required size for ";
+    let rest = input.strip_prefix(prefix)?;
+
+    let mut parts = rest.split(' ');
+
+    let buf_width = parts.next()?.parse().ok()?;
+    let buf_stride = parts
+        .next()?
+        .trim_start_matches('(')
+        .trim_end_matches(" stride)")
+        .parse()
+        .ok()?;
+
+    let after_stride = parts.collect::<Vec<_>>().join(" ");
+    let after_stride = after_stride.strip_prefix("x ")?;
+
+    let mut p = after_stride.split(" buffer is ");
+    let buf_height = p.next()?.parse().ok()?;
+    let rest2 = p.next()?;
+
+    let mut p2 =
+        rest2.split(" bytes but the size of the input buffer has the size ");
+    let required = p2.next()?.parse().ok()?;
+    let actual = p2.next()?.trim_end_matches(" bytes").parse().ok()?;
+
+    Some((buf_width, buf_stride, buf_height, required, actual))
+}
+#[must_use]
+/// Convert the given update error string into an [enum variant](WindowUpdateError)
+pub fn minifb_window_update_error_to_error(error: &str) -> WindowUpdateError {
+    parse_update_buffer_size_mismatch_error(error).map_or_else(
+        || {
+            #[allow(clippy::match_single_binding)]
+            match error {
+                _ => WindowUpdateError::Misc(error.to_string()),
+            }
+        },
+        |val| WindowUpdateError::BufferInvalidSize {
+            width: val.0,
+            stride: val.1,
+            height: val.2,
+            expected: val.3,
+            gotten: val.4,
+        },
+    )
+}
+
+#[must_use]
+/// Convert the given given minifb error into the mirl equitant
+pub fn minifb_error_to_error(error: &minifb::Error) -> WindowError {
+    match error {
+        minifb::Error::MenuExists(_) => WindowError::DuplicateWindow,
+        minifb::Error::MenusNotSupported => WindowError::OsNotSupported,
+        minifb::Error::WindowCreate(reason) => WindowError::FailedToOpenWindow(
+            minifb_window_creation_error_to_error(reason),
+        ),
+        minifb::Error::UpdateFailed(reason) => WindowError::FailedToUpdateWindow(
+            minifb_window_update_error_to_error(reason),
+        ),
     }
 }
 
@@ -65,10 +147,7 @@ impl Window for Framework {
     /// Settings not accounted for:
     ///
     /// visible
-    fn new(
-        title: &str,
-        settings: super::WindowSettings,
-    ) -> Result<Self, Errors> {
+    fn new(title: &str, settings: WindowSettings) -> Result<Self, WindowError> {
         let width = settings.size.0;
         let height = settings.size.1;
         let mut window = match minifb::Window::new(
@@ -79,12 +158,7 @@ impl Window for Framework {
         ) {
             Ok(w) => w,
             Err(er) => {
-                return Err(match er {
-                    minifb::Error::MenuExists(_) => Errors::DuplicateWindow,
-                    minifb::Error::MenusNotSupported => Errors::OsNotSupported,
-                    minifb::Error::UpdateFailed(_)
-                    | minifb::Error::WindowCreate(_) => Errors::Unknown,
-                });
+                return Err(minifb_error_to_error(&er));
             }
         };
 
@@ -102,17 +176,21 @@ impl Window for Framework {
         );
         Ok(Self {
             window,
-            time: NativeTime::new(),
             #[cfg(feature = "svg")]
             cursor_subclassed: false,
         })
     }
     #[inline]
-    fn update(&mut self, buffer: &[u32]) -> Errors {
-        let s = self.window.get_size();
-        match self.window.update_with_buffer(buffer, s.0, s.1) {
-            Ok(()) => Errors::AllGood,
-            Err(e) => minifb_error_to_error(&e),
+    fn update_raw(
+        &mut self,
+        buffer: &[u32],
+        width: usize,
+        height: usize,
+    ) -> Result<(), WindowError> {
+        //let s = self.window.get_size();
+        match self.window.update_with_buffer(buffer, width, height) {
+            Ok(()) => Ok(()),
+            Err(e) => Err(minifb_error_to_error(&e)),
         }
     }
 
@@ -122,17 +200,13 @@ impl Window for Framework {
     }
 }
 
-impl Input for Framework {
+impl MouseInput for Framework {
     #[inline]
     fn get_mouse_position(&self) -> Option<(i32, i32)> {
         let value =
             self.window.get_unscaled_mouse_pos(minifb::MouseMode::Pass)?;
 
         value.try_tuple_into()
-    }
-    #[inline]
-    fn is_key_down(&self, key: KeyCode) -> bool {
-        self.window.is_key_down(map_keycode_to_minifb(key))
     }
     #[inline]
     fn is_mouse_down(&self, button: MouseButton) -> bool {
@@ -142,37 +216,44 @@ impl Input for Framework {
         false
     }
 }
+impl KeyboardInput for Framework {
+    #[inline]
+    fn is_key_down(&self, key: KeyCode) -> bool {
+        self.window.is_key_down(map_keycode_to_minifb(key))
+    }
+}
 
 impl Output for Framework {
     #[inline]
     fn log(&self, t: &str) {
-        super::shared::log(t);
+        shared::log(t);
     }
 }
 
 impl Timing for Framework {
     #[inline]
     fn get_time(&self) -> Box<dyn Time> {
-        super::shared::get_time()
+        shared::get_time()
     }
-    #[inline]
-    fn get_delta_time(&mut self) -> f64 {
-        let (time, r) = super::shared::sample_fps(&self.time);
-        self.time = time;
-        r
-    }
+    // #[inline]
+    // fn get_delta_time(&mut self) -> f64 {
+    //     let (time, r) = shared::sample_fps(&self.time);
+    //     self.time = time;
+    //     r
+    // }
     #[inline]
     fn sleep(&self, time: std::time::Duration) {
-        super::shared::sleep(time);
+        shared::sleep(time);
     }
 }
 use crate::system::action::Iconized;
-
-impl ExtendedControl for Framework {
+impl RenderLayer for Framework {
     #[inline]
     fn set_render_layer(&mut self, level: WindowLevel) {
         crate::system::Os::set_window_level(&self.get_window_handle(), level);
     }
+}
+impl Visibility for Framework {
     #[inline]
     fn maximize(&mut self) {
         Os::maximize(&self.get_window_handle());
@@ -193,8 +274,7 @@ impl ExtendedControl for Framework {
     }
 }
 
-#[cfg(feature = "keyboard_query")]
-impl ExtendedInput for Framework {
+impl ExtendedMouseInput for Framework {
     #[inline]
     fn get_mouse_scroll(&self) -> Option<(f32, f32)> {
         let t = self.window.get_scroll_wheel();
@@ -202,36 +282,25 @@ impl ExtendedInput for Framework {
         let (x, y) = t?;
         (x, y).try_tuple_into()
     }
+}
+#[cfg(feature = "keyboard_query")]
+impl ExtendedKeyboardInput for Framework {
     fn get_all_keys_down(&self) -> Vec<KeyCode> {
-        super::keyboard::get_all_pressed_keys()
+        use crate::platform::keyboard;
+
+        keyboard::get_all_pressed_keys()
     }
 }
 
 #[cfg(feature = "svg")]
-impl CursorStyleControl for Framework {
-    #[inline]
-    fn set_cursor_style(&mut self, style: &Cursor) -> Errors {
-        #[cfg(target_os = "windows")]
-        {
-            if !self.cursor_subclassed {
-                unsafe {
-                    super::mouse::cursors_windows::subclass_window(
-                        self.get_window_handle(),
-                        style,
-                    );
-                }
-                self.cursor_subclassed = true;
-            }
-        }
-        super::mouse::use_cursor(style, None)
-    }
+impl LoadCursorStyle for Framework {
     fn load_custom_cursors(
         &mut self,
         size: CursorResolution,
         main_color: u32,
         secondary_color: u32,
-    ) -> Result<super::mouse::Cursors, LoadCursorError> {
-        super::mouse::Cursors::load(
+    ) -> Result<super::super::mouse::Cursors, LoadCursorError> {
+        super::super::mouse::Cursors::load(
             size,
             main_color,
             secondary_color,
@@ -243,12 +312,12 @@ impl CursorStyleControl for Framework {
     }
     fn load_custom_cursor(
         &mut self,
-        image: super::Buffer,
+        image: super::super::Buffer,
         hotspot: (u8, u8),
-    ) -> Result<super::mouse::Cursor, LoadCursorError> {
+    ) -> Result<super::super::mouse::Cursor, LoadCursorError> {
         #[cfg(feature = "cursor_show_hotspot")]
         let mut image = image;
-        super::mouse::cursors_windows::load_cursor(
+        super::super::mouse::cursors_windows::load_cursor(
             #[cfg(feature = "cursor_show_hotspot")]
             &mut image,
             #[cfg(not(feature = "cursor_show_hotspot"))]
@@ -260,6 +329,32 @@ impl CursorStyleControl for Framework {
         .map(Cursor::Win)
     }
 }
+#[cfg(feature = "svg")]
+impl UseCursorStyle for Framework {
+    #[inline]
+    fn set_cursor_style(&mut self, style: &Cursor) -> Result<(), WindowError> {
+        #[cfg(target_os = "windows")]
+        {
+            if !self.cursor_subclassed {
+                unsafe {
+                    super::super::mouse::cursors_windows::subclass_window(
+                        self.get_window_handle(),
+                        style,
+                    );
+                }
+                self.cursor_subclassed = true;
+            }
+        }
+        super::super::mouse::use_cursor(style, None)
+    }
+}
+
+// impl BufferScaling for Framework {
+//     fn get_scale_level(&self) -> super::WindowScale {}
+//     fn set_scale_level(&mut self, scale: super::WindowScale) {
+//         self.window.sca
+//     }
+// }
 
 impl ExtendedTiming for Framework {
     #[inline]
@@ -268,17 +363,9 @@ impl ExtendedTiming for Framework {
     }
 }
 
-impl ExtendedWindow for Framework {
+impl IconControl for Framework {
     #[inline]
-    fn set_title(&mut self, title: &str) {
-        self.window.set_title(title);
-    }
-    // #[inline]
-    // fn wait(&self, time: u64) {
-    //     std::thread::sleep(Duration::from_millis(time));
-    // }
-    #[inline]
-    fn set_icon(&mut self, buffer: &Buffer) -> Errors {
+    fn set_icon(&mut self, buffer: &Buffer) -> Result<(), WindowError> {
         // assert_eq!(
         //     buffer.len(),
         //     (width * height) as usize,
@@ -306,24 +393,29 @@ impl ExtendedWindow for Framework {
             let ico_path = temp_dir.join("temp_icon.ico");
             let string_path = match ico_path.to_str() {
                 Some(v) => v.to_string(),
-                None => return Errors::Unknown,
+                None => {
+                    return Err(WindowError::Misc(format!(
+                        "Unable to convert '{}' to string",
+                        ico_path.display()
+                    )))
+                }
             };
 
             match std::fs::write(&ico_path, &ico_data) {
                 Ok(()) => {}
                 Err(_) => {
-                    return Errors::FileAccessNotPossible {
+                    return Err(WindowError::FileAccessNotPossible {
                         path: string_path,
-                    };
+                    });
                 }
             }
             if let Ok(p) = minifb::Icon::from_str(&string_path) {
                 self.window.set_icon(p);
             } else {
-                return Errors::Unknown;
+                return Err(WindowError::UnableToLoadIcon);
             }
 
-            return Errors::AllGood;
+            return Ok(());
         }
 
         // For non-Windows platforms, try the buffer approach
@@ -343,11 +435,22 @@ impl ExtendedWindow for Framework {
             );
 
             self.window.set_icon(icon);
-            return Errors::AllGood;
+            return WindowError::AllGood;
         }
         #[allow(unused)]
-        return Errors::NotImplemented;
+        return Err(WindowError::NotImplemented);
     }
+}
+
+impl ExtendedWindow for Framework {
+    #[inline]
+    fn set_title(&mut self, title: &str) {
+        self.window.set_title(title);
+    }
+    // #[inline]
+    // fn wait(&self, time: u64) {
+    //     std::thread::sleep(Duration::from_millis(time));
+    // }
     fn get_window_handle(&self) -> raw_window_handle::RawWindowHandle {
         get_native_window_handle_from_minifb(&self.window)
     }

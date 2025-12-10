@@ -510,7 +510,9 @@ where
 /// Converts a tuple of size 12 into a another tuple of size 12 yet with a different unified output
 pub const trait ConstTuple12Into<T> {
     /// The tuple version of `into()`
-    fn const_try_tuple_into(self) -> Option<(T, T, T, T, T, T, T, T, T, T, T, T)>;
+    fn const_try_tuple_into(
+        self,
+    ) -> Option<(T, T, T, T, T, T, T, T, T, T, T, T)>;
 }
 
 impl<

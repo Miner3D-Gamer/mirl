@@ -2,7 +2,7 @@
 #![allow(clippy::many_single_char_names)]
 
 use crate::{
-    graphics::{rgba_to_u32, u32_to_rgba_u8, u32_to_rgba},
+    graphics::{rgba_to_u32, u32_to_rgba, u32_to_rgba_u8},
     math::interpolate,
 };
 
@@ -27,7 +27,6 @@ pub enum InterpolationMode {
     /// Mitchell–Netravali - Balanced sharpness and smoothness
     MitchellNetravali,
 }
-
 
 #[must_use]
 #[allow(clippy::cast_sign_loss)]

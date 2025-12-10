@@ -46,7 +46,7 @@ def remove_items(list: list[str], items: list[str]):
         remove_items(list, v)
 
 
-unique_sub_lists = {}
+unique_sub_lists: dict[tuple[str, ...], list[str]] = {}
 
 for key, items in flags.items():
     sub_list = list(deepcopy(flags))
@@ -61,7 +61,7 @@ for key, items in flags.items():
         unique_sub_lists[sub_list_tuple] = []
     unique_sub_lists[sub_list_tuple].append(key)
 
-total_combinations = []
+total_combinations: list[tuple[str, ...]] = []
 
 total = 0
 for sub_list_tuple, keys in unique_sub_lists.items():
@@ -73,7 +73,7 @@ for sub_list_tuple, keys in unique_sub_lists.items():
         f"Keys {keys} -> {len(sub_list_tuple)} flags, {val} permutations each, {count} occurrences: {sub_list_tuple}"
     )
 
-print("Estimated Total:", total)
+print("Estimated Total:", total + 2)
 # total_combinations = [list(x) for x in total_combinations]
 # [x.sort() for x in total_combinations]
 # [print(list(x)) for x in total_combinations]
@@ -82,8 +82,8 @@ print("Estimated Total:", total)
 import itertools
 
 
-def all_orders(lst):
-    out = []
+def all_orders(lst: list[tuple[str, ...]]):
+    out: list[tuple[tuple[str, ...], ...]] = []
     n = len(lst)
     for r in range(1, n + 1):
         for combo in itertools.combinations(lst, r):
@@ -92,23 +92,23 @@ def all_orders(lst):
     return out
 
 
-final_combinations: list[list[str]] = []
+final_combinations: list[list[tuple[str, ...]]] = []
 for x in total_combinations:
-    comb = all_orders(x)
+    comb = all_orders(x)  # type: ignore
     comb = [list(x) for x in comb]
     [x.sort() for x in comb]
     comb = [tuple(x) for x in comb]
     final_combinations.extend(comb)
 
 
-print("With duplicates:", len(final_combinations) + 1)
+print("With duplicates:", len(final_combinations) + 2)
 final_combinations = list(set(final_combinations))
-print("Without duplicates:", len(final_combinations) + 1)
+print("Without duplicates:", len(final_combinations) + 2)
 final_combinations.append([])
+final_combinations.insert(0, ["all"])  # type: ignore
 
 import subprocess
 import time
-from itertools import combinations
 from rich.console import Console
 from rich.progress import (
     Progress,
@@ -119,7 +119,7 @@ from rich.progress import (
 
 console = Console()
 
-errors = []
+errors: list[tuple[list[tuple[str, ...]], str]] = []
 
 total = len(final_combinations)
 start_time = time.time()
@@ -136,12 +136,19 @@ with Progress(
 
     for idx, combo in enumerate(final_combinations, start=1):
         console.print(
-            f"\n[cyan]Trying combination {idx}/{total}:[/cyan] [bold]{', '.join(combo)}[/bold]"
+            f"\n[cyan]Trying combination {idx}/{total}:[/cyan] [bold]{', '.join(combo)}[/bold]"  # type: ignore
         )
 
-        cmd = ["cargo", "check", "--no-default-features"]
+        cmd = [
+            "cargo",
+            "+nightly",
+            "check",
+            "-Zfeatures=itarget",
+            "--lib",
+            "--no-default-features",
+        ]
         for feature in combo:
-            cmd.extend(["--features", feature])
+            cmd.extend(["--features", feature])  # type: ignore
 
         result = subprocess.run(
             cmd,

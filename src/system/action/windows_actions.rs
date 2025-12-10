@@ -284,13 +284,11 @@ impl Misc for WindowsActions {
 
 extern crate winapi;
 
-use windows::Win32::UI::WindowsAndMessaging::{
-    GetClientRect, SetWindowPos, SWP_NOSIZE, SWP_NOZORDER,
-};
-use windows::{
-    Win32::Foundation::HWND,
-    Win32::UI::WindowsAndMessaging::{
-        GetWindowLongW, SetWindowLongW, GWL_EXSTYLE, WS_EX_LAYERED,
+use windows::Win32::{
+    Foundation::HWND,
+    UI::WindowsAndMessaging::{
+        GetClientRect, GetWindowLongW, SetWindowLongW, SetWindowPos,
+        GWL_EXSTYLE, SWP_NOSIZE, SWP_NOZORDER, WS_EX_LAYERED,
         WS_EX_TRANSPARENT,
     },
 };
@@ -312,10 +310,12 @@ use windows::{
     },
 };
 
-use crate::platform::{Buffer, WindowLevel};
-use crate::system::action::{
-    CpuPriority, Decoration, Default, Host, Iconized, Misc, ProgressionState,
-    Screen, TaskBar, Transparency,
+use crate::{
+    platform::{Buffer, WindowLevel},
+    system::action::{
+        CpuPriority, Decoration, Default, Host, Iconized, Misc,
+        ProgressionState, Screen, TaskBar, Transparency,
+    },
 };
 
 #[allow(trivial_casts)]
@@ -1023,16 +1023,18 @@ fn get_title_using_id_raw(hwnd: winapi::shared::windef::HWND) -> String {
     }
 }
 
-use windows::Win32::System::Threading::{
-    OpenProcess, OpenThread, SetPriorityClass, SetThreadPriority,
-    ABOVE_NORMAL_PRIORITY_CLASS, BELOW_NORMAL_PRIORITY_CLASS,
-    HIGH_PRIORITY_CLASS, IDLE_PRIORITY_CLASS, NORMAL_PRIORITY_CLASS,
-    PROCESS_SET_INFORMATION, REALTIME_PRIORITY_CLASS,
-    THREAD_PRIORITY_ABOVE_NORMAL, THREAD_PRIORITY_BELOW_NORMAL,
-    THREAD_PRIORITY_HIGHEST, THREAD_PRIORITY_IDLE, THREAD_PRIORITY_NORMAL,
-    THREAD_PRIORITY_TIME_CRITICAL, THREAD_SET_INFORMATION,
+use windows::Win32::{
+    System::Threading::{
+        OpenProcess, OpenThread, SetPriorityClass, SetThreadPriority,
+        ABOVE_NORMAL_PRIORITY_CLASS, BELOW_NORMAL_PRIORITY_CLASS,
+        HIGH_PRIORITY_CLASS, IDLE_PRIORITY_CLASS, NORMAL_PRIORITY_CLASS,
+        PROCESS_SET_INFORMATION, REALTIME_PRIORITY_CLASS,
+        THREAD_PRIORITY_ABOVE_NORMAL, THREAD_PRIORITY_BELOW_NORMAL,
+        THREAD_PRIORITY_HIGHEST, THREAD_PRIORITY_IDLE, THREAD_PRIORITY_NORMAL,
+        THREAD_PRIORITY_TIME_CRITICAL, THREAD_SET_INFORMATION,
+    },
+    UI::WindowsAndMessaging::GetWindowThreadProcessId,
 };
-use windows::Win32::UI::WindowsAndMessaging::GetWindowThreadProcessId;
 
 /// Set the priority of a running process
 pub fn set_cpu_priority(hwnd: HWND, priority: CpuPriority) {
@@ -1183,6 +1185,7 @@ pub fn set_taskbar_progress_value(
     Ok(())
 }
 use winapi::um::winuser::GetSystemMetrics;
+
 fn get_screen_resolution() -> (i32, i32) {
     let width = unsafe { GetSystemMetrics(winapi::um::winuser::SM_CXSCREEN) };
     let height = unsafe { GetSystemMetrics(winapi::um::winuser::SM_CYSCREEN) };

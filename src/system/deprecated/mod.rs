@@ -50,5 +50,4 @@ pub trait Network {
     fn is_connected_to_internet(website_connection: Option<String>) -> bool;
 }
 
-
 // use crate::graphics::Buffer;

@@ -62,16 +62,13 @@ impl Buffer {
     pub fn is_row_transparent(&self, row: usize) -> bool {
         let start = row * self.width;
         let end = start + self.width;
-        self.data[start..end]
-            .iter()
-            .all(|&pixel| get_alpha_of_u32(pixel) == 0)
+        self.data[start..end].iter().all(|&pixel| get_alpha_of_u32(pixel) == 0)
     }
     #[must_use]
     /// Checks if the requested column only has fully transparent pixels
     pub fn is_col_transparent(&self, col: usize) -> bool {
-        (0..self.height).all(|row| {
-            get_alpha_of_u32(self.data[row * self.width + col]) == 0
-        })
+        (0..self.height)
+            .all(|row| get_alpha_of_u32(self.data[row * self.width + col]) == 0)
     }
     /// Trims the image by the given restrictions
     pub fn apply_trim(

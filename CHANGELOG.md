@@ -1,3 +1,100 @@
+# Version 8.0.0
+
+> Enhanced cross-platform support
+
+## Breaking Changes:
+
+### Big changes:
+
+- Moved multiple items to new modules:
+  | Item | Old Location | New Location |
+  |-|-|-|
+  | `minifb` | `mirl::platform::minifb` | `mirl::platform::frameworks::minifb` |
+  | `glfw` | `mirl::platform::glfw` | `mirl::platform::frameworks::glfw` |
+  | `framework_traits` | `mirl::platform::framework_traits` | `mirl::platform::frameworks::traits` |
+
+- Split `mirl::platform::framework_traits::Window::update` into two functions:
+
+  - `update_raw` - Update without buffer
+  - `update_with_buffer` - Update with buffer data
+
+- Renamed methods:
+  | Old Name | New Name |
+  |-|-|
+  | `WindowSettings::set_position_to_middle_of_screen` | `WindowSettings::center_window` |
+  |`mirl::platform::frameworks::Errors`|`mirl::platform::frameworks::WindowError`|
+
+### Minor changes:
+
+- `mirl::platform::framework_traits::Errors` changes:
+  - Removed `AllGood` - Functions now return `Result<(), Errors>` instead
+  - Removed `Unknown` - Functions now return `Errors::Misc` with description instead
+- Removed `get_delta_time` from `mirl::platform::frameworks::Timing`
+- Removed `native_time` field from all frameworks
+- `mirl::constants::bytes` constants are now `u128` instead of a mix of `usize` and `u128`
+
+## Migration Guide
+
+- **Update module imports:**
+
+  - `mirl::platform::minifb` → `mirl::platform::frameworks::minifb`
+  - `mirl::platform::glfw` → `mirl::platform::frameworks::glfw`
+  - `mirl::platform::framework_traits` → `mirl::platform::frameworks::traits`
+
+  Note: Old paths are temporarily re-exported with deprecation warnings for easier migration
+
+- **Update Window trait usage:**
+
+  - Replace `window.update()` with `window.update_raw()` or `window.update_with_buffer()`
+  - Use `mirl::platform::frameworks::traits::DeprecatedCompatibilityHelper` for temporary compatibility
+
+- **Update error handling:**
+
+  - Replace `Errors::AllGood` checks with `Result<(), Errors>` pattern matching
+  - Replace `Errors::Unknown` with `Errors::Misc`
+  - Use new `WindowCreationError` and `WindowUpdateError` enums for explicit error types
+
+- **Update trait implementations:**
+
+  - Split `set_icon` from `ExtendedWindow` into `MouseInput`
+  - Update `Input` implementations to use `MouseInput` and `KeyboardInput`
+  - Update `ExtendedInput` implementations to use `ExtendedMouseInput` and `ExtendedKeyboardInput`
+  - Split `CursorStyleControl` into `LoadCursorStyle` and `UseCursorStyle`
+  - Split `ExtendedControl` into `Visibility` and `RenderLayer`
+
+- **Update WindowSettings:**
+
+  - Replace `set_position_to_middle_of_screen()` with `center_window()`
+
+- **Update timing code:**
+  - Remove `get_delta_time()` from `mirl::platform::frameworks::Timing`
+  - Remove `native_time` field for both backends
+
+## Added:
+
+- `WindowSettings::fullscreen` - Set window to fullscreen mode
+- Implemented `std::error::Error` to `mirl::platform::frameworks::WindowError`
+- `mirl::platform::frameworks::traits::DeprecatedCompatibilityHelper` - Temporary helper for migration with `update` function
+- `WindowCreationError` enum for explicit window creation error handling
+- `WindowUpdateError` enum for explicit window update error handling
+- `Rectangle::get_pos` - Get position helper function
+- `Rectangle::get_size` - Get size helper function
+- `mirl::compile_time_dependency_errors` - Formal compile time errors for unusual flag combinations
+- Platform compilation support:
+  - `wasm32-unknown-unknown` - Compiles with some missing features like IO and framework options, almost no functions implemented for web in `mirl::system::Os`
+  - `x86_64-apple-darwin` / `aarch64-apple-darwin` - Compiles with MiniFB disabled, no functions implemented for mac in `mirl::system::Os`
+
+## Changes:
+
+- Made all error conversion functions public in `mirl::platform::minifb`
+
+## Misc:
+
+- Improved test_flags.py performance (2x faster) so expect more configurability in the future
+- Updated source code formatting settings
+
+---
+
 # Version 7.1.2
 
 Fixed some oversights which prevented some flag combinations from compiling.

@@ -149,6 +149,11 @@ impl WindowSettings {
     /// For size a buffer is required
     /// For position, it will be centered on the screen
     #[must_use]
+    #[cfg(any(
+        target_arch = "wasm32",
+        target_os = "linux",
+        target_os = "windows"
+    ))]
     pub fn default(buffer: &Buffer) -> Self {
         let size =
             (buffer.width, buffer.height).try_tuple_into().unwrap_or_default();
@@ -222,12 +227,40 @@ impl WindowSettings {
         self
     }
     #[must_use]
+    #[cfg(any(
+        target_arch = "wasm32",
+        target_os = "linux",
+        target_os = "windows"
+    ))]
     /// Sets the position of the window to be centered on the screen
-    pub fn set_position_to_middle_of_screen(mut self) -> Self {
+    pub fn center_window(mut self) -> Self {
         self.position = crate::system::get_center_of_screen_for_object(
             self.size.0,
             self.size.1,
         );
+        self
+    }
+    /// Multiply the size of the window
+    #[must_use]
+    pub const fn multiply_size(mut self, by: i32) -> Self {
+        self.size = self.size.mul((by, by));
+        self
+    }
+    #[cfg(any(
+        target_arch = "wasm32",
+        target_os = "linux",
+        target_os = "windows"
+    ))]
+    /// Multiply the size of the window
+    #[must_use]
+    pub fn fullscreen(mut self) -> Self {
+        use crate::system::action::Screen;
+        // The screen cannot be negative so unwrapping is safe
+        self.size = unsafe {
+            crate::system::Os::get_screen_resolution()
+                .const_try_tuple_into()
+                .unwrap_unchecked()
+        };
         self
     }
 }
@@ -242,6 +275,25 @@ pub enum WindowLevel {
     /// Render layer on the top -> Always on top of '[`WindowLevel::Normal`]'
     AlwaysOnTop,
 }
+// #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
+// /// The scale at which the given window buffer should be displayed as
+// pub enum WindowScale {
+//     /// Whether to scale the buffer to match the screen size.
+//     FitScreen,
+//     #[default]
+//     /// 1:1 pixel scale.
+//     X1,
+//     /// 1:2 pixel scale.
+//     X2,
+//     /// 1:4 pixel scale.
+//     X4,
+//     /// 1:8 pixel scale.
+//     X8,
+//     /// 1:16 pixel scale.
+//     X16,
+//     /// 1:32 pixel scale.
+//     X32,
+// }
 
 #[cfg(feature = "keycodes")]
 #[cfg(all(feature = "svg", feature = "system"))]
@@ -253,25 +305,26 @@ mod buffer;
 #[cfg(feature = "std")]
 pub use buffer::*;
 
-// Windows
-#[cfg(not(target_arch = "wasm32"))]
-#[cfg(feature = "minifb")]
-#[cfg(feature = "keycodes")]
+/// All backend related structs/traits
 #[cfg(feature = "std")]
-/// The minifb version of the backend
-pub mod minifb;
-
-#[cfg(not(target_arch = "wasm32"))]
+pub mod frameworks;
+#[cfg(feature = "std")]
+#[deprecated(note = "Replace `glfw` with `framework::glfw` instead ")]
 #[cfg(feature = "glfw")]
-#[cfg(feature = "keycodes")]
+#[cfg(not(target_arch = "wasm32"))]
+pub use frameworks::glfw;
+#[deprecated(note = "Replace `minifb` with `framework::minifb` instead")]
+#[cfg(feature = "minifb")]
+#[cfg(not(target_arch = "wasm32"))]
+#[cfg(any(not(target_os = "macos"), feature = "mac_cc_installed"))]
+pub use frameworks::minifb;
+#[deprecated(
+    note = "Replace `framework_traits` with `frameworks::traits` instead"
+)]
 #[cfg(feature = "std")]
-/// The glfw version of the backend
-pub mod glfw;
-
 #[cfg(feature = "system")]
-#[cfg(feature = "std")]
-/// Traits used by the backends
-pub mod framework_traits;
+pub use frameworks::traits as framework_traits;
+
 #[cfg(all(
     //feature = "svg",
     feature = "system",

@@ -1,8 +1,7 @@
 /// The simplest actions you would expect from interacting with the os
 ///
 /// TODO: Add error handling (Currently silent)
-#[const_trait]
-pub trait Default {
+pub const trait Default {
     /// Set the position of a window, ¯\_(ツ)_/¯
     fn set_window_position(
         handle: &raw_window_handle::RawWindowHandle,
@@ -205,6 +204,26 @@ pub mod linux_actions;
 #[cfg(target_os = "linux")]
 pub use linux_actions::LinuxActions as Os;
 
+#[cfg(target_arch = "wasm32")]
+/// An OS specific library, only use when necessary
+pub mod web_actions;
+#[cfg(target_arch = "wasm32")]
+pub use web_actions::WebActions as Os;
+
+#[cfg(target_os = "macos")]
+/// An OS specific library, only use when necessary
+pub mod mac_actions;
+#[cfg(target_os = "macos")]
+pub use mac_actions::MacActions as Os;
+
+#[cfg(not(any(
+    target_arch = "wasm32",
+    target_os = "linux",
+    target_os = "windows",
+    target_os = "macos"
+)))]
+/// A last resort, not to be used by any devs but the Os struct import from super::
+pub struct Os {}
 // #[cfg(target_arch = "wasm32")]
 // /// An OS specific library, only use when necessary
 // pub mod web_actions;

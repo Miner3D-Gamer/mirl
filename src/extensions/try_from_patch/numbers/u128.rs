@@ -68,5 +68,5 @@ impl const TryFromPatch<u128> for f64 {
     fn try_from_value(v: u128) -> Option<Self> {
         Some(v as Self)
     }
-}use crate::extensions::TryFromPatch;
-
+}
+use crate::extensions::TryFromPatch;

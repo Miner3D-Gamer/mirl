@@ -48,6 +48,16 @@ where
             height,
         }
     }
+    #[must_use]
+    /// Get the current position
+    pub const fn get_pos(&self) -> (T, T) {
+        (self.x, self.y)
+    }
+    #[must_use]
+    /// Get the current size
+    pub const fn get_size(&self) -> (T, T) {
+        (self.width, self.height)
+    }
     /// Get the current x
     #[must_use]
     pub const fn get_x(&self) -> T {

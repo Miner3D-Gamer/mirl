@@ -1,32 +1,34 @@
 use std::time::Duration;
 
-use glfw::Action;
-use glfw::Context;
+use glfw::{Action, Context};
 
-use super::framework_traits::{
-    ExtendedControl, ExtendedInput, ExtendedWindow, Output, Timing,
-};
 use super::{
-    framework_traits::{Control, Input, Window},
-    time::NativeTime,
-    MouseButton, Time,
+    super::{MouseButton, Time},
+    traits::{
+        Control, ExtendedMouseInput, ExtendedWindow, MouseInput, Output,
+        Timing, Visibility, Window,
+    },
 };
-#[cfg(feature = "svg")]
-use crate::platform::framework_traits::CursorStyleControl;
-#[cfg(feature = "svg")]
-use crate::platform::mouse::CursorResolution;
 #[cfg(feature = "svg")]
 use crate::platform::mouse::cursor_glfw::cursor_from_buffer;
+#[cfg(feature = "svg")]
+use crate::platform::mouse::CursorResolution;
 #[cfg(feature = "svg")]
 use crate::platform::mouse::LoadCursorError;
 #[cfg(target_os = "windows")]
 use crate::platform::WindowLevel;
-use crate::system::action::{Decoration, Default};
-use crate::Buffer;
 use crate::{
     extensions::*,
-    graphics,
-    platform::{framework_traits::Errors, keycodes::KeyCode},
+    platform::{
+        frameworks::{WindowError, WindowCreationError},
+        keycodes::KeyCode,
+    },
+    prelude::{ExtendedKeyboardInput, KeyboardInput, RenderLayer},
+    system::action::{Decoration, Default},
+};
+#[cfg(feature = "svg")]
+use crate::{
+    platform::frameworks::traits::LoadCursorStyle, prelude::UseCursorStyle,
 };
 /// glfw implementation of Framework
 #[derive(Debug)]
@@ -39,9 +41,8 @@ pub struct Framework {
     texture: u32,
     shader_program: u32,
     vao: u32,
-    time: NativeTime,
-    keyboard_manager: super::shared::KeyManager,
-    mouse_manager: super::shared::MouseManager,
+    keyboard_manager: super::super::shared::KeyManager,
+    mouse_manager: super::super::shared::MouseManager,
     maximized: bool,
     minimized: bool,
 }
@@ -58,11 +59,13 @@ static LOG_ERRORS: Option<glfw::ErrorCallback<()>> = Some(glfw::Callback {
 impl Window for Framework {
     fn new(
         title: &str,
-        settings: super::WindowSettings,
-    ) -> Result<Self, Errors> {
+        settings: super::super::WindowSettings,
+    ) -> Result<Self, WindowError> {
         // Initialize GLFW
         let Ok(mut glfw) = glfw::init(LOG_ERRORS) else {
-            return Err(Errors::Unknown);
+            return Err(WindowError::FailedToOpenWindow(
+                WindowCreationError::BackendFailedToLoad,
+            ));
         };
         // Configure GLFW
         glfw.window_hint(glfw::WindowHint::ContextVersion(3, 3));
@@ -79,7 +82,9 @@ impl Window for Framework {
             title,
             glfw::WindowMode::Windowed,
         ) else {
-            return Err(Errors::FailedToOpenWindow);
+            return Err(WindowError::FailedToOpenWindow(
+                WindowCreationError::OsFailed,
+            ));
         };
 
         // Make the window's context current
@@ -124,14 +129,18 @@ impl Window for Framework {
             shader_program,
             texture,
             vao,
-            time: NativeTime::new(),
-            keyboard_manager: super::shared::KeyManager::new(),
-            mouse_manager: super::shared::MouseManager::new(),
+            keyboard_manager: super::super::shared::KeyManager::new(),
+            mouse_manager: super::super::shared::MouseManager::new(),
             maximized: false,
             minimized: false,
         })
     }
-    fn update(&mut self, buffer: &[u32]) -> Errors {
+    fn update_raw(
+        &mut self,
+        buffer: &[u32],
+        _width: usize,
+        _height: usize,
+    ) -> Result<(), WindowError> {
         // Poll events
         self.glfw.poll_events();
 
@@ -165,7 +174,7 @@ impl Window for Framework {
 
         // Swap front and back buffers
         self.window.swap_buffers();
-        Errors::AllGood
+        Ok(())
     }
     fn clean_up(&self) {
         unsafe {
@@ -181,26 +190,27 @@ impl Window for Framework {
 impl Timing for Framework {
     #[inline]
     fn get_time(&self) -> Box<dyn Time> {
-        super::shared::get_time()
+        super::super::shared::get_time()
     }
-    #[inline]
-    fn get_delta_time(&mut self) -> f64 {
-        let (time, r) = super::shared::sample_fps(&self.time);
-        self.time = time;
-        r
-    }
+    // #[inline]
+    // fn get_delta_time(&mut self) -> f64 {
+    //     let (time, r) = super::super::shared::sample_fps(&self.time);
+    //     self.time = time;
+    //     r
+    // }
     #[inline]
     fn sleep(&self, time: Duration) {
-        super::shared::sleep(time);
+        super::super::shared::sleep(time);
     }
 }
-use crate::system::action::Iconized;
-use crate::system::Os;
-impl ExtendedControl for Framework {
+use crate::system::{action::Iconized, Os};
+impl RenderLayer for Framework {
     #[inline]
     fn set_render_layer(&mut self, level: WindowLevel) {
         crate::system::Os::set_window_level(&self.get_window_handle(), level);
     }
+}
+impl Visibility for Framework {
     #[inline]
     fn maximize(&mut self) {
         Os::maximize(&self.get_window_handle());
@@ -235,7 +245,7 @@ impl Control for Framework {
         .unwrap_or((0, 0))
     }
     #[allow(clippy::cast_possible_wrap)]
-    fn set_size(&mut self, buffer: &super::Buffer) {
+    fn set_size(&mut self, buffer: &super::super::Buffer) {
         self.window.set_size(buffer.width as i32, buffer.height as i32);
     }
     fn set_position(&mut self, xy: (i32, i32)) {
@@ -243,7 +253,7 @@ impl Control for Framework {
     }
 }
 
-impl Input for Framework {
+impl MouseInput for Framework {
     /// No, you won't get the real position of the mouse, calculate it yourself
     fn get_mouse_position(&self) -> Option<(i32, i32)> {
         self.window.get_cursor_pos().try_tuple_into()
@@ -254,17 +264,23 @@ impl Input for Framework {
         // let relative_y = mouse_y - window_y as isize;
         // return Some((relative_x, relative_y));
     }
-    fn is_key_down(&self, keycode: KeyCode) -> bool {
-        self.keyboard_manager.is_key_pressed(keycode)
-    }
     fn is_mouse_down(&self, button: MouseButton) -> bool {
         self.mouse_manager.is_mouse_button_pressed(button)
     }
 }
-impl ExtendedInput for Framework {
+#[cfg(feature = "keyboard_query")]
+impl KeyboardInput for Framework {
+    fn is_key_down(&self, keycode: KeyCode) -> bool {
+        self.keyboard_manager.is_key_pressed(keycode)
+    }
+}
+impl ExtendedMouseInput for Framework {
     fn get_mouse_scroll(&self) -> Option<(f32, f32)> {
         Some(self.mouse_manager.get_scroll())
     }
+}
+#[cfg(feature = "keyboard_query")]
+impl ExtendedKeyboardInput for Framework {
     fn get_all_keys_down(&self) -> Vec<KeyCode> {
         self.keyboard_manager.get_all_pressed_keys()
     }
@@ -279,7 +295,7 @@ const fn action_to_bool(action: Action) -> Option<bool> {
 
 impl Output for Framework {
     fn log(&self, t: &str) {
-        super::shared::log(t);
+        super::super::shared::log(t);
     }
 }
 
@@ -297,31 +313,23 @@ impl ExtendedWindow for Framework {
         self.window.set_title(title);
     }
 
-    /// Not yet implemented
-    fn set_icon(&mut self, _buffer: &Buffer) -> Errors {
-        Errors::NotImplemented
-    }
     fn get_window_handle(&self) -> raw_window_handle::RawWindowHandle {
         get_native_window_handle_from_glfw(&self.window)
     }
 }
 #[cfg(feature = "svg")]
-impl CursorStyleControl for Framework {
-    fn set_cursor_style(&mut self, style: &super::Cursor) -> Errors {
-        //println!("Setting cursor style");
-        super::mouse::use_cursor(style, Some(&mut self.window))
-    }
+impl LoadCursorStyle for Framework {
     fn load_custom_cursors(
         &mut self,
         size: CursorResolution,
         main_color: u32,
         secondary_color: u32,
-    ) -> Result<super::mouse::Cursors, LoadCursorError> {
-        super::mouse::Cursors::load(
+    ) -> Result<super::super::mouse::Cursors, LoadCursorError> {
+        super::super::mouse::Cursors::load(
             size,
             main_color,
             secondary_color,
-            super::mouse::cursor_glfw::load_base_cursor_with_file,
+            super::super::mouse::cursor_glfw::load_base_cursor_with_file,
         )
         .map_err(|x| {
             LoadCursorError::InvalidImageData(format!("Unable to access {x}"))
@@ -329,12 +337,22 @@ impl CursorStyleControl for Framework {
     }
     fn load_custom_cursor(
         &mut self,
-        image: super::Buffer,
+        image: super::super::Buffer,
         hotspot: (u8, u8),
-    ) -> Result<super::mouse::Cursor, LoadCursorError> {
+    ) -> Result<super::super::mouse::Cursor, LoadCursorError> {
         Ok(cursor_from_buffer(image, unsafe {
             hotspot.try_tuple_into().unwrap_unchecked()
         }))
+    }
+}
+#[cfg(feature = "svg")]
+impl UseCursorStyle for Framework {
+    fn set_cursor_style(
+        &mut self,
+        style: &super::super::Cursor,
+    ) -> Result<(), WindowError> {
+        //println!("Setting cursor style");
+        super::super::mouse::use_cursor(style, Some(&mut self.window))
     }
 }
 
@@ -767,7 +785,7 @@ unsafe fn update_texture(
     buffer: &[u32],
 ) {
     gl::BindTexture(gl::TEXTURE_2D, texture);
-    let rgba_buffer = graphics::switch_red_and_blue_list(buffer);
+    let rgba_buffer = crate::graphics::switch_red_and_blue_list(buffer);
     gl::TexImage2D(
         gl::TEXTURE_2D,
         0,

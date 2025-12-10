@@ -35,7 +35,8 @@ pub trait Tuple3Into<T> {
 impl<Target, Source0, Source1, Source2> Tuple3Into<Target>
     for (Source0, Source1, Source2)
 where
-    Target: TryFromPatch<Source0> + TryFromPatch<Source1> + TryFromPatch<Source2>,
+    Target:
+        TryFromPatch<Source0> + TryFromPatch<Source1> + TryFromPatch<Source2>,
 {
     fn try_tuple_into(self) -> Option<(Target, Target, Target)> {
         Some((
@@ -83,7 +84,9 @@ where
         + TryFromPatch<Source3>
         + TryFromPatch<Source4>,
 {
-    fn try_tuple_into(self) -> Option<(Target, Target, Target, Target, Target)> {
+    fn try_tuple_into(
+        self,
+    ) -> Option<(Target, Target, Target, Target, Target)> {
         Some((
             Target::try_from_value(self.0)?,
             Target::try_from_value(self.1)?,
@@ -110,7 +113,9 @@ where
         + TryFromPatch<Source4>
         + TryFromPatch<Source5>,
 {
-    fn try_tuple_into(self) -> Option<(Target, Target, Target, Target, Target, Target)> {
+    fn try_tuple_into(
+        self,
+    ) -> Option<(Target, Target, Target, Target, Target, Target)> {
         Some((
             Target::try_from_value(self.0)?,
             Target::try_from_value(self.1)?,
@@ -183,7 +188,8 @@ where
 {
     fn try_tuple_into(
         self,
-    ) -> Option<(Target, Target, Target, Target, Target, Target, Target, Target)> {
+    ) -> Option<(Target, Target, Target, Target, Target, Target, Target, Target)>
+    {
         Some((
             Target::try_from_value(self.0)?,
             Target::try_from_value(self.1)?,
@@ -238,8 +244,17 @@ where
 {
     fn try_tuple_into(
         self,
-    ) -> Option<(Target, Target, Target, Target, Target, Target, Target, Target, Target)>
-    {
+    ) -> Option<(
+        Target,
+        Target,
+        Target,
+        Target,
+        Target,
+        Target,
+        Target,
+        Target,
+        Target,
+    )> {
         Some((
             Target::try_from_value(self.0)?,
             Target::try_from_value(self.1)?,

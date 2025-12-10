@@ -1,15 +1,20 @@
-use std::mem;
-use std::ptr;
-use std::sync::{Arc, Mutex, OnceLock};
+use std::{
+    mem, ptr,
+    sync::{Arc, Mutex, OnceLock},
+};
 
 use raw_window_handle::RawWindowHandle;
-use winapi::shared::minwindef::{FALSE, LPARAM, UINT, WPARAM};
-use winapi::shared::windef::HWND;
-use winapi::um::winuser::{
-    CallWindowProcW, DefWindowProcW, GetRawInputData, GetWindowLongPtrW,
-    RegisterRawInputDevices, SetWindowLongPtrW, GWLP_WNDPROC, RAWINPUT,
-    RAWINPUTDEVICE, RAWINPUTHEADER, RIDEV_INPUTSINK, RIDEV_REMOVE, RID_INPUT,
-    RIM_TYPEMOUSE, WM_INPUT, WNDPROC,
+use winapi::{
+    shared::{
+        minwindef::{FALSE, LPARAM, UINT, WPARAM},
+        windef::HWND,
+    },
+    um::winuser::{
+        CallWindowProcW, DefWindowProcW, GetRawInputData, GetWindowLongPtrW,
+        RegisterRawInputDevices, SetWindowLongPtrW, GWLP_WNDPROC, RAWINPUT,
+        RAWINPUTDEVICE, RAWINPUTHEADER, RIDEV_INPUTSINK, RIDEV_REMOVE,
+        RID_INPUT, RIM_TYPEMOUSE, WM_INPUT, WNDPROC,
+    },
 };
 
 use super::{MouseDelta, RawMouseInputTrait};

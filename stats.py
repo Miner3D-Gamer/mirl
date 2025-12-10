@@ -1,6 +1,5 @@
 import subprocess
-from typing import Any, Optional
-from collections import defaultdict
+from typing import Any
 import json
 
 filter_name = "mirl"
@@ -19,7 +18,7 @@ file = (result.stdout or "") + (result.stderr or "")
 data = file.split("\n")
 
 
-search = {
+search: dict[str, str | list[str]] = {
     "functions": ["pub fn", "pub const fn", "pub unsafe fn", "pub unsafe system fn"],
     "implementations": "impl",
     "traits": "pub trait",
@@ -34,9 +33,9 @@ search = {
 
 collected_impl: list[str] = []
 
-found = {}
+found: dict[str, Any] = {}
 
-further = []
+further: list[str] = []
 for name, allowed_variants in search.items():
     found[name] = {}
     if isinstance(allowed_variants, str):
@@ -61,7 +60,7 @@ blacklisted_functions = [
     "try_from",
     "into",
     "try_into_value",
-    "equivilant",
+    "equivalent",
     "drop",
     "clone",
     "or",
@@ -85,6 +84,7 @@ blacklisted_functions = [
 
 def get_function_name(line: str) -> str:
     values = line.split("::")
+    got = ""
     for got in values:
         if got.__contains__("("):
             got = got.split("(")[0]
@@ -180,7 +180,7 @@ for impl in collected_impl:
     struct, condition = more.split(" where ")
     other_optional_impl.append((trait, struct, condition))
 
-doesnt_count = [
+do_not_count = [
     "core::marker::Copy",
     "core::fmt::Debug",
     "core::cmp::Eq",
@@ -202,13 +202,13 @@ my_impl = ["mirl", "core", "num_traits"]
 
 blacklist = ["crossbeam_epoch", "tracing", "either", "strum", "serde"]
 
-impls = {}
+impls: dict[str, int] = {}
 inside = 0
 outside = 0
 self = "mirl"
 
 for i in other_impl:
-    if i[0] in doesnt_count:
+    if i[0] in do_not_count:
         continue
     if any([i[0].startswith(x) for x in blacklist]):
         continue
@@ -226,18 +226,20 @@ for i in other_impl:
         outside += 1
 
 
-def divide_dict_values(d, x):
+def divide_dict_values(
+    d: dict[str, int | float | dict[str, int | float] | Any], x: int
+):
     for key, value in d.items():
         if isinstance(value, dict):
-            divide_dict_values(value, x)
+            divide_dict_values(value, x)  # pyright: ignore[reportUnknownArgumentType]
         elif isinstance(value, (int, float)):
             d[key] = value / x
 
 
-def mul_dict_values(d, x):
+def mul_dict_values(d: dict[str, int | float | dict[str, int | float] | Any], x: int):
     for key, value in d.items():
         if isinstance(value, dict):
-            mul_dict_values(value, x)
+            mul_dict_values(value, x)  # pyright: ignore[reportUnknownArgumentType]
         elif isinstance(value, (int, float)):
             d[key] = value * x
 
@@ -264,17 +266,18 @@ print(json.dumps(to_be_divided, indent=4))
 print(json.dumps(to_be_multiplied, indent=4))
 
 
-def add(dict) -> int:
+def add(dict: dict[str, int | dict[str, int]]) -> int:
     if isinstance(dict, int):
         return dict
     total = 0
 
-    for key, item in dict.items():
+    for _, item in dict.items():
         if isinstance(item, int):
             total += item
         else:
             total += item[">total"]
     return total
+
 
 for_percentage = deepcopy(found)
 for_percentage.pop("struct_fields")

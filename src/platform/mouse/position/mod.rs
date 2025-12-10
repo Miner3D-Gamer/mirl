@@ -2,7 +2,7 @@
 #[const_trait]
 pub trait RawMouseInputTrait {
     /// Create a new raw mouse input getter under the window from which should poll the mouse move event
-    /// 
+    ///
     /// # Errors
     fn new(handle: RawWindowHandle) -> Result<Self, &'static str>
     where
@@ -21,6 +21,6 @@ pub struct MouseDelta {
 }
 #[cfg(target_os = "windows")]
 mod windows;
+use raw_window_handle::RawWindowHandle;
 #[cfg(target_os = "windows")]
 pub use windows::RawMouseInputWindows as RawMouseInput;
-use raw_window_handle::RawWindowHandle;
