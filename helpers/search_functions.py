@@ -27,9 +27,10 @@ def get_public_api(name: str, filter_name: str, cache_folder: str) -> list[str]:
         file = (result.stdout or "") + (result.stderr or "")
         if result.returncode != 0:
             raise RuntimeError("Unable to get public-api", file)
+        lines = list(set(file.split("\n")))
         with open(path, "w", encoding="utf-8") as f:
-            f.write(file)
-        return file.split("\n")
+            f.write("\n".join(lines))
+        return lines
 
 
 def filter_for_struct_inputs_and_enums(
