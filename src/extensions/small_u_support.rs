@@ -1,7 +1,7 @@
 use super::{U1, U2, U4};
 
 // Conversion between U1 and U2
-impl From<U2> for U1 {
+impl const From<U2> for U1 {
     fn from(val: U2) -> Self {
         // Extract just the lowest bit from U2
         Self {
@@ -10,7 +10,7 @@ impl From<U2> for U1 {
     }
 }
 
-impl From<U1> for U2 {
+impl const From<U1> for U2 {
     fn from(val: U1) -> Self {
         // Set the upper bit to false
         Self {
@@ -21,7 +21,7 @@ impl From<U1> for U2 {
 }
 
 // Conversion between U1 and U4
-impl From<U4> for U1 {
+impl const From<U4> for U1 {
     fn from(val: U4) -> Self {
         // Extract just the lowest bit from U4
         Self {
@@ -30,7 +30,7 @@ impl From<U4> for U1 {
     }
 }
 
-impl From<U1> for U4 {
+impl const From<U1> for U4 {
     fn from(val: U1) -> Self {
         // Set the upper bits to false
         Self {
@@ -131,7 +131,7 @@ impl U4 {
     }
 }
 
-impl From<U2> for U4 {
+impl const From<U2> for U4 {
     fn from(val: U2) -> Self {
         // Set the upper 2 bits to false
         Self {
@@ -143,7 +143,7 @@ impl From<U2> for U4 {
     }
 }
 
-impl From<U4> for U2 {
+impl const From<U4> for U2 {
     fn from(val: U4) -> Self {
         // Extract just the lower 2 bits from U4
         Self {

@@ -1,3 +1,619 @@
+# [Changelog](#changelog-overview)/Migration Guide v9.0.0
+
+Disclaimer: `mirl::math::geometry` is not in a state that I like. Expect changes to the api there before the next major update.
+
+## Quick Start - Most Common Changes
+
+If you need to get your code compiling quickly, these are the changes that affect most projects:
+
+```rust
+// 1. Buffer import location
+use mirl::platform::Buffer;  // ❌ Old
+use mirl::render::Buffer;    // ✅ New
+
+// 2. Buffer constructor
+Buffer::new(w, h, data);          // ❌ Old
+Buffer::new_with_data(w, h, data); // ✅ New
+
+// 3. Collision functions
+buffer.create_collision(x, y, w, h);     // ❌ Old
+buffer.to_collision((x, y), (w, h));     // ✅ New
+
+// 5. Draw buffer functions (names swapped!)
+draw_buffer_on_buffer_1_to_1(...)  // ❌ Old (1:1 pixel copy)
+draw_buffer_on_buffer(...)         // ✅ New (1:1 pixel copy)
+
+draw_buffer_on_buffer(...)         // ❌ Old (stretched)
+draw_buffer_on_buffer_stretched(...) // ✅ New (stretched)
+```
+
+For complete migration details, continue reading below.
+
+---
+
+## Table of Contents
+
+1. [Critical Breaking Changes](#critical-breaking-changes) - Start here: Buffer relocation, constructor changes
+2. [Module & Import Changes](#module--import-changes) - Namespace reorganization and new module locations
+3. [Trait Reorganization](#trait-reorganization) - Trait renames, splits, and new patterns
+4. [Function Signature Changes](#function-signature-changes) - Parameter changes and return type updates
+5. [Type & Constant Changes](#type--constant-changes) - Type renames and constant updates
+6. [New Features](#new-features) - Exciting additions you can start using
+7. [Additional Notes](#additional-notes) - Performance, debugging, and quality improvements
+8. [Migration Checklist](#migration-checklist) - Step-by-step migration tracking
+
+---
+
+## Critical Breaking Changes
+
+These changes will likely affect most projects and should be addressed first.
+
+### 1. Buffer Module Relocation
+
+**Impact: HIGH** - Affects all code using `Buffer`
+
+`Buffer` has moved from `mirl::platform` to `mirl::render` (but it is recommended to use `mirl::prelude`) to better reflect its primary use case.
+
+```rust
+// Before
+use mirl::platform::Buffer;
+use mirl::Buffer;
+
+// After
+use mirl::render::Buffer;
+```
+
+**Why this change?** The buffer is primarily a rendering construct, not a platform-specific one.
+
+### 2. Collision Functions: Rename
+
+Two changes in one: renamed functions AND changed to tuple-based parameters.
+
+```rust
+// Before
+let collision = buffer.create_collision_usize(x, y, width, height);
+let collision = buffer.create_collision(x, y, width, height);
+
+// After
+let collision = buffer.to_collision_usize((x, y), (width, height));
+let collision = buffer.to_collision((x, y), (width, height));
+```
+
+---
+
+## Module & Import Changes
+
+### Namespace Reorganization
+
+#### Math Module
+
+The collision module has been reorganized into a layered geometry system.
+
+```rust
+// Before
+use mirl::math::collision::Rectangle;
+use mirl::math::positioning::*;
+
+// After
+use mirl::math::geometry::d2::Rectangle;
+// positioning module removed - use tuples directly
+// mirl's tuple math provides equivalent functionality
+```
+
+**What happened to positioning?** Tuples with mirl's mathematical extensions now handle positioning more elegantly than a dedicated module.
+
+#### Time Constants
+
+```rust
+// Before
+use mirl::time::{SECONDS_IN_MINUTE, MINUTES_IN_HOUR};
+
+// After
+use mirl::constants::time::{SECONDS_IN_MINUTE, MINUTES_IN_HOUR};
+```
+
+#### Text Positioning
+
+```rust
+// Before
+use mirl::misc::TextPos;
+
+// After
+use mirl::text::position::TextPos;
+```
+
+**Bonus:** New utilities added alongside `TextPos` in the text module.
+
+#### Dependencies
+
+```rust
+// Before
+use mirl::prelude::fontdue;
+
+// After
+use mirl::dependencies::fontdue;
+// All dependencies now in dedicated module
+```
+
+### Feature Flag Changes
+
+- `num_traits` is no longer a feature flag
+- `texture_manager_cleanup` removed from `default` features
+
+---
+
+## Trait Reorganization
+
+### Windowing Traits
+
+#### Framework Traits
+
+Simple rename for clarity.
+
+```rust
+// Before
+use mirl::platform::framework_traits::{Framework, ExtendedFramework};
+
+struct MyFramework;
+impl Framework for MyFramework { ... }
+impl ExtendedFramework for MyFramework { ... }
+
+// After
+use mirl::platform::windowing::traits::{WindowingFramework, ExtendedWindowingFramework};
+
+struct MyFramework;
+impl WindowingFramework for MyFramework { ... }
+impl ExtendedWindowingFramework for MyFramework { ... }
+```
+
+**Note:** `WindowingFramework` now requires `Debug` - ensure your implementations derive or implement it.
+
+#### Control Traits - Trait Splitting
+
+`ExtendedControl` has been split into two separate traits for better granularity.
+
+```rust
+// Before
+use mirl::platform::windowing::traits::ExtendedControl;
+
+impl ExtendedControl for MyControl {
+    fn new(...) -> Self { ... }
+    fn get_window_handle(&self) -> ... { ... }
+}
+
+// After
+use mirl::platform::windowing::traits::{NewWindow, GetWindowHandle};
+
+impl NewWindow for MyControl {
+    fn new(...) -> Self { ... }
+}
+
+impl GetWindowHandle for MyControl {
+    fn get_window_handle(&self) -> ... { ... }
+}
+```
+
+**Why split?** Allows implementations to opt into only the functionality they need and GetWindowHandle is dyn compatible now.
+
+#### Window Helper Trait - Function Rename
+
+The function has been renamed back to the simpler `update`.
+
+```rust
+// Before
+window_helper.update_with_buffer(&buffer);
+
+// After
+window_helper.update(&buffer);
+```
+
+**Migration tip:** Global find-and-replace `update_with_buffer` → `update`
+
+### Direction Traits
+
+```rust
+// Before
+use mirl::directions::NormalDirections;
+if direction.is_direction_allowed_u8() { ... }
+
+// After
+use mirl::directions::{NormalDirections, IsDirectionTrue};
+if direction.is_direction_true() { ... }
+```
+
+**Technical note:** Direction traits have been split and many are now `const`, enabling compile-time direction validation.
+
+### Conversion Traits - FromPatch Introduction
+
+Safe conversions extracted from `TryFromPatch` into new `FromPatch` trait (`TryFromPatch` automatically derives `FromPatch`).
+
+```rust
+use mirl::extensions::{FromPatch, TryFromPatch};
+
+// Safe conversion (infallible)
+let value: u32 = u32::from_patch(some_u8);
+let value = some_u8.into_patch(); // Also works
+
+// Fallible conversion (can fail)
+let value: u32 = u32::try_from_patch(some_i32)?;
+let value = some_i32.try_into_patch()?; // Also works
+```
+
+**Key difference:** `FromPatch` for conversions that always succeed, `TryFromPatch` for conversions that might fail.
+
+---
+
+## Function Signature Changes
+
+### Tuple-Based Parameters (Consistency Update)
+
+#### Buffer Resizing
+
+```rust
+// Before
+buffer.resize_content(new_x, new_y);
+
+// After
+buffer.resize_content((new_x, new_y));
+```
+
+### Drawing Functions
+
+#### Draw Buffer Naming Clarification
+
+**Impact: MEDIUM-HIGH** - Affects all buffer composition code
+
+Functions renamed to better indicate their behavior.
+
+```rust
+// Before
+draw_buffer_on_buffer(target, source, ...);        // Was 1:1 pixel mapping
+draw_buffer_on_buffer_1_to_1(target, source, ...); // Also 1:1 pixel mapping
+
+// After
+draw_buffer_on_buffer(target, source, ...);          // 1:1 pixel mapping
+draw_buffer_on_buffer_stretched(target, source, ...); // Scaling/stretching
+```
+
+**Quick reference:**
+
+- `draw_buffer_on_buffer` - Direct pixel copy (no scaling)
+- `draw_buffer_on_buffer_stretched` - Scaled rendering with interpolation
+
+### Text Rendering
+
+#### Antialiasing Control
+
+More granular control over text antialiasing with alpha cutoff values.
+
+```rust
+// Before
+draw_text_switch(buffer, text, antialiased: true, ...);
+draw_text_switch(buffer, text, antialiased: false, ...);
+
+// After
+draw_text_switch(buffer, text, antialiased: Some(128), ...); // Antialiased with cutoff
+draw_text_switch(buffer, text, antialiased: None, ...);      // Aliased
+```
+
+### Mouse Input
+
+#### Position Type Change
+
+Mouse positions now use `f32` for sub-pixel precision.
+
+```rust
+// Before
+let pos: Option<(i32, i32)> = window.get_mouse_position();
+if let Some((x, y)) = pos {
+    println!("Mouse at {}, {}", x, y);
+}
+
+// After
+let pos: Option<(f32, f32)> = window.get_mouse_position();
+if let Some((x, y)) = pos {
+    println!("Mouse at {:.2}, {:.2}", x, y);
+    // Round if you need integer coordinates:
+    let (x_int, y_int) = (x.round() as i32, y.round() as i32);
+}
+```
+
+#### Scroll Return Type
+
+```rust
+// Before
+let scroll: Option<(f32, f32)> = window.get_mouse_scroll();
+if let Some((dx, dy)) = scroll {
+    // Handle scroll
+}
+
+// After
+let (dx, dy): (f32, f32) = window.get_mouse_scroll();
+// Always returns a value, (0.0, 0.0) when no scroll occurred
+if dx != 0.0 || dy != 0.0 {
+    // Handle scroll
+}
+```
+
+### Color Interpolation
+
+#### Unified Generic Function
+
+**Impact: LOW** - Simplification
+
+```rust
+// Before
+interpolate_color_rgb_u32_f32(color1, color2, t_f32);
+interpolate_color_rgb_u32_f64(color1, color2, t_f64);
+
+// After
+interpolate_color_rgb_u32(color1, color2, t); // Works with f32, f64, f16, f128
+```
+
+The compiler infers the float type automatically.
+
+---
+
+## Type & Constant Changes
+
+### Math Constants
+
+```rust
+// Before
+use mirl::math::ConstPartialOrd; // (nightly-only workaround)
+use mirl::math::TwoTillTen;
+
+// After
+// ConstPartialOrd removed (use nightly feature directly)
+use mirl::math::ConstNumbers128; // Now supports 0-127
+```
+
+### Filesystem
+
+```rust
+// Before
+use mirl::platform::filesystem::FileSystem;
+
+// After
+use mirl::platform::filesystem::FileSystemTrait;
+```
+
+---
+
+## New Features
+
+### Mouse Snapshot - Unified Mouse State
+
+Capture complete mouse state in a single call for consistent frame data.
+
+```rust
+use mirl::platform::mouse::MouseSnapshot;
+use mirl::platform::windowing::traits::WindowInputHelper;
+
+// Old way - multiple calls
+let pos = window.get_mouse_position();
+let scroll = window.get_mouse_scroll();
+let button1 = window.get_mouse_button(MouseButton::Left);
+
+// New way - single snapshot
+let snapshot = window.get_mouse_snapshot();
+// All state captured in one call
+```
+
+### Console Backend (Experimental-Alpha)
+
+Display your buffer in the terminal instead of a window.
+
+This is not yet recommended but it is available.
+
+### Rectangle Operations
+
+#### Strict Intersection
+
+New precise intersection check.
+
+```rust
+// Existing (inclusive)
+if rect1.do_areas_intersect(&rect2) { ... }
+
+// New (strict - edges don't count)
+if rect1.do_areas_intersect_strict(&rect2) { ... }
+```
+
+### TextureManager Enhancements
+
+#### Explicit Lazy Loading
+
+Better control over when textures are loaded.
+
+```rust
+// Before: get() would load if not present (implicit)
+let texture = manager.get("texture_key"); // Might load, might not
+
+// After: explicit behavior
+let texture = manager.get("texture_key");        // Errors if not loaded
+let texture = manager.get_or_load("texture_key"); // Loads if needed
+
+// Migration: Replace old get() calls with get_or_load() for same behavior (When using `imaginary` feature)
+```
+
+### Mathematical Extensions - Comprehensive Math Traits (Also no_std replacements)
+
+#### Basic Math Operations
+
+```rust
+use mirl::extensions::{Round, Sqrt, Abs, Floor, Ceil};
+
+let rounded = value.round();
+let root = value.sqrt();
+let absolute = value.abs();
+```
+
+#### Tuple Math Operations
+
+Apply operations to entire tuples at once.
+
+```rust
+use mirl::extensions::{TupleRound, TupleSqrt, TupleAbs, TupleFloor, TupleCeil};
+
+let position = (3.7, 4.2);
+let rounded_pos = position.tuple_round(); // (4.0, 4.0)
+
+let vector = (-3.5, 7.8);
+let abs_vector = vector.tuple_abs(); // (3.5, 7.8)
+```
+
+#### Power of Two Utilities
+
+```rust
+use mirl::extensions::{NextPowerOfTwo, NextPowerOfTwoWithExponent, NextPowerOfTwoExponent};
+
+let size = 100;
+let next_pow = size.next_power_of_two(); // 128
+let (pow, exp) = size.next_power_of_two_with_exponent(); // (128, 7)
+let exp = size.next_power_of_two_exponent(); // 7
+```
+
+### Extended Float Support
+
+- Added `f16` support throughout the library
+- Existing `f128` support expanded
+- Most mathematical operations now work with `f16`, `f32`, `f64`, and `f128`
+
+### Enhanced Number Constants
+
+```rust
+// Before
+use mirl::math::TwoTillTen; // Only 2-10
+
+// After
+use mirl::math::ConstNumbers128; // Constants 0-127
+```
+
+### Platform Module Improvements
+
+`mirl::platform::mouse` now available without the `system` feature flag (individual items flagged as needed).
+
+---
+
+## Changelog overview
+
+### Standard Library Independence
+
+More of the library now works without the `std` feature flag.
+
+**What changed:**
+
+- Core replaces std functionality wherever possible
+- Implemented a lot of math traits for numbers
+
+### Float Type Support Expansion
+
+MIRL now supports a wider range of float types.
+
+**Supported float types:**
+
+- `f16` - Half precision (NEW)
+- `f32` - Single precision
+- `f64` - Double precision
+- `f128` - Quadruple precision (expanded support, reminder that your native compiler itself might not support `f128`)
+
+### Debug Requirement for WindowingFramework
+
+Custom windowing framework implementations must now implement `Debug`.
+
+```rust
+// Quick fix: Just derive it
+#[derive(Debug)]
+struct MyFramework {
+    // ...
+}
+
+// Or implement manually if needed
+impl Debug for MyFramework {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("MyFramework")
+            .field("complex_value", &"<Unknown>")
+            .finish()
+    }
+}
+```
+
+### Derive Improvements
+
+Many structs and enums gained additional trait implementations.
+
+**Commonly added derives:**
+
+- `Ord` and `PartialOrd` - Enables comparison and sorting
+- `Hash` - Enables use as HashMap/HashSet keys
+- `Default` - Provides sensible default values
+
+**Benefit:** More types work out-of-the-box with standard Rust patterns and collections.
+
+### Const Support Expansion
+
+More operations can now be performed at compile time.
+
+**What's new:**
+
+- Many trait implementations marked as `impl const`
+- Direction validation can happen at compile time
+- More mathematical operations in const contexts
+
+### Performance Improvements
+
+#### Fixed TRANSPARENCY_INTERPOLATION
+
+Transparency blending in `draw_buffer_on_buffer` now works correctly, producing more accurate visual results.
+
+#### Inlining Optimizations
+
+Various functions marked for inlining, improving performance in hot paths. The compiler can now better optimize drawing and mathematical operations.
+
+### Feature Flag Changes
+
+#### Removal of num_traits
+
+**What this means:**
+
+- These traits have been reimplemented to support `f16` and `128` as well as give extended functionality
+- Improvements regarding `const` trait definition and implementations
+
+### ConstBuffer Improvements
+
+`mirl::render::ConstBuffer` is now much more functional.
+
+**What changed:**
+
+- Fixed existing function implementations
+- Almost all `Buffer` functions now available
+- Can be used as a drop-in replacement for cases where speed is more important than configurability
+
+**When to use:** When you have fixed sized buffers and want compile-time speed improvements.
+
+### Cargo Version Requirement
+
+**Updated to cargo 1.94.0**
+
+Ensure your development environment is up to date:
+
+```bash
+rustup update
+cargo --version  # Should be 1.94.0 or later
+```
+
+---
+
+## Questions or Issues?
+
+If you encounter migration issues not covered in this guide, please:
+
+1. Check the raw changelog for additional context
+2. Report issues on the project's issue tracker
+
+---
+
 # Version 8.0.0
 
 > Enhanced cross-platform support
@@ -14,7 +630,6 @@
   | `framework_traits` | `mirl::platform::framework_traits` | `mirl::platform::frameworks::traits` |
 
 - Split `mirl::platform::framework_traits::Window::update` into two functions:
-
   - `update_raw` - Update without buffer
   - `update_with_buffer` - Update with buffer data
 
@@ -36,7 +651,6 @@
 ## Migration Guide
 
 - **Update module imports:**
-
   - `mirl::platform::minifb` → `mirl::platform::frameworks::minifb`
   - `mirl::platform::glfw` → `mirl::platform::frameworks::glfw`
   - `mirl::platform::framework_traits` → `mirl::platform::frameworks::traits`
@@ -44,18 +658,15 @@
   Note: Old paths are temporarily re-exported with deprecation warnings for easier migration
 
 - **Update Window trait usage:**
-
   - Replace `window.update()` with `window.update_raw()` or `window.update_with_buffer()`
   - Use `mirl::platform::frameworks::traits::DeprecatedCompatibilityHelper` for temporary compatibility
 
 - **Update error handling:**
-
   - Replace `Errors::AllGood` checks with `Result<(), Errors>` pattern matching
   - Replace `Errors::Unknown` with `Errors::Misc`
   - Use new `WindowCreationError` and `WindowUpdateError` enums for explicit error types
 
 - **Update trait implementations:**
-
   - Split `set_icon` from `ExtendedWindow` into `MouseInput`
   - Update `Input` implementations to use `MouseInput` and `KeyboardInput`
   - Update `ExtendedInput` implementations to use `ExtendedMouseInput` and `ExtendedKeyboardInput`
@@ -63,7 +674,6 @@
   - Split `ExtendedControl` into `Visibility` and `RenderLayer`
 
 - **Update WindowSettings:**
-
   - Replace `set_position_to_middle_of_screen()` with `center_window()`
 
 - **Update timing code:**
@@ -106,7 +716,6 @@ Fixed some oversights which prevented some flag combinations from compiling.
 ## Changes
 
 - `mirl::platform::file_system::native::NativeFileSystem::{get_files_in_folder, get_folders_in_folders}` now searches paths in this order until an element is found:
-
   1. Provided path
   2. Executable path
   3. Current working directory
@@ -137,7 +746,6 @@ Fixed some oversights which prevented some flag combinations from compiling.
 ## Migration Guide
 
 - **Update module imports:**
-
   - `mirl::extensions::list::*` → `mirl::extensions::lists::helper_functions::*`
 
 - **Removed:**
@@ -185,7 +793,6 @@ Fixed some oversights which prevented some flag combinations from compiling.
 ## Migration Guide
 
 - **Update module imports:**
-
   - `mirl::misc::corner_type_to_cursor_style` → `mirl::directions::misc::corner_type_to_cursor_style`
   - `mirl::misc::corner_type_and_delta_to_metric_change` → `mirl::directions::misc::corner_type_and_delta_to_metric_change`
   - `mirl::misc::NormalDirections` → `mirl::directions::NormalDirections`
@@ -197,11 +804,9 @@ Fixed some oversights which prevented some flag combinations from compiling.
   - `mirl::misc::discord` → `mirl::network::discord`
 
 - **Update cursor style control:**
-
   - Replace `mirl::extensions::u2::U2` with `mirl::platform::mouse::CursorResolution` for cursor resolution
 
 - **Update feature flags:**
-
   - Enable `ahash` flag to use ahash-based HashMaps
   - `num_traits` flag is enabled by default
 
@@ -273,17 +878,14 @@ Fixed some oversights which prevented some flag combinations from compiling.
 ## Migration Guide
 
 - **Update traits:**
-
   - Replace `FromPatch` → `TryFromPatch`
   - Replace `TupleInto` → `TryTupleInto`
   - Replace `ConstTupleInto` → `ConstTryTupleInto`
 
 - **Update `FileData` methods:**
-
   - Functions previously prefixed with `as_` may now be `to_`
 
 - **Adjust for optional returns:**
-
   - `Buffer::create_collision` now returns `Option<Rectangle>`
   - `pixmap_to_dynamic_image` now returns `Option<DynamicImage>`
   - `RangeExtension` methods now return `Option<T>`
@@ -291,15 +893,12 @@ Fixed some oversights which prevented some flag combinations from compiling.
   - `mirl::math::radians` methods now return `Option<T>`
 
 - **Cursor loading:**
-
   - Now returns `Result<Cursor, LoadCursorError>` instead of `Result<Cursor, String>`
 
 - **Platform trait updates:**
-
   - `mirl::platform::framework_traits` now uses `i32` instead of `isize`
 
 - **Update feature flags:**
-
   - `svg_support` → `svg`
   - `full_backend_support` → `all_backends`
   - `minifb_backend` → `minifb`

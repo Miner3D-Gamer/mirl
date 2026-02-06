@@ -145,7 +145,7 @@ pub struct Component {
     pub component_type: u8,
     /// Child components (for ActionRow)
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub components: Option<Vec<Component>>,
+    pub components: Option<Vec<Self>>,
     /// Button style: 1 = Primary, 2 = Secondary, 3 = Success, 4 = Danger, 5 = Link
     #[serde(skip_serializing_if = "Option::is_none")]
     pub style: Option<u8>,
@@ -432,7 +432,7 @@ use reqwest::blocking::Client;
 pub fn send_discord_message(
     webhook_url: &str,
     payload: &WebhookPayload,
-) -> Result<(), Box<dyn std::error::Error>> {
+) -> Result<(), Box<dyn core::error::Error>> {
     const MAX_CONTENT_LENGTH: usize = 2000;
 
     // Check if we need to chunk the content
@@ -471,7 +471,7 @@ pub fn send_discord_message(
 pub fn send_discord_message_single(
     webhook_url: &str,
     payload: &WebhookPayload,
-) -> Result<(), Box<dyn std::error::Error>> {
+) -> Result<(), Box<dyn core::error::Error>> {
     let client = Client::new();
     client
         .post(webhook_url)

@@ -1,13 +1,18 @@
 use super::{Directions, RotateDirections, SpecialDirections};
 /// N E S W + None
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub enum DirectionsWithNone {
     /// N E S W
     Base(Directions),
     /// NE SE SW NW
     Special(SpecialDirections),
 }
-impl RotateDirections for DirectionsWithNone {
+impl core::default::Default for DirectionsWithNone {
+    fn default() -> Self {
+        Self::Special(SpecialDirections::default())
+    }
+}
+impl const RotateDirections for DirectionsWithNone {
     fn rotate_clockwise_90(&self) -> Self {
         match self {
             Self::Base(direction) => {
@@ -23,14 +28,6 @@ impl RotateDirections for DirectionsWithNone {
             Self::Base(direction) => {
                 Self::Base(direction.rotate_counterclockwise_90())
             }
-            Self::Special(SpecialDirections::None) => {
-                Self::Special(SpecialDirections::None)
-            }
-        }
-    }
-    fn rotate_180(&self) -> Self {
-        match self {
-            Self::Base(direction) => Self::Base(direction.rotate_180()),
             Self::Special(SpecialDirections::None) => {
                 Self::Special(SpecialDirections::None)
             }

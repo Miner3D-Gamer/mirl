@@ -1,0 +1,38 @@
+use crate::prelude::FromPatch;
+
+/// The inverse of [`TryFromPatch`]
+pub const trait TryIntoPatch<T>: Sized {
+    #[must_use]
+    /// A custom from to bypass rusts orphan rule
+    fn try_into_value(self) -> Option<T>;
+}
+impl<T: Sized + TryFromPatch<O>, O> TryIntoPatch<T> for O {
+    fn try_into_value(self) -> Option<T> {
+        T::try_from_value(self)
+    }
+}
+
+/// Lets you convert from one value to another.
+///
+/// What's the difference between this and [`core::convert::TryFrom`]?
+/// [`core::convert::TryFrom`] has many holes covered by [`core::convert::From`], this inconveniences things.
+/// This trait "patches" the [`core::convert::TryFrom`] by combining both traits and adding even more
+pub const trait TryFromPatch<T>: Sized {
+    #[must_use]
+    /// A custom from to bypass rusts orphan rule
+    fn try_from_value(value: T) -> Option<Self>;
+}
+
+impl<T: FromPatch<V>, V> TryFromPatch<V> for T {
+    fn try_from_value(value: V) -> Option<Self> {
+        Some(T::from_value(value))
+    }
+}
+
+#[cfg(feature = "std")]
+mod map;
+mod numbers;
+#[cfg(feature = "std")]
+mod string;
+#[cfg(feature = "std")]
+mod vec;

@@ -31,7 +31,6 @@ pub const fn mirl_keycode_to_keyboard_query_keycode(
     keycode: KeyCode,
 ) -> Option<DQKeycode> {
     match keycode {
-        // Letters
         KeyCode::A => Some(DQKeycode::A),
         KeyCode::B => Some(DQKeycode::B),
         KeyCode::C => Some(DQKeycode::C),
@@ -58,8 +57,6 @@ pub const fn mirl_keycode_to_keyboard_query_keycode(
         KeyCode::X => Some(DQKeycode::X),
         KeyCode::Y => Some(DQKeycode::Y),
         KeyCode::Z => Some(DQKeycode::Z),
-
-        // Numbers
         KeyCode::Num0 => Some(DQKeycode::Key0),
         KeyCode::Num1 => Some(DQKeycode::Key1),
         KeyCode::Num2 => Some(DQKeycode::Key2),
@@ -70,8 +67,6 @@ pub const fn mirl_keycode_to_keyboard_query_keycode(
         KeyCode::Num7 => Some(DQKeycode::Key7),
         KeyCode::Num8 => Some(DQKeycode::Key8),
         KeyCode::Num9 => Some(DQKeycode::Key9),
-
-        // Keypad
         KeyCode::KeyPad0 => Some(DQKeycode::Numpad0),
         KeyCode::KeyPad1 => Some(DQKeycode::Numpad1),
         KeyCode::KeyPad2 => Some(DQKeycode::Numpad2),
@@ -82,8 +77,6 @@ pub const fn mirl_keycode_to_keyboard_query_keycode(
         KeyCode::KeyPad7 => Some(DQKeycode::Numpad7),
         KeyCode::KeyPad8 => Some(DQKeycode::Numpad8),
         KeyCode::KeyPad9 => Some(DQKeycode::Numpad9),
-
-        // Function keys
         KeyCode::F1 => Some(DQKeycode::F1),
         KeyCode::F2 => Some(DQKeycode::F2),
         KeyCode::F3 => Some(DQKeycode::F3),
@@ -96,23 +89,17 @@ pub const fn mirl_keycode_to_keyboard_query_keycode(
         KeyCode::F10 => Some(DQKeycode::F10),
         KeyCode::F11 => Some(DQKeycode::F11),
         KeyCode::F12 => Some(DQKeycode::F12),
-
-        // Modifiers
         KeyCode::LeftShift => Some(DQKeycode::LShift),
         KeyCode::RightShift => Some(DQKeycode::RShift),
         KeyCode::LeftControl => Some(DQKeycode::LControl),
         KeyCode::RightControl => Some(DQKeycode::RControl),
         KeyCode::LeftAlt => Some(DQKeycode::LAlt),
         KeyCode::RightAlt => Some(DQKeycode::RAlt),
-
-        // Special keys
         KeyCode::Space => Some(DQKeycode::Space),
         KeyCode::Enter => Some(DQKeycode::Enter),
         KeyCode::Escape => Some(DQKeycode::Escape),
         KeyCode::Backspace => Some(DQKeycode::Backspace),
         KeyCode::Tab => Some(DQKeycode::Tab),
-
-        // Punctuation
         KeyCode::Comma => Some(DQKeycode::Comma),
         KeyCode::Period => Some(DQKeycode::Dot),
         KeyCode::Minus => Some(DQKeycode::Minus),
@@ -123,32 +110,22 @@ pub const fn mirl_keycode_to_keyboard_query_keycode(
         KeyCode::Semicolon => Some(DQKeycode::Semicolon),
         KeyCode::Grave => Some(DQKeycode::Grave),
         KeyCode::Slash => Some(DQKeycode::Slash),
-
-        // Arrow keys
         KeyCode::UpArrow => Some(DQKeycode::Up),
         KeyCode::DownArrow => Some(DQKeycode::Down),
         KeyCode::LeftArrow => Some(DQKeycode::Left),
         KeyCode::RightArrow => Some(DQKeycode::Right),
-
-        // Editing keys
         KeyCode::Insert => Some(DQKeycode::Insert),
         KeyCode::Delete => Some(DQKeycode::Delete),
         KeyCode::Home => Some(DQKeycode::Home),
         KeyCode::End => Some(DQKeycode::End),
         KeyCode::PageUp => Some(DQKeycode::PageUp),
         KeyCode::PageDown => Some(DQKeycode::PageDown),
-
-        // Lock keys
         KeyCode::CapsLock => Some(DQKeycode::CapsLock),
-
-        // Keypad operations
         KeyCode::KeyPadDivide => Some(DQKeycode::NumpadDivide),
         KeyCode::KeyPadMultiply => Some(DQKeycode::NumpadMultiply),
         KeyCode::KeyPadSubtract => Some(DQKeycode::NumpadSubtract),
         KeyCode::KeyPadAdd => Some(DQKeycode::NumpadAdd),
         KeyCode::KeyPadDecimal => Some(DQKeycode::NumpadDecimal),
-
-        // Keys that don't have direct mappings or are unsupported
         KeyCode::LeftSuper
         | KeyCode::RightSuper
         | KeyCode::NumLock
@@ -217,7 +194,17 @@ pub const fn mirl_keycode_to_keyboard_query_keycode(
         | KeyCode::AnyControl
         | KeyCode::AnyShift
         | KeyCode::AnySuper
-        | KeyCode::Unknown => None,
+        | KeyCode::Unknown
+        | KeyCode::LeftHyper
+        | KeyCode::RightHyper
+        | KeyCode::AltControl
+        | KeyCode::BackTab
+        | KeyCode::MediaPlay
+        | KeyCode::MediaPause
+        | KeyCode::MediaReverse
+        | KeyCode::MediaFastForward
+        | KeyCode::MediaRecord
+        | KeyCode::SpecialControl => None,
     }
 }
 

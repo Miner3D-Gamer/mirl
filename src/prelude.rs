@@ -1,6 +1,4 @@
 //! A simple collection of potentially useful things
-#[cfg(feature = "font_support")]
-pub use fontdue;
 
 #[allow(unused_imports, unreachable_pub)]
 #[cfg(feature = "std")]
@@ -12,20 +10,40 @@ pub use crate::platform::file_system::get_default_font;
 #[cfg(not(target_arch = "wasm32"))]
 #[cfg(feature = "std")]
 pub use crate::platform::file_system::FileSystem;
+#[cfg(not(target_arch = "wasm32"))]
+#[cfg(feature = "console")]
+#[cfg(feature = "std")]
+pub use crate::platform::windowing::console;
+#[cfg(all(not(feature = "glfw"), not(feature = "minifb")))]
+#[cfg(not(target_arch = "wasm32"))]
+#[cfg(feature = "console")]
+#[cfg(feature = "std")]
+pub use crate::platform::windowing::console::Framework;
+#[cfg(feature = "glfw")]
+#[cfg(not(target_arch = "wasm32"))]
+#[cfg(feature = "std")]
+pub use crate::platform::windowing::glfw;
 #[cfg(all(feature = "glfw", not(feature = "minifb")))]
 #[cfg(not(target_arch = "wasm32"))]
-pub use crate::platform::frameworks::glfw::Framework;
+#[cfg(feature = "std")]
+pub use crate::platform::windowing::glfw::Framework;
 #[cfg(feature = "minifb")]
 #[cfg(feature = "std")]
 #[cfg(not(target_arch = "wasm32"))]
-#[cfg(any(not(target_os = "macos"), feature = "mac_cc_installed"))]
-pub use crate::platform::frameworks::minifb::Framework;
+pub use crate::platform::windowing::minifb;
+#[cfg(feature = "minifb")]
 #[cfg(feature = "std")]
-#[cfg(feature = "system")]
-#[cfg(feature = "keycodes")]
-pub use crate::platform::frameworks::traits::*;
+#[cfg(not(target_arch = "wasm32"))]
+pub use crate::platform::windowing::minifb::Framework;
 #[cfg(feature = "std")]
-pub use crate::platform::Buffer;
+pub use crate::platform::windowing::traits::*;
 #[cfg(feature = "std")]
 pub use crate::render;
-pub use crate::{extensions::*, platform::WindowSettings};
+#[cfg(feature = "std")]
+pub use crate::render::Buffer;
+pub use crate::{
+    extensions::*,
+    math::{ConstNumbers128, ConstOne, ConstZero},
+    platform::WindowSettings,
+    render::ConstBuffer,
+};

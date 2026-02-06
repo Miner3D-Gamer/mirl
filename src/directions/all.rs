@@ -3,7 +3,7 @@ use super::{
     SpecialDirections,
 };
 /// N E S W + NE SE SW NW + None
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub enum AllDirections {
     /// N E S W
     Base(Directions),
@@ -12,7 +12,12 @@ pub enum AllDirections {
     /// No direction
     Special(SpecialDirections),
 }
-impl RotateDirections for AllDirections {
+impl core::default::Default for AllDirections {
+    fn default() -> Self {
+        Self::Special(SpecialDirections::default())
+    }
+}
+impl const RotateDirections for AllDirections {
     fn rotate_clockwise_90(&self) -> Self {
         match self {
             Self::Base(direction) => {
@@ -39,17 +44,8 @@ impl RotateDirections for AllDirections {
             }
         }
     }
-    fn rotate_180(&self) -> Self {
-        match self {
-            Self::Base(direction) => Self::Base(direction.rotate_180()),
-            Self::Extended(direction) => Self::Extended(direction.rotate_180()),
-            Self::Special(SpecialDirections::None) => {
-                Self::Special(SpecialDirections::None)
-            }
-        }
-    }
 }
-impl RotatePrecise for AllDirections {
+impl const RotatePrecise for AllDirections {
     fn rotate_clockwise_45(&self) -> Self {
         match self {
             Self::Base(direction) => Self::Extended(match direction {
@@ -83,46 +79,6 @@ impl RotatePrecise for AllDirections {
                 ExtendedDirections::SouthEast => Directions::East,
                 ExtendedDirections::SouthWest => Directions::South,
                 ExtendedDirections::NorthWest => Directions::West,
-            }),
-            Self::Special(SpecialDirections::None) => {
-                Self::Special(SpecialDirections::None)
-            }
-        }
-    }
-
-    fn rotate_clockwise_135(&self) -> Self {
-        match self {
-            Self::Base(direction) => Self::Extended(match direction {
-                Directions::North => ExtendedDirections::SouthEast,
-                Directions::East => ExtendedDirections::SouthWest,
-                Directions::South => ExtendedDirections::NorthWest,
-                Directions::West => ExtendedDirections::NorthEast,
-            }),
-            Self::Extended(direction) => Self::Base(match direction {
-                ExtendedDirections::NorthEast => Directions::South,
-                ExtendedDirections::SouthEast => Directions::West,
-                ExtendedDirections::SouthWest => Directions::North,
-                ExtendedDirections::NorthWest => Directions::East,
-            }),
-            Self::Special(SpecialDirections::None) => {
-                Self::Special(SpecialDirections::None)
-            }
-        }
-    }
-
-    fn rotate_counterclockwise_135(&self) -> Self {
-        match self {
-            Self::Base(direction) => Self::Extended(match direction {
-                Directions::North => ExtendedDirections::SouthWest,
-                Directions::East => ExtendedDirections::NorthWest,
-                Directions::South => ExtendedDirections::NorthEast,
-                Directions::West => ExtendedDirections::SouthEast,
-            }),
-            Self::Extended(direction) => Self::Base(match direction {
-                ExtendedDirections::NorthEast => Directions::West,
-                ExtendedDirections::SouthEast => Directions::North,
-                ExtendedDirections::SouthWest => Directions::East,
-                ExtendedDirections::NorthWest => Directions::South,
             }),
             Self::Special(SpecialDirections::None) => {
                 Self::Special(SpecialDirections::None)

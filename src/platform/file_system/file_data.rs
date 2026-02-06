@@ -117,7 +117,9 @@ impl FileData {
     ///
     /// # Errors
     /// When not a font it will error
-    pub fn to_font(&self) -> Result<fontdue::Font, Box<dyn std::error::Error>> {
+    pub fn to_font(
+        &self,
+    ) -> Result<fontdue::Font, Box<dyn core::error::Error>> {
         let font = fontdue::Font::from_bytes(
             self.raw_data.clone(),
             fontdue::FontSettings::default(),
@@ -131,7 +133,7 @@ impl FileData {
     #[cfg(feature = "imagery")]
     pub fn to_image(
         &self,
-    ) -> Result<image::DynamicImage, Box<dyn std::error::Error>> {
+    ) -> Result<image::DynamicImage, Box<dyn core::error::Error>> {
         // Decode the raw bytes as an image
         let img = image::load_from_memory(&self.raw_data)?;
 

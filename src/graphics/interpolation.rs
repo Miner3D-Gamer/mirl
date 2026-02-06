@@ -1,30 +1,47 @@
 #![allow(clippy::similar_names)]
 #![allow(clippy::many_single_char_names)]
 
+#[cfg(not(feature = "std"))]
+#[allow(unused_imports)]
+use crate::prelude::*;
 use crate::{
     graphics::{rgba_to_u32, u32_to_rgba, u32_to_rgba_u8},
     math::interpolate,
 };
-
 /// The interpolation mode for resizing a buffer-like object
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Hash, PartialOrd, Ord)]
 pub enum InterpolationMode {
     #[default]
     /// Nearest neighbor - Best for pixel art and sharp edges
+    /// Downscale: 2/10  Upscale: 3/10
     Nearest,
+
     /// Linear (bilinear) - Simple smoothing, fast but can blur
+    /// Downscale: 4/10  Upscale: 5/10
     Linear,
+
     /// Cubic (bicubic) - Smoother than linear, preserves detail better
+    /// Downscale: 6/10  Upscale: 7/10
     Cubic,
+
     /// Lanczos - High quality, sharp, good for downscaling, more expensive
+    /// Downscale: 9/10  Upscale: 8/10
     Lanczos,
+
     /// Area (box/average) - Good for reducing aliasing when downscaling
+    /// Downscale: 8/10  Upscale: 1/10
     Area,
+
     /// Catmull–Rom spline - Cubic variant, sharper than bicubic
+    /// Downscale: 6/10  Upscale: 8/10
     CatmullRom,
+
     /// Gaussian - Blurry but effective at noise reduction
+    /// Downscale: 5/10  Upscale: 3/10
     Gaussian,
+
     /// Mitchell–Netravali - Balanced sharpness and smoothness
+    /// Downscale: 7/10  Upscale: 7/10
     MitchellNetravali,
 }
 
@@ -33,6 +50,7 @@ pub enum InterpolationMode {
 #[allow(clippy::cast_precision_loss)]
 #[allow(clippy::cast_possible_truncation)]
 #[allow(clippy::cast_possible_wrap)]
+#[cfg(feature = "std")]
 /// Resize u32 list using linear interpolation
 pub fn resize_buffer_linear(
     buffer: &[u32],
@@ -75,6 +93,7 @@ pub fn resize_buffer_linear(
 #[allow(clippy::cast_sign_loss)]
 #[allow(clippy::cast_precision_loss)]
 #[allow(clippy::cast_possible_truncation)]
+#[cfg(feature = "std")]
 #[allow(clippy::cast_possible_wrap)]
 /// Resize u32 list using the nearest neighbor
 pub fn resize_buffer_nearest(
@@ -91,8 +110,10 @@ pub fn resize_buffer_nearest(
 
     for y in 0..dst_height {
         for x in 0..dst_width {
-            let src_x = (x as f32).mul_add(x_ratio, 0.5).floor() as usize;
-            let src_y = (y as f32).mul_add(y_ratio, 0.5).floor() as usize;
+            let src_x = core::f32::math::mul_add(x as f32, x_ratio, 0.5).floor()
+                as usize;
+            let src_y = core::f32::math::mul_add(y as f32, y_ratio, 0.5).floor()
+                as usize;
 
             // Clamp to valid indices
             let src_x = src_x.min(src_width - 1);
@@ -109,6 +130,7 @@ pub fn resize_buffer_nearest(
 #[allow(clippy::cast_sign_loss)]
 #[allow(clippy::cast_precision_loss)]
 #[allow(clippy::cast_possible_truncation)]
+#[cfg(feature = "std")]
 #[allow(clippy::cast_possible_wrap)]
 /// Resize u32 list using bicubic interpolation
 pub fn resize_buffer_cubic(
@@ -141,6 +163,7 @@ pub fn resize_buffer_cubic(
 #[allow(clippy::cast_sign_loss)]
 #[allow(clippy::cast_precision_loss)]
 #[allow(clippy::cast_possible_truncation)]
+#[cfg(feature = "std")]
 #[allow(clippy::cast_possible_wrap)]
 /// Resize u32 list using Lanczos interpolation
 pub fn resize_buffer_lanczos(
@@ -173,6 +196,7 @@ pub fn resize_buffer_lanczos(
 #[allow(clippy::cast_sign_loss)]
 #[allow(clippy::cast_precision_loss)]
 #[allow(clippy::cast_possible_truncation)]
+#[cfg(feature = "std")]
 #[allow(clippy::cast_possible_wrap)]
 /// Resize u32 list using area averaging (good for downscaling)
 pub fn resize_buffer_area(
@@ -214,6 +238,7 @@ pub fn resize_buffer_area(
 #[allow(clippy::cast_sign_loss)]
 #[allow(clippy::cast_precision_loss)]
 #[allow(clippy::cast_possible_truncation)]
+#[cfg(feature = "std")]
 #[allow(clippy::cast_possible_wrap)]
 /// Resize u32 list using Catmull-Rom spline interpolation
 pub fn resize_buffer_catmull_rom(
@@ -246,6 +271,7 @@ pub fn resize_buffer_catmull_rom(
 #[allow(clippy::cast_sign_loss)]
 #[allow(clippy::cast_precision_loss)]
 #[allow(clippy::cast_possible_truncation)]
+#[cfg(feature = "std")]
 #[allow(clippy::cast_possible_wrap)]
 /// Resize u32 list using Gaussian interpolation
 pub fn resize_buffer_gaussian(
@@ -278,6 +304,7 @@ pub fn resize_buffer_gaussian(
 #[allow(clippy::cast_sign_loss)]
 #[allow(clippy::cast_precision_loss)]
 #[allow(clippy::cast_possible_truncation)]
+#[cfg(feature = "std")]
 #[allow(clippy::cast_possible_wrap)]
 /// Resize u32 list using Mitchell-Netravali interpolation
 pub fn resize_buffer_mitchell_netravali(
@@ -307,6 +334,7 @@ pub fn resize_buffer_mitchell_netravali(
     result
 }
 
+#[cfg(feature = "std")]
 #[must_use]
 /// Resize a list of u32 to a list of u32s with a different visual size
 pub fn resize_buffer(
@@ -348,9 +376,9 @@ pub fn resize_buffer(
 }
 
 // Helper functions for interpolation
-
+#[must_use]
 /// Bilinear interpolation for u32 pixels
-fn bilinear_interpolate_u32(
+pub(super) const fn bilinear_interpolate_u32(
     p1: u32,
     p2: u32,
     p3: u32,
@@ -503,10 +531,12 @@ pub fn area_average_sample(
     x_end: f32,
     y_end: f32,
 ) -> u32 {
-    let x1 = x_start.floor() as usize;
-    let y1 = y_start.floor() as usize;
-    let x2 = (x_end.ceil() as usize).min(width);
-    let y2 = (y_end.ceil() as usize).min(height);
+    let x1 = core::f32::math::floor(x_start) as usize;
+    let y1 = core::f32::math::floor(y_start) as usize;
+    let x2 = core::f32::math::ceil(x_end) as usize;
+    let x2 = x2.min(width);
+    let y2 = core::f32::math::ceil(y_end) as usize;
+    let y2 = y2.min(height);
 
     let mut r = 0.0;
     let mut g = 0.0;
@@ -625,7 +655,8 @@ pub fn gaussian_sample(
 
             let dx = x - (x_int + i) as f32;
             let dy = y - (y_int + j) as f32;
-            let distance_sq = dx.mul_add(dx, dy * dy);
+            let distance_sq = core::f32::math::mul_add(dx, dx, dy * dy);
+
             let weight = (-distance_sq / (2.0 * SIGMA * SIGMA)).exp();
 
             r += pr as f32 * weight;
@@ -699,9 +730,13 @@ pub fn mitchell_netravali_sample(
 pub fn cubic_hermite(t: f32, p: f32) -> f32 {
     let t = (t - p).abs();
     if t < 1.0 {
-        (2.0 * t * t).mul_add(t, -(3.0 * t * t)) + 1.0
+        core::f32::math::mul_add(2.0 * t * t, t, -(3.0 * t * t)) + 1.0
     } else if t < 2.0 {
-        8.0f32.mul_add(-t, (-t * t).mul_add(t, 5.0 * t * t)) + 4.0
+        core::f32::math::mul_add(
+            8.0,
+            core::f32::math::mul_add(-t * t, t, 5.0 * t * t),
+            8.0 * -t,
+        ) + 4.0
     } else {
         0.0
     }
@@ -715,7 +750,7 @@ pub fn lanczos_kernel(x: f32, a: i32) -> f32 {
         if x_abs == 0.0 {
             1.0
         } else {
-            let pi_x = std::f32::consts::PI * x_abs;
+            let pi_x = core::f32::consts::PI * x_abs;
             let pi_x_a = pi_x / a as f32;
             (pi_x.sin() / pi_x) * (pi_x_a.sin() / pi_x_a)
         }
@@ -729,11 +764,20 @@ pub fn lanczos_kernel(x: f32, a: i32) -> f32 {
 pub fn catmull_rom_kernel(t: f32) -> f32 {
     let t_abs = t.abs();
     if t_abs < 1.0 {
-        (1.5 * t_abs * t_abs).mul_add(t_abs, -(2.5 * t_abs * t_abs)) + 1.0
+        core::f32::math::mul_add(
+            1.5 * t_abs * t_abs,
+            t_abs,
+            -(2.5 * t_abs * t_abs),
+        ) + 1.0
     } else if t_abs < 2.0 {
-        4.0f32.mul_add(
-            -t_abs,
-            (-0.5 * t_abs * t_abs).mul_add(t_abs, 2.5 * t_abs * t_abs),
+        core::f32::math::mul_add(
+            4.0,
+            core::f32::math::mul_add(
+                -0.5 * t_abs * t_abs,
+                t_abs,
+                2.5 * t_abs * t_abs,
+            ),
+            -4.0 * t_abs,
         ) + 2.0
     } else {
         0.0
@@ -748,20 +792,41 @@ pub fn mitchell_netravali_kernel(t: f32) -> f32 {
     let t_abs = t.abs();
 
     if t_abs < 1.0 {
-        ((6.0f32.mul_add(-C, 9.0f32.mul_add(-B, 12.0)) * t_abs * t_abs)
-            .mul_add(
-                t_abs,
-                6.0f32.mul_add(C, 12.0f32.mul_add(B, -18.0)) * t_abs * t_abs,
-            )
-            + 2.0f32.mul_add(-B, 6.0))
-            / 6.0
+        ((core::f32::math::mul_add(
+            6.0,
+            core::f32::math::mul_add(
+                -C,
+                core::f32::math::mul_add(-B, 12.0, t_abs * t_abs),
+                t_abs * t_abs,
+            ),
+            t_abs * t_abs,
+        )) + core::f32::math::mul_add(
+            6.0,
+            core::f32::math::mul_add(
+                B,
+                core::f32::math::mul_add(C, -18.0, t_abs * t_abs),
+                t_abs * t_abs,
+            ),
+            2.0,
+        )) / 6.0
     } else if t_abs < 2.0 {
-        ((-12.0f32).mul_add(B, -(48.0 * C)).mul_add(
-            t_abs,
-            (6.0f32.mul_add(-C, -B) * t_abs * t_abs)
-                .mul_add(t_abs, 6.0f32.mul_add(B, 30.0 * C) * t_abs * t_abs),
-        ) + 8.0f32.mul_add(B, 24.0 * C))
-            / 6.0
+        ((core::f32::math::mul_add(
+            -12.0,
+            core::f32::math::mul_add(B, -(48.0 * C), t_abs),
+            core::f32::math::mul_add(
+                core::f32::math::mul_add(
+                    6.0,
+                    core::f32::math::mul_add(-C, -B, t_abs * t_abs),
+                    t_abs * t_abs,
+                ),
+                core::f32::math::mul_add(B, 30.0 * C, t_abs * t_abs),
+                t_abs,
+            ),
+        )) + core::f32::math::mul_add(
+            8.0,
+            core::f32::math::mul_add(B, 24.0 * C, 0.0),
+            0.0,
+        )) / 6.0
     } else {
         0.0
     }

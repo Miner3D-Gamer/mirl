@@ -1,26 +1,19 @@
-use super::{draw_pixel_safe, draw_pixel_unsafe, DrawPixelFunction};
-use crate::{extensions::*, platform::Buffer};
+use super::{draw_pixel_safe, draw_pixel_unsafe};
+use crate::{
+    extensions::*,
+    render::{BufferMetrics, BufferPointers},
+};
 
 /// Draw a filled circle by checking if every pixel is inside the radius
 #[inline]
 #[allow(clippy::cast_sign_loss)]
 #[allow(clippy::cast_possible_wrap)]
 pub fn draw_circle<const SAFE: bool, const FIX_STRAY_PIXEL: bool>(
-    buffer: &mut Buffer,
+    buffer: &mut (impl BufferPointers + BufferMetrics),
     pos: (isize, isize),
     radius: isize,
     color: u32,
 ) {
-    let draw_pixel: DrawPixelFunction = {
-        if SAFE {
-            draw_pixel_safe
-        } else {
-            draw_pixel_unsafe
-        }
-    };
-    // let pos_x = pos_x as isize;
-    // let pos_y = pos_y as isize;
-
     for y in -radius..=radius {
         let dy = y * y;
         let mut dx = (radius * radius - dy).abs().sqrt();
@@ -33,7 +26,19 @@ pub fn draw_circle<const SAFE: bool, const FIX_STRAY_PIXEL: bool>(
             let y_pos = pos.1 + y;
 
             if x_pos >= 0 && y_pos >= 0 {
-                draw_pixel(buffer, (x_pos as usize, y_pos as usize), color);
+                if SAFE {
+                    draw_pixel_safe(
+                        buffer,
+                        (x_pos as usize, y_pos as usize),
+                        color,
+                    );
+                } else {
+                    draw_pixel_unsafe(
+                        buffer,
+                        (x_pos as usize, y_pos as usize),
+                        color,
+                    );
+                }
             }
         }
     }

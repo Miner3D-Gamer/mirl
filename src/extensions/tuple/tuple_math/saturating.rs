@@ -1,10 +1,9 @@
 #![allow(missing_docs)]
-use std::ops::Div;
+use core::ops::Div;
 
-use num_traits::{SaturatingAdd, SaturatingMul, SaturatingSub};
+use crate::extensions::{SaturatingAdd, SaturatingMul, SaturatingSub};
 
-#[const_trait]
-pub trait SaturatingTupleOps<Rhs = Self> {
+pub const trait SaturatingTupleOps<Rhs = Self> {
     type Output;
     fn saturating_add(self, rhs: Rhs) -> Self::Output;
     fn saturating_sub(self, rhs: Rhs) -> Self::Output;
@@ -21,15 +20,15 @@ macro_rules! tuple_ops {
             type Output = ($(impl_helper!(@type $n T),)+);
 
             fn saturating_add(self, rhs: Self) -> Self::Output {
-                ($(self.$n.saturating_add(&rhs.$n),)+)
+                ($(self.$n.saturating_add(rhs.$n),)+)
             }
 
             fn saturating_sub(self, rhs: Self) -> Self::Output {
-                ($(self.$n.saturating_sub(&rhs.$n),)+)
+                ($(self.$n.saturating_sub(rhs.$n),)+)
             }
 
             fn saturating_mul(self, rhs: Self) -> Self::Output {
-                ($(self.$n.saturating_mul(&rhs.$n),)+)
+                ($(self.$n.saturating_mul(rhs.$n),)+)
             }
 
             fn saturating_div(self, rhs: Self) -> Self::Output {

@@ -1,4 +1,4 @@
-#[derive(Debug, Clone, Copy, PartialEq, Default)]
+#[derive(Debug, Clone, Copy, PartialEq, Default, PartialOrd)]
 /// A camera that is bound to a region
 pub struct ScrollableCamera {
     /// The size of the horizontally scrollable region
@@ -38,6 +38,7 @@ impl ScrollableCamera {
 
         self.clamp_to_bounds();
     }
+    #[allow(clippy::tuple_array_conversions)]
     /// Clamp the content to the bounds of the defined region
     pub fn clamp_to_bounds(&mut self) {
         let y_range = if self.allow_free_scroll {

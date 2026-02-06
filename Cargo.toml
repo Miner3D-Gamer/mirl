@@ -1,7 +1,7 @@
 [package]
 # General Info
 name = "mirl"
-version = "8.0.0"
+version = "9.0.0"
 description = "Miners Rust Lib - A massive collection of ever growing and changing functions, structs, and enums. Check the description for compatibility and toggleable features! (Most of the lib is controlled by flags/features so the lib can continue to be lightweight despite its size)"
 # Compiler
 rust-version = "1.88.0"
@@ -12,14 +12,8 @@ authors = ["Miner3D"]
 keywords = ["utilities", "graphics", "windowing", "extensions", "system"]
 repository = "https://github.com/Miner3D-Gamer/mirl"
 # Keep cursor files when uploading
-include = [
-    "Cargo.toml",
-    "README.md",
-    "LICENSE*",
-    "src/**",
-    "src/platform/cursors/svg/*.svg",
-]
-exclude = ["**/_*", "**/*.py"]
+include = ["Cargo.toml", "license", "src/**", "README.md", "CHANGELOG.md"] # Should these last two be included?
+
 
 [dependencies]
 # For locking/releasing a global variable (Font rendering)
@@ -27,11 +21,15 @@ parking_lot = { version = ">=0.12", optional = true, default-features = false }
 # Enum stuff - Used for iterating the keycodes
 strum = { version = ">=0.26", optional = true, default-features = false }
 strum_macros = { version = ">=0.26", optional = true, default-features = false }
-
-
+# Macro stuff
+pastey = { version = "0.2.1", optional = true }
+# Console stuff
+crossterm = { version = ">=0.29.0", optional = true }
+# Json stuff
 serde_json = { version = ">=1.0", optional = true, default-features = false, features = [
     "std",
 ] }
+# Decode/Encoding stuff
 serde = { version = ">=1.0", optional = true, default-features = false }
 
 # Needed for glyph cache
@@ -50,10 +48,14 @@ raw-window-handle = { version = ">=0.6.2", optional = true, default-features = f
 
 # graphics & render
 image = { version = ">=0.25.6", optional = true, default-features = false }
-
+indexmap = { version = "2.12.1", optional = true }
 
 # This lib is pretty useful
-num-traits = { version = ">=0.2", optional = true }
+[dependencies.num-traits]
+version = ">=0.2"
+default-features = false
+optional = true
+features = ["std"]
 
 # system
 [target.'cfg(target_os = "windows")'.dependencies]
@@ -80,11 +82,9 @@ winapi = { version = "0.3", features = [
 ], optional = true }
 
 [target.'cfg(target_os = "linux")'.dependencies]
-x11 = { "version" = ">=2.18.0", optional = true }
+x11 = { "version" = ">=2.18.0", optional = true, default-features = false }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-# # console
-# crossterm = ">=0.28"
 
 # For detecting key strokes
 device_query = { version = ">=4.0.0", optional = true, default-features = false }
@@ -130,11 +130,10 @@ font-kit = { version = "0.11", optional = true, default-features = false, featur
 # # Make a const value be calculated at compile time
 # lazy_static = "1.4"
 # # Macro thingy
-# paste = "1.0.15"
 
 [features]
 # Features enabled by default
-default = ["texture_manager_cleanup", "num_traits"]
+default = ["std"]
 # Image lib support
 imagery = ["dep:image"]
 # # Linux wayland support (Not yet supported)
@@ -146,7 +145,7 @@ ahash = ["dep:ahash", "std"]
 # SVG/resvg support
 svg = ["dep:resvg", "dep:tempfile"]
 # Enable all available backends
-all_backends = ["minifb", "glfw", "font_support"]
+all_backends = ["minifb", "glfw", "font_support", "console"]
 # Framework backend using minifb (NOT COMPATIBLE WITH WEB)
 minifb = ["dep:minifb", "system", "keycodes", "keyboard_query", "svg", "std"]
 # Framework backend using glfw (NOT COMPATIBLE WITH WEB)
@@ -162,7 +161,15 @@ font_support = [
     "dep:parking_lot",
 ]
 # Enable all features that add content
-all = ["default", "imagery", "all_backends", "discord", "random"]
+all = [
+    "default",
+    "imagery",
+    "all_backends",
+    "discord",
+    "random",
+    "console",
+    "num_traits_with_std",
+]
 # Support for interacting with they keyboard
 keycodes = ["dep:strum", "dep:strum_macros", "std"]
 # Support for pulling the current state of the keyboard
@@ -176,10 +183,18 @@ discord = ["dep:serde_json", "dep:reqwest", "dep:serde", "std"]
 random = ["dep:rand", "std"]
 # Unbind rust from any os specific features
 std = []
-# # If nightly features are to be enabled
-# nightly = []
-num_traits = ["dep:num-traits", "std"]
-mac_cc_installed = []
+# Num traits allows for less hardcoded number stuff
+num_traits = ["dep:num-traits"]
+# # Activate when on MacOs and a c compiler is installed
+# # Otherwise libraries like minifb will not be able to compile
+# mac_cc_installed = []
+# Set this flag if you are using miri
+miri = []
+console = ["dep:crossterm"]
+# Alright, this is stupid
+num_traits_with_std = ["num-traits/std", "num_traits", "std"]
+# A flag required when wanting to test this lib
+test = ["dep:pastey"]
 
 
 # Get the current state of the keyboard
@@ -189,3 +204,5 @@ path = "src/lib.rs"
 
 # [build-dependencies]
 # rustc_version = "0.4"
+[profile.release]
+lto = true

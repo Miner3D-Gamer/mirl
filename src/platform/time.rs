@@ -3,7 +3,7 @@ use super::Time;
 
 #[cfg(feature = "std")]
 /// Native implementation of the Time trait
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct NativeTime {
     /// The starting time
     pub time: std::time::Instant,

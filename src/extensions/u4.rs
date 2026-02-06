@@ -1,13 +1,14 @@
 #![allow(clippy::cast_lossless)]
 #![allow(clippy::cast_possible_truncation)]
 #![allow(clippy::cast_sign_loss)]
-#[cfg(feature = "num_traits")]
-use num_traits::{NumCast, ToPrimitive};
 
 use super::U2;
+#[cfg(not(feature = "std"))]
+#[allow(unused_imports)]
+use crate::extensions::*;
+use crate::math::{ConstOne, ConstZero};
 
-#[cfg_attr(feature = "std", derive(std::cmp::PartialOrd))]
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Default)]
 /// A custom u4
 #[allow(missing_docs)]
 #[allow(clippy::struct_excessive_bools)]
@@ -18,7 +19,7 @@ pub struct U4 {
     pub b3: bool,
 }
 #[cfg(feature = "num_traits")]
-impl ToPrimitive for U4 {
+impl num_traits::ToPrimitive for U4 {
     fn to_f32(&self) -> Option<f32> {
         Some(self.value().into())
     }
@@ -60,7 +61,7 @@ impl ToPrimitive for U4 {
     }
 }
 #[cfg(feature = "num_traits")]
-impl NumCast for U4 {
+impl num_traits::NumCast for U4 {
     fn from<T: num_traits::ToPrimitive>(n: T) -> Option<Self> {
         Some(unsafe { Self::new(n.to_u8().unwrap_unchecked()) })
     }
@@ -153,72 +154,71 @@ impl U4 {
     }
 }
 
-#[cfg(feature = "std")]
 // Bitwise and arithmetic traits
-impl std::ops::Not for U4 {
+impl const core::ops::Not for U4 {
     type Output = Self;
     fn not(self) -> Self {
         Self::from_u8_trunc(!self.value())
     }
 }
-#[cfg(feature = "std")]
-impl std::ops::BitAnd for U4 {
+
+impl const core::ops::BitAnd for U4 {
     type Output = Self;
     fn bitand(self, rhs: Self) -> Self {
         Self::from_u8_trunc(self.value() & rhs.value())
     }
 }
-#[cfg(feature = "std")]
-impl std::ops::BitOr for U4 {
+
+impl const core::ops::BitOr for U4 {
     type Output = Self;
     fn bitor(self, rhs: Self) -> Self {
         Self::from_u8_trunc(self.value() | rhs.value())
     }
 }
-#[cfg(feature = "std")]
-impl std::ops::BitXor for U4 {
+
+impl const core::ops::BitXor for U4 {
     type Output = Self;
     fn bitxor(self, rhs: Self) -> Self {
         Self::from_u8_trunc(self.value() ^ rhs.value())
     }
 }
-#[cfg(feature = "std")]
-impl std::ops::Shl<usize> for U4 {
+
+impl const core::ops::Shl<usize> for U4 {
     type Output = Self;
     fn shl(self, rhs: usize) -> Self {
         Self::from_u8_trunc(self.value() << rhs)
     }
 }
-#[cfg(feature = "std")]
-impl std::ops::Shr<usize> for U4 {
+
+impl const core::ops::Shr<usize> for U4 {
     type Output = Self;
     fn shr(self, rhs: usize) -> Self {
         Self::from_u8_trunc(self.value() >> rhs)
     }
 }
-#[cfg(feature = "std")]
-impl std::ops::Add for U4 {
+
+impl const core::ops::Add for U4 {
     type Output = Self;
     fn add(self, rhs: Self) -> Self {
         self.wrapping_add(rhs)
     }
 }
-#[cfg(feature = "std")]
-impl std::ops::Sub for U4 {
+
+impl core::ops::Sub for U4 {
     type Output = Self;
     fn sub(self, rhs: Self) -> Self {
         self.wrapping_sub(rhs)
     }
 }
-#[cfg(feature = "std")]
-impl std::ops::Mul for U4 {
+
+impl const core::ops::Mul for U4 {
     type Output = Self;
     fn mul(self, rhs: Self) -> Self {
         Self::from_u8_trunc(self.value().wrapping_mul(rhs.value()))
     }
 }
-#[cfg(feature = "std")]
-impl std::ops::Div for U4 {
+
+impl const core::ops::Div for U4 {
     type Output = Self;
     fn div(self, rhs: Self) -> Self {
         Self::from_u8_trunc(self.value().wrapping_div(rhs.value()))
@@ -264,7 +264,7 @@ macro_rules! impl_u4_conversion {
 
 macro_rules! impl_u4_float_conversion {
     ($($f:ty),* $(,)?) => {
-        $(#[cfg(feature = "std")]
+        $(
             impl From<$f> for U4 {
                 fn from(val: $f) -> Self {
                     assert!(val.is_finite(), "Cannot convert non-finite float to U4");
@@ -297,15 +297,14 @@ impl_u4_conversion!(u8, u16, u32, u64, u128, usize);
 impl_u4_conversion!(i8, i16, i32, i64, i128, isize);
 impl_u4_float_conversion!(f32, f64);
 
-#[cfg(feature = "std")]
-impl std::ops::Rem for U4 {
+impl core::ops::Rem for U4 {
     type Output = Self;
 
     fn rem(self, rhs: Self) -> Self::Output {
         Self::from_u8_trunc(self.value() % rhs.value())
     }
 }
-#[cfg(feature = "std")]
+
 #[cfg(feature = "num_traits")]
 impl num_traits::One for U4 {
     fn is_one(&self) -> bool
@@ -318,7 +317,7 @@ impl num_traits::One for U4 {
         Self::from_u8_trunc(1)
     }
 }
-#[cfg(feature = "std")]
+
 #[cfg(feature = "num_traits")]
 impl num_traits::Zero for U4 {
     fn zero() -> Self {
@@ -329,7 +328,6 @@ impl num_traits::Zero for U4 {
     }
 }
 
-#[cfg(feature = "std")]
 #[cfg(feature = "num_traits")]
 impl num_traits::Num for U4 {
     fn from_str_radix(
@@ -344,4 +342,12 @@ impl num_traits::Num for U4 {
     }
 
     type FromStrRadixErr = ::core::num::ParseIntError;
+}
+
+impl ConstOne for U4 {
+    const ONE: Self = Self::from_u8_trunc(1);
+}
+
+impl ConstZero for U4 {
+    const ZERO: Self = Self::from_u8_trunc(0);
 }

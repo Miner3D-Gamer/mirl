@@ -32,9 +32,8 @@ pub const trait Default {
     ) -> bool;
 }
 
-#[const_trait]
 /// Transparency information/Manipulation
-pub trait Transparency {
+pub const trait Transparency {
     /// Culls the given color -> Essentially just a green screen
     fn make_color_transparent(
         handle: &raw_window_handle::RawWindowHandle,
@@ -46,18 +45,18 @@ pub trait Transparency {
         opacity: u8,
     ) -> bool;
 }
-#[const_trait]
+
 /// Decoration like os menu manipulation
-pub trait Decoration {
+pub const trait Decoration {
     /// Remove/Give a window their border
     fn set_window_borderless(
         handle: &raw_window_handle::RawWindowHandle,
         boolean: bool,
     ) -> bool;
 }
-#[const_trait]
+
 /// Stuff I couldn't categorize yet
-pub trait Misc {
+pub const trait Misc {
     /// The title says it all
     fn set_window_hidden_from_taskbar_and_alt_tab(
         handle: &raw_window_handle::RawWindowHandle,
@@ -106,9 +105,9 @@ pub trait Misc {
         priority: CpuPriority,
     );
 }
-#[const_trait]
+
 /// Additional actions for tinkering with the taskbar
-pub trait TaskBar {
+pub const trait TaskBar {
     // fn flash(handle: &raw_window_handle::RawWindowHandle);
     // /// For things like `Recently used` or `Pinned`
     // fn right_click_menu(
@@ -143,7 +142,7 @@ pub trait TaskBar {
     );
 }
 /// The state of a window - Is it here or minimized away into an icon?
-pub trait Iconized {
+pub const trait Iconized {
     /// Checks wether a window is currently minimized
     fn is_minimized(handle: &raw_window_handle::RawWindowHandle) -> bool;
     /// Checks wether a window is currently maximized
@@ -156,15 +155,14 @@ pub trait Iconized {
     fn maximize(handle: &raw_window_handle::RawWindowHandle) -> bool;
 }
 
-#[const_trait]
 /// Screen information
-pub trait Screen {
+pub const trait Screen {
     /// Get the resolution of the screen in pixels (does not support multiple monitors, multi screen workspaces)
     fn get_screen_resolution() -> (i32, i32);
 }
-#[const_trait]
+
 /// Os information
-pub trait Host {
+pub const trait Host {
     /// Get the name of the os
     /// Windows -> Windows
     /// Linux (Ubuntu) -> Ubuntu
@@ -178,8 +176,9 @@ pub trait Host {
 // pub struct ToolbarTool {}
 
 /// The loading state of the taskbar icon be aware that some OS may not support all of these
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Hash)]
 pub enum ProgressionState {
+    #[default]
     /// Default behavior
     Normal,
     /// Make the white bar Red
@@ -191,36 +190,49 @@ pub enum ProgressionState {
     /// Hide bar
     NoBar,
 }
-
+#[cfg(not(feature = "miri"))]
 #[cfg(target_os = "windows")]
 /// An OS specific library, only use when necessary
 pub mod windows_actions;
 #[cfg(target_os = "windows")]
+#[cfg(not(feature = "miri"))]
 pub use windows_actions::WindowsActions as Os;
 
 #[cfg(target_os = "linux")]
+#[cfg(not(feature = "miri"))]
 /// An OS specific library, only use when necessary
 pub mod linux_actions;
 #[cfg(target_os = "linux")]
+#[cfg(not(feature = "miri"))]
 pub use linux_actions::LinuxActions as Os;
 
 #[cfg(target_arch = "wasm32")]
+#[cfg(not(feature = "miri"))]
 /// An OS specific library, only use when necessary
 pub mod web_actions;
 #[cfg(target_arch = "wasm32")]
+#[cfg(not(feature = "miri"))]
 pub use web_actions::WebActions as Os;
 
 #[cfg(target_os = "macos")]
+#[cfg(not(feature = "miri"))]
 /// An OS specific library, only use when necessary
 pub mod mac_actions;
 #[cfg(target_os = "macos")]
+#[cfg(not(feature = "miri"))]
 pub use mac_actions::MacActions as Os;
+#[cfg(feature = "miri")]
+/// An OS specific library, only use when necessary
+pub mod miri_actions;
+#[cfg(feature = "miri")]
+pub use miri_actions::MiriActions as Os;
 
 #[cfg(not(any(
     target_arch = "wasm32",
     target_os = "linux",
     target_os = "windows",
-    target_os = "macos"
+    target_os = "macos",
+    feature = "miri"
 )))]
 /// A last resort, not to be used by any devs but the Os struct import from super::
 pub struct Os {}
@@ -231,7 +243,7 @@ pub struct Os {}
 // use web_actions::{
 //     capture_desktop_background_raw, capture_screen_raw, get_window_id_by_title,
 // };
-use crate::platform::{Buffer, WindowLevel};
+use crate::{platform::WindowLevel, prelude::Buffer};
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 /// The cpu/thread priority a process can have
 pub enum CpuPriority {

@@ -1,11 +1,11 @@
 #![warn(missing_docs)]
+#![warn(clippy::pedantic)]
+#![warn(clippy::nursery)]
 #![warn(missing_debug_implementations)]
 #![warn(missing_copy_implementations)]
 #![warn(trivial_casts)]
 #![warn(trivial_numeric_casts)]
 #![warn(unreachable_pub)]
-#![warn(clippy::pedantic)]
-#![warn(clippy::nursery)]
 #![warn(clippy::expect_used)]
 #![warn(clippy::todo)]
 #![allow(clippy::cast_precision_loss)]
@@ -19,6 +19,7 @@
 #![allow(clippy::overly_complex_bool_expr)]
 #![allow(clippy::too_many_lines)]
 #![allow(clippy::fn_params_excessive_bools)]
+#![allow(clippy::format_push_string)] // TODO: Replace all format string assign instances with write!
 #![allow(internal_features)]
 #![feature(const_trait_impl)]
 #![feature(const_ops)]
@@ -28,6 +29,14 @@
 #![feature(const_option_ops)]
 #![feature(core_float_math)]
 #![feature(f128)]
+#![feature(f16)]
+#![feature(iter_advance_by)]
+#![feature(lazy_type_alias)] // This may be performance intensive
+#![feature(type_alias_impl_trait)]
+#![allow(incomplete_features)] // Incomplete: generic_const_exprs
+#![feature(generic_const_exprs)]
+#![feature(const_cmp)]
+#![feature(try_trait_v2)]
 #![cfg_attr(not(feature = "std"), no_std)]
 //! Miners
 //! Rust
@@ -36,12 +45,17 @@
 //!
 //! How to get started:
 //! ```
-//! use mirl::platform::framework_traits::Window;
+//! #[cfg(test)]
+//! #[cfg(not(feature = "minifb"))]
+//! compile_error!("`minifb` flag needs to be set");
+//!
+//! use mirl::platform::windowing::traits::*;
 //! fn main() {
-//!     let mut buffer = mirl::platform::Buffer::new_empty((800, 600));
-//!     let mut window = mirl::platform::minifb::Framework::new(
+//!     let mut buffer = mirl::prelude::Buffer::new_empty((800, 600));
+//!     // The supported are `minifb`, `glfw`, and experimentally `console`
+//!     let mut window = mirl::prelude::minifb::Framework::new(
 //!         "Example window",
-//!         mirl::platform::WindowSettings::default(&buffer),
+//!         mirl::prelude::WindowSettings::default(&buffer),
 //!     )
 //!     .unwrap();
 //!     while window.is_open() {
@@ -58,7 +72,7 @@
 //! This lib has got a ton to offer but the main attractions are in here:
 //! ## Window/Rendering Bundle (flags: `minifb`/`glfw`/`all_backends`):
 //!
-//! - [Frameworks](crate::platform::framework_traits) - What are they capable of? (for [`crate::platform::minifb::Framework`] or [`crate::platform::glfw::Framework`])
+//! - [Frameworks](crate::platform::windowing::traits) - What are they capable of? (for [`crate::platform::minifb::Framework`] or [`crate::platform::glfw::Framework`])
 //! - [Buffer] - The central struct many other functions rely on
 //! - [Rendering](crate::render) - Render simple shapes
 //! - [Platform](crate::platform) - Other neat stuff like [`crate::platform::keycodes::KeyCode`]/[`crate::platform::MouseButton`], or [`crate::platform::ScreenNormalizer`]
@@ -88,11 +102,14 @@ pub mod misc;
 ///
 /// For basic collision, use [`mirl::math::collision`](crate::math::collision)
 pub mod platform;
-#[cfg(feature = "std")]
-/// Rendering stuff, simple but powerful (on [`mirl::platform::Buffer`](crate::platform::Buffer))
+/// Rendering stuff, simple but powerful (on [`mirl::prelude::Buffer`](crate::prelude::Buffer))
 ///
 /// For color stuff, use [`mirl::graphics`](crate::graphics)
 pub mod render;
+#[cfg(feature = "std")]
+/// Text related stuff
+pub mod text;
+#[cfg(feature = "std")]
 /// Time related stuff
 pub mod time;
 
@@ -102,7 +119,6 @@ pub mod time;
 pub mod console;
 
 /// Unified os specific features
-#[cfg(feature = "std")]
 #[cfg(feature = "system")]
 pub mod system;
 
@@ -133,8 +149,9 @@ pub fn disable_traceback() {
     }
 }
 #[cfg(feature = "std")]
-// This little fella is so often used that it only makes sense to reexport it
-pub use platform::Buffer;
+// // This little fella is so often used that it only makes sense to reexport it
+#[deprecated = "Please use `mirl::prelude::Buffer` instead"]
+pub use prelude::Buffer;
 
 /// Defaults
 pub mod prelude;
@@ -142,11 +159,25 @@ pub mod prelude;
 /// Settings to be applied throughout the lib
 pub mod settings;
 
+/// A reexport of all available/used dependencies
+pub mod dependencies;
+
 // TODO:
 // - Clipboard support
 // - Sound support
 // - Networking support?
-// - Linux Compatibility
+// - (Full) Linux Compatibility
+// - Compression of svg fils inside `mirl::platform::mouse::svg`:
+//  - Svg object deduplication using relative transformation
+//  - Zip for a size reduction from current ~470kb to ~90kb
+// - Split files:
+//  - mirl::graphics
+//  - mirl::platform::mouse
+//  - mirl::extensions::math
+//  - mirl::system::action::windows_actions
+//  - key_manager and mouse_manager in mirl::platform::shared
+// - Add shapes to mirl::math::geometry and add more dimension support for existing shapes
+// - Resolve other `TODO` sprinkled around the lib
 
 // TODON'T:
 // - Mac support

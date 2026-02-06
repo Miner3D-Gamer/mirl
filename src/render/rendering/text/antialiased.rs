@@ -2,11 +2,9 @@
 #![allow(clippy::significant_drop_tightening)]
 
 use super::get_character;
-use crate::{
-    platform::Buffer,
-    render::{
-        draw_pixel_safe, draw_pixel_unsafe, rendering::DrawPixelFunction,
-    },
+use crate::render::{
+    draw_pixel_safe, draw_pixel_unsafe, BufferGetPixel, BufferMetrics,
+    BufferMisc, BufferPointers,
 };
 
 #[allow(clippy::cast_precision_loss)]
@@ -14,7 +12,7 @@ use crate::{
 #[allow(clippy::cast_sign_loss)]
 /// Draw text in the specified font
 pub fn draw_text_antialiased<const SAFE: bool>(
-    buffer: &mut Buffer,
+    buffer: &mut (impl BufferPointers + BufferMetrics + BufferMisc),
     text: &str,
     xy: (usize, usize),
     color: u32,
@@ -43,8 +41,8 @@ pub fn draw_text_antialiased<const SAFE: bool>(
                 let py =
                     ((pen_y + gy + offset_y) as i32 - metrics.ymin) as usize;
 
-                if px < buffer.width && py < buffer.height {
-                    let index = py * buffer.width + px;
+                if px < buffer.width() && py < buffer.height() {
+                    let index = py * buffer.width() + px;
                     let alpha = bitmap[gy * metrics.width + gx]; // Alpha (0-255)
 
                     if alpha > 0 {
@@ -108,7 +106,7 @@ pub fn draw_text_antialiased<const SAFE: bool>(
 ///
 /// function: `fn(original_color: u32, color_under_pixel: u32) -> u32`
 pub fn draw_text_antialiased_execute_at<const SAFE: bool>(
-    buffer: &mut Buffer,
+    buffer: &mut (impl BufferPointers + BufferMetrics + BufferGetPixel),
     text: &str,
     xy: (usize, usize),
     color: u32,
@@ -138,8 +136,8 @@ pub fn draw_text_antialiased_execute_at<const SAFE: bool>(
                 let py =
                     ((pen_y + gy + offset_y) as i32 - metrics.ymin) as usize;
 
-                if px < buffer.width && py < buffer.height {
-                    let index = py * buffer.width + px;
+                if px < buffer.width() && py < buffer.height() {
+                    let index = py * buffer.width() + px;
                     let alpha = bitmap[gy * metrics.width + gx]; // Alpha (0-255)
                     let new_color = function(color, buffer.get_pixel((px, py)));
 
@@ -201,7 +199,7 @@ pub fn draw_text_antialiased_execute_at<const SAFE: bool>(
 
 /// Draw text yet stretch the resulting characters
 pub fn draw_text_antialiased_stretched<const SAFE: bool>(
-    buffer: &mut Buffer,
+    buffer: &mut (impl BufferPointers + BufferMetrics + BufferGetPixel),
     text: &str,
     xy: (usize, usize),
     color: u32,
@@ -227,7 +225,7 @@ pub fn draw_text_antialiased_stretched<const SAFE: bool>(
 
         for gy in 0..h.floor() as usize {
             let py = ((pen_y + gy + offset_y) as i32 - metrics.ymin) as usize;
-            if py >= buffer.height {
+            if py >= buffer.height() {
                 continue;
             }
 
@@ -235,7 +233,7 @@ pub fn draw_text_antialiased_stretched<const SAFE: bool>(
                 ((gy as f32 / stretch.1) as usize) * metrics.width;
             for gx in 0..w.floor() as usize {
                 let px = pen_x as usize + gx;
-                if px >= buffer.width {
+                if px >= buffer.width() {
                     continue;
                 }
 
@@ -294,20 +292,13 @@ pub fn draw_text_antialiased_stretched<const SAFE: bool>(
 
 /// Same as [`draw_text_antialiased`] but uses isize for positioning allowing for partially out of bounds text (left and top)
 pub fn draw_text_antialiased_isize<const SAFE: bool>(
-    buffer: &mut Buffer,
+    buffer: &mut (impl BufferPointers + BufferMetrics + BufferMisc),
     text: &str,
     xy: (isize, isize),
     color: u32,
     size: f32,
     font: &fontdue::Font,
 ) {
-    let draw_pixel: DrawPixelFunction = {
-        if SAFE {
-            draw_pixel_safe
-        } else {
-            draw_pixel_unsafe
-        }
-    };
     let mut pen_x = xy.0 as f32;
     let pen_y = xy.1;
 
@@ -332,15 +323,15 @@ pub fn draw_text_antialiased_isize<const SAFE: bool>(
                 // Check if pixel is within buffer bounds
                 if px >= 0
                     && py >= 0
-                    && px < buffer.width as isize
-                    && py < buffer.height as isize
+                    && px < buffer.width() as isize
+                    && py < buffer.height() as isize
                 {
                     let pixel_x_new = px as usize;
                     let pixel_y_new = py as usize;
-                    let index = pixel_y_new * buffer.width + pixel_x_new;
+                    let index = pixel_y_new * buffer.width() + pixel_x_new;
                     let alpha = bitmap[gy * metrics.width + gx]; // Alpha (0-255)
                     if alpha > 0 {
-                        if SAFE && index >= buffer.width * buffer.height {
+                        if SAFE && index >= buffer.width() * buffer.height() {
                             continue;
                         }
 
@@ -378,15 +369,25 @@ pub fn draw_text_antialiased_isize<const SAFE: bool>(
                                 + ba as u16 * u16::from(inv_alpha))
                                 / 255)
                                 as u8;
-
-                            draw_pixel(
-                                buffer,
-                                (pixel_x_new, pixel_y_new),
-                                u32::from(nr) << 24
-                                    | u32::from(ng) << 16
-                                    | u32::from(nb) << 8
-                                    | u32::from(na),
-                            );
+                            if SAFE {
+                                draw_pixel_safe(
+                                    buffer,
+                                    (pixel_x_new, pixel_y_new),
+                                    u32::from(nr) << 24
+                                        | u32::from(ng) << 16
+                                        | u32::from(nb) << 8
+                                        | u32::from(na),
+                                );
+                            } else {
+                                draw_pixel_unsafe(
+                                    buffer,
+                                    (pixel_x_new, pixel_y_new),
+                                    u32::from(nr) << 24
+                                        | u32::from(ng) << 16
+                                        | u32::from(nb) << 8
+                                        | u32::from(na),
+                                );
+                            }
                         }
                     }
                 }
@@ -400,7 +401,7 @@ pub fn draw_text_antialiased_isize<const SAFE: bool>(
 
 /// Same as [`draw_text_antialiased_stretched`] but uses isize for positioning allowing for partially out of bounds text (left and top)
 pub fn draw_text_antialiased_stretched_isize<const SAFE: bool>(
-    buffer: &mut Buffer,
+    buffer: &mut (impl BufferPointers + BufferMetrics + BufferGetPixel),
     text: &str,
     xy: (isize, isize),
     color: u32,
@@ -426,7 +427,7 @@ pub fn draw_text_antialiased_stretched_isize<const SAFE: bool>(
 
         for gy in 0..h.floor() as usize {
             let py = pen_y + gy as isize + offset_y - metrics.ymin as isize;
-            if py < 0 || py >= buffer.height as isize {
+            if py < 0 || py >= buffer.height() as isize {
                 continue;
             }
 
@@ -434,7 +435,7 @@ pub fn draw_text_antialiased_stretched_isize<const SAFE: bool>(
                 ((gy as f32 / stretch.1) as usize) * metrics.width;
             for gx in 0..w.floor() as usize {
                 let px = pen_x as isize + gx as isize;
-                if px < 0 || px >= buffer.width as isize {
+                if px < 0 || px >= buffer.width() as isize {
                     continue;
                 }
 
@@ -445,9 +446,9 @@ pub fn draw_text_antialiased_stretched_isize<const SAFE: bool>(
                 if alpha > 0 {
                     let px_new = px as usize;
                     let py_new = py as usize;
-                    let index = py_new * buffer.width + px_new;
+                    let index = py_new * buffer.width() + px_new;
 
-                    if SAFE && index >= buffer.width * buffer.height {
+                    if SAFE && index >= buffer.width() * buffer.height() {
                         continue;
                     }
 
@@ -545,8 +546,8 @@ pub fn draw_text_antialiased_stretched_isize<const SAFE: bool>(
 //                 let py =
 //                     ((pen_y + gy + offset_y) as i32 - metrics.ymin) as usize;
 
-//                 if px < buffer.width && py < buffer.height {
-//                     let index = py * buffer.width + px;
+//                 if px < buffer.width() && py < buffer.height() {
+//                     let index = py * buffer.width() + px;
 //                     let alpha = bitmap[gy * metrics.width + gx]; // Alpha (0-255)
 
 //                     if alpha > 0 {

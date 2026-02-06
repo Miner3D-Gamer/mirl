@@ -1,5 +1,5 @@
 use crate::platform::file_system::{
-    file_data::DataType, file_system_traits::FileSystem, FileData,
+    file_data::DataType, file_system_traits::FileSystemTrait, FileData,
 };
 
 struct DefaultFont {
@@ -7,7 +7,7 @@ struct DefaultFont {
     pub path: Option<std::path::PathBuf>,
 }
 
-fn get_default_os_font() -> Result<DefaultFont, Box<dyn std::error::Error>> {
+fn get_default_os_font() -> Result<DefaultFont, Box<dyn core::error::Error>> {
     let source = font_kit::source::SystemSource::new();
 
     let handle = source.select_best_match(
@@ -37,9 +37,9 @@ fn get_default_os_font() -> Result<DefaultFont, Box<dyn std::error::Error>> {
 ///
 /// # Errors
 /// When no default font could be found
-pub fn get_default_font<T: FileSystem>(
+pub fn get_default_font<T: FileSystemTrait>(
     file_system: &T,
-) -> Result<FileData, Box<dyn std::error::Error>> {
+) -> Result<FileData, Box<dyn core::error::Error>> {
     let thing = get_default_os_font()?;
     if let Some(data) = thing.bytes {
         Ok(FileData::from_bytes(data, DataType::Font))

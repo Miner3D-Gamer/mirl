@@ -1,3 +1,8 @@
+use crate::{
+    math::{ConstZero, NumberWithMonotoneOps},
+    prelude::TryFromPatch,
+};
+
 /// Add item to list without exceeding the specified maximal size
 pub fn add_item_to_max_sized_list<T>(
     list: &mut Vec<T>,
@@ -60,21 +65,22 @@ pub fn combined_contents<T: Clone + Sized>(
 ///
 /// Returns None if the length of the input is 0
 #[must_use]
-#[cfg(feature = "num_traits")]
-pub fn average<T: num_traits::Num + num_traits::NumCast + Copy>(
+pub fn average<
+    T: ConstZero + Copy + TryFromPatch<usize> + PartialEq + NumberWithMonotoneOps,
+>(
     vec: &[T],
 ) -> Option<T> {
-    let len = T::from(vec.len())?;
-    if len == T::zero() {
+    let len = T::try_from_value(vec.len())?;
+    if len == T::ZERO {
         return None;
     }
-    let sum: T = vec.iter().copied().fold(T::zero(), |a, b| a + b);
+    let sum: T = vec.iter().copied().fold(T::ZERO, |a, b| a + b);
 
     Some(sum / len)
 }
 #[must_use]
 /// Get additions to a list
-pub fn get_difference_new<'a, T: std::cmp::PartialEq>(
+pub fn get_difference_new<'a, T: core::cmp::PartialEq>(
     old: &'a [T],
     new: &'a [T],
 ) -> Vec<&'a T> {
@@ -88,7 +94,7 @@ pub fn get_difference_new<'a, T: std::cmp::PartialEq>(
 }
 #[must_use]
 /// Get additions to a list
-pub fn get_difference_new_cloned<T: std::cmp::PartialEq + Clone>(
+pub fn get_difference_new_cloned<T: core::cmp::PartialEq + Clone>(
     old: &[T],
     new: &[T],
 ) -> Vec<T> {
@@ -102,7 +108,7 @@ pub fn get_difference_new_cloned<T: std::cmp::PartialEq + Clone>(
 }
 /// Returns if the list has duplicate values
 #[must_use]
-pub fn has_duplicates<T: std::hash::Hash + Eq>(vec: &Vec<T>) -> bool {
+pub fn has_duplicates<T: core::hash::Hash + Eq>(vec: &Vec<T>) -> bool {
     let mut seen = std::collections::HashSet::new();
     for item in vec {
         if !seen.insert(item) {
@@ -112,7 +118,7 @@ pub fn has_duplicates<T: std::hash::Hash + Eq>(vec: &Vec<T>) -> bool {
     false
 }
 /// Find an item in a list
-pub fn find_in_list<T: std::cmp::PartialEq>(
+pub fn find_in_list<T: core::cmp::PartialEq>(
     vec: &[T],
     item: &T,
 ) -> Option<usize> {

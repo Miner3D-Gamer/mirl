@@ -4,7 +4,7 @@ use web_sys::window;
 use crate::system::action::Screen;
 
 /// A struct holding information about the underlying os
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Hash)]
 pub struct WebActions;
 
 impl Screen for WebActions {

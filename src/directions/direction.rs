@@ -1,19 +1,28 @@
 use super::RotateDirections;
 
 /// N E S W
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Hash, PartialOrd, Ord)]
 pub enum Directions {
-    /// It's North, what'd you expect?
+    #[default]
+    /// Up
+    ///
+    /// "It's North, what'd you expect?""
     North,
-    /// It's East, what'd you expect?
+    /// Right
+    ///
+    /// "It's East, what'd you expect?""
     East,
-    /// It's South, what'd you expect?
+    /// Down
+    ///
+    /// "It's South, what'd you expect?""
     South,
-    /// It's West, what'd you expect?
+    /// Left
+    ///
+    /// "It's West, what'd you expect?""
     West,
 }
 
-impl RotateDirections for Directions {
+impl const RotateDirections for Directions {
     fn rotate_clockwise_90(&self) -> Self {
         match self {
             Self::North => Self::East,
@@ -28,14 +37,6 @@ impl RotateDirections for Directions {
             Self::East => Self::North,
             Self::South => Self::East,
             Self::West => Self::South,
-        }
-    }
-    fn rotate_180(&self) -> Self {
-        match self {
-            Self::North => Self::South,
-            Self::East => Self::West,
-            Self::South => Self::North,
-            Self::West => Self::East,
         }
     }
 }

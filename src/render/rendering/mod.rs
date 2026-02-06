@@ -1,26 +1,41 @@
-use crate::platform::Buffer;
 /// Draw a pixel color onto the buffer without checking if the pixel is on screen (which will crash the program if it isn't)
 #[inline(always)]
 #[allow(clippy::inline_always)]
 #[track_caller]
-pub fn draw_pixel_unsafe(buffer: &mut Buffer, xy: (usize, usize), color: u32) {
+pub const fn draw_pixel_unsafe(
+    buffer: &mut (impl [const] BufferPointers + [const] BufferMetrics),
+    xy: (usize, usize),
+    color: u32,
+) {
     unsafe {
-        *buffer.mut_pointer().add(xy.1 * buffer.width + xy.0) = color;
+        *buffer.mut_pointer().add(xy.1 * buffer.width() + xy.0) = color;
     }
 }
 /// Draw a pixel color onto the buffer by first checking if the pixel is on screen
 #[inline(always)]
 #[allow(clippy::inline_always)]
 #[track_caller]
-pub fn draw_pixel_safe(buffer: &mut Buffer, xy: (usize, usize), color: u32) {
-    if xy.0 < buffer.width && xy.1 < buffer.height {
+pub const fn draw_pixel_safe(
+    buffer: &mut (impl [const] BufferPointers + [const] BufferMetrics),
+    xy: (usize, usize),
+    color: u32,
+) {
+    if xy.0 < buffer.width() && xy.1 < buffer.height() {
         unsafe {
-            *buffer.mut_pointer().add(xy.1 * buffer.width + xy.0) = color;
+            *buffer.mut_pointer().add(xy.1 * buffer.width() + xy.0) = color;
         }
     }
 }
+// type DrawPixelFunction =
+//     fn(&mut (impl BufferPointers + BufferMetrics), (usize, usize), u32);
 
-type DrawPixelFunction = fn(&mut Buffer, (usize, usize), u32);
+/// All buffer-type related traits
+pub mod buffer_type;
+pub use buffer_type::*;
+#[cfg(feature = "std")]
+/// Helpers that should make using stuff like Arc easier
+pub mod buffer_compatibility;
+// pub use buffer_compatibility::*;
 
 // macro_rules! create_safe_and_unsafe {
 //     (
@@ -73,7 +88,9 @@ mod circle;
 pub use circle::*;
 mod rectangle;
 pub use rectangle::*;
+#[cfg(feature = "std")]
 mod triangle;
+#[cfg(feature = "std")]
 pub use triangle::*;
 mod texture;
 pub use texture::*;

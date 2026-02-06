@@ -29,6 +29,7 @@ pub fn sleep(time: std::time::Duration) {
 pub fn log(t: &str) {
     println!("{t}");
 }
+#[cfg(feature = "keycodes")]
 /// A struct to manage pressed keys
 #[derive(Clone, Debug, Copy, PartialEq, Eq)]
 #[allow(clippy::struct_excessive_bools)]
@@ -118,6 +119,8 @@ pub struct KeyManager {
     right_alt: bool,
     left_super: bool,
     right_super: bool,
+    left_hyper: bool,
+    right_hyper: bool,
 
     // Symbols / Punctuation
     space: bool,
@@ -125,6 +128,7 @@ pub struct KeyManager {
     escape: bool,
     backspace: bool,
     tab: bool,
+    back_tab: bool,
     comma: bool,
     period: bool,
     minus: bool,
@@ -193,12 +197,17 @@ pub struct KeyManager {
 
     // Multimedia keys
     media_play_pause: bool,
+    media_pause: bool,
+    media_play: bool,
     media_stop: bool,
     media_next: bool,
     media_prev: bool,
     volume_up: bool,
     volume_down: bool,
     mute: bool,
+    media_reverse: bool,
+    media_fast_forward: bool,
+    media_record: bool,
 
     // Browser/OS keys
     browser_back: bool,
@@ -217,18 +226,21 @@ pub struct KeyManager {
 
     apostrophe: bool,
     f25: bool,
-
+    special_control: bool,
     key_pad_equal: bool,
     world_1: bool,
     world_2: bool,
 }
 
+#[cfg(feature = "system")]
+#[cfg(feature = "keycodes")]
 impl Default for KeyManager {
     fn default() -> Self {
         Self::new()
     }
 }
 
+#[cfg(feature = "keycodes")]
 impl KeyManager {
     /// Create a new `KeyManager` instance, keep in mind that key manager itself does not check if a key is down.
     #[must_use]
@@ -312,6 +324,8 @@ impl KeyManager {
             right_alt: false,
             left_super: false,
             right_super: false,
+            left_hyper: false,
+            right_hyper: false,
             space: false,
             enter: false,
             escape: false,
@@ -395,6 +409,13 @@ impl KeyManager {
             world_2: false,
             ì: false,
             ù: false,
+            media_pause: false,
+            media_play: false,
+            back_tab: false,
+            media_reverse: false,
+            media_fast_forward: false,
+            media_record: false,
+            special_control: false,
         }
     }
     /// Checks if a key is pressed
@@ -409,7 +430,9 @@ impl KeyManager {
     /// Get every pressed key (by checking if every single one is pressed)
     #[must_use]
     #[cfg(feature = "std")]
+    #[cfg(feature = "system")]
     pub fn get_all_pressed_keys(&self) -> Vec<KeyCode> {
+        use strum::IntoEnumIterator;
         let mut key_codes = Vec::new();
         for variant in KeyCode::iter() {
             if self.is_key_pressed(variant) {
@@ -419,9 +442,6 @@ impl KeyManager {
         key_codes
     }
 }
-
-#[cfg(feature = "std")]
-use strum::IntoEnumIterator;
 
 /// A struct to manage the pressed mouse keys + scroll
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -497,6 +517,7 @@ impl MouseManager {
     }
 }
 use super::MouseButton;
+#[cfg(feature = "keycodes")]
 use crate::platform::keycodes::KeyCode;
 #[must_use]
 /// Get the value [`MouseButton`] of [`MouseManager`]
@@ -533,6 +554,7 @@ pub const fn set_mouse_button(
     }
 }
 
+#[cfg(feature = "keycodes")]
 /// Get the value [`KeyCode`] of [`KeyManager`]
 #[must_use]
 pub const fn map_keycode(keycode: KeyCode, key_manager: &KeyManager) -> bool {
@@ -655,9 +677,7 @@ pub const fn map_keycode(keycode: KeyCode, key_manager: &KeyManager) -> bool {
         KeyCode::End => key_manager.end,
         KeyCode::Insert => key_manager.insert,
         KeyCode::Delete => key_manager.delete,
-
         KeyCode::AUmlautÄ => key_manager.a_umlaut_ä,
-
         KeyCode::ECircumflexÊ => key_manager.ê,
         KeyCode::OGraveÒ => key_manager.ô,
         KeyCode::UGraveÙ => key_manager.ù,
@@ -692,25 +712,36 @@ pub const fn map_keycode(keycode: KeyCode, key_manager: &KeyManager) -> bool {
         KeyCode::YAcuteÝ => key_manager.ý,
         KeyCode::ThornÞ => key_manager.þ,
         KeyCode::OELigatureŒ => key_manager.œ,
-
         KeyCode::AnyAlt => key_manager.right_alt || key_manager.left_alt,
         KeyCode::AnyControl => {
             key_manager.right_control || key_manager.left_control
         }
         KeyCode::AnyShift => key_manager.right_shift || key_manager.left_shift,
         KeyCode::AnySuper => key_manager.right_super || key_manager.left_super,
-
         KeyCode::Pause => key_manager.pause,
         KeyCode::Apostrophe => key_manager.apostrophe,
         KeyCode::F25 => key_manager.f25,
         KeyCode::KeyPadEqual => key_manager.key_pad_equal,
         KeyCode::World1 => key_manager.world_1,
         KeyCode::World2 => key_manager.world_2,
-
+        KeyCode::AltControl => {
+            (key_manager.left_alt || key_manager.right_alt)
+                && (key_manager.left_control || key_manager.right_control)
+        }
+        KeyCode::BackTab => key_manager.back_tab,
         KeyCode::Unknown => false,
+        KeyCode::LeftHyper => key_manager.left_hyper,
+        KeyCode::RightHyper => key_manager.right_hyper,
+        KeyCode::MediaPlay => key_manager.media_play,
+        KeyCode::MediaPause => key_manager.media_pause,
+        KeyCode::MediaReverse => key_manager.media_reverse,
+        KeyCode::MediaFastForward => key_manager.media_fast_forward,
+        KeyCode::MediaRecord => key_manager.media_record,
+        KeyCode::SpecialControl => key_manager.special_control,
     }
 }
 
+#[cfg(feature = "keycodes")]
 /// Set the value [`KeyCode`] of [`KeyManager`]
 pub const fn set_keycode(
     keycode: KeyCode,
@@ -793,6 +824,7 @@ pub const fn set_keycode(
         KeyCode::Enter => key_manager.enter = value,
         KeyCode::Backspace => key_manager.backspace = value,
         KeyCode::Tab => key_manager.tab = value,
+        KeyCode::BackTab => key_manager.back_tab = value,
         KeyCode::Space => key_manager.space = value,
         KeyCode::Minus => key_manager.minus = value,
         KeyCode::Equal => key_manager.equal = value,
@@ -894,6 +926,20 @@ pub const fn set_keycode(
         KeyCode::World1 => key_manager.world_1 = value,
         KeyCode::World2 => key_manager.world_2 = value,
         KeyCode::Unknown => (),
+        KeyCode::LeftHyper => key_manager.left_hyper = value,
+        KeyCode::RightHyper => key_manager.right_hyper = value,
+        KeyCode::AltControl => {
+            key_manager.left_alt = value;
+            key_manager.right_alt = value;
+            key_manager.left_control = value;
+            key_manager.right_control = value;
+        }
+        KeyCode::MediaPlay => key_manager.media_play = value,
+        KeyCode::MediaPause => key_manager.media_pause = value,
+        KeyCode::MediaReverse => key_manager.media_reverse = value,
+        KeyCode::MediaFastForward => key_manager.media_fast_forward = value,
+        KeyCode::MediaRecord => key_manager.media_record = value,
+        KeyCode::SpecialControl => key_manager.special_control = value,
     }
 }
 

@@ -1,5 +1,5 @@
 /// `OsImplementation` for Window
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Hash)]
 pub struct WindowsActions {}
 
 impl Default for WindowsActions {
@@ -168,7 +168,7 @@ impl Misc for WindowsActions {
         for i in windows {
             new.push(raw_window_handle::RawWindowHandle::Win32(
                 raw_window_handle::Win32WindowHandle::new(unsafe {
-                    std::num::NonZero::new(i.0).unwrap_unchecked()
+                    core::num::NonZero::new(i.0).unwrap_unchecked()
                 }),
             ));
         }
@@ -311,7 +311,8 @@ use windows::{
 };
 
 use crate::{
-    platform::{Buffer, WindowLevel},
+    platform::WindowLevel,
+    prelude::Buffer,
     system::action::{
         CpuPriority, Decoration, Default, Host, Iconized, Misc,
         ProgressionState, Screen, TaskBar, Transparency,
@@ -826,7 +827,7 @@ fn set_z_raw(hwnd: windows::Win32::Foundation::HWND, index: u32) {
 //             // Force window to refresh its layered window properties
 //             SetWindowPos(
 //                 hwnd,
-//                 std::ptr::null_mut(),
+//                 core::ptr::null_mut(),
 //                 0,
 //                 0,
 //                 0,
@@ -854,7 +855,7 @@ fn set_window_level_raw(hwnd: HWND, level: WindowLevel) {
 
 use raw_window_handle::{RawWindowHandle, Win32WindowHandle};
 use winapi::um::winuser::{EnumWindows, GetWindowTextW, IsWindowVisible};
-
+#[derive(Debug, Clone, PartialEq, Eq, Default, Hash)]
 struct WindowSearchData {
     target_title: String,
     found_hwnds: Option<Vec<winapi::shared::windef::HWND>>,
@@ -889,7 +890,7 @@ fn get_window_id_by_title(
         for hwnd in hwnds {
             handles.push(RawWindowHandle::Win32(Win32WindowHandle::new(
                 unsafe {
-                    std::num::NonZero::new(hwnd as isize).unwrap_unchecked()
+                    core::num::NonZero::new(hwnd as isize).unwrap_unchecked()
                 },
             )));
         }
@@ -914,6 +915,7 @@ mod tests {
     }
 }
 
+#[allow(unused_imports)]
 use crate::extensions::*;
 unsafe extern "system" fn enum_windows_proc(
     hwnd: winapi::shared::windef::HWND,
@@ -1184,9 +1186,9 @@ pub fn set_taskbar_progress_value(
     }
     Ok(())
 }
-use winapi::um::winuser::GetSystemMetrics;
-
+#[track_caller]
 fn get_screen_resolution() -> (i32, i32) {
+    use winapi::um::winuser::GetSystemMetrics;
     let width = unsafe { GetSystemMetrics(winapi::um::winuser::SM_CXSCREEN) };
     let height = unsafe { GetSystemMetrics(winapi::um::winuser::SM_CYSCREEN) };
     (width, height)
@@ -1276,7 +1278,7 @@ pub fn resize(hwnd: winapi::shared::windef::HWND, size: (i32, i32)) {
         // Resize the window to the given width and height
         winapi::um::winuser::SetWindowPos(
             hwnd,
-            std::ptr::null_mut(), // No changes to the window's position
+            core::ptr::null_mut(), // No changes to the window's position
             0,
             0,
             size.0,

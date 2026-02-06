@@ -1,15 +1,72 @@
+#[cfg(feature = "keycodes")]
+#[cfg(all(feature = "svg", feature = "system"))]
+#[cfg(feature = "std")]
+pub use mouse::Cursor;
+
+/// All backend related structs/traits
+#[cfg(feature = "std")]
+pub mod windowing;
+#[cfg(feature = "std")]
+#[deprecated(note = "Replace `glfw` with `framework::glfw` instead ")]
+#[cfg(feature = "glfw")]
+#[cfg(not(target_arch = "wasm32"))]
+pub use windowing::glfw;
+#[deprecated(note = "Replace `minifb` with `framework::minifb` instead")]
+#[cfg(feature = "minifb")]
+#[cfg(not(target_arch = "wasm32"))]
+pub use windowing::minifb;
+#[deprecated(
+    note = "Replace `framework_traits` with `windowing::traits` instead"
+)]
+#[cfg(feature = "std")]
+#[cfg(feature = "system")]
+pub use windowing::traits as framework_traits;
+#[allow(clippy::non_minimal_cfg)]
+#[cfg(all(
+    //feature = "svg",
+    // feature = "system",
+    //feature = "keycodes",
+    feature = "std"
+))]
+// Window associates
+/// Everything do to with cursors
+pub mod mouse;
+
+/// A modular system of accessing files/folders
+#[cfg(feature = "std")]
+pub mod file_system;
+
+/// There is a lot of duplicate functionality between backends, why not share them?
+pub mod shared;
+/// Time related stuff, it's not a lot I Reckon
+pub mod time;
+
+/// The standart key-board/code detection
+#[cfg(feature = "system")]
+#[cfg(feature = "keycodes")]
+#[cfg(feature = "keyboard_query")]
+pub mod keyboard;
+
 #[cfg(feature = "system")]
 #[cfg(feature = "std")]
 use crate::extensions::*;
+#[cfg(feature = "std")]
+// #[cfg(feature = "system")]
+// #[cfg(any(
+//     target_arch = "wasm32",
+//     target_os = "linux",
+//     target_os = "windows"
+// ))]
+use crate::prelude::Buffer;
+use crate::{math::NumberWithMonotoneOps, prelude::TryFromPatch};
 
-#[const_trait]
 /// Time trait, IDK
-pub trait Time {
+pub const trait Time {
     /// Get time in seconds
     fn get_elapsed_time(&self) -> f64;
 }
 /// A cursor style, what else to say?
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum CursorStyle {
     /// Default Pointer
     Default,
@@ -97,7 +154,7 @@ pub enum CursorStyle {
     ZoomOut,
 }
 /// Supported (and unsupported) mouse buttons
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum MouseButton {
     /// ✨ The left mouse button ✨
     Left,
@@ -116,12 +173,12 @@ pub enum MouseButton {
     /// You can't expect to be able to expect everything ¯\_(ツ)_/¯
     Unsupported,
 }
-#[cfg(feature = "keycodes")]
+
 /// Represents digital keys using `KeyCodes` of which there should be plenty enough to pretty all libraries that use their own `KeyCodes`
 pub mod keycodes;
 
 #[allow(clippy::struct_excessive_bools)]
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 /// Settings for spawning in a window
 pub struct WindowSettings {
     /// Remove the border of the window
@@ -258,13 +315,13 @@ impl WindowSettings {
         // The screen cannot be negative so unwrapping is safe
         self.size = unsafe {
             crate::system::Os::get_screen_resolution()
-                .const_try_tuple_into()
+                .try_tuple_into()
                 .unwrap_unchecked()
         };
         self
     }
 }
-#[derive(PartialEq, Copy, Clone, Debug, Eq)]
+#[derive(PartialEq, Copy, Clone, Debug, Eq, PartialOrd, Ord)]
 /// The render level of the window the os should use
 /// Any window on the same render level will move in front of every other window on that same level if the user clicks them
 pub enum WindowLevel {
@@ -275,123 +332,6 @@ pub enum WindowLevel {
     /// Render layer on the top -> Always on top of '[`WindowLevel::Normal`]'
     AlwaysOnTop,
 }
-// #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
-// /// The scale at which the given window buffer should be displayed as
-// pub enum WindowScale {
-//     /// Whether to scale the buffer to match the screen size.
-//     FitScreen,
-//     #[default]
-//     /// 1:1 pixel scale.
-//     X1,
-//     /// 1:2 pixel scale.
-//     X2,
-//     /// 1:4 pixel scale.
-//     X4,
-//     /// 1:8 pixel scale.
-//     X8,
-//     /// 1:16 pixel scale.
-//     X16,
-//     /// 1:32 pixel scale.
-//     X32,
-// }
-
-#[cfg(feature = "keycodes")]
-#[cfg(all(feature = "svg", feature = "system"))]
-#[cfg(feature = "std")]
-pub use mouse::Cursor;
-
-#[cfg(feature = "std")]
-mod buffer;
-#[cfg(feature = "std")]
-pub use buffer::*;
-
-/// All backend related structs/traits
-#[cfg(feature = "std")]
-pub mod frameworks;
-#[cfg(feature = "std")]
-#[deprecated(note = "Replace `glfw` with `framework::glfw` instead ")]
-#[cfg(feature = "glfw")]
-#[cfg(not(target_arch = "wasm32"))]
-pub use frameworks::glfw;
-#[deprecated(note = "Replace `minifb` with `framework::minifb` instead")]
-#[cfg(feature = "minifb")]
-#[cfg(not(target_arch = "wasm32"))]
-#[cfg(any(not(target_os = "macos"), feature = "mac_cc_installed"))]
-pub use frameworks::minifb;
-#[deprecated(
-    note = "Replace `framework_traits` with `frameworks::traits` instead"
-)]
-#[cfg(feature = "std")]
-#[cfg(feature = "system")]
-pub use frameworks::traits as framework_traits;
-
-#[cfg(all(
-    //feature = "svg",
-    feature = "system",
-    //feature = "keycodes",
-    feature = "std"
-))]
-// Window associates
-/// Everything do to with cursors
-pub mod mouse;
-
-/// A modular system of accessing files/folders
-#[cfg(feature = "std")]
-pub mod file_system;
-
-#[cfg(feature = "system")]
-#[cfg(feature = "keycodes")]
-/// There is a lot of duplicate functionality between backends, why not share them?
-pub mod shared;
-/// Time related stuff, it's not a lot I Reckon
-pub mod time;
-
-/// The standart key-board/code detection
-#[cfg(feature = "system")]
-#[cfg(feature = "keycodes")]
-#[cfg(feature = "keyboard_query")]
-pub mod keyboard;
-
-// struct Camera {
-//     pub x: f64,
-//     pub y: f64,
-//     pub z: f64,
-//     pub width: isize,
-//     pub height: isize,
-//     half_width: isize,
-//     half_height: isize,
-// }
-// impl Camera {
-//     fn new(buffer: &Buffer) -> Self {
-//         Self {
-//             x: 0.0,
-//             y: 0.0,
-//             z: 1.0,
-//             width: buffer.width as isize,
-//             height: buffer.height as isize,
-//             half_width: buffer.width as isize / 2,
-//             half_height: buffer.height as isize / 2,
-//         }
-//     }
-//     fn get_screen_x(&self, x: isize) -> isize {
-//         if self.z == 0.0 {
-//             return self.half_width as isize;
-//         }
-//         return ((x as f64 + self.x) / self.z) as isize;
-//     }
-//     fn get_screen_y(&self, y: isize) -> isize {
-//         if self.z == 0.0 {
-//             return self.half_height;
-//         }
-//         return ((y as f64 + self.y) / self.z) as isize;
-//     }
-//     fn is_point_visible(&self, xy: (isize,isize)) -> bool {
-//         return self.get_screen_x(x) < self.width
-//             && self.get_screen_y(y) < self.height;
-//     }
-// }
-
-// pub mod keyboard;
 
 /// A thread safe double buffer when fast isn't fast enough
 #[derive(Debug)]
@@ -437,15 +377,13 @@ impl DoubleBuffer {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
-#[cfg(feature = "num_traits")]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
 /// A struct to convert between 0.0-1.0 and the metrics of the screen
-pub struct ScreenNormalizer<S: num_traits::Float> {
+pub struct ScreenNormalizer<S> {
     screen_width: S,
     screen_height: S,
 }
-#[cfg(feature = "num_traits")]
-impl<S: num_traits::Float> ScreenNormalizer<S> {
+impl<S: Copy + NumberWithMonotoneOps> ScreenNormalizer<S> {
     /// Recommended is using [`crate::math::UniformRange`] in conjunction with this struct
     ///
     /// # Panics
@@ -457,48 +395,38 @@ impl<S: num_traits::Float> ScreenNormalizer<S> {
         }
     }
     /// Convert a percentage into screen a coordinate horizontally
-    pub fn percentile_to_x<T: num_traits::Num + num_traits::NumCast>(
-        &self,
-        p: S,
-    ) -> Option<T> {
-        num_traits::NumCast::from(p * self.screen_width)
+    pub fn percentile_to_x<T: TryFromPatch<S>>(&self, p: S) -> Option<T> {
+        T::try_from_value(p * self.screen_width)
     }
     /// Convert a percentage into screen a coordinate vertically
-    pub fn percentile_to_y<T: num_traits::Num + num_traits::NumCast>(
-        &self,
-        p: S,
-    ) -> Option<T> {
-        num_traits::NumCast::from(p * self.screen_height)
+    pub fn percentile_to_y<T: TryFromPatch<S>>(&self, p: S) -> Option<T> {
+        T::try_from_value(p * self.screen_height)
     }
     /// Convert a percentage into screen a coordinate
-    pub fn percentile_to_xy<T: num_traits::Num + num_traits::NumCast>(
+    pub fn percentile_to_xy<T: TryFromPatch<S>>(
         &self,
         pxy: (S, S),
     ) -> Option<(T, T)> {
-        let x = num_traits::NumCast::from(pxy.0 * self.screen_width);
-        let y = num_traits::NumCast::from(pxy.1 * self.screen_height);
-        if x.is_none() || y.is_none() {
-            None
-        } else {
-            unsafe { Some((x.unwrap_unchecked(), y.unwrap_unchecked())) }
-        }
+        let x = T::try_from_value(pxy.0 * self.screen_width)?;
+        let y = T::try_from_value(pxy.1 * self.screen_height)?;
+        Some((x, y))
     }
     /// Convert a horizontal screen coordinate into a percentage
-    pub fn x_to_percentile<T: num_traits::Num + num_traits::NumCast>(
-        &self,
-        x: T,
-    ) -> Option<S> {
-        if let Some(value) = S::from(x) {
+    pub fn x_to_percentile<T>(&self, x: T) -> Option<S>
+    where
+        S: TryFromPatch<T>,
+    {
+        if let Some(value) = S::try_from_value(x) {
             return Some(value / self.screen_width);
         }
         None
     }
     /// Convert a vertical screen coordinate into a percentage
-    pub fn y_to_percentile<T: num_traits::Num + num_traits::NumCast>(
-        &self,
-        y: T,
-    ) -> Option<S> {
-        if let Some(value) = S::from(y) {
+    pub fn y_to_percentile<T>(&self, y: T) -> Option<S>
+    where
+        S: TryFromPatch<T>,
+    {
+        if let Some(value) = S::try_from_value(y) {
             return Some(value / self.screen_height);
         }
         None

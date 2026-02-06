@@ -1,15 +1,10 @@
 use std::io::Write;
 
-use windows::{
-    core::*, //Win32::Foundation::*,
-    Win32::UI::WindowsAndMessaging::*,
-};
+use windows::{core::*, Win32::UI::WindowsAndMessaging::*};
 
 use super::{BaseCursor, Cursor};
-// #[cfg(feature = "num_traits")]
-// use crate::extensions::*;
-use crate::graphics::{pixmap_to_buffer, rasterize_svg, u32_to_rgba_u8};
 use crate::{
+    graphics::{pixmap_to_buffer, rasterize_svg, u32_to_rgba_u8},
     misc::EasyUnwrapUnchecked,
     platform::{
         mouse::{CursorResolution, LoadCursorError},
@@ -32,7 +27,10 @@ pub fn load_cursor(
     #[cfg(not(feature = "cursor_show_hotspot"))] image_data: &Buffer,
     hotspot_x: u16,
     hotspot_y: u16,
-) -> std::result::Result<HCURSOR, LoadCursorError> {
+) -> core::result::Result<
+    windows::Win32::UI::WindowsAndMessaging::HCURSOR,
+    LoadCursorError,
+> {
     //let size = cursor_resolution(size);
 
     let Ok((file_path, temp_file)) =
@@ -99,7 +97,7 @@ pub fn load_base_cursor_with_file(
     cursor: BaseCursor,
     size: CursorResolution,
     svg_data: String,
-) -> std::result::Result<Cursor, LoadCursorError> {
+) -> core::result::Result<Cursor, LoadCursorError> {
     let wanted_size: u32 = size.get_size().easy_unwrap_unchecked(); // This will never error because u32 is bigger than u8
 
     let Ok(image_data) =
@@ -126,7 +124,10 @@ pub fn load_base_cursor_with_file(
 /// Expects .cur file
 fn load_cursor_file(
     file_path: &str,
-) -> std::result::Result<HCURSOR, &'static str> {
+) -> core::result::Result<
+    windows::Win32::UI::WindowsAndMessaging::HCURSOR,
+    &'static str,
+> {
     unsafe {
         let Some(filename) = std::ffi::CString::new(file_path).ok() else {
             return Err("Unable to create null-terminated C-style byte string from file path");
@@ -251,7 +252,7 @@ fn delete_temp_file(path: &str) -> std::io::Result<()> {
 }
 
 /// A windows only function to set the current cursor
-pub fn set_cursor(cursor: &HCURSOR) {
+pub fn set_cursor(cursor: &windows::Win32::UI::WindowsAndMessaging::HCURSOR) {
     unsafe {
         SetCursor(*cursor);
     }
@@ -259,7 +260,8 @@ pub fn set_cursor(cursor: &HCURSOR) {
 use windows::Win32::Foundation::{HWND, LPARAM, LRESULT, WPARAM};
 
 static mut ORIGINAL_WNDPROC: Option<WNDPROC> = None;
-static mut CURRENT_CURSOR: HCURSOR = HCURSOR(0);
+static mut CURRENT_CURSOR: windows::Win32::UI::WindowsAndMessaging::HCURSOR =
+    windows::Win32::UI::WindowsAndMessaging::HCURSOR(0);
 
 /// A hook to attach to a window -> Setting their cursor style
 ///
@@ -302,9 +304,10 @@ pub unsafe fn subclass_window(
 
             // Get the original window procedure
             let orig_proc = GetWindowLongPtrW(hwnd, GWLP_WNDPROC);
-            ORIGINAL_WNDPROC = Some(std::mem::transmute::<isize, std::option::Option<unsafe extern "system" fn(windows::Win32::Foundation::HWND, u32, windows::Win32::Foundation::WPARAM, windows::Win32::Foundation::LPARAM) -> windows::Win32::Foundation::LRESULT>>(orig_proc));
+            ORIGINAL_WNDPROC = Some(std::mem::transmute::<isize, core::option::Option<unsafe extern "system" fn(windows::Win32::Foundation::HWND, u32, windows::Win32::Foundation::WPARAM, windows::Win32::Foundation::LPARAM) -> windows::Win32::Foundation::LRESULT>>(orig_proc));
 
             // Set our window procedure
+            #[allow(function_casts_as_integer)]
             SetWindowLongPtrW(hwnd, GWLP_WNDPROC, wndproc as isize);
         }
     }
@@ -314,7 +317,9 @@ pub unsafe fn subclass_window(
 ///
 /// # Safety
 /// Interacts with windows
-pub unsafe fn update_cursor(cursor: &HCURSOR) {
+pub unsafe fn update_cursor(
+    cursor: &windows::Win32::UI::WindowsAndMessaging::HCURSOR,
+) {
     CURRENT_CURSOR = *cursor;
 }
 // pub fn set_cursor_style(cursor: CursorStyle, cursors: &Cursors) {

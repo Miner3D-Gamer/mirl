@@ -1,11 +1,13 @@
 use super::{draw_pixel_safe, draw_pixel_unsafe};
-use crate::platform::Buffer;
+#[cfg(not(feature = "std"))]
+use crate::prelude::*;
+use crate::render::{BufferMetrics, BufferPointers};
 
 /// Draw a simple rectangle
 #[inline]
 #[allow(clippy::cast_sign_loss)]
 pub fn draw_rectangle_old<const SAFE: bool>(
-    buffer: &mut Buffer,
+    buffer: &mut (impl BufferPointers + BufferMetrics),
     pos: (isize, isize),
     size: (isize, isize),
     color: u32,
@@ -28,7 +30,7 @@ pub fn draw_rectangle_old<const SAFE: bool>(
 #[allow(clippy::cast_possible_wrap)]
 /// Draw a simple rectangle
 pub fn draw_rectangle<const SAFE: bool>(
-    buffer: &mut Buffer,
+    buffer: &mut (impl BufferPointers + BufferMetrics),
     pos: (isize, isize),
     size: (isize, isize),
     color: u32,
@@ -42,12 +44,12 @@ pub fn draw_rectangle<const SAFE: bool>(
         let start_x = pos.0.max(0) as usize;
         let start_y = pos.1.max(0) as usize;
         let end_x =
-            ((pos.0 + size.0).min(buffer.width as isize)).max(0) as usize;
+            ((pos.0 + size.0).min(buffer.width() as isize)).max(0) as usize;
         let end_y =
-            ((pos.1 + size.1).min(buffer.height as isize)).max(0) as usize;
+            ((pos.1 + size.1).min(buffer.height() as isize)).max(0) as usize;
 
-        if start_x >= buffer.width
-            || start_y >= buffer.height
+        if start_x >= buffer.width()
+            || start_y >= buffer.height()
             || start_x >= end_x
             || start_y >= end_y
         {
@@ -58,7 +60,7 @@ pub fn draw_rectangle<const SAFE: bool>(
         //println!("end {} - start {}", end_x, start_x);
 
         for y in start_y..end_y {
-            let row_start = y * buffer.width + start_x;
+            let row_start = y * buffer.width() + start_x;
             unsafe {
                 let ptr = buffer.mut_pointer().add(row_start);
                 for i in 0..row_width {
@@ -75,7 +77,7 @@ pub fn draw_rectangle<const SAFE: bool>(
         let row_width = size.0 as usize;
 
         for y in start_y..end_y {
-            let row_start = y * buffer.width + start_x;
+            let row_start = y * buffer.width() + start_x;
             unsafe {
                 let ptr = buffer.mut_pointer().add(row_start);
                 if row_width <= 8 {
@@ -112,7 +114,7 @@ pub fn draw_rectangle<const SAFE: bool>(
         }
     }
 }
-
+#[cfg(feature = "std")]
 /// Draw a simple rectangle
 #[inline]
 #[allow(clippy::cast_sign_loss)]
@@ -120,11 +122,11 @@ pub fn draw_rectangle<const SAFE: bool>(
 #[allow(clippy::cast_possible_truncation)]
 #[allow(clippy::cast_possible_wrap)]
 pub fn execute_at_rectangle<const SAFE: bool>(
-    buffer: &mut Buffer,
+    buffer: &mut crate::prelude::Buffer,
     pos: (isize, isize),
     size: (isize, isize),
     color: u32,
-    function: impl Fn(&mut Buffer, (usize, usize), u32),
+    function: impl Fn(&mut crate::prelude::Buffer, (usize, usize), u32),
 ) {
     for y in pos.1..pos.1 + size.1 {
         for x in pos.0..pos.0 + size.0 {
@@ -146,7 +148,7 @@ pub fn execute_at_rectangle<const SAFE: bool>(
 #[allow(clippy::cast_possible_truncation)]
 #[allow(clippy::cast_possible_wrap)]
 pub fn draw_rectangle_angled<const SAFE: bool>(
-    buffer: &mut Buffer,
+    buffer: &mut (impl BufferPointers + BufferMetrics),
     pos: (usize, usize),
     size: (isize, isize),
     color: u32,
@@ -190,6 +192,7 @@ pub fn draw_rectangle_angled<const SAFE: bool>(
         }
     }
 }
+#[cfg(feature = "std")]
 /// Tried to draw a rectangle 4 pixels at the time in the hopes of improving performance
 #[inline]
 #[allow(clippy::cast_sign_loss)]
@@ -197,7 +200,7 @@ pub fn draw_rectangle_angled<const SAFE: bool>(
 #[allow(clippy::cast_possible_truncation)]
 #[allow(clippy::cast_possible_wrap)]
 pub fn draw_rectangle_impl_simd(
-    buffer: &mut Buffer,
+    buffer: &mut crate::prelude::Buffer,
     pos: (isize, isize),
     size: (isize, isize),
     color: u32,

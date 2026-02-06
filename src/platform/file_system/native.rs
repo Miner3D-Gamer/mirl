@@ -1,7 +1,7 @@
 use std::io::Read;
 
 use crate::platform::file_system::{
-    file_data::DataType, file_system_traits::FileSystem, FileData,
+    file_data::DataType, file_system_traits::FileSystemTrait, FileData,
 };
 
 /// Implementation of `FileSystem` for Native use only
@@ -15,7 +15,7 @@ impl NativeFileSystem {
     /// # Errors
     /// When the current exe does not have a parent path, or the current exe does not exist. Both of which should not be possible under normal circumstances
     pub fn new(//required_files: Vec<&'static str>,
-    ) -> Result<Self, Box<dyn std::error::Error>> {
+    ) -> Result<Self, Box<dyn core::error::Error>> {
         let temp = std::env::current_exe()?;
         let exe_path =
             temp.parent().ok_or("No parent for current_exe")?.to_path_buf();
@@ -53,29 +53,35 @@ impl NativeFileSystem {
     }
 }
 
-impl FileSystem for NativeFileSystem {
+fn get_file_contents<P: core::convert::AsRef<std::path::Path>>(
+    path: P,
+) -> Result<FileData, Box<dyn core::error::Error>> {
+    let mut file = std::fs::File::open(path)?;
+    let mut buffer = Vec::new();
+    file.read_to_end(&mut buffer)?;
+    Ok(FileData::from_bytes(buffer, DataType::Bytes))
+}
+
+impl FileSystemTrait for NativeFileSystem {
     fn get_file_contents(
         &self,
         path: &str,
-    ) -> Result<FileData, Box<dyn std::error::Error>> {
-        // Try exe path first
-        let exe_full_path = self.exe_path.join(path);
-        let exe_check = std::fs::File::open(&exe_full_path);
-
-        if let Ok(mut file) = exe_check {
-            let mut buffer = Vec::new();
-            file.read_to_end(&mut buffer)?;
-            return Ok(FileData::from_bytes(buffer, DataType::Bytes));
+    ) -> Result<FileData, Box<dyn core::error::Error>> {
+        if let Ok(contents) = get_file_contents(path) {
+            return Ok(contents);
         }
-
-        if let Some(src_path) = &self.src_path {
-            // Try src path
-            let src_full_path = src_path.join(path);
-
-            let mut file = std::fs::File::open(&src_full_path)?;
-            let mut buffer = Vec::new();
-            file.read_to_end(&mut buffer)?;
-            return Ok(FileData::from_bytes(buffer, DataType::Bytes));
+        if let Ok(contents) = get_file_contents(self.exe_path.join(path)) {
+            return Ok(contents);
+        }
+        if let Ok(val) = std::env::current_dir() {
+            if let Ok(contents) = get_file_contents(val.join(path)) {
+                return Ok(contents);
+            }
+        }
+        if let Ok(contents) = get_file_contents(
+            self.src_path.clone().unwrap_or_default().join(path),
+        ) {
+            return Ok(contents);
         }
         Err(Box::new(std::io::Error::new(
             std::io::ErrorKind::NotFound,

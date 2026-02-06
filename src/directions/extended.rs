@@ -1,7 +1,7 @@
 use super::RotateDirections;
 
 /// NE SE SW NW
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
 #[allow(missing_docs)]
 pub enum ExtendedDirections {
     NorthEast,
@@ -9,7 +9,7 @@ pub enum ExtendedDirections {
     SouthWest,
     NorthWest,
 }
-impl RotateDirections for ExtendedDirections {
+impl const RotateDirections for ExtendedDirections {
     fn rotate_clockwise_90(&self) -> Self {
         match self {
             Self::NorthEast => Self::SouthEast,
@@ -24,14 +24,6 @@ impl RotateDirections for ExtendedDirections {
             Self::SouthEast => Self::NorthEast,
             Self::SouthWest => Self::SouthEast,
             Self::NorthWest => Self::SouthWest,
-        }
-    }
-    fn rotate_180(&self) -> Self {
-        match self {
-            Self::NorthEast => Self::SouthWest,
-            Self::SouthEast => Self::NorthWest,
-            Self::SouthWest => Self::SouthEast,
-            Self::NorthWest => Self::NorthEast,
         }
     }
 }

@@ -1,6 +1,6 @@
 use crate::platform::keycodes::KeyCode;
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 /// A singular key combination
 pub struct KeyBind<T> {
     /// The keys required to activate this keybind besides shift, alt, and control
@@ -80,7 +80,7 @@ pub fn sort_actions<T: Clone>(actions: Vec<KeyBind<T>>) -> Vec<KeyBind<T>> {
     let mut new_actions: Vec<KeyBind<T>> = Vec::new();
     for i in actions.iter().rev() {
         if !actions.iter().any(|y| {
-            !std::ptr::eq(i, y) // God damn you self checking
+            !core::ptr::eq(i, y) // God damn you self checking
                 && i.does_other_keybind_eat_this_one(y)
         }) {
             new_actions.push((*i).clone());

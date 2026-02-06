@@ -5,10 +5,8 @@
 pub use cursors_windows::load_base_cursor_with_file;
 
 #[cfg(feature = "keycodes")]
-use crate::platform::frameworks::WindowError;
-#[cfg(feature = "svg")]
-use crate::platform::CursorStyle;
-use crate::{extensions::*, platform::Buffer};
+use crate::platform::windowing::WindowError;
+use crate::{extensions::*, prelude::Buffer};
 
 // Damn past me, why so sassy?
 /// Cursor stuff of glfw bc glfw is a bitch
@@ -17,12 +15,13 @@ pub mod cursor_glfw;
 /// Implementation for cursors on windows
 #[cfg(target_os = "windows")]
 #[cfg(feature = "svg")]
+#[cfg(feature = "system")]
 pub mod cursors_windows;
 /// Mouse position stuff like raw mouse input
+#[cfg(feature = "system")]
 pub mod position;
 /// The Cursor Manager provides a way of easily loading cursors based on a Buffer or the default cursors that come with this lib
-#[const_trait]
-pub trait CursorManager {
+pub const trait CursorManager {
     /// Create a Cursor instance using a Buffer
     fn load_cursor(
         &mut self,
@@ -50,6 +49,7 @@ pub enum Cursor {
     /// Windows
     #[cfg(target_os = "windows")]
     #[cfg(feature = "svg")]
+    #[cfg(feature = "system")]
     Win(windows::Win32::UI::WindowsAndMessaging::HCURSOR),
     /// Linux using X11, wayland support will be added later
     #[cfg(target_os = "linux")]
@@ -61,7 +61,7 @@ pub enum Cursor {
     Glfw((Buffer, u32, u32)),
 }
 /// Set the current value to the new cursor
-pub trait SetSelfToCursor {
+pub const trait SetSelfToCursor {
     /// Set the current value to the new cursor
     fn set(&mut self, cursor: &Cursor);
 }
@@ -76,7 +76,7 @@ impl SetSelfToCursor for Option<Cursor> {
     }
 }
 // /// Set the current value to the new cursor
-// pub trait SetSelfToCursorStyle {
+// pub const trait SetSelfToCursorStyle {
 //     /// Set the current value to the new cursor
 //     fn set(&mut self, cursor: &CursorStyle);
 // }
@@ -190,6 +190,7 @@ pub struct Cursors {
     pub zoom_out: Cursor,
 }
 #[cfg(feature = "svg")]
+#[cfg(all(feature = "system", target_os = "windows"))]
 impl Cursors {
     #[allow(clippy::too_many_lines)]
     /// Load all defaultly supported cursors
@@ -1052,9 +1053,13 @@ impl Cursors {
             zoom_out,
         })
     }
-    /// Get the cursor from the selected [`CursorStyle`]
+    /// Get the cursor from the selected [`CursorStyle`](crate::platform::CursorStyle)
     #[must_use]
-    pub const fn from_cursor_style(&self, style: CursorStyle) -> &Cursor {
+    pub const fn from_cursor_style(
+        &self,
+        style: crate::platform::CursorStyle,
+    ) -> &Cursor {
+        use crate::platform::CursorStyle;
         match style {
             CursorStyle::Alias => &self.alias,
             CursorStyle::AllScroll => &self.all_scroll,
@@ -1114,13 +1119,13 @@ pub struct BaseCursor {
 /// Set the cursor of the current window
 ///
 /// # Errors
-/// See [Errors]
+/// See [`WindowError`]
 pub fn use_cursor(
     cursor: &Cursor,
     #[cfg(all(feature = "glfw", not(target_arch = "wasm32")))]
     glfw_window: Option<&mut glfw::Window>,
     #[cfg(not(all(feature = "glfw", not(target_arch = "wasm32"))))]
-    _glfw_window: std::option::Option<NoneOnly>,
+    _glfw_window: core::option::Option<NoneOnly>,
 ) -> Result<(), WindowError> {
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "glfw")]
@@ -1146,7 +1151,7 @@ pub fn use_cursor(
 
             additional_info.set_cursor(Some(new));
         } else {
-            use crate::platform::frameworks::WindowError;
+            use crate::platform::windowing::WindowError;
 
             return Err(WindowError::Misc(format!(
                 "Cursor of type Cursor::Glfw expected but got {cursor:?} instead"
@@ -1159,6 +1164,7 @@ pub fn use_cursor(
     match cursor {
         #[cfg(target_os = "windows")]
         #[cfg(feature = "svg")]
+        #[cfg(feature = "system")]
         Cursor::Win(cursor) => {
             unsafe {
                 // Update the passive cursor provider windows uses
@@ -1190,35 +1196,6 @@ pub fn use_cursor(
     Ok(())
 }
 
-// /// Converts the U2 into the actual cursor size, up to 255
-// #[must_use]
-// #[cfg(feature = "num_traits")]
-// pub fn cursor_resolution(quality: U2) -> u8 {
-//     let t: u32 = quality.into();
-//     2u8.pow(t + 5)
-// }
-// /// Converts a desired resolution into U2
-// ///
-// /// # Errors
-// /// When quality +1 isn't a power of two
-// /// When resolution is bigger than 255
-// pub fn resolution_to_quality(resolution: u8) -> Result<U2, &'static str> {
-//     let val = u32::from(resolution) + 1;
-
-//     if !val.is_power_of_two() {
-//         return Err("Resolution + 1 is not a power of two");
-//     }
-
-//     let t =
-//         val.trailing_zeros().checked_sub(5).ok_or("Resolution too small")?;
-
-//     if t > 3 {
-//         return Err("Resolution too large");
-//     }
-
-//     Ok(U2::new(t as u8))
-// }
-
 impl ButtonState {
     #[must_use]
     /// Create a new button state -> Pressed, clicked, and released are calculated
@@ -1236,7 +1213,7 @@ impl ButtonState {
         self.down = new;
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Hash, PartialOrd, Ord)]
 /// The current state of a mouse buttons and if they have just been pressed
 #[allow(missing_docs, clippy::struct_excessive_bools)]
 pub struct ButtonState {
@@ -1245,7 +1222,7 @@ pub struct ButtonState {
     pub released: bool,
 }
 #[allow(missing_docs)]
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Hash, PartialOrd, Ord)]
 /// The current state of the mouse buttons and if they have just been pressed
 pub struct MouseButtonState {
     pub left: ButtonState,
@@ -1253,7 +1230,36 @@ pub struct MouseButtonState {
     pub right: ButtonState,
 }
 impl MouseButtonState {
-    /// Updates the mouse state
+    #[must_use]
+    /// Create a new button state using the current mouse state, assumes that the buttons have been released last frame
+    pub const fn new_default(
+        left_down: bool,
+        middle_down: bool,
+        right_down: bool,
+    ) -> Self {
+        Self {
+            left: ButtonState::new(left_down, false),
+            middle: ButtonState::new(middle_down, false),
+            right: ButtonState::new(right_down, false),
+        }
+    }
+    #[must_use]
+    /// Create a new button state using the current mouse state, assumes that the buttons have been released last frame
+    pub const fn new(
+        left_down: bool,
+        middle_down: bool,
+        right_down: bool,
+        previous_left_down: bool,
+        previous_middle_down: bool,
+        previous_right_down: bool,
+    ) -> Self {
+        Self {
+            left: ButtonState::new(left_down, previous_left_down),
+            middle: ButtonState::new(middle_down, previous_middle_down),
+            right: ButtonState::new(right_down, previous_right_down),
+        }
+    }
+    /// Updates the mouse button states
     pub const fn update(
         &mut self,
         left_down: bool,
@@ -1264,8 +1270,94 @@ impl MouseButtonState {
         self.middle.update(middle_down);
         self.right.update(right_down);
     }
+    /// Updates the mouse button states using the current mouse snapshot
+    pub const fn update_with_snapshot(&mut self, snapshot: &MouseSnapShot) {
+        self.update(
+            snapshot.left_down,
+            snapshot.middle_down,
+            snapshot.right_down,
+        );
+    }
+    /// Update the current state by directly checking from the framework
+    pub fn update_with_framework<
+        T: crate::platform::windowing::traits::MouseInput,
+    >(
+        &mut self,
+        framework: &T,
+    ) {
+        self.update(
+            framework.is_mouse_down(crate::platform::MouseButton::Left),
+            framework.is_mouse_down(crate::platform::MouseButton::Middle),
+            framework.is_mouse_down(crate::platform::MouseButton::Right),
+        );
+    }
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Default, PartialOrd)]
+/// A data storage helper holding the current state of the mouse
+pub struct MouseSnapShot {
+    /// The current position of the mouse
+    pub position: Option<(f32, f32)>,
+    /// The current mouse scroll
+    pub scroll: (f32, f32),
+    /// If the left mouse button is down
+    pub left_down: bool,
+    /// If the right mouse button is down
+    pub middle_down: bool,
+    /// If the right mouse button is down
+    pub right_down: bool,
+}
+impl MouseSnapShot {
+    #[must_use]
+    /// Convert the current snapshot into a proper
+    pub const fn to_mouse_button_state(
+        &self,
+        previous_left: bool,
+        previous_middle: bool,
+        previous_right: bool,
+    ) -> MouseButtonState {
+        MouseButtonState::new(
+            self.left_down,
+            self.middle_down,
+            self.right_down,
+            previous_left,
+            previous_middle,
+            previous_right,
+        )
+    }
+}
+impl MouseSnapShot {
+    #[must_use]
+    /// Sets the current mouse position
+    pub const fn set_position(mut self, position: Option<(f32, f32)>) -> Self {
+        self.position = position;
+        self
+    }
+    #[must_use]
+    /// Sets the current mouse scroll
+    pub const fn set_scroll(mut self, scroll: (f32, f32)) -> Self {
+        self.scroll = scroll;
+        self
+    }
+    #[must_use]
+    /// Sets whether the left mouse button is down
+    pub const fn set_left_down(mut self, left_down: bool) -> Self {
+        self.left_down = left_down;
+        self
+    }
+    #[must_use]
+    /// Sets whether the middle mouse button is down
+    pub const fn set_middle_down(mut self, middle_down: bool) -> Self {
+        self.middle_down = middle_down;
+        self
+    }
+    #[must_use]
+    /// Sets whether the right mouse button is down
+    pub const fn set_right_down(mut self, right_down: bool) -> Self {
+        self.right_down = right_down;
+        self
+    }
+}
 // pub struct MousePos<T> {
 //     pos: (T, T),
 //     delta_pos: (T, T),
@@ -1310,11 +1402,12 @@ impl CursorResolution {
     /// Get the size of the cursor in pixels
     pub fn get_size<T: TryFromPatch<u8>>(&self) -> Option<T> {
         match self {
-            Self::X16 => 15.try_into_value(),
-            Self::X32 => 31.try_into_value(),
-            Self::X64 => 63.try_into_value(),
-            Self::X128 => 127.try_into_value(),
-            Self::X256 => 255.try_into_value(),
+            Self::X16 => 15,
+            Self::X32 => 31,
+            Self::X64 => 63,
+            Self::X128 => 127,
+            Self::X256 => 255,
         }
+        .try_into_value()
     }
 }

@@ -2,7 +2,7 @@ use crate::misc::EasyUnwrapUnchecked;
 // TODO: Add this trait to ahash and indexmap
 
 /// A trait that combines standart capabilities across Maps
-pub trait Map<K, V>: std::hash::Hash {
+pub const trait Map<K, V>: core::hash::Hash {
     /// Insert a value using a key, return `Some(old_value)` if key already existed
     fn insert(&mut self, key_val: (K, V)) -> Option<V>;
     /// Get a value using the key
@@ -24,7 +24,7 @@ pub trait Map<K, V>: std::hash::Hash {
     /// If the given map supports placing at taking from explicit indexes
     fn supports_indexing(&self) -> bool;
 }
-impl<K: std::hash::Hash + std::cmp::Ord, V: std::hash::Hash> Map<K, V>
+impl<K: core::hash::Hash + core::cmp::Ord, V: core::hash::Hash> Map<K, V>
     for std::collections::BTreeMap<K, V>
 {
     fn insert(&mut self, key_val: (K, V)) -> Option<V> {
@@ -68,7 +68,7 @@ impl<K: std::hash::Hash + std::cmp::Ord, V: std::hash::Hash> Map<K, V>
 // #[allow(clippy::implicit_hasher)]
 // #[cfg(feature = "std")]
 // /// Instead of key -> value, value -> key
-// pub fn find_key_by_value<K: Eq + std::hash::Hash + Clone, V: PartialEq>(
+// pub fn find_key_by_value<K: Eq + core::hash::Hash + Clone, V: PartialEq>(
 //     map: &std::collections::HashMap<K, V>,
 //     value: &V,
 // ) -> Option<K> {

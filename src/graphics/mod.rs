@@ -1,26 +1,20 @@
 #![allow(clippy::inline_always)]
 #![allow(clippy::cast_lossless)]
 
+#[allow(unused_imports)]
 use crate::extensions::*;
 
 #[cfg(feature = "random")]
-#[cfg(feature = "std")]
 #[cfg(not(target_arch = "wasm32"))]
 mod random;
 
 #[cfg(feature = "random")]
-#[cfg(feature = "std")]
 #[cfg(not(target_arch = "wasm32"))]
 pub use random::*;
 
 /// Presets for common colors
 pub mod colors;
-
-#[cfg(feature = "std")]
-#[cfg(feature = "num_traits")]
 mod interpolation;
-#[cfg(feature = "std")]
-#[cfg(feature = "num_traits")]
 pub use interpolation::*;
 /// Convert an r b g format into u32 argb format
 #[inline(always)]
@@ -761,9 +755,9 @@ pub use pixel::*;
 
 #[cfg(feature = "imagery")]
 #[cfg(feature = "std")]
-use crate::platform::file_system::file_system_traits::FileSystem;
+use crate::platform::file_system::file_system_traits::FileSystemTrait;
 #[cfg(feature = "std")]
-use crate::{platform::Buffer, settings::MapType};
+use crate::{prelude::Buffer, settings::MapType};
 /// Convert u32 argb to hex
 #[inline(always)]
 #[must_use]
@@ -786,8 +780,7 @@ pub fn u32_to_hex(color: u32) -> String {
 /// # Errors
 /// If the hex is not valid - The function expects for there to not be a # before the hex values
 #[inline(always)]
-#[cfg(feature = "std")]
-pub fn hex_to_u32(hex: &str) -> Result<u32, std::num::ParseIntError> {
+pub fn hex_to_u32(hex: &str) -> Result<u32, core::num::ParseIntError> {
     let alpha = u8::from_str_radix(&hex[0..2], 16)?;
     let red = u8::from_str_radix(&hex[2..4], 16)?;
     let green = u8::from_str_radix(&hex[4..6], 16)?;
@@ -801,7 +794,7 @@ pub fn hex_to_u32(hex: &str) -> Result<u32, std::num::ParseIntError> {
 /// If the hex is not valid - The function expects for there to not be a # before the hex values
 #[inline(always)]
 #[cfg(feature = "std")]
-pub fn hex_to_u32_rgba(hex: &str) -> Result<u32, std::num::ParseIntError> {
+pub fn hex_to_u32_rgba(hex: &str) -> Result<u32, core::num::ParseIntError> {
     let red = u8::from_str_radix(&hex[0..2], 16)?;
     let green = u8::from_str_radix(&hex[2..4], 16)?;
     let blue = u8::from_str_radix(&hex[4..6], 16)?;
@@ -815,7 +808,7 @@ pub fn hex_to_u32_rgba(hex: &str) -> Result<u32, std::num::ParseIntError> {
 /// If the hex is not valid - The function expects for there to not be a # before the hex values
 #[inline(always)]
 #[cfg(feature = "std")]
-pub fn hex_to_u32_rgb(hex: &str) -> Result<u32, std::num::ParseIntError> {
+pub fn hex_to_u32_rgb(hex: &str) -> Result<u32, core::num::ParseIntError> {
     let red = u8::from_str_radix(&hex[2..4], 16)?;
     let green = u8::from_str_radix(&hex[4..6], 16)?;
     let blue = u8::from_str_radix(&hex[6..8], 16)?;
@@ -991,31 +984,7 @@ pub fn bilinear_interpolate_u32(
 #[must_use]
 /// Interpolate between 2 numbers linearly
 /// progress should be from 0 to 255
-pub const fn interpolate_color_rgb_f32(
-    from: u32,
-    to: u32,
-    progress: u32,
-) -> u32 {
-    // Convert progress to fixed-point (8.8 format)
-    let inv_progress = 256 - progress;
-
-    let r1 = (from >> 24) & 0xFF;
-    let g1 = (from >> 16) & 0xFF;
-    let b1 = (from >> 8) & 0xFF;
-    let r2 = (to >> 24) & 0xFF;
-    let g2 = (to >> 16) & 0xFF;
-    let b2 = (to >> 8) & 0xFF;
-
-    let r = (r1 * inv_progress + r2 * progress) >> 8;
-    let g = (g1 * inv_progress + g2 * progress) >> 8;
-    let b = (b1 * inv_progress + b2 * progress) >> 8;
-
-    (r << 24) | (g << 16) | (b << 8) | 0xFF
-}
-#[must_use]
-/// Interpolate between 2 numbers linearly
-/// progress should be from 0 to 255
-pub const fn interpolate_color_rgb_f64(
+pub const fn interpolate_color_rgb_u32(
     from: u32,
     to: u32,
     progress: u32,
@@ -1037,8 +1006,6 @@ pub const fn interpolate_color_rgb_f64(
 
     (r << 24) | (g << 16) | (b << 8) | 0xFF
 }
-#[cfg(feature = "std")]
-#[cfg(feature = "num_traits")]
 macro_rules! interpolate_color_rgb_u32 {
     ($t:ty, $name:ident) => {
         /// Interpolate between 2 colors linearly based on a scale of 0 to 1
@@ -1047,7 +1014,7 @@ macro_rules! interpolate_color_rgb_u32 {
         #[allow(clippy::cast_precision_loss)]
         #[allow(clippy::cast_possible_truncation)]
         #[allow(clippy::cast_possible_wrap)]
-        pub fn $name(from: u32, to: u32, progress: $t) -> u32 {
+        pub const fn $name(from: u32, to: u32, progress: $t) -> u32 {
             let (r1, g1, b1) = u32_to_rgb(from);
             let (r2, g2, b2) = u32_to_rgb(to);
             let red = crate::math::interpolate(r1 as $t, r2 as $t, progress);
@@ -1057,12 +1024,10 @@ macro_rules! interpolate_color_rgb_u32 {
         }
     };
 }
-#[cfg(feature = "std")]
-#[cfg(feature = "num_traits")]
 interpolate_color_rgb_u32!(f32, interpolate_color_rgb_u32_f32);
-#[cfg(feature = "std")]
-#[cfg(feature = "num_traits")]
 interpolate_color_rgb_u32!(f64, interpolate_color_rgb_u32_f64);
+interpolate_color_rgb_u32!(f16, interpolate_color_rgb_u32_f16);
+interpolate_color_rgb_u32!(f128, interpolate_color_rgb_u32_f128);
 
 /// Inverts the rgb channels of the given color
 #[must_use]
@@ -1137,14 +1102,23 @@ impl TextureManager {
     pub fn register_texture(&mut self, name: String, file_path: String) {
         self.texture_lookup.insert(name, file_path);
     }
-    /// Get a texture -> Enable 'imagery' feature for lazy loading
+    #[must_use]
     /// Returns None if the requested image cannot be found
-    pub fn get(
-        &mut self,
-        name: &str,
-        #[cfg(feature = "imagery")] file_system: &dyn FileSystem,
-        #[cfg(feature = "imagery")] remove_margins: bool,
-    ) -> Option<&Buffer> {
+    pub fn get_from_idx(&self, index: usize) -> Option<&Buffer> {
+        // #[cfg(feature = "texture_manager_cleanup")]
+        // if index < self.last_used.len() {
+        //     self.last_used[index] = self.current_frame;
+        // }
+        self.textures.get(index).and_then(|v| v.as_ref())
+    }
+    #[must_use]
+    /// Get the raw image idx from the given name
+    pub fn get_idx(&self, name: &String) -> Option<usize> {
+        self.lookup.get(name).copied()
+    }
+    /// Get a texture
+    /// Returns None if the requested image cannot be found
+    pub fn get(&mut self, name: &str) -> Option<&Buffer> {
         #[cfg(feature = "texture_manager_cleanup")]
         if let Some(&index) = self.lookup.get(name) {
             if index < self.last_used.len() {
@@ -1158,6 +1132,33 @@ impl TextureManager {
             return self.textures[index].as_ref();
         }
 
+        None
+    }
+    #[cfg(feature = "imagery")]
+    /// Get a texture -> Enable 'imagery' feature for lazy loading
+    /// Returns None if the requested image cannot be found
+    ///
+    /// # Errors
+    /// When there was a problem with accessing the file
+    pub fn get_or_load<F: FileSystemTrait>(
+        &mut self,
+        name: &str,
+        file_system: &F,
+        remove_margins: bool,
+    ) -> Result<Option<&Buffer>, Box<dyn std::error::Error>> {
+        #[cfg(feature = "texture_manager_cleanup")]
+        if let Some(&index) = self.lookup.get(name) {
+            if index < self.last_used.len() {
+                self.last_used[index] = self.current_frame;
+            }
+            return self.textures[index].as_ref();
+        }
+
+        // First check if it's already loaded
+        if let Some(&index) = self.lookup.get(name) {
+            return Ok(self.textures[index].as_ref());
+        }
+
         #[cfg(feature = "imagery")]
         // If not loaded, try to load from file
         if let Some(file_path) = self.texture_lookup.get(name) {
@@ -1168,35 +1169,32 @@ impl TextureManager {
                     }
                     self.insert_texture(name.to_string(), buffer);
                     if let Some(&index) = self.lookup.get(name) {
-                        return self.textures[index].as_ref();
+                        return Ok(self.textures[index].as_ref());
                     }
                 }
                 Err(e) => {
-                    eprintln!(
-                        "Failed to load texture '{name}' from '{file_path}': {e}"
-                    );
-                    return None;
+                    return Err(e);
                 }
             }
         }
 
-        None
+        Ok(None)
     }
     /// Load texture from file to memory
     /// # Errors
     /// When the file was not found
     #[cfg(feature = "imagery")]
-    pub fn load_texture_from_file(
+    pub fn load_texture_from_file<F: FileSystemTrait>(
         &self,
         file_path: &str,
-        file_system: &dyn FileSystem,
-    ) -> Result<Buffer, Box<dyn std::error::Error>> {
+        file_system: &F,
+    ) -> Result<Buffer, Box<dyn core::error::Error>> {
         let file = file_system.get_file_contents(file_path)?;
         let img = file.to_image()?;
         Ok(img.into())
     }
     /// Manually insert a texture with a corresponding name into cache
-    pub fn insert_texture(&mut self, name: String, texture: Buffer) {
+    pub fn insert_texture(&mut self, name: String, texture: Buffer) -> usize {
         let index = if let Some(free) = self.free_list.pop() {
             self.textures[free] = Some(texture);
             free
@@ -1205,6 +1203,7 @@ impl TextureManager {
             self.textures.len() - 1
         };
         self.lookup.insert(name, index);
+        index
     }
     /// Unloads/Deletes the specified image from cache if found
     pub fn unload_texture(&mut self, name: &str) {
@@ -1225,11 +1224,11 @@ impl TextureManager {
     /// # Errors
     /// When the file cannot be loaded
     #[cfg(feature = "imagery")]
-    pub fn preload_texture(
+    pub fn preload_texture<F: FileSystemTrait>(
         &mut self,
         name: &str,
-        file_system: &dyn FileSystem,
-    ) -> Result<(), Box<dyn std::error::Error>> {
+        file_system: &F,
+    ) -> Result<(), Box<dyn core::error::Error>> {
         if !self.lookup.contains_key(name) {
             if let Some(file_path) = self.texture_lookup.get(name) {
                 let buffer =
@@ -1269,9 +1268,9 @@ impl TextureManager {
         self.current_frame += 1;
     }
 }
-#[const_trait]
+
 /// A trait for changing or retrieving a single channel of a color
-pub trait ColorManipulation {
+pub const trait ColorManipulation {
     /// Set the alpha channel
     fn with_alpha(&self, alpha: u32) -> u32;
     /// Set the red channel
@@ -1289,9 +1288,34 @@ pub trait ColorManipulation {
     fn green(&self) -> u32;
     /// Get the blue channel
     fn blue(&self) -> u32;
+
+    /// Add X to the blue channel
+    fn add_blue(&self, other: u32) -> u32;
+    /// Add X to the red channel
+    fn add_red(&self, other: u32) -> u32;
+    /// Add X to the green channel
+    fn add_green(&self, other: u32) -> u32;
+    /// Add X to the alpha channel
+    fn add_alpha(&self, other: u32) -> u32;
+
+    /// Subtract X from the blue channel
+    fn sub_blue(&self, other: u32) -> u32;
+    /// Subtract X from the red channel
+    fn sub_red(&self, other: u32) -> u32;
+    /// Subtract X from the green channel
+    fn sub_green(&self, other: u32) -> u32;
+    /// Subtract X from the alpha channel
+    fn sub_alpha(&self, other: u32) -> u32;
+
+    /// Add to all color channels - Alpha excluded
+    fn add_all_color_channels(&self, other: u32) -> u32;
+
+    /// Sub from all color channels - Alpha excluded
+    fn sub_all_color_channels(&self, other: u32) -> u32;
 }
 
 impl const ColorManipulation for u32 {
+    #[inline(always)]
     fn with_alpha(&self, alpha: u32) -> u32 {
         rgba_to_u32(
             get_red_of_u32(*self),
@@ -1301,6 +1325,7 @@ impl const ColorManipulation for u32 {
         )
     }
 
+    #[inline(always)]
     fn with_red(&self, red: u32) -> u32 {
         rgba_to_u32(
             red,
@@ -1310,6 +1335,7 @@ impl const ColorManipulation for u32 {
         )
     }
 
+    #[inline(always)]
     fn with_green(&self, green: u32) -> u32 {
         rgba_to_u32(
             get_red_of_u32(*self),
@@ -1319,6 +1345,7 @@ impl const ColorManipulation for u32 {
         )
     }
 
+    #[inline(always)]
     fn with_blue(&self, blue: u32) -> u32 {
         rgba_to_u32(
             get_red_of_u32(*self),
@@ -1328,20 +1355,63 @@ impl const ColorManipulation for u32 {
         )
     }
 
+    #[inline(always)]
     fn alpha(&self) -> u32 {
         get_alpha_of_u32(*self)
     }
 
+    #[inline(always)]
     fn red(&self) -> u32 {
         get_red_of_u32(*self)
     }
 
+    #[inline(always)]
     fn green(&self) -> u32 {
         get_green_of_u32(*self)
     }
 
+    #[inline(always)]
     fn blue(&self) -> u32 {
         get_blue_of_u32(*self)
+    }
+    #[inline(always)]
+    fn add_alpha(&self, other: u32) -> u32 {
+        self.with_alpha(self.alpha() + other)
+    }
+    #[inline(always)]
+    fn add_red(&self, other: u32) -> u32 {
+        self.with_red(self.red() + other)
+    }
+    #[inline(always)]
+    fn add_green(&self, other: u32) -> u32 {
+        self.with_green(self.green() + other)
+    }
+    #[inline(always)]
+    fn add_blue(&self, other: u32) -> u32 {
+        self.with_blue(self.blue() + other)
+    }
+    #[inline(always)]
+    fn sub_alpha(&self, other: u32) -> u32 {
+        self.with_alpha(self.alpha() - other)
+    }
+    #[inline(always)]
+    fn sub_red(&self, other: u32) -> u32 {
+        self.with_red(self.red() - other)
+    }
+    #[inline(always)]
+    fn sub_green(&self, other: u32) -> u32 {
+        self.with_green(self.green() - other)
+    }
+    #[inline(always)]
+    fn sub_blue(&self, other: u32) -> u32 {
+        self.with_blue(self.blue() - other)
+    }
+
+    fn add_all_color_channels(&self, other: u32) -> u32 {
+        self.add_blue(other).add_red(other).add_green(other)
+    }
+    fn sub_all_color_channels(&self, other: u32) -> u32 {
+        self.sub_blue(other).sub_red(other).sub_green(other)
     }
 }
 

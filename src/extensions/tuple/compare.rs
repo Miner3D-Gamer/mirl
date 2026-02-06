@@ -1,8 +1,7 @@
-use std::cmp::Ordering;
+use core::cmp::Ordering;
 
-#[const_trait]
 /// Allows for < > >= <= ==
-pub trait TupleCmp<Rhs = Self> {
+pub const trait TupleCmp<Rhs = Self> {
     /// <
     fn lt(self, rhs: Rhs) -> bool;
     /// <=

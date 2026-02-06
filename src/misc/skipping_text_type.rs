@@ -1,7 +1,7 @@
 // TODO: Deduplicate letter pairs
 
 /// The basic type of a char
-#[derive(Debug, PartialEq, Clone, Copy, Eq)]
+#[derive(Debug, PartialEq, Clone, Copy, Eq, PartialOrd, Ord)]
 pub enum CharacterType {
     /// All letters (both upper and lower)
     Letter,

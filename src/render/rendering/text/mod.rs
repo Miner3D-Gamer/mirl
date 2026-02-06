@@ -61,40 +61,47 @@ mod antialiased;
 pub use aliased::*;
 pub use antialiased::*;
 
-use crate::{platform::Buffer, settings::MapType};
+use crate::{
+    render::{BufferMetrics, BufferMisc, BufferPointers},
+    settings::MapType,
+};
 
 /// Switch between aliased and antialiased text rendering
+///
+/// When `antialiased` is [None], the drawn text respects alpha, otherwise it expects an alpha cutoff
 pub fn draw_text_switch<const SAFE: bool>(
-    buffer: &mut Buffer,
+    buffer: &mut (impl BufferPointers + BufferMetrics + BufferMisc),
     text: &str,
     xy: (usize, usize),
     color: u32,
     size: f32,
     font: &fontdue::Font,
-    antialiased: bool,
+    antialiased: Option<u8>,
 ) {
-    if antialiased {
-        draw_text_antialiased::<SAFE>(buffer, text, xy, color, size, font);
+    if let Some(val) = antialiased {
+        draw_text::<SAFE>(buffer, text, xy, color, size, font, val);
     } else {
-        draw_text::<SAFE>(buffer, text, xy, color, size, font);
+        draw_text_antialiased::<SAFE>(buffer, text, xy, color, size, font);
     }
 }
 /// Switch between aliased and antialiased text rendering in isize space
+///
+/// When `antialiased` is [None], the drawn text respects alpha, otherwise it expects an alpha cutoff
 pub fn draw_text_switch_isize<const SAFE: bool>(
-    buffer: &mut Buffer,
+    buffer: &mut (impl BufferPointers + BufferMetrics + BufferMisc),
     text: &str,
     xy: (isize, isize),
     color: u32,
     size: f32,
     font: &fontdue::Font,
-    antialiased: bool,
+    antialiased: Option<u8>,
 ) {
-    if antialiased {
+    if let Some(val) = antialiased {
+        draw_text_isize::<SAFE>(buffer, text, xy, color, size, font, val);
+    } else {
         draw_text_antialiased_isize::<SAFE>(
             buffer, text, xy, color, size, font,
         );
-    } else {
-        draw_text_isize::<SAFE>(buffer, text, xy, color, size, font);
     }
 }
 

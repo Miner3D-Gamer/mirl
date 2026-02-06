@@ -1,4 +1,4 @@
-use crate::{platform::Buffer, render::extra::uv_interpolate};
+use crate::{prelude::Buffer, render::extra::uv_interpolate};
 /// This sucks, it works but it sucks
 #[allow(clippy::cast_sign_loss)]
 #[allow(clippy::cast_precision_loss)]

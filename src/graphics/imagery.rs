@@ -2,7 +2,7 @@ use image::{GenericImage, GenericImageView};
 
 use crate::{
     graphics::{rgba_u8_to_u32, u32_to_rgba_u8},
-    platform::Buffer,
+    prelude::Buffer,
 };
 /// Convert a [u32] argb format into an [`image::Rgba<u8>`]
 #[must_use]
@@ -111,7 +111,7 @@ pub fn pixmap_to_dynamic_image(
     );
     for x in 0..ras.width() {
         for y in 0..ras.height() {
-            use crate::extensions::Tuple3Into;
+            use crate::extensions::*;
 
             let color = unsafe { ras.pixel(x, y).unwrap_unchecked() }; // If this crashes I will be glad to fix it, until then shut it
             let (r, g, b) = crate::graphics::shift_hue_rgb(

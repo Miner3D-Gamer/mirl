@@ -1,5 +1,5 @@
 #![allow(missing_docs)]
-use std::ops::{Add, Div, Mul, Sub};
+use core::ops::{Add, Div, Mul, Sub};
 pub const trait TupleOps<Rhs = Self> {
     type Output;
     fn add(self, rhs: Rhs) -> Self::Output;

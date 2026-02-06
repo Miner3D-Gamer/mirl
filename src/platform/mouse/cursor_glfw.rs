@@ -1,11 +1,9 @@
 use super::{BaseCursor, Cursor};
-// #[cfg(feature = "num_traits")]
-// use crate::extensions::*;
-use crate::graphics::{pixmap_to_buffer, rasterize_svg};
 use crate::{
+    graphics::{pixmap_to_buffer, rasterize_svg},
     misc::EasyUnwrapUnchecked,
     platform::mouse::{CursorResolution, LoadCursorError},
-    Buffer,
+    prelude::Buffer,
 };
 
 //use crate::misc::copyable_list::buffer_to_copy_list;
@@ -18,7 +16,7 @@ pub fn load_base_cursor_with_file(
     cursor: BaseCursor,
     size: CursorResolution,
     svg_data: String,
-) -> std::result::Result<Cursor, LoadCursorError> {
+) -> core::result::Result<Cursor, LoadCursorError> {
     let wanted_size: u32 = size.get_size().easy_unwrap_unchecked(); // This will never error because u32 is bigger than u8
 
     let image_data =

@@ -1,7 +1,8 @@
-use super::{draw_pixel_safe, draw_pixel_unsafe, DrawPixelFunction};
+use super::{draw_pixel_safe, draw_pixel_unsafe};
+#[allow(unused_imports)]
 use crate::extensions::*;
 // use crate::graphics::interpolate_color_rgb_u32_f32;
-use crate::platform::Buffer;
+use crate::render::{BufferMetrics, BufferPointers};
 
 #[inline]
 /// Draw a simple line using Bresenham's line algorithm and destroy its performance by drawing circle at every point
@@ -9,20 +10,13 @@ use crate::platform::Buffer;
 #[allow(clippy::cast_precision_loss)]
 #[allow(clippy::cast_possible_truncation)]
 #[allow(clippy::cast_possible_wrap)]
-pub fn draw_line<const SAFE: bool>(
-    buffer: &mut Buffer,
+pub fn draw_line<const SAFE: bool, >(
+    buffer: &mut (impl BufferPointers + BufferMetrics),
     start: (usize, usize),
     end: (usize, usize),
     color: u32,
     thickness: isize,
 ) {
-    let draw_pixel: DrawPixelFunction = {
-        if SAFE {
-            draw_pixel_safe
-        } else {
-            draw_pixel_unsafe
-        }
-    };
     let mut start_x = start.0 as i16;
     let mut start_y = start.1 as i16;
     let end_x = end.0 as i16;
@@ -52,11 +46,19 @@ pub fn draw_line<const SAFE: bool>(
                     if dx * dx + dy * dy <= radius_sq {
                         let new_x = start_x + dx;
                         let new_y = start_y + dy;
-                        draw_pixel(
-                            buffer,
-                            (new_x as usize, new_y as usize),
-                            color,
-                        );
+                        if SAFE {
+                            draw_pixel_safe(
+                                buffer,
+                                (new_x as usize, new_y as usize),
+                                color,
+                            );
+                        } else {
+                            draw_pixel_unsafe(
+                                buffer,
+                                (new_x as usize, new_y as usize),
+                                color,
+                            );
+                        }
                     }
                 }
             }
@@ -76,11 +78,19 @@ pub fn draw_line<const SAFE: bool>(
                     if dx * dx + dy * dy <= radius_sq {
                         let new_x = start_x + dx;
                         let new_y = start_y + dy;
-                        draw_pixel(
-                            buffer,
-                            (new_x as usize, new_y as usize),
-                            color,
-                        );
+                        if SAFE {
+                            draw_pixel_safe(
+                                buffer,
+                                (new_x as usize, new_y as usize),
+                                color,
+                            );
+                        } else {
+                            draw_pixel_unsafe(
+                                buffer,
+                                (new_x as usize, new_y as usize),
+                                color,
+                            );
+                        }
                     }
                 }
             }
@@ -93,42 +103,54 @@ pub fn draw_line<const SAFE: bool>(
 #[allow(clippy::cast_precision_loss)]
 #[allow(clippy::cast_possible_truncation)]
 #[allow(clippy::cast_possible_wrap)]
-pub fn draw_line_straight(
-    buffer: &mut Buffer,
+pub fn draw_line_straight<
+
+    const SAFE: bool,
+>(
+    buffer: &mut (impl BufferPointers + BufferMetrics),
     start: (usize, usize),
     length: usize,
     vertical: bool,
     color: u32,
     thickness: isize,
-    safe: bool,
 ) {
-    let draw_pixel: DrawPixelFunction = if safe {
-        draw_pixel_safe
-    } else {
-        draw_pixel_unsafe
-    };
-
     let (start_x, start_y) = (start.0 as isize, start.1 as isize);
     let half_thickness = thickness / 2;
 
     if vertical {
         for y in start_y..start_y + length as isize {
             for offset_x in -half_thickness..=half_thickness {
-                draw_pixel(
-                    buffer,
-                    ((start_x + offset_x) as usize, y as usize),
-                    color,
-                );
+                if SAFE {
+                    draw_pixel_safe(
+                        buffer,
+                        ((start_x + offset_x) as usize, y as usize),
+                        color,
+                    );
+                } else {
+                    draw_pixel_unsafe(
+                        buffer,
+                        ((start_x + offset_x) as usize, y as usize),
+                        color,
+                    );
+                }
             }
         }
     } else {
         for x in start_x..start_x + length as isize {
             for offset_y in -half_thickness..=half_thickness {
-                draw_pixel(
-                    buffer,
-                    (x as usize, (start_y + offset_y) as usize),
-                    color,
-                );
+                if SAFE {
+                    draw_pixel_safe(
+                        buffer,
+                        (x as usize, (start_y + offset_y) as usize),
+                        color,
+                    );
+                } else {
+                    draw_pixel_unsafe(
+                        buffer,
+                        (x as usize, (start_y + offset_y) as usize),
+                        color,
+                    );
+                }
             }
         }
     }

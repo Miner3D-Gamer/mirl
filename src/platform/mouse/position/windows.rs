@@ -180,6 +180,7 @@ impl RawMouseInputTrait for RawMouseInputWindows {
             store_original_proc(hwnd, original_proc);
 
             #[allow(clippy::fn_to_numeric_cast)]
+            #[allow(function_casts_as_integer)]
             // Set our custom window procedure
             let result = SetWindowLongPtrW(
                 hwnd,

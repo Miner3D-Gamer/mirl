@@ -15,10 +15,10 @@ pub fn get_center_of_screen_for_object(width: i32, height: i32) -> (i32, i32) {
 }
 
 #[cfg(any(target_arch = "wasm32", target_os = "linux", target_os = "windows"))]
-/// Get the xy coordinates of where to put the window associated with the [Buffer](crate::platform::Buffer) for it to be centered
+/// Get the xy coordinates of where to put the window associated with the [Buffer](crate::prelude::Buffer) for it to be centered
 #[must_use]
 pub fn get_center_of_screen_of_buffer(
-    buffer: &crate::platform::Buffer,
+    buffer: &crate::prelude::Buffer,
 ) -> (i32, i32) {
     use crate::system::action::Screen;
     let (screen_width, screen_height): (i32, i32) = Os::get_screen_resolution();

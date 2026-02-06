@@ -1,7 +1,8 @@
+#![allow(unused)]
 // //extern crate image;
 // extern crate x11;
 
-// //use std::ptr;
+// //use core::ptr;
 
 // use image::{Rgba, RgbaImage};
 // use x11::xlib::{
@@ -11,7 +12,7 @@
 
 // pub fn get_title_bar_height() -> i32 {
 //     unsafe {
-//         let display: *mut Display = XOpenDisplay(std::ptr::null());
+//         let display: *mut Display = XOpenDisplay(core::ptr::null());
 //         if display.is_null() {
 //             panic!("Unable to open X display");
 //         }

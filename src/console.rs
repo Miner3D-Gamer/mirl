@@ -7,7 +7,7 @@ use std::io::{
 };
 
 // use crossterm::ExecutableCommand;
-use crate::graphics::Pixel;
+use crate::graphics::{ColorManipulation, Pixel};
 
 // /// Clears the currently visible console
 // ///
@@ -35,19 +35,24 @@ pub fn color_text(msg: &str, r: u8, g: u8, b: u8) -> String {
 }
 #[must_use]
 /// Color the background of the given text (requires the console to support the full color range)
-pub fn color_background(msg: &str, r: u8, g: u8, b: u8) -> String {
+pub fn color_background<T: core::fmt::Display, F: core::fmt::Display>(
+    msg: &T,
+    r: F,
+    g: F,
+    b: F,
+) -> String {
     format!("\x1b[48;2;{r};{g};{b}m{msg}\x1b[0m")
 }
 #[must_use]
 /// Color the text and color of the given string (requires the console to support the full color range)
-pub fn color(
+pub fn color<T: core::fmt::Display>(
     msg: &str,
-    r1: u8,
-    g1: u8,
-    b1: u8,
-    r2: u8,
-    g2: u8,
-    b2: u8,
+    r1: T,
+    g1: T,
+    b1: T,
+    r2: T,
+    g2: T,
+    b2: T,
 ) -> String {
     format!("\x1b[38;2;{r1};{g1};{b1}m\x1b[48;2;{r2};{g2};{b2}m{msg}\x1b[0m")
 }
@@ -130,4 +135,48 @@ pub fn print_color_v(buffer: &[Pixel], width: usize) {
             println!();
         }
     }
+}
+#[must_use]
+/// Convert an array of u32 to a list of console formatted color data
+pub fn color_data_to_console(
+    pixels: &[u32],
+    width: usize,
+    height: usize,
+) -> Vec<String> {
+    let mut output = Vec::new();
+    for y in 0..height / 2 {
+        let mut local = String::new();
+        for x in 0..width {
+            let pixel_below = pixels[x + y * width];
+            let pixel = pixels[x + (y + 1) * width];
+            local.push_str(&color(
+                "▄",
+                pixel.red(),
+                pixel.green(),
+                pixel.blue(),
+                pixel_below.red(),
+                pixel_below.green(),
+                pixel_below.blue(),
+            ));
+        }
+        output.push(local);
+    }
+    if height % 2 == 1 {
+        let mut local = String::new();
+        for x in 0..width {
+            let pixel = pixels[x + (height - 1) * width];
+            local.push_str(&color(
+                "▄",
+                pixel.red(),
+                pixel.green(),
+                pixel.blue(),
+                0,
+                0,
+                0,
+            ));
+        }
+        output.push(local);
+    }
+
+    output
 }

@@ -1,6 +1,7 @@
 /// None
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Hash, PartialOrd, Ord)]
 pub enum SpecialDirections {
     #[allow(missing_docs)]
+    #[default]
     None,
 }

@@ -1,6 +1,6 @@
-use crate::{extensions::U2, graphics::switch_red_and_blue, platform::Buffer};
+use crate::{extensions::U2, graphics::switch_red_and_blue, prelude::Buffer};
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
 /// A list with a known size that is able to be copied
 pub struct CopyableList<T, const N: usize>
 where
@@ -72,16 +72,16 @@ where
 }
 
 /// 32²
-pub type List1K<T> = CopyableList<T, 1024>;
+pub type List1K<T: Copy> = CopyableList<T, 1024>;
 /// 64²
-pub type List4K<T> = CopyableList<T, 4096>;
+pub type List4K<T: Copy> = CopyableList<T, 4096>;
 /// 128²
-pub type List16K<T> = CopyableList<T, 16384>;
+pub type List16K<T: Copy> = CopyableList<T, 16384>;
 /// 256²
-pub type List64K<T> = CopyableList<T, 65536>;
+pub type List64K<T: Copy> = CopyableList<T, 65536>;
 
 /// Enum to hold different sized lists at runtime
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum VariableSizeList<T>
 where
     T: Copy,
@@ -97,7 +97,7 @@ where
 }
 #[must_use]
 /// Convert a U2 into a copyable size list with the sizes of 32, 64, 128, and 256
-pub fn u2_to_size_list<T: Copy + std::default::Default>(
+pub fn u2_to_size_list<T: Copy + core::default::Default>(
     size: U2,
 ) -> VariableSizeList<T> {
     match size {

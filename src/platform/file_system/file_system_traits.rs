@@ -1,6 +1,5 @@
-// #[const_trait]
 // /// A helper trait for file systems so the new function is uniform
-// pub trait FileSystemNew {
+// pub  const trait FileSystemNew {
 //     /// Create a new file system access-er, files that are not defined in `required_files` are not guaranteed to exist
 //     ///
 //     /// # Errors
@@ -10,9 +9,8 @@
 //         Self: Sized;
 // }
 
-#[const_trait]
 /// A trait for a simple file system for possible portability
-pub trait FileSystem {
+pub const trait FileSystemTrait {
     /// # Get the contents of a file
     ///
     /// # Errors
@@ -20,7 +18,7 @@ pub trait FileSystem {
     fn get_file_contents(
         &self,
         path: &str,
-    ) -> Result<super::FileData, Box<dyn std::error::Error>>;
+    ) -> Result<super::FileData, Box<dyn core::error::Error>>;
     /// Write the desired data into the specified file in byte format
     ///
     /// # Errors

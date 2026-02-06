@@ -79,7 +79,7 @@
 //         // Resize the window to the given width and height
 //         SetWindowPos(
 //             hwnd,
-//             std::ptr::null_mut(), // No changes to the window's position
+//             core::ptr::null_mut(), // No changes to the window's position
 //             0,
 //             0,
 //             size.0,

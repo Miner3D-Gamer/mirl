@@ -1,18 +1,19 @@
 #![allow(clippy::similar_names)]
 #![allow(clippy::significant_drop_tightening)]
 use super::get_character;
-use crate::{
-    platform::Buffer,
-    render::{draw_pixel_safe, draw_pixel_unsafe},
+use crate::render::{
+    draw_pixel_safe, draw_pixel_unsafe, BufferMetrics,
+    BufferPointers,
 };
 /// Draw text in the specified font
-pub fn draw_text<const SAFE: bool>(
-    buffer: &mut Buffer,
+pub fn draw_text<const SAFE: bool, >(
+    buffer: &mut (impl BufferPointers + BufferMetrics),
     text: &str,
     xy: (usize, usize),
     color: u32,
     size: f32,
     font: &fontdue::Font,
+    alpha_cutoff: u8,
 ) {
     let mut pen_x = xy.0 as f32;
     let pen_y = xy.1;
@@ -33,14 +34,18 @@ pub fn draw_text<const SAFE: bool>(
 
         for gy in 0..h {
             let py = ((pen_y + gy + offset_y) as i32 - metrics.ymin) as usize;
-            if py >= buffer.height {
+            if py >= buffer.height() {
                 continue;
             }
 
             let row_start = gy * w;
             for gx in 0..w {
                 let px = pen_x as usize + gx;
-                if px >= buffer.width {
+                if px >= buffer.width() {
+                    continue;
+                }
+                let alpha = bitmap[gy * metrics.width + gx];
+                if alpha < alpha_cutoff {
                     continue;
                 }
 
@@ -58,8 +63,11 @@ pub fn draw_text<const SAFE: bool>(
 }
 
 /// Draw text yet stretch the resulting characters
-pub fn draw_text_stretched<const SAFE: bool>(
-    buffer: &mut Buffer,
+pub fn draw_text_stretched<
+    const SAFE: bool,
+
+>(
+    buffer: &mut (impl BufferPointers + BufferMetrics),
     text: &str,
     xy: (usize, usize),
     color: u32,
@@ -86,7 +94,7 @@ pub fn draw_text_stretched<const SAFE: bool>(
 
         for gy in 0..h.floor() as usize {
             let py = ((pen_y + gy + offset_y) as i32 - metrics.ymin) as usize;
-            if py >= buffer.height {
+            if py >= buffer.height() {
                 continue;
             }
 
@@ -94,7 +102,7 @@ pub fn draw_text_stretched<const SAFE: bool>(
                 ((gy as f32 / stretch.1) as usize) * metrics.width;
             for gx in 0..w.floor() as usize {
                 let px = pen_x as usize + gx;
-                if px >= buffer.width {
+                if px >= buffer.width() {
                     continue;
                 }
 
@@ -114,13 +122,14 @@ pub fn draw_text_stretched<const SAFE: bool>(
 }
 
 /// Same as [`draw_text`] but uses isize for positioning allowing for partially out of bounds text (left and top)
-pub fn draw_text_isize<const SAFE: bool>(
-    buffer: &mut Buffer,
+pub fn draw_text_isize<const SAFE: bool, >(
+    buffer: &mut (impl BufferPointers + BufferMetrics),
     text: &str,
     xy: (isize, isize),
     color: u32,
     size: f32,
     font: &fontdue::Font,
+    alpha_cutoff: u8,
 ) {
     let mut pen_x = xy.0 as f32;
     let pen_y = xy.1;
@@ -141,23 +150,26 @@ pub fn draw_text_isize<const SAFE: bool>(
 
         for gy in 0..h {
             let py = pen_y + gy as isize + offset_y - metrics.ymin as isize;
-            if py < 0 || py >= buffer.height as isize {
+            if py < 0 || py >= buffer.height() as isize {
                 continue;
             }
 
             let row_start = gy * w;
             for gx in 0..w {
                 let px = pen_x as isize + gx as isize;
-                if px < 0 || px >= buffer.width as isize {
+                if px < 0 || px >= buffer.width() as isize {
                     continue;
                 }
-
+                let alpha = bitmap[gy * metrics.width + gx];
+                if alpha < alpha_cutoff {
+                    continue;
+                }
                 if bitmap[row_start + gx] > 0 {
                     let px_new = px as usize;
                     let py_new = py as usize;
-                    let index = py_new * buffer.width + px_new;
+                    let index = py_new * buffer.width() + px_new;
 
-                    if SAFE && index >= buffer.width * buffer.height {
+                    if SAFE && index >= buffer.width() * buffer.height() {
                         continue;
                     }
 
@@ -174,8 +186,11 @@ pub fn draw_text_isize<const SAFE: bool>(
 }
 
 /// Same as [`draw_text_stretched`] but uses isize for positioning allowing for partially out of bounds text (left and top)
-pub fn draw_text_stretch_isize<const SAFE: bool>(
-    buffer: &mut Buffer,
+pub fn draw_text_stretch_isize<
+    const SAFE: bool,
+
+>(
+    buffer: &mut (impl BufferPointers + BufferMetrics),
     text: &str,
     xy: (isize, isize),
     color: u32,
@@ -202,7 +217,7 @@ pub fn draw_text_stretch_isize<const SAFE: bool>(
 
         for gy in 0..h.floor() as usize {
             let py = pen_y + gy as isize + offset_y - metrics.ymin as isize;
-            if py < 0 || py >= buffer.height as isize {
+            if py < 0 || py >= buffer.height() as isize {
                 continue;
             }
 
@@ -210,7 +225,7 @@ pub fn draw_text_stretch_isize<const SAFE: bool>(
                 ((gy as f32 / stretch.1) as usize) * metrics.width;
             for gx in 0..w.floor() as usize {
                 let px = pen_x as isize + gx as isize;
-                if px < 0 || px >= buffer.width as isize {
+                if px < 0 || px >= buffer.width() as isize {
                     continue;
                 }
 

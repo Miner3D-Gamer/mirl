@@ -115,4 +115,7 @@ macro_rules! upgrade_type {
     (f64) => {
         f128
     };
+    (f16) => {
+        f32
+    };
 }

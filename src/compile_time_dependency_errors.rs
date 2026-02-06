@@ -1,11 +1,11 @@
 // imagery = ["dep:image"]
 // no feature dependencies; no guard needed
 
-#[cfg(all(
-    feature = "minifb",
-    not(feature = "mac_cc_installed"),
-    target_os = "macos"
-))]
+// #[cfg(all(
+//     feature = "minifb",
+//     not(feature = "mac_cc_installed"),
+//     target_os = "macos"
+// ))]
 // use crate::compile_warn;
 
 // texture_manager_cleanup = ["std"]
@@ -80,8 +80,10 @@ compile_error!("feature `random` requires `std`");
 // no guard needed
 
 // num_traits = ["dep:num-traits", "std"]
-#[cfg(all(feature = "num_traits", not(feature = "std")))]
-compile_error!("feature `num_traits` requires `std`");
+#[cfg(all(feature = "num_traits_with_std", not(feature = "std")))]
+compile_error!("feature `num_traits_with_std` requires `std`");
+#[cfg(all(feature = "num_traits_with_std", not(feature = "num_traits")))]
+compile_error!("feature `num_traits_with_std` requires `num_traits`");
 
 // #[cfg(all(
 //     feature = "minifb",
@@ -89,3 +91,7 @@ compile_error!("feature `num_traits` requires `std`");
 //     target_os = "macos"
 // ))]
 // compile_warn!("To compile minifb on mac, see https://docs.rs/cc/latest/cc/#compile-time-requirements");
+
+#[cfg(test)]
+#[cfg(not(feature = "test"))]
+compile_error!("You're trying to test the lib without having the required dependencies enabled");

@@ -9,3 +9,12 @@ pub mod extra;
 // ---------------------------------------------------------------------
 mod rendering;
 pub use rendering::*;
+
+#[cfg(feature = "std")]
+mod buffer;
+#[cfg(feature = "std")]
+pub use buffer::*;
+
+/// A const buffer making money on more compile time optimizations and `no_std` support
+pub mod const_buffer;
+pub use const_buffer::*;

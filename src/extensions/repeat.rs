@@ -1,6 +1,5 @@
-#[const_trait]
 /// A trait that allows for data to repeat
-pub trait RepeatData
+pub const trait RepeatData
 where
     Self: Sized + Clone,
 {
@@ -12,11 +11,11 @@ impl<T: Sized + Clone> RepeatData for T {
         // let mut buffer = Vec::with_capacity(total_size);
         // unsafe {
         //     let ptr = buffer.as_mut_ptr();
-        //     std::ptr::write(ptr, color);
+        //     core::ptr::write(ptr, color);
         //     let mut filled = 1;
         //     while filled < total_size {
-        //         let copy_len = std::cmp::min(filled, total_size - filled);
-        //         std::ptr::copy_nonoverlapping(ptr, ptr.add(filled), copy_len);
+        //         let copy_len = core::cmp::min(filled, total_size - filled);
+        //         core::ptr::copy_nonoverlapping(ptr, ptr.add(filled), copy_len);
         //         filled += copy_len;
         //     }
         //     buffer.set_len(total_size);
@@ -25,16 +24,15 @@ impl<T: Sized + Clone> RepeatData for T {
     }
 }
 
-#[const_trait]
 /// A trait that allows for data to repeat inside another container
-pub trait RepeatDataInContainer {
+pub const trait RepeatDataInContainer {
     /// The output type of `Self<T>` should be `Self<Vec<T>>`
     type Output;
     /// Repeat the given data X times and return a Vec containing the repeated data
     fn repeat_value_inside(self, times: usize) -> Self::Output;
 }
 impl<T: RepeatData> RepeatDataInContainer for Option<T> {
-    type Output = std::option::Option<Vec<T>>;
+    type Output = core::option::Option<Vec<T>>;
     fn repeat_value_inside(self, times: usize) -> Self::Output {
         self.map(|val| val.repeat_value(times))
     }
@@ -47,10 +45,10 @@ impl<T: RepeatData> RepeatDataInContainer for Box<T> {
     }
 }
 
-impl<T: RepeatData> RepeatDataInContainer for std::cell::Cell<T> {
-    type Output = std::cell::Cell<Vec<T>>;
+impl<T: RepeatData> RepeatDataInContainer for core::cell::Cell<T> {
+    type Output = core::cell::Cell<Vec<T>>;
     fn repeat_value_inside(self, times: usize) -> Self::Output {
-        std::cell::Cell::new((self.into_inner()).repeat_value(times))
+        core::cell::Cell::new((self.into_inner()).repeat_value(times))
     }
 }
 
@@ -68,10 +66,10 @@ impl<T: RepeatData> RepeatDataInContainer for std::sync::Arc<T> {
     }
 }
 
-impl<T: RepeatData> RepeatDataInContainer for std::cell::RefCell<T> {
-    type Output = std::cell::RefCell<std::vec::Vec<T>>;
+impl<T: RepeatData> RepeatDataInContainer for core::cell::RefCell<T> {
+    type Output = core::cell::RefCell<std::vec::Vec<T>>;
     fn repeat_value_inside(self, times: usize) -> Self::Output {
-        std::cell::RefCell::new(self.into_inner().repeat_value(times))
+        core::cell::RefCell::new(self.into_inner().repeat_value(times))
     }
 }
 
@@ -95,17 +93,17 @@ impl<T: RepeatData> RepeatDataInContainer for std::task::Poll<T> {
     }
 }
 
-impl<T: RepeatData> RepeatDataInContainer for std::num::Wrapping<T> {
-    type Output = std::num::Wrapping<std::vec::Vec<T>>;
+impl<T: RepeatData> RepeatDataInContainer for core::num::Wrapping<T> {
+    type Output = core::num::Wrapping<std::vec::Vec<T>>;
     fn repeat_value_inside(self, times: usize) -> Self::Output {
-        std::num::Wrapping(self.0.repeat_value(times))
+        core::num::Wrapping(self.0.repeat_value(times))
     }
 }
 
-impl<T: RepeatData> RepeatDataInContainer for std::cmp::Reverse<T> {
-    type Output = std::cmp::Reverse<std::vec::Vec<T>>;
+impl<T: RepeatData> RepeatDataInContainer for core::cmp::Reverse<T> {
+    type Output = core::cmp::Reverse<std::vec::Vec<T>>;
     fn repeat_value_inside(self, times: usize) -> Self::Output {
-        std::cmp::Reverse(self.0.repeat_value(times))
+        core::cmp::Reverse(self.0.repeat_value(times))
     }
 }
 

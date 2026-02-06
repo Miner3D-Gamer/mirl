@@ -1,3 +1,55 @@
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Default, Hash)]
+/// A enum that will return the value it beholds when a ? is used - The opposite of [Option]
+pub enum FoundReturn<V> {
+    #[default]
+    /// The item was not found, continue execution
+    NotFound,
+    /// The item was found, exit the current function!
+    Found(V),
+}
+
+impl<V> core::ops::Try for FoundReturn<V> {
+    type Output = ();
+    type Residual = V;
+
+    fn from_output((): Self::Output) -> Self {
+        Self::NotFound
+    }
+
+    fn branch(self) -> core::ops::ControlFlow<Self::Residual, Self::Output> {
+        match self {
+            Self::NotFound => core::ops::ControlFlow::Continue(()),
+            Self::Found(v) => core::ops::ControlFlow::Break(v),
+        }
+    }
+}
+
+impl<V> core::ops::FromResidual<V> for FoundReturn<V> {
+    fn from_residual(residual: V) -> Self {
+        Self::Found(residual)
+    }
+}
+impl<T> From<Option<T>> for FoundReturn<T> {
+    fn from(val: Option<T>) -> Self {
+        val.map_or_else(|| Self::NotFound, |val| Self::Found(val))
+    }
+}
+impl<T> FromPatch<Option<T>> for FoundReturn<T> {
+    fn from_value(val: Option<T>) -> Self {
+        val.map_or_else(|| Self::NotFound, |val| Self::Found(val))
+    }
+}
+impl<T> From<T> for FoundReturn<T> {
+    fn from(val: T) -> Self {
+        Self::Found(val)
+    }
+}
+impl<T> FromPatch<T> for FoundReturn<T> {
+    fn from_value(val: T) -> Self {
+        Self::Found(val)
+    }
+}
+
 /// Lists but copyable
 #[cfg(feature = "std")]
 pub mod copyable_list;
@@ -16,11 +68,8 @@ pub mod skipping_text_type;
 /// A few lines of helper code for easier keybind handling time
 pub mod keybinds;
 
-/// A 2d point specialize for lines and columns
-pub mod text_position;
-
 #[cfg(feature = "std")]
-use std::hash::Hasher;
+use core::hash::Hasher;
 
 #[cfg(feature = "std")]
 /// Combine 2 strings
@@ -31,10 +80,64 @@ pub fn concatenate<A: AsRef<str>, B: AsRef<str>>(a: A, b: B) -> String {
 }
 #[cfg(feature = "std")]
 /// Hash a value
-pub fn hash_value<T: std::hash::Hash>(value: &T) -> u64 {
+pub fn hash_value<T: core::hash::Hash>(value: &T) -> u64 {
     let mut s = std::hash::DefaultHasher::new();
     value.hash(&mut s);
     s.finish()
+}
+#[derive(Debug, Clone, Copy)]
+/// Convert from one ratio to another
+pub struct RatioConverter2D<T: FromPatch<F>, F: FromPatch<T> + Copy> {
+    ratio: (F, F),
+    inverse_ratio: (F, F),
+    phantom: core::marker::PhantomData<T>,
+}
+use crate::prelude::FromPatch;
+#[allow(clippy::missing_const_for_fn)]
+const impl<
+        T: [const] core::ops::Add<Output = T>
+            + [const] core::ops::Sub<Output = T>
+            + [const] core::ops::Mul<Output = T>
+            + [const] core::ops::Div<Output = T>
+            + Copy
+            + [const] FromPatch<F>,
+        F: [const] FromPatch<T>
+            + [const] core::ops::Add<Output = F>
+            + [const] core::ops::Sub<Output = F>
+            + [const] core::ops::Mul<Output = F>
+            + [const] core::ops::Div<Output = F>
+            + Copy,
+    > RatioConverter2D<T, F>
+{
+    /// Create a new ratio
+    #[must_use]
+    pub fn new(smaller: (T, T), bigger: (T, T)) -> Self {
+        Self {
+            ratio: (
+                F::from_value(smaller.0) / F::from_value(bigger.0),
+                F::from_value(smaller.1) / F::from_value(bigger.1),
+            ),
+            inverse_ratio: (
+                F::from_value(bigger.0) / F::from_value(smaller.0),
+                F::from_value(bigger.1) / F::from_value(smaller.1),
+            ),
+            phantom: core::marker::PhantomData,
+        }
+    }
+    /// Convert a value from the smaller ratio to the bigger ratio
+    pub fn smaller_to_bigger(&self, value: (T, T)) -> (T, T) {
+        (
+            T::from_value(F::from_value(value.0) * self.inverse_ratio.0),
+            T::from_value(F::from_value(value.1) * self.inverse_ratio.1),
+        )
+    }
+    /// Convert a value from the bigger ratio to the smaller ratio
+    pub fn bigger_to_smaller(&self, value: (T, T)) -> (T, T) {
+        (
+            T::from_value(F::from_value(value.0) * self.ratio.0),
+            T::from_value(F::from_value(value.1) * self.ratio.1),
+        )
+    }
 }
 
 /// A windows only section for misc function
@@ -107,7 +210,7 @@ pub fn type_name_of_val<T>(_: &T) -> &'static str {
 
 // /// Check if 2 objects are the same
 // #[cfg(feature = "std")]
-// pub trait Comparable {
+// pub const trait Comparable {
 //     /// Convert self to `&dyn std::any::Any`
 //     fn compare_as_any(&self) -> &dyn std::any::Any;
 //     /// Check if this and another object are the same
@@ -130,7 +233,7 @@ pub fn type_name_of_val<T>(_: &T) -> &'static str {
 //     }
 // }
 
-// impl<T: std::hash::Hash> Comparable for T {
+// impl<T: core::hash::Hash> Comparable for T {
 //     fn is_same(&self, other: &Self) -> bool {
 //         let mut own_hasher = std::hash::DefaultHasher::new();
 //         let mut other_hasher = std::hash::DefaultHasher::new();
@@ -139,7 +242,7 @@ pub fn type_name_of_val<T>(_: &T) -> &'static str {
 //         own_hasher == other_hasher
 //     }
 // }
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 /// Choose between 2 values
 pub enum TwoOptions<O1, O2> {
     /// Select the first of 2 options
@@ -149,12 +252,17 @@ pub enum TwoOptions<O1, O2> {
 }
 
 /// I am already aware it is unsafe, just let me unwrap it!
-pub trait EasyUnwrapUnchecked<T> {
+pub const trait EasyUnwrapUnchecked<T> {
     /// I am already aware it is unsafe, just let me unwrap it!
     fn easy_unwrap_unchecked(self) -> T;
 }
 
 impl<T> EasyUnwrapUnchecked<T> for Option<T> {
+    fn easy_unwrap_unchecked(self) -> T {
+        unsafe { self.unwrap_unchecked() }
+    }
+}
+impl<T, E> EasyUnwrapUnchecked<T> for Result<T, E> {
     fn easy_unwrap_unchecked(self) -> T {
         unsafe { self.unwrap_unchecked() }
     }
@@ -168,3 +276,84 @@ pub use map_extension::*;
 
 mod scrollable_container;
 pub use scrollable_container::*;
+
+#[cfg(feature = "std")]
+mod clone_any;
+#[cfg(feature = "std")]
+pub use clone_any::*;
+
+#[macro_export]
+/// Usage: `impl_empty_trait!(std::sync::Send for Struct1 Struct2 Struct3)`
+macro_rules! impl_empty_trait {
+    ($name:ident for $($t:ty)*) => ($(
+        impl $name for $t {}
+    )*)
+}
+
+#[cfg(feature = "std")]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+/// A ticker, regulate the timing of an application
+pub struct Ticker {
+    /// 1/fps
+    pub target_delta_time: std::time::Duration,
+    /// The last time this struct got ticked
+    pub last_frame: std::time::Instant,
+    /// When the next frame should start
+    pub next_frame: std::time::Instant,
+    /// The current delta time -> Time between frame starts/ends
+    pub delta_time: std::time::Duration,
+}
+#[cfg(feature = "std")]
+impl Ticker {
+    #[must_use]
+    /// Create a new ticker, holds invalid data until ticked once
+    ///
+    /// # Errors
+    /// When fps it too high/negative to fit into [`std::time::Duration`]
+    pub fn new(fps: f64) -> Option<Self> {
+        Some(Self {
+            target_delta_time: std::time::Duration::try_from_secs_f64(
+                1.0 / fps,
+            )
+            .ok()?,
+            last_frame: std::time::Instant::now(),
+            next_frame: std::time::Instant::now(),
+            delta_time: std::time::Duration::new(0, 0),
+        })
+    }
+    /// Tick the Ticker
+    ///
+    /// If the frame took too long, the next frame will be skipped
+    /// If there is still time left, it will sleep until the desired frame time
+    pub fn tick(&mut self) {
+        let now = std::time::Instant::now();
+        self.delta_time = now - self.last_frame;
+        self.last_frame = now;
+        if now > self.next_frame {
+            self.next_frame = now + self.target_delta_time;
+        } else {
+            std::thread::sleep(self.next_frame - now);
+            self.next_frame += self.target_delta_time;
+        }
+    }
+    #[must_use]
+    /// Get the delta time, use [`as_secs_f32`](std::time::Duration::as_secs_f32) or [`as_secs_64`](std::time::Duration::as_secs_f64) on that duration
+    pub const fn get_delta_time(&self) -> std::time::Duration {
+        self.delta_time
+    }
+    /// Get the delta time and the fps of the last tick
+    #[must_use]
+    pub const fn get_delta_time_and_fps_f32(&self) -> (f32, f32) {
+        let delta = self.delta_time.as_secs_f32();
+        (delta, 1.0 / delta)
+    }
+    /// Get the delta time and the fps of the last tick
+    #[must_use]
+    pub const fn get_delta_time_and_fps_f64(&self) -> (f64, f64) {
+        let delta = self.delta_time.as_secs_f64();
+        (delta, 1.0 / delta)
+    }
+}
+#[cfg(feature = "std")]
+/// A scene - A collection of shapes and positions
+pub mod scene;

@@ -1,6 +1,7 @@
+#[cfg(all(feature = "system", feature = "keycodes"))]
 use strum_macros::EnumIter;
-
-#[derive(Debug, Clone, Copy, PartialEq, EnumIter, Eq, Default, Hash)]
+#[cfg_attr(all(feature = "system", feature = "keycodes"), derive(EnumIter))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Hash, PartialOrd, Ord)]
 /// Key code to be interpreted anywhere
 #[allow(missing_docs)]
 pub enum KeyCode {
@@ -89,6 +90,9 @@ pub enum KeyCode {
     RightAlt,
     LeftSuper,
     RightSuper,
+    LeftHyper,
+    RightHyper,
+    AltControl,
 
     // Symbols / Punctuation
     Space,
@@ -96,6 +100,7 @@ pub enum KeyCode {
     Escape,
     Backspace,
     Tab,
+    BackTab,
     Comma,
     Period,
     Minus,
@@ -162,13 +167,19 @@ pub enum KeyCode {
     ThornÞ,
 
     // Multimedia keys
+    // TODO: when checking for MediaPlayPause, also check MediaPlay and MediaPause
     MediaPlayPause,
+    MediaPlay,
+    MediaPause,
     MediaStop,
     MediaNext,
     MediaPrev,
     VolumeUp,
     VolumeDown,
     Mute,
+    MediaReverse,
+    MediaFastForward,
+    MediaRecord,
 
     // Browser/OS keys
     BrowserBack,
@@ -196,6 +207,7 @@ pub enum KeyCode {
     KeyPadEqual,
     World1,
     World2,
+    SpecialControl,
     #[default]
     Unknown,
 }
@@ -267,10 +279,10 @@ macro_rules! define_keys {
         }
     };
 }
-#[const_trait]
+
 #[cfg(feature = "std")]
 /// Convert from a string to a `Vec<KeyCode>`
-pub trait StringToKeyCodes {
+pub const trait StringToKeyCodes {
     /// Convert from a string to a `Vec<KeyCode>`
     fn to_keycodes(&self) -> Vec<KeyCode>;
     /// Converts a single text instance into the corresponding `KeyCode`
@@ -283,7 +295,6 @@ impl KeyCode {
     /// Convert a keycode to a String -> Letters/Numbers return a String while function keys return None
     pub const fn to_user_friendly_string(&self) -> Option<&'static str> {
         match self {
-            // Letters
             Self::A => Some("A"),
             Self::B => Some("B"),
             Self::C => Some("C"),
@@ -310,8 +321,6 @@ impl KeyCode {
             Self::X => Some("X"),
             Self::Y => Some("Y"),
             Self::Z => Some("Z"),
-
-            // Numbers
             Self::Num0 | Self::KeyPad0 => Some("0"),
             Self::Num1 | Self::KeyPad1 => Some("1"),
             Self::Num2 | Self::KeyPad2 => Some("2"),
@@ -322,11 +331,6 @@ impl KeyCode {
             Self::Num7 | Self::KeyPad7 => Some("7"),
             Self::Num8 | Self::KeyPad8 => Some("8"),
             Self::Num9 | Self::KeyPad9 => Some("9"),
-            // Function Keys
-            // Multimedia keys - return None for action keys
-            // Browser/OS keys - return None for action keys
-            // Platform-specific - return None for action keys
-            // Special
             Self::F1
             | Self::F2
             | Self::F3
@@ -402,9 +406,17 @@ impl KeyCode {
             | Self::Unknown
             | Self::Enter
             | Self::KeyPadEnter
-            | Self::Tab => None,
-            // Modifiers - return None for action keys
-            // Symbols / Punctuation
+            | Self::BackTab
+            | Self::Tab
+            | Self::LeftHyper
+            | Self::RightHyper
+            | Self::AltControl
+            | Self::MediaPlay
+            | Self::MediaPause
+            | Self::MediaReverse
+            | Self::MediaFastForward
+            | Self::MediaRecord
+            | Self::SpecialControl => None,
             Self::Space => Some(" "),
             Self::Comma => Some(","),
             Self::Period | Self::KeyPadDecimal => Some("."),
@@ -419,14 +431,8 @@ impl KeyCode {
             Self::Slash | Self::KeyPadDivide => Some("/"),
             Self::Grave => Some("`"),
             Self::Apostrophe => Some("'"),
-
-            // Arrow keys - return None for action keys
-            // Editing keys - return None for action keys
-            // Lock keys - return None for action keys
-            // Keypad operations - return just the symbol
             Self::KeyPadMultiply => Some("*"),
             Self::KeyPadAdd => Some("+"),
-            // International & special characters
             Self::AUmlautÄ => Some("Ä"),
             Self::UUmlautÜ => Some("Ü"),
             Self::OUmlautÖ => Some("Ö"),
@@ -647,8 +653,8 @@ impl KeyCode {
     // }
 }
 #[cfg(feature = "std")]
-impl std::fmt::Display for KeyCode {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl core::fmt::Display for KeyCode {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         let value = self.to_string();
         write!(f, "{value}")
     }
@@ -740,6 +746,9 @@ define_keys!(
             RightAlt => "Right Alt",
             LeftSuper => "Left Super",
             RightSuper => "Right Super",
+    LeftHyper=>"Hyper Left",
+    RightHyper=>"Hyper Right",
+    AltControl=>"Alt Control",
 
             // Symbols / Punctuation
             Space => "Space",
@@ -820,6 +829,11 @@ define_keys!(
             VolumeUp => "Volume Up",
             VolumeDown => "Volume Down",
             Mute => "Mute",
+            MediaPause=>"Media Pause",
+            MediaPlay=>"Media Play",
+            MediaReverse=>"Media Reverse",
+            MediaFastForward=>"Media Fast forward",
+            MediaRecord=>"Media Record",
 
             // Browser/OS keys
             BrowserBack => "Browser Back",
@@ -846,6 +860,8 @@ define_keys!(
             KeyPadEqual => "KeyPad =",
             World1 => "World 1",
             World2 => "World 2",
+            BackTab=>"BackTab",
+            SpecialControl=>"Special Control",
             Unknown => "Unknown",);
 
 #[must_use]
@@ -865,4 +881,34 @@ pub fn keycodes_to_str(keycodes: &Vec<KeyCode>) -> (String, Vec<KeyCode>) {
         }
     }
     (output, functions)
+}
+impl KeyCode {
+    #[must_use]
+    /// Get the number of the keycode if it is a number
+    pub const fn get_number<
+        T: crate::math::ConstOne
+            + crate::math::ConstZero
+            + crate::math::ConstNumbers128,
+    >(
+        &self,
+    ) -> Option<T> {
+        Some(match self {
+            Self::Num0 => T::ZERO,
+            Self::Num1 => T::ONE,
+            Self::Num2 => T::CONST_2,
+            Self::Num3 => T::CONST_3,
+            Self::Num4 => T::CONST_4,
+            Self::Num5 => T::CONST_5,
+            Self::Num6 => T::CONST_6,
+            Self::Num7 => T::CONST_7,
+            Self::Num8 => T::CONST_8,
+            Self::Num9 => T::CONST_9,
+            _ => return None,
+        })
+    }
+    #[must_use]
+    /// Check if the given keycode is a number
+    pub const fn is_number(&self) -> bool {
+        self.get_number::<usize>().is_some()
+    }
 }
