@@ -1,3 +1,7 @@
+# Version 9.0.1
+
+- Added `Unwrap` and `UnwrapDefault` to `mirl::extensions`, implementing it for `Option`
+
 # Version 9.0.0
 
 ### Changes:

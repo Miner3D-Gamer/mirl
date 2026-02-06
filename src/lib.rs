@@ -37,6 +37,8 @@
 #![feature(generic_const_exprs)]
 #![feature(const_cmp)]
 #![feature(try_trait_v2)]
+#![feature(const_default)]
+#![feature(const_destruct)]
 #![cfg_attr(not(feature = "std"), no_std)]
 //! Miners
 //! Rust

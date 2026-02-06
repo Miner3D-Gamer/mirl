@@ -1,3 +1,9 @@
+# 9.0.1
+
+Added `Unwrap` and `UnwrapDefault` to `mirl::extensions`
+
+This trait is automatically implemented for `Option` but will be extended in the future to `Result` and the still in progress `mirl::misc::FoundReturn`
+
 # [Changelog](#changelog-overview)/Migration Guide v9.0.0
 
 Disclaimer: `mirl::math::geometry` is not in a state that I like. Expect changes to the api there before the next major update.

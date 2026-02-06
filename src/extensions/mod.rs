@@ -101,3 +101,10 @@ impl<T: core::fmt::Debug> LogToConsole for T {
         print!("{self:?}");
     }
 }
+
+
+// #[cfg(feature = "std")]
+mod panic;
+
+// #[cfg(feature = "std")]
+pub use panic::*;
