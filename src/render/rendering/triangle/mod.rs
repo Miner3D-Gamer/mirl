@@ -15,7 +15,7 @@ pub fn draw_triangle(
 ) {
     // Sort vertices by Y coordinate
     let mut vertices = [point1, point2, point3];
-    vertices.sort_by(|a, b| a.1.cmp(&b.1));
+    vertices.sort_by_key(|a| a.1);
 
     let (x1, y1, u1, v1) =
         (vertices[0].0, vertices[0].1, vertices[0].2, vertices[0].3);

@@ -1076,7 +1076,7 @@ dependencies = [
 
 [[package]]
 name = "mirl"
-version = "9.0.1"
+version = "9.0.2"
 dependencies = [
  "ahash",
  "crossterm",
@@ -1101,6 +1101,7 @@ dependencies = [
  "strum",
  "strum_macros",
  "tempfile",
+ "version_check",
  "wasm-bindgen",
  "web-sys",
  "winapi",

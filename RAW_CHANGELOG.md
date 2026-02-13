@@ -1,3 +1,10 @@
+# Version 9.0.2
+
+- Added `SparseVec` to `mirl::extensions` which is a `Vec` with stable indexing
+- Added `ListLike` trait to `mirl::extensions` for unifying functions for list like structs
+- Added compile time nightly checker so users who try to compile with `stable` get a nice error message instead of a bunch of unreadable "feature not available in stable" errors
+- Removed unused import warning in `mirl::render::const_buffer` for when the `std` flag hadn't been set
+
 # Version 9.0.1
 
 - Added `Unwrap` and `UnwrapDefault` to `mirl::extensions`, implementing it for `Option`

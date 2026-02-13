@@ -1,8 +1,20 @@
+# 9.0.2
+
+## Added
+
+- **`SparseVec`** to `mirl::extensions` - A vector with stable indexing that maintains element positions even after removals
+- **`ListLike` trait** to `mirl::extensions` - Provides a unified interface for list-like data structures
+- **Compile-time nightly checker** - Users compiling with stable Rust now receive a clear error message instead of numerous cryptic "feature not available in stable" errors
+
+## Fixed
+
+- Removed unused import warning in `mirl::render::const_buffer` when the `std` feature flag is disabled
+
 # 9.0.1
 
-Added `Unwrap` and `UnwrapDefault` to `mirl::extensions`
+Added `Unwrap` and `UnwrapDefault` traits to `mirl::extensions`
 
-This trait is automatically implemented for `Option` but will be extended in the future to `Result` and the still in progress `mirl::misc::FoundReturn`
+This trait is already implemented for `Option` but will be extended in the future to `Result` and the still in progress `mirl::misc::FoundReturn`
 
 # [Changelog](#changelog-overview)/Migration Guide v9.0.0
 

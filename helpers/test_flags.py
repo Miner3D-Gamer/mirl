@@ -387,6 +387,7 @@ def run_checks(final_combinations, total):
         console.print("[bold cyan]Statistics:[/bold cyan]")
         console.print(f"  Total combinations: {total}")
         console.print(f"  Total time: {elapsed:.2f}s")
+        console.print(f"  Total time without parallelization: {sum(durations):.2f}s")
         console.print(f"  Average per combo: {sum(durations) / len(durations):.2f}s")
         console.print(f"  Fastest: {min(durations):.2f}s")
         console.print(f"  Slowest: {max(durations):.2f}s")

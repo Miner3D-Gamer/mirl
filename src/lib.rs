@@ -39,6 +39,8 @@
 #![feature(try_trait_v2)]
 #![feature(const_default)]
 #![feature(const_destruct)]
+// #![feature(vec_try_remove)] // Miri does not recognize this feature
+//#![feature(const_heap)]
 #![cfg_attr(not(feature = "std"), no_std)]
 //! Miners
 //! Rust
