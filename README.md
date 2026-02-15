@@ -73,7 +73,7 @@ fn main() {
 - `indexmap` - Enables `indexmap` support for `FromPatch` and `TryFromPatch`
 - `internal_use_indexmap` - Replaces all relevant uses of `HashMap` with `indexmap::IndexMap`
 - `ahash` - Does nothing
-- `internal_use_ahash` - Replaces all releveant uses of `RandomState` in hashmaps to `ahash::Ahasher`
+- `internal_use_ahash` - Replaces all relevant uses of `RandomState` in hashmaps to `ahash::Ahasher`
 
 #### Graphics & Rendering
 
