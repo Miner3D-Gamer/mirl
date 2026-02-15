@@ -18,7 +18,7 @@ use winapi::{
 };
 
 use super::{MouseDelta, RawMouseInputTrait};
-use crate::settings::MapType;
+use crate::settings::{MapType, SettingsMapType};
 
 /// Global mouse delta storage (since there's only one mouse)
 static GLOBAL_MOUSE_DELTA: OnceLock<Arc<Mutex<MouseDelta>>> = OnceLock::new();
@@ -35,7 +35,7 @@ fn get_global_delta() -> &'static Arc<Mutex<MouseDelta>> {
 
 /// Get or initialize the original procedures storage
 fn get_original_procs() -> &'static Arc<Mutex<MapType<isize, WNDPROC>>> {
-    ORIGINAL_PROCS.get_or_init(|| Arc::new(Mutex::new(MapType::new())))
+    ORIGINAL_PROCS.get_or_init(|| Arc::new(Mutex::new(MapType::new_map())))
 }
 
 /// Update the global mouse delta
@@ -68,7 +68,7 @@ fn store_original_proc(hwnd: HWND, proc: WNDPROC) {
 /// Remove the stored original window procedure for a given HWND
 fn remove_original_proc(hwnd: HWND) {
     if let Ok(mut procs) = get_original_procs().lock() {
-        procs.remove(&(hwnd as isize));
+        procs.remove_thingy(&(hwnd as isize));
     }
 }
 

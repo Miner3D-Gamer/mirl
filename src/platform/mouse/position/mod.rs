@@ -10,6 +10,7 @@ pub const trait RawMouseInputTrait {
     fn get_delta(&self) -> (i32, i32);
 }
 
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 /// Represents mouse movement delta values
 #[derive(Debug, Clone, Copy, Default)]
 pub struct MouseDelta {

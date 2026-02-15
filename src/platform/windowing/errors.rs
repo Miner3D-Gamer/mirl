@@ -1,4 +1,5 @@
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 /// Potential errors that may occur when trying to open a window
 pub enum WindowCreationError {
     /// The given backend could not load itself before even opening the window
@@ -10,6 +11,7 @@ pub enum WindowCreationError {
     /// An unaccounted error occurrence
     Misc(String),
 }
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 /// Potential errors that may occur when trying to update a window
 pub enum WindowUpdateError {
@@ -40,6 +42,7 @@ impl From<crate::platform::windowing::errors::WindowUpdateError>
     }
 }
 
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 /// An enum for checking what kind of error was produced
 pub enum WindowError {

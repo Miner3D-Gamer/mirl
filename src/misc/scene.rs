@@ -1,5 +1,6 @@
 use crate::math::collision::{Circle, Rectangle};
 #[derive(Debug, Clone, PartialEq, Eq)]
+// #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 /// A collection of supported objects
 pub struct Scene2D<T, const CS: bool> {
     objects: Vec<SupportedShapes2D<T, CS>>,
@@ -9,6 +10,7 @@ pub struct Scene2D<T, const CS: bool> {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 #[allow(missing_docs)]
+// #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 /// All supported shapes
 pub enum SupportedShapes2D<T, const CS: bool> {
     Rectangle(Rectangle<T, CS>),

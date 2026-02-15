@@ -1,6 +1,7 @@
 #[cfg(all(feature = "system", feature = "keycodes"))]
 use strum_macros::EnumIter;
 #[cfg_attr(all(feature = "system", feature = "keycodes"), derive(EnumIter))]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Hash, PartialOrd, Ord)]
 /// Key code to be interpreted anywhere
 #[allow(missing_docs)]

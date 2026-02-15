@@ -1,4 +1,5 @@
 use super::{Directions, RotateDirections, SpecialDirections};
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 /// N E S W + None
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub enum DirectionsWithNone {

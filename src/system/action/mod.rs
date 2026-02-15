@@ -175,6 +175,7 @@ pub const trait Host {
 // ///
 // pub struct ToolbarTool {}
 
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 /// The loading state of the taskbar icon be aware that some OS may not support all of these
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Hash)]
 pub enum ProgressionState {
@@ -244,6 +245,7 @@ pub struct Os {}
 //     capture_desktop_background_raw, capture_screen_raw, get_window_id_by_title,
 // };
 use crate::{platform::WindowLevel, prelude::Buffer};
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 /// The cpu/thread priority a process can have
 pub enum CpuPriority {

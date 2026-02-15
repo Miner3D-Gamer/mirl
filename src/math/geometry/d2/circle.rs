@@ -6,6 +6,7 @@ use crate::{
     prelude::Sqrt,
 };
 
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
 /// A simple Rectangle defining computational limits
 #[allow(missing_docs)]

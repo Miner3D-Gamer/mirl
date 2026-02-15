@@ -8,6 +8,7 @@ use super::U2;
 use crate::extensions::*;
 use crate::math::{ConstOne, ConstZero};
 
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Default)]
 /// A custom u4
 #[allow(missing_docs)]

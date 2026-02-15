@@ -8,6 +8,7 @@ use super::U4;
 use crate::extensions::*;
 use crate::math::{ConstOne, ConstZero};
 
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default)]
 /// A u2... yeah
 pub struct U2 {

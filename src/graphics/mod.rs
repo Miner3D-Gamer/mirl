@@ -1083,14 +1083,17 @@ pub struct TextureManager {
 #[cfg(feature = "std")]
 impl TextureManager {
     #[must_use]
+    #[allow(clippy::new_without_default)]
     /// Create a texture manager -> Request textures for visual applications
     pub fn new() -> Self {
+        use crate::settings::SettingsMapType;
+
         Self {
             textures: Vec::new(),
-            lookup: MapType::new(),
+            lookup: MapType::new_map(),
             free_list: Vec::new(),
             #[cfg(feature = "imagery")]
-            texture_lookup: MapType::new(),
+            texture_lookup: MapType::new_map(),
             #[cfg(feature = "texture_manager_cleanup")]
             last_used: Vec::new(),
             #[cfg(feature = "texture_manager_cleanup")]
@@ -1208,9 +1211,11 @@ impl TextureManager {
     /// Unloads/Deletes the specified image from cache if found
     pub fn unload_texture(&mut self, name: &str) {
         if let Some(&index) = self.lookup.get(name) {
+            use crate::settings::SettingsMapType;
+
             self.textures[index] = None;
             self.free_list.push(index);
-            self.lookup.remove(name);
+            self.lookup.remove_thingy(&name.to_string());
         }
     }
     /// Checks if a an image is already registered for lazy loading

@@ -70,13 +70,16 @@ where
         &self.data
     }
 }
-
+#[allow(type_alias_bounds)]
 /// 32²
 pub type List1K<T: Copy> = CopyableList<T, 1024>;
+#[allow(type_alias_bounds)]
 /// 64²
 pub type List4K<T: Copy> = CopyableList<T, 4096>;
+#[allow(type_alias_bounds)]
 /// 128²
 pub type List16K<T: Copy> = CopyableList<T, 16384>;
+#[allow(type_alias_bounds)]
 /// 256²
 pub type List64K<T: Copy> = CopyableList<T, 65536>;
 

@@ -1,5 +1,6 @@
 use super::RotateDirections;
 
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 /// NE SE SW NW
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
 #[allow(missing_docs)]

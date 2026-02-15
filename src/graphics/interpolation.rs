@@ -8,6 +8,7 @@ use crate::{
     graphics::{rgba_to_u32, u32_to_rgba, u32_to_rgba_u8},
     math::interpolate,
 };
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 /// The interpolation mode for resizing a buffer-like object
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Hash, PartialOrd, Ord)]
 pub enum InterpolationMode {

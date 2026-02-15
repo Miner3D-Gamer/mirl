@@ -65,6 +65,7 @@ pub const trait Time {
     /// Get time in seconds
     fn get_elapsed_time(&self) -> f64;
 }
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 /// A cursor style, what else to say?
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum CursorStyle {
@@ -153,6 +154,7 @@ pub enum CursorStyle {
     /// Magnifying glass with minus
     ZoomOut,
 }
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 /// Supported (and unsupported) mouse buttons
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum MouseButton {
@@ -177,6 +179,7 @@ pub enum MouseButton {
 /// Represents digital keys using `KeyCodes` of which there should be plenty enough to pretty all libraries that use their own `KeyCodes`
 pub mod keycodes;
 
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[allow(clippy::struct_excessive_bools)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 /// Settings for spawning in a window
@@ -313,14 +316,17 @@ impl WindowSettings {
     pub fn fullscreen(mut self) -> Self {
         use crate::system::action::Screen;
         // The screen cannot be negative so unwrapping is safe
-        self.size = unsafe {
+        self.size = {
+            use crate::misc::EasyUnwrapUnchecked;
+
             crate::system::Os::get_screen_resolution()
                 .try_tuple_into()
-                .unwrap_unchecked()
+                .easy_unwrap_unchecked()
         };
         self
     }
 }
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(PartialEq, Copy, Clone, Debug, Eq, PartialOrd, Ord)]
 /// The render level of the window the os should use
 /// Any window on the same render level will move in front of every other window on that same level if the user clicks them
@@ -333,6 +339,7 @@ pub enum WindowLevel {
     AlwaysOnTop,
 }
 
+// #[cfg_attr(feature = "serde", derive(serde::Serialize))]
 /// A thread safe double buffer when fast isn't fast enough
 #[derive(Debug)]
 #[cfg(feature = "std")]
@@ -377,6 +384,7 @@ impl DoubleBuffer {
     }
 }
 
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
 /// A struct to convert between 0.0-1.0 and the metrics of the screen
 pub struct ScreenNormalizer<S> {

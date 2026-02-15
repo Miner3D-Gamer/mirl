@@ -1,3 +1,23 @@
+# Version 9.1.0
+
+## Added
+
+- **`serde` support** - Almost all structs and enums now support serialization/deserialization when the `serde` feature flag is enabled
+- **`indexmap` integration** - New `indexmap` feature flag enables support for `IndexMap` from the `indexmap` crate
+- **Internal collection replacement flags**:
+  - `internal_use_ahash` - Replaces Rust's builtin hash builder with the hash builder of `ahash` throughout the library
+  - `internal_use_indexmap` - Replaces Rust's builtin `HashMap` with `indexmap::IndexMap` throughout the library
+
+## Changed
+
+- **`FromPatch` trait expansion** - Moved some conversion implementations from `TryFromPatch` to `FromPatch` for `String` and `Vec` types, making these conversions infallible where appropriate
+
+## Removed
+
+- **`mirl::extensions::NoneOnly`** - Removed as it provides no functionality beyond `Option<()>`
+
+---
+
 # 9.0.2
 
 ## Added
@@ -10,11 +30,15 @@
 
 - Removed unused import warning in `mirl::render::const_buffer` when the `std` feature flag is disabled
 
+---
+
 # 9.0.1
 
 Added `Unwrap` and `UnwrapDefault` traits to `mirl::extensions`
 
 This trait is already implemented for `Option` but will be extended in the future to `Result` and the still in progress `mirl::misc::FoundReturn`
+
+---
 
 # [Changelog](#changelog-overview)/Migration Guide v9.0.0
 

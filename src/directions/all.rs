@@ -2,6 +2,7 @@ use super::{
     Directions, ExtendedDirections, RotateDirections, RotatePrecise,
     SpecialDirections,
 };
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 /// N E S W + NE SE SW NW + None
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub enum AllDirections {

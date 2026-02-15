@@ -1,5 +1,6 @@
 use crate::platform::keycodes::KeyCode;
 
+// #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 /// A singular key combination
 pub struct KeyBind<T> {

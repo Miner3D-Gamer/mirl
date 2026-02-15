@@ -3,6 +3,7 @@ use crate::graphics::{
     get_green_of_u32_in_u8, get_red_of_u32_in_u8,
 };
 
+// #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 // #[cfg(feature = "imagery")]
 /// This struct hold the raw data of a file to be converted/used somewhere else
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -46,6 +47,7 @@ impl FileData {
         }
     }
 }
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 /// What type the data is expected to be
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum DataType {

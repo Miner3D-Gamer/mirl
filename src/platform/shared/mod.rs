@@ -29,6 +29,7 @@ pub fn sleep(time: std::time::Duration) {
 pub fn log(t: &str) {
     println!("{t}");
 }
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[cfg(feature = "keycodes")]
 /// A struct to manage pressed keys
 #[derive(Clone, Debug, Copy, PartialEq, Eq)]
@@ -443,6 +444,7 @@ impl KeyManager {
     }
 }
 
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 /// A struct to manage the pressed mouse keys + scroll
 #[derive(Debug, Clone, Copy, PartialEq)]
 #[allow(clippy::struct_excessive_bools)]

@@ -48,6 +48,7 @@ pub const trait Position<V, S: Shape<V>> {
     fn get_shape_mut(&mut self) -> &mut S;
 }
 
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 /// A one-dimensional position with an associated shape.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Default, Hash)]
 pub struct Pos1D<V, S: Shape<V>> {
@@ -90,6 +91,7 @@ impl<V: Copy, S: Shape<V>> const GetPosX<V> for Pos1D<V, S> {
     }
 }
 
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 /// A two-dimensional position with an associated shape.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Default, Hash)]
 pub struct Pos2D<V, S: Shape<V>> {
@@ -146,6 +148,7 @@ impl<V: Copy, S: Shape<V>> const GetPosY<V> for Pos2D<V, S> {
     }
 }
 
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 /// A three-dimensional position with an associated shape.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Default, Hash)]
 pub struct Pos3D<V, S: Shape<V>> {
@@ -216,6 +219,7 @@ impl<V: Copy, S: Shape<V>> const GetPosZ<V> for Pos3D<V, S> {
     }
 }
 
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 /// A four-dimensional position with an associated shape.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Default, Hash)]
 pub struct Pos4D<V, S: Shape<V>> {

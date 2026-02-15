@@ -2,6 +2,7 @@
 
 use crate::math::expressions::d2::{FlipExpression, GetY};
 
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Default, Hash)]
 /// A struct holding x for the given expression
 pub struct XHolder<T, E> {

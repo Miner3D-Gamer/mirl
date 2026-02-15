@@ -1,5 +1,6 @@
 use crate::{misc::EasyUnwrapUnchecked, prelude::TryIntoPatch};
 
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[allow(clippy::derived_hash_with_manual_eq)] // It is manually derived for the const tag.
 #[derive(Debug, Clone, Copy, Hash)]
 /// A 2d position in a text context

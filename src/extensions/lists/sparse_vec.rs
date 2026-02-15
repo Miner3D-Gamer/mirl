@@ -1,5 +1,6 @@
 use crate::prelude::ListLike;
 
+// #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 /// A data structure that uses a few vectors to simulate a hashmap without the slow hashing of a hashmap
 /// Insert: O(1)
 /// Removal: O(1)

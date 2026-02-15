@@ -1,7 +1,4 @@
 #[cfg(feature = "std")]
-use super::Time;
-
-#[cfg(feature = "std")]
 /// Native implementation of the Time trait
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct NativeTime {
@@ -25,7 +22,7 @@ impl Default for NativeTime {
     }
 }
 #[cfg(feature = "std")]
-impl Time for NativeTime {
+impl super::Time for NativeTime {
     fn get_elapsed_time(&self) -> f64 {
         self.time.elapsed().as_secs_f64()
     }

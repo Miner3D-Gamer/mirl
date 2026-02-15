@@ -4,6 +4,7 @@ use crate::platform::file_system::{
     file_data::DataType, file_system_traits::FileSystemTrait, FileData,
 };
 
+// #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 /// Implementation of `FileSystem` for Native use only
 /// This is supposed to make accessing files easier
 #[derive(Debug, Clone, PartialEq, Eq)]

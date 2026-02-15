@@ -6,7 +6,7 @@ use parking_lot::RwLock;
 ///
 /// See [`GlyphCache`] for the composition of this type
 pub static GLYPH_CACHE: GlyphCache =
-    std::sync::LazyLock::new(|| RwLock::new(MapType::new()));
+    std::sync::LazyLock::new(|| RwLock::new(MapType::new_map()));
 
 /// ### Key:
 ///
@@ -25,6 +25,8 @@ pub static GLYPH_CACHE: GlyphCache =
 pub type GlyphCache = std::sync::LazyLock<
     RwLock<MapType<(char, u32, usize), (fontdue::Metrics, Vec<u8>)>>,
 >;
+// #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+// struct GlyphKey(char, u32, usize);
 
 /// Get a glyph from the cache if it exists
 #[inline(always)]
@@ -39,7 +41,7 @@ pub fn _reset_glyph_cache() {
 }
 /// Removes a selected glyph from the glyph cache
 pub fn _remove_glyph_from_glyph_cache(glyph: &(char, u32, usize)) {
-    GLYPH_CACHE.write().remove(glyph);
+    GLYPH_CACHE.write().remove_thingy(glyph);
 }
 /// Manually add a glyph to the glyph cache
 pub fn _add_to_glyph_cache(
@@ -63,7 +65,7 @@ pub use antialiased::*;
 
 use crate::{
     render::{BufferMetrics, BufferMisc, BufferPointers},
-    settings::MapType,
+    settings::{MapType, SettingsMapType},
 };
 
 /// Switch between aliased and antialiased text rendering

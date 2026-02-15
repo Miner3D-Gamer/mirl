@@ -20,6 +20,7 @@ use crate::math::geometry::{positioning::*, GetShapeDirectionType};
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
 /// A simple Rectangle defining computational limits
 #[allow(missing_docs)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct Rectangle<T, const CS: bool> {
     pub width: T,
     pub height: T,

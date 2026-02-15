@@ -1,4 +1,5 @@
 #[derive(Debug, Clone, Copy, PartialEq, Default, PartialOrd)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 /// A camera that is bound to a region
 pub struct ScrollableCamera {
     /// The size of the horizontally scrollable region

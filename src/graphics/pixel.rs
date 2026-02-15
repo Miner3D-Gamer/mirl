@@ -1,5 +1,6 @@
 use super::{rgb_u8_to_u32, u32_to_rgba_u8};
 
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 /// A pixel made to be read FAST
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Pixel {

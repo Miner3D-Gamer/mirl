@@ -1,5 +1,6 @@
 // TODO: Deduplicate letter pairs
 
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 /// The basic type of a char
 #[derive(Debug, PartialEq, Clone, Copy, Eq, PartialOrd, Ord)]
 pub enum CharacterType {

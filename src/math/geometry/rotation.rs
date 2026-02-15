@@ -1,5 +1,6 @@
 use crate::math::geometry::{positioning::Position, EmptyShape, Shape};
 
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Default, Hash)]
 /// A shape with a 1 dimensional position and an x dimensional rotation
 ///
@@ -13,6 +14,7 @@ pub struct Rotation1D<V, S: Shape<V>, P: Position<V, S>> {
     pub _shape: core::marker::PhantomData<S>,
 }
 
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Default, Hash)]
 /// A shape with a 2 dimensional position and an x dimensional rotation
 pub struct Rotation2D<

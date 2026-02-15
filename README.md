@@ -65,7 +65,15 @@ fn main() {
 #### Core Features
 
 - `std` - Enables the standard rust library which most of the lib relies on
-- `num_traits` - Enables `num-traits` dependency for modular number support (without std)
+
+#### Supported libs
+
+- `num_traits` - Enables `num-traits` support for the small u items
+- `serde` - Enables `serde` support for almost all structs/enums
+- `indexmap` - Enables `indexmap` support for `FromPatch` and `TryFromPatch`
+- `internal_use_indexmap` - Replaces all relevant uses of `HashMap` with `indexmap::IndexMap`
+- `ahash` - Does nothing
+- `internal_use_ahash` - Replaces all releveant uses of `RandomState` in hashmaps to `ahash::Ahasher`
 
 #### Graphics & Rendering
 
@@ -82,11 +90,11 @@ fn main() {
 
 #### Font Support
 
-- `font_support` - Adds support for `fontdue` font rendering with `once_cell` for caching and `parking_lot` for synchronization (includes `std`)
+- `font_support` - Adds support for `fontdue` font rendering with `once_cell` for caching and `parking_lot` for synchronization (requires `std`)
 
 #### System Integration
 
-- `system` - Low-level system interaction using platform-specific crates (`x11`, `windows`, `winapi`, `raw-window-handle`) - Requires `std`
+- `system` - Low-level system interaction using platform-specific crates (`x11`, `windows`, `winapi`, `raw-window-handle`) (requires `std`)
 
 #### Input Handling
 

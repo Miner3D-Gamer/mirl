@@ -1106,6 +1106,7 @@ impl Cursors {
         }
     }
 }
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 /// Holds information any cursor would need
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct BaseCursor {
@@ -1125,7 +1126,7 @@ pub fn use_cursor(
     #[cfg(all(feature = "glfw", not(target_arch = "wasm32")))]
     glfw_window: Option<&mut glfw::Window>,
     #[cfg(not(all(feature = "glfw", not(target_arch = "wasm32"))))]
-    _glfw_window: core::option::Option<NoneOnly>,
+    _glfw_window: core::option::Option<()>,
 ) -> Result<(), WindowError> {
     #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "glfw")]
@@ -1213,6 +1214,7 @@ impl ButtonState {
         self.down = new;
     }
 }
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Hash, PartialOrd, Ord)]
 /// The current state of a mouse buttons and if they have just been pressed
 #[allow(missing_docs, clippy::struct_excessive_bools)]
@@ -1221,6 +1223,7 @@ pub struct ButtonState {
     pub clicked: bool,
     pub released: bool,
 }
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[allow(missing_docs)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Hash, PartialOrd, Ord)]
 /// The current state of the mouse buttons and if they have just been pressed
@@ -1293,6 +1296,7 @@ impl MouseButtonState {
     }
 }
 
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Debug, Clone, Copy, PartialEq, Default, PartialOrd)]
 /// A data storage helper holding the current state of the mouse
 pub struct MouseSnapShot {
@@ -1367,6 +1371,7 @@ impl MouseSnapShot {
 //     buttons: MouseState,
 //     pos: MousePos<T>,
 // }
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Debug, Clone, PartialEq, Eq)]
 /// Things that could go wrong while loading a cursor
 pub enum LoadCursorError {
@@ -1383,6 +1388,7 @@ pub enum LoadCursorError {
     /// When the hotspot is in an invalid position
     InvalidHotspot,
 }
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 /// The resolution/size of the given cursor
 pub enum CursorResolution {

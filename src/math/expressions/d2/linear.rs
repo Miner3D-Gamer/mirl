@@ -1,5 +1,6 @@
 use crate::math::expressions::d2::GetY;
 
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Default, Hash)]
 /// x * m + n
 pub struct LinearExpression<T> {

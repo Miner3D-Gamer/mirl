@@ -16,6 +16,7 @@ pub const BOTTOM_LOWER: bool = false;
 /// A marker signifying that a struct is a raw shape
 pub const trait Shape<T> {}
 
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Default, Hash)]
 /// Sometimes we just need a path without an associating shape
 pub struct EmptyShape {}

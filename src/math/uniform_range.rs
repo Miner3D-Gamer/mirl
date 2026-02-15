@@ -15,12 +15,13 @@ use crate::{
     prelude::TryFromPatch,
 };
 
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 /// A type that represents a uniform range from 0.0 to 1.0 using any unsigned integer type
 /// The internal value is stored as an unsigned integer where 0 represents 0.0 and MAX represents 1.0
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct UniformRange<T: Copy + core::fmt::Debug> {
     value: T,
-    _phantom: core::marker::PhantomData<T>,
+    //_phantom: core::marker::PhantomData<T>,
 }
 
 #[allow(unused_imports)]
@@ -45,7 +46,7 @@ where
     pub const fn zero() -> Self {
         Self {
             value: T::ZERO,
-            _phantom: core::marker::PhantomData,
+            //_phantom: core::marker::PhantomData,
         }
     }
 
@@ -54,7 +55,7 @@ where
     pub fn one() -> Self {
         Self {
             value: Self::max_value(),
-            _phantom: core::marker::PhantomData,
+            //_phantom: core::marker::PhantomData,
         }
     }
 
@@ -63,7 +64,7 @@ where
     pub const fn from_raw(value: T) -> Self {
         Self {
             value,
-            _phantom: core::marker::PhantomData,
+            //_phantom: core::marker::PhantomData,
         }
     }
 
@@ -79,7 +80,7 @@ where
         let value: T = T::try_from_value(scaled)?;
         Some(Self {
             value,
-            _phantom: core::marker::PhantomData,
+            //_phantom: core::marker::PhantomData,
         })
     }
     #[must_use]

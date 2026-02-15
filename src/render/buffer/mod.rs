@@ -1,5 +1,6 @@
 use crate::render::{BufferMetrics, BufferMisc, BufferPointers};
 
+// #[cfg_attr(feature = "serde", derive(serde::Serialize))]
 // Rewrite to use copyable list instead of Vec<[u32]>?
 /// A raw color buffer to be modified and read quickly
 #[derive(PartialEq, Debug, Eq, Clone, Hash, PartialOrd, Ord)]
@@ -15,6 +16,16 @@ pub struct Buffer {
     /// The total size -> width*height
     pub total_size: usize,
 }
+// #[cfg(feature = "serde")]
+// impl<'de> serde::Deserialize<'de> for Buffer {
+//     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+//     where
+//         D: serde::Deserializer<'de>,
+//     {
+//         Err(D::)
+//     }
+// }
+
 unsafe impl core::marker::Send for Buffer {}
 unsafe impl core::marker::Sync for Buffer {}
 
@@ -76,7 +87,6 @@ impl BufferMisc for Buffer {
     fn data(&mut self) -> &mut [u32] {
         &mut self.data
     }
-
 }
 
 impl const BufferMetrics for Buffer {

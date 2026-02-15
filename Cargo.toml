@@ -1,7 +1,7 @@
 [package]
 # General Info
 name = "mirl"
-version = "9.0.2"
+version = "9.1.0"
 description = "Miners Rust Lib - A massive collection of ever growing and changing functions, structs, and enums. Check the description for compatibility and toggleable features! (Most of the lib is controlled by flags/features so the lib can continue to be lightweight despite its size)"
 # Compiler
 rust-version = "1.88.0"
@@ -57,9 +57,12 @@ raw-window-handle = { version = ">=0.6.2", optional = true, default-features = f
 
 # graphics & render
 image = { version = ">=0.25.6", optional = true, default-features = false }
-indexmap = { version = "2.12.1", optional = true }
+indexmap = { version = "2.12.1", optional = true, default-features = false, features = [
+    "std",
+] }
 
-# This lib is pretty useful
+
+# This lib is pretty useless - Extra support for num-traits
 [dependencies.num-traits]
 version = ">=0.2"
 default-features = false
@@ -178,6 +181,9 @@ all = [
     "random",
     "console",
     "num_traits_with_std",
+    "serde",
+    "internal_use_ahash",
+    "internal_use_indexmap",
 ]
 # Support for interacting with they keyboard
 keycodes = ["dep:strum", "dep:strum_macros", "std"]
@@ -204,6 +210,14 @@ console = ["dep:crossterm"]
 num_traits_with_std = ["num-traits/std", "num_traits", "std"]
 # A flag required when wanting to test this lib
 test = ["dep:pastey"]
+# Support for serde
+serde = ["serde/derive", "serde/std", "std"]
+# Support for indexmap
+indexmap = ["dep:indexmap", "std"]
+# If any hash builder should be replaced with the hash builder of ahash
+internal_use_ahash = ["ahash"]
+# If any reference to std::collection::HashMap should be replaced with indexmap::IndexMap
+internal_use_indexmap = ["indexmap"]
 
 
 # Get the current state of the keyboard

@@ -131,7 +131,7 @@ def parse_error_block(block: str, features: tuple) -> RustError:
     """Parse a single error or warning block."""
     # Skip compilation summary errors
     if "could not compile" in block and "-->" not in block:
-        return None # pyright: ignore[reportReturnType]
+        return None  # pyright: ignore[reportReturnType]
 
     # Determine if it's an error or warning
     is_warning = block.strip().startswith("warning:")
@@ -161,7 +161,7 @@ def parse_error_block(block: str, features: tuple) -> RustError:
         location=location,
         full_text=block.strip(),
     )
-    error.feature_flags.add(features) # pyright: ignore[reportArgumentType]
+    error.feature_flags.add(features)  # pyright: ignore[reportArgumentType]
     return error
 
 
@@ -262,7 +262,9 @@ def parse_and_deduplicate_rust_errors(file_content: str) -> str:
         Formatted string with deduplicated errors grouped by feature flags
     """
     error_dict = parse_rust_errors(file_content)
-    sorted_errors = deduplicate_and_sort_errors(error_dict) # pyright: ignore[reportArgumentType]
+    sorted_errors = deduplicate_and_sort_errors(
+        error_dict  # pyright: ignore[reportArgumentType]
+    )  # pyright: ignore[reportArgumentType]
     return format_output(sorted_errors)
 
 
@@ -442,6 +444,10 @@ if __name__ == "__main__":
         "ahash": ["std"],
         "miri": [],
         "console": [],
+        "serde": [],
+        "indexmap": ["std"],
+        "internal_use_ahash": ["ahash", "std"],
+        "internal_use_indexmap": ["std", "indexmap"],
         # "nightly": [],
     }
     # Flags that only really depend on other flags and as such do not need to be checked
@@ -458,6 +464,10 @@ if __name__ == "__main__":
         "ahash",
         "miri",
         "console",
+        "serde",
+        "indexmap",
+        "internal_use_ahash",
+        "internal_use_indexmap",
     ]
 
     def remove_items(list: list[str], items: list[str]):

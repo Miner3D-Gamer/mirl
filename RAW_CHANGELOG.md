@@ -1,3 +1,13 @@
+# Version 9.1.0
+
+- Removed `mirl::extensions::NoneOnly` which is useless due to `Option<()>` existing
+- Added `serde` support for almost all structs/enums under the `serde` flag
+- Brought some items from `TryFromPath` to `FromPatch` in regards to `String` and `Vec`
+- Added support for `indexmap` (With the `indexmap` flag)
+- Added `internal_use_ahash` and `internal_use_indexmap` flags for replacing the usage of rusts builtin `HashMap` with `ahash` and `indexmap` f
+
+---
+
 # Version 9.0.2
 
 - Added `SparseVec` to `mirl::extensions` which is a `Vec` with stable indexing
@@ -5,11 +15,15 @@
 - Added compile time nightly checker so users who try to compile with `stable` get a nice error message instead of a bunch of unreadable "feature not available in stable" errors
 - Removed unused import warning in `mirl::render::const_buffer` for when the `std` flag hadn't been set
 
+---
+
 # Version 9.0.1
 
 - Added `Unwrap` and `UnwrapDefault` to `mirl::extensions`, implementing it for `Option`
 
 # Version 9.0.0
+
+---
 
 ### Changes:
 

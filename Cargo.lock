@@ -1076,7 +1076,7 @@ dependencies = [
 
 [[package]]
 name = "mirl"
-version = "9.0.2"
+version = "9.1.0"
 dependencies = [
  "ahash",
  "crossterm",

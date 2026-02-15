@@ -31,7 +31,7 @@
 #![feature(f128)]
 #![feature(f16)]
 #![feature(iter_advance_by)]
-#![feature(lazy_type_alias)] // This may be performance intensive
+//#![feature(lazy_type_alias)] // This may be performance intensive
 #![feature(type_alias_impl_trait)]
 #![allow(incomplete_features)] // Incomplete: generic_const_exprs
 #![feature(generic_const_exprs)]

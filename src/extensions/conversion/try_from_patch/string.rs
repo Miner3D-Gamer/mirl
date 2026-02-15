@@ -1,18 +1,6 @@
 use crate::extensions::TryFromPatch;
 
 // String conversions
-impl const TryFromPatch<Self> for String {
-    fn try_from_value(v: Self) -> Option<Self> {
-        Some(v)
-    }
-}
-
-impl TryFromPatch<&str> for String {
-    fn try_from_value(v: &str) -> Option<Self> {
-        Some(v.to_string())
-    }
-}
-
 impl<const N: usize> TryFromPatch<[u8; N]> for String {
     fn try_from_value(v: [u8; N]) -> Option<Self> {
         Self::from_utf8(v.to_vec()).ok()
@@ -37,17 +25,6 @@ impl TryFromPatch<&[u8]> for String {
     }
 }
 
-impl TryFromPatch<String> for Vec<u8> {
-    fn try_from_value(v: String) -> Option<Self> {
-        Some(v.into_bytes())
-    }
-}
-
-impl TryFromPatch<&str> for Vec<u8> {
-    fn try_from_value(v: &str) -> Option<Self> {
-        Some(v.as_bytes().to_vec())
-    }
-}
 // Unsigned integers
 impl TryFromPatch<String> for u8 {
     fn try_from_value(v: String) -> Option<Self> {

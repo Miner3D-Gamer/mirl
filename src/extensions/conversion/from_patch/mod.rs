@@ -21,3 +21,8 @@ pub const trait FromPatch<T>: Sized {
     fn from_value(value: T) -> Self;
 }
 mod numbers;
+
+#[cfg(feature = "std")]
+mod string;
+#[cfg(feature = "std")]
+mod vec;

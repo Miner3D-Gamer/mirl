@@ -171,6 +171,7 @@ pub fn uv_interpolate(
     }
     start_val + (end_val - start_val) * (target_y - start_y) / (end_y - start_y)
 }
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 /// A polygon - Created using 3 [`Vertex3D`]
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Polygon {
@@ -181,6 +182,7 @@ pub struct Polygon {
     /// Third [`Vertex3D`]
     pub point3: Vertex3D,
 }
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 /// A 3D point in space with uv coordinates
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Vertex3D {
@@ -195,6 +197,7 @@ pub struct Vertex3D {
     /// Texture y coordinate
     pub v: f32,
 }
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 /// A 3D point in space without uv coordinates
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Point3D {
@@ -206,6 +209,7 @@ pub struct Point3D {
     pub z: f64,
 }
 
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 /// A 2D point in space without uv coordinates
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Point2D {

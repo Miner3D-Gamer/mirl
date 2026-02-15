@@ -1,4 +1,5 @@
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Default, Hash)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 /// A enum that will return the value it beholds when a ? is used - The opposite of [Option]
 pub enum FoundReturn<V> {
     #[default]
@@ -85,6 +86,7 @@ pub fn hash_value<T: core::hash::Hash>(value: &T) -> u64 {
     value.hash(&mut s);
     s.finish()
 }
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Debug, Clone, Copy)]
 /// Convert from one ratio to another
 pub struct RatioConverter2D<T: FromPatch<F>, F: FromPatch<T> + Copy> {
@@ -242,6 +244,7 @@ pub fn type_name_of_val<T>(_: &T) -> &'static str {
 //         own_hasher == other_hasher
 //     }
 // }
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 /// Choose between 2 values
 pub enum TwoOptions<O1, O2> {
