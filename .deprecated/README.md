@@ -1,0 +1,1 @@
+These are just files and folders which may have good code but aren't that useful/have been overshadowed

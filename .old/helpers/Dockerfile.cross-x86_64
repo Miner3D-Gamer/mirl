@@ -1,0 +1,25 @@
+# syntax=docker/dockerfile:1
+#
+# Build once, use forever:
+#   podman build -t cross-x86_64-linux-x11 -f Dockerfile.cross-x86_64 .
+#
+# Based on the official cross image for x86_64-unknown-linux-gnu.
+# Find the correct base tag at: https://github.com/cross-rs/cross/pkgs/container/x86_64-unknown-linux-gnu
+
+FROM ghcr.io/cross-rs/x86_64-unknown-linux-gnu:main
+
+RUN dpkg --add-architecture amd64 \
+ && apt-get update \
+ && apt-get install -y --no-install-recommends \
+        libx11-dev \
+        libxext-dev \
+        libxrandr-dev \
+        libxinerama-dev \
+        libxcursor-dev \
+        libxi-dev \
+        libxfixes-dev \
+        libgl1-mesa-dev \
+        libglu1-mesa-dev \
+        pkg-config \
+ && apt-get clean \
+ && rm -rf /var/lib/apt/lists/*

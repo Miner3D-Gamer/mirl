@@ -1,0 +1,3 @@
+
+[target.x86_64-unknown-linux-gnu]
+image = "cross-x86_64-linux-x11"

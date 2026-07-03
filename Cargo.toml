@@ -1,0 +1,78 @@
+[workspace]
+members = [
+    "buffer/mirl_buffer",
+    "buffer/mirl_buffer_interpolation",
+    "codec/mirl_codec_info",
+    "codec/mirl_values",
+    "codec/mirl_values_core",
+    "deprecated/mirl_consts",
+    "deprecated/mirl_core",
+    "deprecated/mirl_crate",
+    "extensions/mirl_extensions",
+    "extensions/mirl_extensions_conversion",
+    "extensions/mirl_extensions_core",
+    "extensions/mirl_extensions_math",
+    "graphics/mirl_graphics",
+    "graphics/mirl_gui",
+    "graphics/mirl_rendering",
+    "helper/mirl_build_tools",
+    "helper/mirl_derive",
+    "math/mirl_geometry",
+    "math/mirl_geometry_core",
+    "mirl_collections",
+    "mirl_std_exposed",
+    "platform/mirl_audio",
+    "platform/mirl_input",
+    "platform/mirl_system",
+    "platform/mirl_terminal",
+    "platform/windowing/mirl_windowing",
+    "platform/windowing/mirl_windowing_console",
+    "platform/windowing/mirl_windowing_core",
+    "platform/windowing/mirl_windowing_glfw",
+    "platform/windowing/mirl_windowing_minifb",
+]
+resolver = "3"
+
+[workspace.metadata.workspaces]
+independent = true
+
+[workspace.package]
+readme = "README.md"
+repository = "https://github.com/Miner3D-Gamer/mirl"
+edition = "2024"
+license = "MIT"
+authors = ["Miner3D"]
+
+[workspace.dependencies]
+mirl_build_tools = { version = "0.0.0-alpha" }
+
+[workspace.lints.rust]
+missing_docs = { level = "warn", priority = 1 }
+missing_debug_implementations = { level = "warn", priority = 1 }
+missing_copy_implementations = { level = "warn", priority = 1 }
+trivial_casts = { level = "warn", priority = 1 }
+trivial_numeric_casts = { level = "warn", priority = 1 }
+unreachable_pub = { level = "warn", priority = 1 }
+internal_features = { level = "allow", priority = 2 }
+future_incompatible = { level = "allow", priority = 2 }          # We'll get to it when we'll to it! You implement the functionality first and I'll react accordingly
+
+[workspace.lints.clippy]
+pedantic = { level = "warn", priority = 0 }
+nursery = { level = "warn", priority = 0 }
+expect_used = { level = "warn", priority = 1 }
+todo = { level = "warn", priority = 1 }
+
+cast_precision_loss = { level = "allow", priority = 1 }
+cast_possible_truncation = { level = "allow", priority = 1 }
+cast_sign_loss = { level = "allow", priority = 1 }
+wildcard_imports = { level = "allow", priority = 1 }
+cast_possible_wrap = { level = "allow", priority = 1 }
+struct_excessive_bools = { level = "allow", priority = 1 }
+inline_always = { level = "allow", priority = 1 }
+overly_complex_bool_expr = { level = "allow", priority = 1 }
+too_many_lines = { level = "allow", priority = 1 }
+fn_params_excessive_bools = { level = "allow", priority = 1 }
+# This is an unusual one but mirl uses public underscored names for variables that would normally be private
+pub_underscore_fields = { level = "allow", priority = 1 }
+used_underscore_items = { level = "allow", priority = 1 }
+used_underscore_binding = { level = "allow", priority = 1 }

@@ -1,0 +1,1 @@
+cargo check --workspace --target thumbv7m-none-eabi --no-default-features

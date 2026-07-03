@@ -1,0 +1,357 @@
+/* ========================================
+   Base Styles
+======================================== */
+html,
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  background: #f5f5f5;
+  color: #333;
+}
+
+a {
+  text-decoration: none;
+  color: #007acc;
+  transition: color 0.3s ease;
+}
+
+a:hover,
+a:focus {
+  color: #005f99;
+}
+
+/* ========================================
+   Layout
+======================================== */
+.container {
+  width: 90%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.flex {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+/* ========================================
+   Typography
+======================================== */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: bold;
+  margin: 0.5em 0;
+}
+
+p {
+  line-height: 1.6;
+  margin-bottom: 1em;
+}
+
+strong {
+  font-weight: 700;
+}
+
+em {
+  font-style: italic;
+}
+
+/* ========================================
+   Forms
+======================================== */
+input,
+textarea,
+select,
+button {
+  padding: 0.5em;
+  border: 1px solid #ccc;
+  border-radius: 0.25em;
+  font-size: 1rem;
+}
+
+input:focus,
+textarea:focus {
+  border-color: #007acc;
+  outline: none;
+}
+
+button {
+  cursor: pointer;
+  background-color: #007acc;
+  color: #fff;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #005f99;
+}
+
+/* ========================================
+   Lists
+======================================== */
+ul,
+ol {
+  margin: 0;
+  padding-left: 2em;
+}
+
+li {
+  margin-bottom: 0.5em;
+}
+
+/* ========================================
+   Pseudo-classes & Pseudo-elements
+======================================== */
+a::after {
+  content: " ↗";
+  font-size: 0.8em;
+}
+
+p::first-letter {
+  font-size: 2em;
+  font-weight: bold;
+}
+
+li:nth-child(odd) {
+  background-color: #eee;
+}
+
+li:nth-child(even) {
+  background-color: #ddd;
+}
+
+/* ========================================
+   Animations
+======================================== */
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 1s ease forwards;
+}
+
+/* ========================================
+   Media Queries
+======================================== */
+@media (max-width: 768px) {
+  .flex {
+    flex-direction: column;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background: #222;
+    color: #eee;
+  }
+
+  a {
+    color: #66aaff;
+  }
+
+  button {
+    background-color: #66aaff;
+  }
+}
+
+/* ========================================
+   Advanced Selectors
+======================================== */
+article > section + section {
+  border-top: 1px solid #ccc;
+}
+
+ul li:first-child {
+  font-weight: bold;
+}
+
+input[type="checkbox"]:checked + label {
+  text-decoration: line-through;
+}
+
+div[class^="box-"] {
+  padding: 1em;
+  margin: 0.5em 0;
+  border-radius: 0.25em;
+}
+
+/* ========================================
+   Transforms & Filters
+======================================== */
+.rotate-45 {
+  transform: rotate(45deg);
+}
+
+.scale-110 {
+  transform: scale(1.1);
+}
+
+.blur {
+  filter: blur(2px);
+}
+
+.grayscale {
+  filter: grayscale(100%);
+}
+
+/* ========================================
+   Gradients & Shadows
+======================================== */
+.button-gradient {
+  background: linear-gradient(45deg, #007acc, #00ccff);
+  color: #fff;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.card {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 0.5em;
+  padding: 1em;
+}
+
+/* ========================================
+   Keyframe Animations with Multiple Steps
+======================================== */
+@keyframes slideBounce {
+  0% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(50px);
+  }
+  70% {
+    transform: translateX(30px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.bounce {
+  animation: slideBounce 2s infinite;
+}
+
+/* ========================================
+   Complex Media Queries
+======================================== */
+@media (min-width: 1200px) and (orientation: landscape) {
+  .container {
+    width: 80%;
+  }
+}
+
+/* ========================================
+   CSS Variables
+======================================== */
+:root {
+  --main-color: #007acc;
+  --secondary-color: #00ccff;
+  --border-radius: 0.25em;
+}
+
+.box {
+  background-color: var(--secondary-color);
+  border-radius: var(--border-radius);
+  padding: 1em;
+}
+
+/* ========================================
+   Font Faces
+======================================== */
+@font-face {
+  font-family: "MyFont";
+  src: url("myfont.woff2") format("woff2");
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* ========================================
+   Complex Selectors
+======================================== */
+.navbar ul li a.active:hover::after {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 2px;
+  background: var(--main-color);
+}
+
+section > article:first-of-type p:last-child {
+  font-style: italic;
+}
+
+/* ========================================
+   CSS Grid Areas
+======================================== */
+.grid-layout {
+  display: grid;
+  grid-template-areas:
+    "header header"
+    "sidebar main"
+    "footer footer";
+  grid-gap: 1em;
+}
+
+.header {
+  grid-area: header;
+}
+.sidebar {
+  grid-area: sidebar;
+}
+.main {
+  grid-area: main;
+}
+.footer {
+  grid-area: footer;
+}
+
+/* ========================================
+   Multi-column Layouts
+======================================== */
+.columns {
+  column-count: 3;
+  column-gap: 2em;
+}
+
+/* ========================================
+   Complex Attribute Selectors
+======================================== */
+input[name$="email"] {
+  border-color: #007acc;
+}
+
+input[name^="user"] {
+  background-color: #f0f8ff;
+}
+
+input[name*="id"] {
+  font-weight: bold;
+}
+
+/* ========================================
+   End of File
+======================================== */

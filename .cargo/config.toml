@@ -1,0 +1,30 @@
+[patch.crates-io]
+mirl = { path = "../mirl/deprecated/mirl_crate" }
+mirl_buffer = { path = "../mirl/buffer/mirl_buffer" }
+mirl_buffer_interpolation = { path = "../mirl/buffer/mirl_buffer_interpolation" }
+mirl_build_tools = { path = "../mirl/helper/mirl_build_tools" }
+mirl_codec_info = { path = "../mirl/codec/mirl_codec_info" }
+mirl_collections = { path = "../mirl/mirl_collections" }
+mirl_core = { path = "../mirl/deprecated/mirl_core" }
+mirl_derive = { path = "../mirl/helper/mirl_derive" }
+mirl_extensions = { path = "../mirl/extensions/mirl_extensions" }
+mirl_extensions_core = { path = "../mirl/extensions/mirl_extensions_core" }
+mirl_extensions_math = { path = "../mirl/extensions/mirl_extensions_math" }
+mirl_extensions_conversion = { path = "../mirl/extensions/mirl_extensions_conversion" }
+mirl_graphics = { path = "../mirl/graphics/mirl_graphics" }
+mirl_input = { path = "../mirl/platform/mirl_input" }
+mirl_geometry = { path = "../mirl/math/mirl_geometry" }
+mirl_geometry_core = { path = "../mirl/math/mirl_geometry_core" }
+mirl_system = { path = "../mirl/platform/mirl_system" }
+mirl_values = { path = "../mirl/codec/mirl_values" }
+mirl_values_core = { path = "../mirl/codec/mirl_values_core" }
+mirl_windowing = { path = "../mirl/platform/windowing/mirl_windowing" }
+mirl_windowing_core = { path = "../mirl/platform/windowing/mirl_windowing_core" }
+mirl_windowing_glfw = { path = "../mirl/platform/windowing/mirl_windowing_glfw" }
+mirl_windowing_minifb = { path = "../mirl/platform/windowing/mirl_windowing_minifb" }
+mirl_windowing_console = { path = "../mirl/platform/windowing/mirl_windowing_console" }
+mirl_terminal = { path = "../mirl/platform/mirl_terminal" }
+mirl_std_exposed = { path = "../mirl/mirl_std_exposed" }
+mirl_gui = { path = "../mirl/graphics/mirl_gui" }
+mirl_rendering = { path = "../mirl/graphics/mirl_rendering" }
+# dear_mirl_gui = { path = "../dear_mirl_gui" }
