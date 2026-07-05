@@ -1,0 +1,1073 @@
+
+Scanning C:\Users\Astro\.rustup\toolchains\nightly-x86_64-pc-windows-msvc\lib\rustlib\src\rust\library\std\src for .rs files…
+Excluding: .git, .vscode, build.rs, target
+
+  (160,409 lines)  ██████████████████░░
+  pub fn 925  priv fn 916  trait fn 683  pub impl fn 3108  priv impl fn 3289  closure fn 523  pub const 2604  priv const 149  trait const 3  pub impl const 78  priv impl const 11  closure const 424  pub type 345  priv type 23  trait type 6  priv impl type 199  closure type 153  pub struct 666  priv struct 82  priv impl struct 3  closure struct 102  pub enum 47  priv enum 21  closure enum 7  pub trait 91  priv trait 9  closure trait 5  pub static 1  priv static 41  closure static 137  impl 2492  impl impl 2  closure impl 136
+    ├── sys/  (63,493 lines)  █████████████████░░░  39.6%
+    │     pub fn 741  priv fn 297  trait fn 28  pub impl fn 2036  priv impl fn 987  closure fn 410  pub const 2593  priv const 118  trait const 3  pub impl const 56  priv impl const 11  closure const 374  pub type 161  priv type 18  trait type 2  priv impl type 57  closure type 13  pub struct 428  priv struct 44  priv impl struct 3  closure struct 40  pub enum 14  priv enum 10  closure enum 3  pub trait 23  priv trait 3  closure trait 1  priv static 35  closure static 90  impl 1016  impl impl 2  closure impl 48
+    │   ├── pal/  (15,251 lines)  ██████████████████░░  9.5%
+    │   │     pub fn 212  priv fn 62  trait fn 21  pub impl fn 168  priv impl fn 175  closure fn 210  pub const 2529  priv const 19  trait const 3  pub impl const 28  priv impl const 10  closure const 25  pub type 121  priv type 2  trait type 2  priv impl type 18  closure type 5  pub struct 140  priv struct 6  priv impl struct 1  closure struct 4  pub enum 2  closure enum 1  pub trait 17  priv trait 2  closure trait 1  priv static 12  closure static 29  impl 214  impl impl 1  closure impl 8
+    │   │   ├── windows/  (5,548 lines)  ████████████████████  3.5%
+    │   │   │     pub fn 38  priv fn 10  trait fn 5  pub impl fn 29  priv impl fn 69  closure fn 27  pub const 2408  priv const 1  trait const 3  pub impl const 22  priv impl const 7  closure const 7  pub type 78  trait type 1  priv impl type 3  closure type 2  pub struct 72  pub enum 1  pub trait 6  priv trait 1  closure trait 1  priv static 3  closure static 7  impl 79  closure impl 3
+    │   │   │   ├── c/  (3,672 lines)  ████████████████████  2.3%
+    │   │   │   │     priv fn 5  pub impl fn 1  priv impl fn 49  pub const 2398  pub type 73  pub struct 63  pub enum 1  impl 50
+    │   │   │   │   └── windows_sys.rs  (3,672 lines)  ████████████████████  2.3%  [code 100%  comm 0%  blank 0%]  priv fn 5  pub impl fn 1  priv impl fn 49  pub const 2398  pub type 73  pub struct 63  pub enum 1  impl 50
+    │   │   │   ├── api.rs  (366 lines)  ███████████████████░  0.2%  [code 60%  comm 34%  blank 6%]  pub fn 4  priv fn 1  trait fn 2  pub impl fn 4  priv impl fn 3  closure fn 1  trait const 3  pub impl const 21  priv impl const 7  closure const 4  pub struct 2  pub trait 1  priv trait 1  closure trait 1  priv static 1  impl 10  closure impl 1
+    │   │   │   ├── handle.rs  (362 lines)  █████████████████░░░  0.2%  [code 75%  comm 12%  blank 14%]  pub impl fn 17  priv impl fn 13  pub struct 1  impl 10
+    │   │   │   ├── mod.rs  (296 lines)  ██████████████████░░  0.2%  [code 63%  comm 27%  blank 10%]  pub fn 13  trait fn 2  priv impl fn 2  closure fn 1  pub struct 1  pub trait 2  impl 1
+    │   │   │   ├── compat.rs  (255 lines)  ██████████████████░░  0.2%  [code 55%  comm 36%  blank 9%]  pub fn 2  priv fn 1  pub impl fn 2  closure fn 7  closure const 3  closure type 2  pub struct 1  priv static 1  closure static 4  impl 1
+    │   │   │   ├── c.rs  (247 lines)  ██████████████████░░  0.2%  [code 75%  comm 13%  blank 12%]  pub fn 1  pub impl fn 2  closure fn 14  pub const 9  pub impl const 1  pub type 1  pub struct 3  closure static 2  impl 2
+    │   │   │   ├── time.rs  (112 lines)  █████████████████░░░  0.1%  [code 71%  comm 15%  blank 14%]  pub fn 2  pub impl fn 3  priv impl fn 1  closure fn 4  pub const 1  priv const 1  pub struct 1  closure static 1  impl 2
+    │   │   │   ├── futex.rs  (97 lines)  ██████████████████░░  0.1%  [code 85%  comm 5%  blank 10%]  pub fn 6  pub type 4  trait type 1  priv impl type 3  pub trait 2  impl 3  closure impl 2
+    │   │   │   ├── winsock.rs  (80 lines)  █████████████████░░░  0.0%  [code 70%  comm 16%  blank 14%]  pub fn 6  priv fn 1  trait fn 1  priv impl fn 1  pub trait 1  priv static 1
+    │   │   │   ├── stack_overflow.rs  (41 lines)  █████████████████░░░  0.0%  [code 66%  comm 22%  blank 12%]  pub fn 2  priv fn 1
+    │   │   │   ├── api/  (16 lines)  ██████████████████░░  0.0%
+    │   │   │   │     priv fn 1
+    │   │   │   │   └── tests.rs  (16 lines)  ██████████████████░░  0.0%  [code 88%  comm 0%  blank 12%]  priv fn 1
+    │   │   │   └── stack_overflow_uwp.rs  (4 lines)  ███████████████░░░░░  0.0%  [code 50%  comm 25%  blank 25%]  pub fn 2
+    │   │   ├── unix/  (3,064 lines)  █████████████████░░░  1.9%
+    │   │   │     pub fn 36  priv fn 8  trait fn 1  pub impl fn 38  priv impl fn 18  closure fn 59  pub const 21  priv const 1  pub impl const 6  priv impl const 3  closure const 8  pub type 12  closure type 3  pub struct 12  priv struct 2  closure struct 3  pub trait 1  priv static 4  closure static 6  impl 33  closure impl 1
+    │   │   │   ├── stack_overflow.rs  (748 lines)  ██████████████████░░  0.5%  [code 69%  comm 22%  blank 9%]  pub impl fn 1  priv impl fn 2  closure fn 33  closure const 2  closure type 3  pub struct 1  closure struct 2  closure static 4  impl 2
+    │   │   │   ├── sync/  (389 lines)  █████████████████░░░  0.2%
+    │   │   │   │     pub impl fn 15  priv impl fn 5  closure fn 1  pub impl const 3  priv impl const 2  closure const 1  pub struct 2  priv struct 1  closure struct 1  impl 16  closure impl 1
+    │   │   │   │   ├── condvar.rs  (238 lines)  ██████████████████░░  0.1%  [code 59%  comm 29%  blank 12%]  pub impl fn 9  priv impl fn 3  pub impl const 3  priv impl const 2  closure const 1  pub struct 1  closure struct 1  impl 10  closure impl 1
+    │   │   │   │   ├── mutex.rs  (135 lines)  ██████████████████░░  0.1%  [code 52%  comm 39%  blank 10%]  pub impl fn 6  priv impl fn 2  closure fn 1  pub struct 1  priv struct 1  impl 6
+    │   │   │   │   └── mod.rs  (16 lines)  █████████████████░░░  0.0%  [code 75%  comm 12%  blank 12%]
+    │   │   │   ├── mod.rs  (381 lines)  ██████████████████░░  0.2%  [code 70%  comm 22%  blank 8%]  pub fn 8  trait fn 1  priv impl fn 1  closure fn 4  closure const 4  pub trait 1  priv static 1
+    │   │   │   ├── futex.rs  (284 lines)  █████████████████░░░  0.2%  [code 76%  comm 12%  blank 11%]  pub fn 17  closure fn 2  pub type 4
+    │   │   │   ├── linux/  (267 lines)  █████████████████░░░  0.2%
+    │   │   │   │     priv fn 1  pub impl fn 7  priv impl fn 7  closure fn 1  pub struct 1  impl 6
+    │   │   │   │   ├── pidfd.rs  (154 lines)  ██████████████████░░  0.1%  [code 83%  comm 5%  blank 12%]  pub impl fn 7  priv impl fn 7  closure fn 1  pub struct 1  impl 6
+    │   │   │   │   ├── pidfd/  (112 lines)  █████████████████░░░  0.1%
+    │   │   │   │   │     priv fn 1
+    │   │   │   │   │   └── tests.rs  (112 lines)  █████████████████░░░  0.1%  [code 43%  comm 40%  blank 17%]  priv fn 1
+    │   │   │   │   └── mod.rs  (1 lines)  ████████████████████  0.0%  [code 100%  comm 0%  blank 0%]
+    │   │   │   ├── weak/  (233 lines)  ██████████████████░░  0.1%
+    │   │   │   │     priv fn 2  pub impl fn 3  priv impl fn 1  closure fn 4  pub impl const 1  closure const 1  pub struct 2  closure static 2  impl 4
+    │   │   │   │   ├── dlsym.rs  (104 lines)  ██████████████████░░  0.1%  [code 50%  comm 40%  blank 10%]  pub impl fn 1  priv impl fn 1  pub impl const 1  pub struct 1  closure static 1  impl 3
+    │   │   │   │   ├── mod.rs  (52 lines)  ██████████████████░░  0.0%  [code 40%  comm 48%  blank 12%]
+    │   │   │   │   ├── weak_linkage.rs  (32 lines)  ██████████████████░░  0.0%  [code 88%  comm 0%  blank 12%]  pub impl fn 2  pub struct 1  closure static 1  impl 1
+    │   │   │   │   ├── tests.rs  (26 lines)  ████████████████░░░░  0.0%  [code 69%  comm 12%  blank 19%]  priv fn 2  closure fn 2  closure const 1
+    │   │   │   │   └── syscall.rs  (19 lines)  ██████████████████░░  0.0%  [code 79%  comm 11%  blank 11%]  closure fn 2
+    │   │   │   ├── time.rs  (231 lines)  █████████████████░░░  0.1%  [code 76%  comm 12%  blank 12%]  pub impl fn 10  closure fn 2  pub const 2  priv const 1  pub impl const 2  priv impl const 1  pub struct 2  impl 2
+    │   │   │   ├── fuchsia.rs  (204 lines)  ████████████████░░░░  0.1%  [code 64%  comm 15%  blank 21%]  pub fn 1  pub impl fn 2  priv impl fn 1  closure fn 11  pub const 19  pub type 7  pub struct 3  impl 2
+    │   │   │   ├── stack_overflow/  (133 lines)  ██████████████████░░  0.1%
+    │   │   │   │     pub fn 3  priv fn 1  priv impl fn 1  pub struct 1  priv struct 1  priv static 3  impl 1
+    │   │   │   │   └── thread_info.rs  (133 lines)  ██████████████████░░  0.1%  [code 52%  comm 38%  blank 11%]  pub fn 3  priv fn 1  priv impl fn 1  pub struct 1  priv struct 1  priv static 3  impl 1
+    │   │   │   ├── conf.rs  (95 lines)  ███████████████████░  0.1%  [code 59%  comm 35%  blank 6%]  pub fn 3  priv fn 1  closure fn 1
+    │   │   │   ├── thread_parking.rs  (51 lines)  █████████████████░░░  0.0%  [code 71%  comm 14%  blank 16%]  pub fn 4  pub type 1
+    │   │   │   └── conf/  (48 lines)  ████████████████████  0.0%
+    │   │   │         priv fn 3
+    │   │   │       └── tests.rs  (48 lines)  ████████████████████  0.0%  [code 88%  comm 8%  blank 4%]  priv fn 3
+    │   │   ├── sgx/  (2,818 lines)  ██████████████████░░  1.8%
+    │   │   │     pub fn 43  priv fn 22  trait fn 11  pub impl fn 53  priv impl fn 52  closure fn 14  pub const 1  priv const 6  closure const 4  pub type 2  trait type 1  priv impl type 9  pub struct 17  priv struct 4  pub enum 1  closure enum 1  pub trait 7  priv trait 1  priv static 2  closure static 8  impl 64  closure impl 3
+    │   │   │   ├── abi/  (2,036 lines)  ██████████████████░░  1.3%
+    │   │   │   │     pub fn 29  priv fn 13  trait fn 10  pub impl fn 36  priv impl fn 43  closure fn 14  pub const 1  priv const 4  closure const 4  pub type 1  trait type 1  priv impl type 7  pub struct 10  priv struct 3  closure enum 1  pub trait 6  priv trait 1  priv static 2  closure static 7  impl 47  closure impl 3
+    │   │   │   │   ├── usercalls/  (1,508 lines)  ██████████████████░░  0.9%
+    │   │   │   │   │     pub fn 19  priv fn 6  trait fn 10  pub impl fn 23  priv impl fn 34  closure fn 9  closure const 1  pub type 1  trait type 1  priv impl type 6  pub struct 4  priv struct 1  closure enum 1  pub trait 6  priv trait 1  impl 40  closure impl 3
+    │   │   │   │   │   ├── alloc.rs  (837 lines)  ██████████████████░░  0.5%  [code 57%  comm 34%  blank 9%]  pub fn 2  priv fn 2  trait fn 6  pub impl fn 23  priv impl fn 18  closure fn 2  closure const 1  priv impl type 4  pub struct 4  pub trait 3  priv trait 1  impl 32
+    │   │   │   │   │   ├── mod.rs  (346 lines)  ██████████████████░░  0.2%  [code 75%  comm 16%  blank 9%]  pub fn 16  priv fn 2  trait fn 1  priv impl fn 2  closure fn 1  trait type 1  priv impl type 2  pub trait 1  impl 2
+    │   │   │   │   │   ├── raw.rs  (270 lines)  ██████████████████░░  0.2%  [code 81%  comm 11%  blank 8%]  pub fn 1  trait fn 3  priv impl fn 14  closure fn 6  pub type 1  priv struct 1  closure enum 1  pub trait 2  impl 6  closure impl 3
+    │   │   │   │   │   └── tests.rs  (55 lines)  ████████████████░░░░  0.0%  [code 67%  comm 15%  blank 18%]  priv fn 2
+    │   │   │   │   ├── tls/  (233 lines)  █████████████████░░░  0.1%
+    │   │   │   │   │     priv fn 3  pub impl fn 12  priv impl fn 6  closure fn 2  pub const 1  priv const 3  priv impl type 1  pub struct 5  priv static 2  impl 5
+    │   │   │   │   │   ├── mod.rs  (123 lines)  █████████████████░░░  0.1%  [code 80%  comm 3%  blank 16%]  pub impl fn 8  priv impl fn 4  closure fn 2  priv const 3  pub struct 3  priv static 2  impl 3
+    │   │   │   │   │   ├── sync_bitset.rs  (85 lines)  █████████████████░░░  0.1%  [code 82%  comm 5%  blank 13%]  pub impl fn 4  priv impl fn 2  pub const 1  priv impl type 1  pub struct 2  impl 2
+    │   │   │   │   │   └── sync_bitset/  (25 lines)  ██████████████████░░  0.0%
+    │   │   │   │   │         priv fn 3
+    │   │   │   │   │       └── tests.rs  (25 lines)  ██████████████████░░  0.0%  [code 88%  comm 0%  blank 12%]  priv fn 3
+    │   │   │   │   ├── mod.rs  (112 lines)  █████████████████░░░  0.1%  [code 67%  comm 19%  blank 14%]  pub fn 1  priv fn 3  closure fn 1  closure const 3  priv struct 1  closure static 1
+    │   │   │   │   ├── mem.rs  (93 lines)  ██████████████████░░  0.1%  [code 63%  comm 24%  blank 13%]  pub fn 7  closure static 3
+    │   │   │   │   ├── panic.rs  (41 lines)  █████████████████░░░  0.0%  [code 83%  comm 0%  blank 17%]  priv fn 1  pub impl fn 1  priv impl fn 3  closure fn 1  pub struct 1  closure static 1  impl 2
+    │   │   │   │   ├── reloc.rs  (32 lines)  █████████████████░░░  0.0%  [code 66%  comm 19%  blank 16%]  pub fn 1  priv const 1  priv struct 1  closure static 2
+    │   │   │   │   └── thread.rs  (17 lines)  ███████████████████░  0.0%  [code 71%  comm 24%  blank 6%]  pub fn 1  closure fn 1
+    │   │   │   ├── waitqueue/  (626 lines)  █████████████████░░░  0.4%
+    │   │   │   │     priv fn 9  pub impl fn 17  priv impl fn 9  priv impl type 2  pub struct 7  priv struct 1  pub enum 1  impl 17
+    │   │   │   │   ├── mod.rs  (242 lines)  ██████████████████░░  0.2%  [code 63%  comm 27%  blank 10%]  pub impl fn 8  priv impl fn 4  priv impl type 1  pub struct 3  priv struct 1  pub enum 1  impl 7
+    │   │   │   │   ├── unsafe_list.rs  (156 lines)  ██████████████████░░  0.1%  [code 51%  comm 40%  blank 9%]  pub impl fn 6  priv impl fn 2  pub struct 2  impl 2
+    │   │   │   │   ├── unsafe_list/  (105 lines)  ██████████████████░░  0.1%
+    │   │   │   │   │     priv fn 7
+    │   │   │   │   │   └── tests.rs  (105 lines)  ██████████████████░░  0.1%  [code 89%  comm 2%  blank 10%]  priv fn 7
+    │   │   │   │   ├── spin_mutex.rs  (80 lines)  █████████████████░░░  0.0%  [code 79%  comm 4%  blank 18%]  pub impl fn 3  priv impl fn 3  priv impl type 1  pub struct 2  impl 8
+    │   │   │   │   ├── spin_mutex/  (23 lines)  █████████████████░░░  0.0%
+    │   │   │   │   │     priv fn 1
+    │   │   │   │   │   └── tests.rs  (23 lines)  █████████████████░░░  0.0%  [code 78%  comm 4%  blank 17%]  priv fn 1
+    │   │   │   │   └── tests.rs  (20 lines)  ███████████████░░░░░  0.0%  [code 70%  comm 5%  blank 25%]  priv fn 1
+    │   │   │   ├── mod.rs  (74 lines)  █████████████████░░░  0.0%  [code 54%  comm 32%  blank 14%]  pub fn 7  trait fn 1  pub trait 1  closure static 1
+    │   │   │   ├── libunwind_integration.rs  (58 lines)  █████████████████░░░  0.0%  [code 71%  comm 14%  blank 16%]  pub fn 4  priv const 2
+    │   │   │   └── thread_parking.rs  (24 lines)  ███████████████░░░░░  0.0%  [code 75%  comm 0%  blank 25%]  pub fn 3  pub type 1
+    │   │   ├── uefi/  (1,394 lines)  █████████████████░░░  0.9%
+    │   │   │     pub fn 18  priv fn 16  pub impl fn 35  priv impl fn 17  closure fn 4  priv const 7  closure const 1  priv type 2  priv impl type 1  pub struct 9  priv static 1  closure static 4  impl 22
+    │   │   │   ├── helpers.rs  (875 lines)  █████████████████░░░  0.5%  [code 76%  comm 8%  blank 15%]  pub fn 11  priv fn 3  pub impl fn 35  priv impl fn 17  closure fn 4  priv const 1  priv type 2  priv impl type 1  pub struct 9  closure static 4  impl 22
+    │   │   │   ├── tests.rs  (255 lines)  ██████████████████░░  0.2%  [code 85%  comm 4%  blank 12%]  priv fn 12  priv const 2
+    │   │   │   ├── system_time.rs  (151 lines)  █████████████████░░░  0.1%  [code 24%  comm 62%  blank 14%]  pub fn 2  priv const 4  closure const 1
+    │   │   │   └── mod.rs  (113 lines)  █████████████████░░░  0.1%  [code 67%  comm 21%  blank 12%]  pub fn 5  priv fn 1  priv static 1
+    │   │   ├── itron/  (723 lines)  ██████████████████░░  0.5%
+    │   │   │     pub fn 19  priv fn 4  pub impl fn 11  priv impl fn 4  closure fn 28  pub const 36  priv const 1  pub type 16  pub struct 7  priv impl struct 1  impl 5  impl impl 1
+    │   │   │   ├── abi.rs  (197 lines)  ██████████████████░░  0.1%  [code 73%  comm 13%  blank 14%]  closure fn 28  pub const 36  pub type 15  pub struct 4
+    │   │   │   ├── error.rs  (163 lines)  ██████████████████░░  0.1%  [code 66%  comm 23%  blank 10%]  pub fn 7  pub impl fn 3  priv impl fn 1  pub struct 1  impl 2
+    │   │   │   ├── spin.rs  (161 lines)  █████████████████░░░  0.1%  [code 70%  comm 14%  blank 16%]  pub impl fn 8  priv impl fn 3  priv const 1  pub struct 2  priv impl struct 1  impl 3  impl impl 1
+    │   │   │   ├── time.rs  (91 lines)  █████████████████░░░  0.1%  [code 77%  comm 12%  blank 11%]  pub fn 4  priv fn 1
+    │   │   │   ├── task.rs  (41 lines)  █████████████████░░░  0.0%  [code 76%  comm 12%  blank 12%]  pub fn 5
+    │   │   │   ├── thread_parking.rs  (37 lines)  █████████████████░░░  0.0%  [code 81%  comm 5%  blank 14%]  pub fn 3  pub type 1
+    │   │   │   └── time/  (33 lines)  ██████████████████░░  0.0%
+    │   │   │         priv fn 3
+    │   │   │       └── tests.rs  (33 lines)  ██████████████████░░  0.0%  [code 91%  comm 0%  blank 9%]  priv fn 3
+    │   │   ├── solid/  (501 lines)  █████████████████░░░  0.3%
+    │   │   │     pub fn 7  pub impl fn 1  closure fn 57  pub const 61  pub type 5  pub struct 15  impl 1
+    │   │   │   ├── abi/  (396 lines)  █████████████████░░░  0.2%
+    │   │   │   │     closure fn 57  pub const 61  pub type 5  pub struct 15
+    │   │   │   │   ├── sockets.rs  (278 lines)  █████████████████░░░  0.2%  [code 83%  comm 0%  blank 16%]  closure fn 27  pub const 37  pub type 4  pub struct 13
+    │   │   │   │   ├── mod.rs  (64 lines)  ██████████████████░░  0.0%  [code 78%  comm 9%  blank 12%]  closure fn 11  pub const 13  pub struct 1
+    │   │   │   │   └── fs.rs  (54 lines)  █████████████████░░░  0.0%  [code 83%  comm 2%  blank 15%]  closure fn 19  pub const 11  pub type 1  pub struct 1
+    │   │   │   ├── error.rs  (63 lines)  ██████████████████░░  0.0%  [code 70%  comm 21%  blank 10%]  pub fn 2  pub impl fn 1  impl 1
+    │   │   │   └── mod.rs  (42 lines)  ████████████████░░░░  0.0%  [code 60%  comm 19%  blank 21%]  pub fn 5
+    │   │   ├── xous/  (422 lines)  ██████████████████░░  0.3%
+    │   │   │     pub fn 2  priv fn 2  priv impl fn 9  closure fn 3  priv const 3  priv impl type 5  pub struct 7  closure struct 1  priv static 1  closure static 2  impl 8  closure impl 1
+    │   │   │   ├── params.rs  (293 lines)  █████████████████░░░  0.2%  [code 56%  comm 30%  blank 15%]  pub fn 2  priv impl fn 8  priv const 3  priv impl type 5  pub struct 7  priv static 1  impl 8
+    │   │   │   ├── params/  (75 lines)  █████████████████░░░  0.0%
+    │   │   │   │     priv fn 2
+    │   │   │   │   └── tests.rs  (75 lines)  █████████████████░░░  0.0%  [code 76%  comm 11%  blank 13%]  priv fn 2
+    │   │   │   └── mod.rs  (54 lines)  ████████████████░░░░  0.0%  [code 81%  comm 2%  blank 17%]  priv impl fn 1  closure fn 3  closure struct 1  closure static 2  closure impl 1
+    │   │   ├── hermit/  (171 lines)  █████████████████░░░  0.1%
+    │   │   │     pub fn 11  trait fn 2  priv impl fn 4  closure fn 1  pub type 4  pub trait 1  impl 1
+    │   │   │   ├── mod.rs  (122 lines)  ████████████████░░░░  0.1%  [code 66%  comm 17%  blank 16%]  pub fn 8  trait fn 2  priv impl fn 4  closure fn 1  pub trait 1  impl 1
+    │   │   │   └── futex.rs  (49 lines)  █████████████████░░░  0.0%  [code 71%  comm 14%  blank 14%]  pub fn 3  pub type 4
+    │   │   ├── wasi/  (142 lines)  ██████████████████░░  0.1%
+    │   │   │     pub fn 6  trait fn 1  pub impl fn 1  priv impl fn 1  pub struct 1  pub trait 1  priv static 1  impl 1
+    │   │   │   ├── mod.rs  (66 lines)  █████████████████░░░  0.0%  [code 76%  comm 8%  blank 17%]  pub fn 4  trait fn 1  priv impl fn 1  pub trait 1
+    │   │   │   ├── cabi_realloc.rs  (65 lines)  ███████████████████░  0.0%  [code 58%  comm 37%  blank 5%]  pub fn 1  priv static 1
+    │   │   │   ├── stack_overflow.rs  (7 lines)  █████████████████░░░  0.0%  [code 86%  comm 0%  blank 14%]  pub impl fn 1  pub struct 1  impl 1
+    │   │   │   └── conf.rs  (4 lines)  ████████████████████  0.0%  [code 100%  comm 0%  blank 0%]  pub fn 1
+    │   │   ├── zkvm/  (90 lines)  █████████████████░░░  0.1%
+    │   │   │     pub fn 5  closure fn 15  pub const 2  closure const 4
+    │   │   │   ├── abi.rs  (55 lines)  ██████████████████░░  0.0%  [code 71%  comm 20%  blank 9%]  closure fn 15  pub const 1  closure const 4
+    │   │   │   └── mod.rs  (35 lines)  ███████████████░░░░░  0.0%  [code 40%  comm 37%  blank 23%]  pub fn 5  pub const 1
+    │   │   ├── teeos/  (87 lines)  █████████████████░░░  0.1%
+    │   │   │     pub fn 9  trait fn 1  priv impl fn 1  pub trait 1
+    │   │   │   ├── mod.rs  (82 lines)  ████████████████░░░░  0.1%  [code 66%  comm 17%  blank 17%]  pub fn 8  trait fn 1  priv impl fn 1  pub trait 1
+    │   │   │   └── conf.rs  (5 lines)  ████████████████████  0.0%  [code 60%  comm 40%  blank 0%]  pub fn 1
+    │   │   ├── wasm/  (74 lines)  █████████████████░░░  0.0%
+    │   │   │     pub fn 3  pub type 4
+    │   │   │   ├── atomics/  (48 lines)  ██████████████████░░  0.0%
+    │   │   │   │     pub fn 3  pub type 4
+    │   │   │   │   └── futex.rs  (48 lines)  ██████████████████░░  0.0%  [code 58%  comm 29%  blank 12%]  pub fn 3  pub type 4
+    │   │   │   └── mod.rs  (26 lines)  █████████████████░░░  0.0%  [code 27%  comm 62%  blank 12%]
+    │   │   ├── vexos/  (72 lines)  ████████████████░░░░  0.0%
+    │   │   │     pub fn 3  closure fn 1  closure const 1  closure static 2
+    │   │   │   └── mod.rs  (72 lines)  ████████████████░░░░  0.0%  [code 72%  comm 8%  blank 19%]  pub fn 3  closure fn 1  closure const 1  closure static 2
+    │   │   ├── mod.rs  (67 lines)  ████████████████████  0.0%  [code 93%  comm 4%  blank 3%]
+    │   │   ├── motor/  (46 lines)  ███████████████░░░░░  0.0%
+    │   │   │     pub fn 7  closure fn 1
+    │   │   │   └── mod.rs  (46 lines)  ███████████████░░░░░  0.0%  [code 59%  comm 17%  blank 24%]  pub fn 7  closure fn 1
+    │   │   ├── unsupported/  (25 lines)  ███████████████░░░░░  0.0%
+    │   │   │     pub fn 5
+    │   │   │   ├── common.rs  (21 lines)  ███████████████░░░░░  0.0%  [code 57%  comm 19%  blank 24%]  pub fn 5
+    │   │   │   └── mod.rs  (4 lines)  ███████████████░░░░░  0.0%  [code 50%  comm 25%  blank 25%]
+    │   │   └── trusty/  (7 lines)  ██████████████░░░░░░  0.0%
+    │   │       └── mod.rs  (7 lines)  ██████████████░░░░░░  0.0%  [code 57%  comm 14%  blank 29%]
+    │   ├── fs/  (8,889 lines)  █████████████████░░░  5.5%
+    │   │     pub fn 128  priv fn 19  pub impl fn 425  priv impl fn 134  closure fn 31  pub const 1  priv const 2  closure const 7  priv type 1  priv impl type 8  pub struct 72  priv struct 10  closure struct 6  pub enum 1  closure enum 1  closure static 2  impl 164  closure impl 8
+    │   │   ├── unix.rs  (2,704 lines)  ██████████████████░░  1.7%  [code 83%  comm 7%  blank 10%]  pub fn 23  priv fn 7  pub impl fn 96  priv impl fn 47  closure fn 25  closure const 1  priv impl type 1  pub struct 9  priv struct 5  closure struct 5  closure enum 1  closure static 1  impl 37  closure impl 5
+    │   │   ├── windows.rs  (1,748 lines)  ██████████████████░░  1.1%  [code 9%  comm 82%  blank 9%]  pub impl fn 3  priv impl fn 5  priv impl type 1  pub struct 9  priv struct 1  impl 9
+    │   │   ├── uefi.rs  (905 lines)  ████████████████░░░░  0.6%  [code 76%  comm 6%  blank 18%]  pub fn 14  priv fn 2  pub impl fn 61  priv impl fn 13  closure fn 5  priv const 1  closure const 1  priv impl type 1  pub struct 9  closure struct 1  impl 11  closure impl 3
+    │   │   ├── solid.rs  (624 lines)  █████████████████░░░  0.4%  [code 81%  comm 4%  blank 15%]  pub fn 15  priv fn 1  pub impl fn 53  priv impl fn 9  closure const 1  priv type 1  priv impl type 1  pub struct 9  priv struct 2  impl 14
+    │   │   ├── vexos.rs  (623 lines)  ██████████████████░░  0.4%  [code 78%  comm 9%  blank 13%]  pub fn 8  priv fn 1  pub impl fn 46  priv impl fn 4  closure fn 1  closure const 4  priv impl type 1  pub struct 6  priv struct 1  pub enum 1  impl 12
+    │   │   ├── hermit.rs  (615 lines)  █████████████████░░░  0.4%  [code 79%  comm 4%  blank 17%]  pub fn 14  pub impl fn 56  priv impl fn 16  priv impl type 1  pub struct 9  priv struct 1  impl 23
+    │   │   ├── motor.rs  (485 lines)  ████████████████░░░░  0.3%  [code 82%  comm 0%  blank 18%]  pub fn 15  pub impl fn 50  priv impl fn 11  priv impl type 1  pub struct 9  impl 18
+    │   │   ├── windows/  (369 lines)  ███████████████████░  0.2%
+    │   │   │     pub fn 1  priv fn 6  pub impl fn 3  priv impl fn 9  priv const 1  pub struct 1  closure static 1  impl 8
+    │   │   │   ├── remove_dir_all.rs  (206 lines)  ███████████████████░  0.1%  [code 63%  comm 30%  blank 7%]  pub fn 1  priv fn 5  priv const 1  closure static 1
+    │   │   │   └── dir.rs  (163 lines)  ██████████████████░░  0.1%  [code 85%  comm 6%  blank 9%]  priv fn 1  pub impl fn 3  priv impl fn 9  pub struct 1  impl 8
+    │   │   ├── unsupported.rs  (362 lines)  ███████████████░░░░░  0.2%  [code 77%  comm 0%  blank 23%]  pub fn 16  pub impl fn 50  priv impl fn 11  priv impl type 1  pub struct 9  impl 22
+    │   │   ├── unix/  (195 lines)  ██████████████████░░  0.1%
+    │   │   │     priv fn 1  pub impl fn 4  priv impl fn 8  pub struct 1  impl 8
+    │   │   │   ├── dir.rs  (124 lines)  █████████████████░░░  0.1%  [code 86%  comm 2%  blank 12%]  pub impl fn 4  priv impl fn 8  pub struct 1  impl 8
+    │   │   │   └── tests.rs  (71 lines)  ███████████████████░  0.0%  [code 59%  comm 37%  blank 4%]  priv fn 1
+    │   │   ├── mod.rs  (173 lines)  █████████████████░░░  0.1%  [code 80%  comm 5%  blank 15%]  pub fn 19
+    │   │   └── common.rs  (86 lines)  ████████████████░░░░  0.1%  [code 81%  comm 2%  blank 16%]  pub fn 3  priv fn 1  pub impl fn 3  priv impl fn 1  pub const 1  pub struct 1  impl 2
+    │   ├── net/  (7,134 lines)  █████████████████░░░  4.4%
+    │   │     pub fn 25  priv fn 26  trait fn 1  pub impl fn 654  priv impl fn 118  closure fn 12  priv const 4  closure const 6  pub type 4  priv impl type 9  closure type 3  pub struct 39  priv struct 3  closure struct 6  pub enum 1  priv enum 2  pub trait 1  impl 130
+    │   │   ├── connection/  (7,020 lines)  █████████████████░░░  4.4%
+    │   │   │     pub fn 22  priv fn 26  trait fn 1  pub impl fn 654  priv impl fn 118  closure fn 12  priv const 4  closure const 6  pub type 4  priv impl type 9  closure type 3  pub struct 39  priv struct 3  closure struct 6  pub enum 1  priv enum 2  pub trait 1  impl 130
+    │   │   │   ├── socket/  (2,887 lines)  █████████████████░░░  1.8%
+    │   │   │   │     pub fn 14  priv fn 19  trait fn 1  pub impl fn 206  priv impl fn 45  closure fn 7  closure const 6  pub type 4  priv impl type 1  closure type 3  pub struct 8  closure struct 6  pub trait 1  impl 45
+    │   │   │   │   ├── mod.rs  (895 lines)  █████████████████░░░  0.6%  [code 76%  comm 9%  blank 15%]  pub fn 3  priv fn 14  pub impl fn 75  priv impl fn 10  closure fn 4  closure const 1  priv impl type 1  closure type 2  pub struct 4  impl 15
+    │   │   │   │   ├── unix.rs  (705 lines)  █████████████████░░░  0.4%  [code 80%  comm 7%  blank 13%]  pub fn 2  priv fn 2  pub impl fn 50  priv impl fn 9  closure const 3  pub type 1  pub struct 1  impl 8
+    │   │   │   │   ├── windows.rs  (511 lines)  █████████████████░░░  0.3%  [code 82%  comm 3%  blank 15%]  pub impl fn 27  priv impl fn 10  closure fn 3  closure const 2  pub type 1  closure type 1  pub struct 1  closure struct 6  impl 9
+    │   │   │   │   ├── solid.rs  (411 lines)  █████████████████░░░  0.3%  [code 83%  comm 1%  blank 15%]  pub fn 7  priv fn 2  trait fn 1  pub impl fn 26  priv impl fn 9  pub type 1  pub struct 1  pub trait 1  impl 7
+    │   │   │   │   ├── hermit.rs  (346 lines)  ████████████████░░░░  0.2%  [code 82%  comm 1%  blank 17%]  pub fn 2  pub impl fn 28  priv impl fn 7  pub type 1  pub struct 1  impl 6
+    │   │   │   │   └── tests.rs  (19 lines)  ███████████████████░  0.0%  [code 95%  comm 0%  blank 5%]  priv fn 1
+    │   │   │   ├── xous/  (1,283 lines)  ██████████████████░░  0.8%
+    │   │   │   │     pub fn 1  priv fn 1  pub impl fn 70  priv impl fn 10  closure fn 2  priv impl type 1  pub struct 6  priv struct 3  priv enum 2  impl 10
+    │   │   │   │   ├── udp.rs  (464 lines)  ██████████████████░░  0.3%  [code 83%  comm 6%  blank 10%]  pub impl fn 31  priv impl fn 3  closure fn 1  pub struct 1  impl 3
+    │   │   │   │   ├── tcpstream.rs  (438 lines)  ██████████████████░░  0.3%  [code 84%  comm 5%  blank 11%]  priv fn 1  pub impl fn 29  priv impl fn 3  pub struct 1  priv enum 1  impl 3
+    │   │   │   │   ├── tcplistener.rs  (246 lines)  ███████████████████░  0.2%  [code 83%  comm 8%  blank 10%]  pub impl fn 10  priv impl fn 3  closure fn 1  pub struct 1  impl 3
+    │   │   │   │   ├── dns.rs  (87 lines)  ██████████████████░░  0.1%  [code 90%  comm 2%  blank 8%]  pub fn 1  priv impl fn 1  priv impl type 1  pub struct 1  priv struct 1  impl 1
+    │   │   │   │   └── mod.rs  (48 lines)  ████████████████░░░░  0.0%  [code 71%  comm 10%  blank 19%]  pub struct 2  priv struct 2  priv enum 1
+    │   │   │   ├── uefi/  (883 lines)  █████████████████░░░  0.6%
+    │   │   │   │     pub fn 1  priv fn 1  pub impl fn 90  priv impl fn 12  closure fn 2  priv const 3  priv impl type 1  pub struct 5  pub enum 1  impl 11
+    │   │   │   │   ├── tcp4.rs  (407 lines)  █████████████████░░░  0.3%  [code 77%  comm 8%  blank 15%]  priv fn 1  pub impl fn 10  priv impl fn 7  priv const 3  pub struct 1  impl 2
+    │   │   │   │   ├── mod.rs  (358 lines)  ███████████████░░░░░  0.2%  [code 77%  comm 0%  blank 23%]  pub fn 1  pub impl fn 69  priv impl fn 5  closure fn 2  priv impl type 1  pub struct 4  impl 7
+    │   │   │   │   └── tcp.rs  (118 lines)  ██████████████████░░  0.1%  [code 86%  comm 3%  blank 11%]  pub impl fn 11  pub enum 1  impl 2
+    │   │   │   ├── sgx.rs  (536 lines)  ████████████████░░░░  0.3%  [code 76%  comm 4%  blank 20%]  pub fn 2  priv fn 2  pub impl fn 69  priv impl fn 15  closure fn 1  priv const 1  priv impl type 1  pub struct 6  impl 19
+    │   │   │   ├── motor.rs  (529 lines)  ████████████████░░░░  0.3%  [code 80%  comm 1%  blank 19%]  pub fn 1  priv fn 2  pub impl fn 75  priv impl fn 14  priv impl type 3  pub struct 5  impl 17
+    │   │   │   ├── wasip1.rs  (498 lines)  ████████████████░░░░  0.3%  [code 78%  comm 1%  blank 22%]  pub fn 1  pub impl fn 75  priv impl fn 18  priv impl type 1  pub struct 5  impl 21
+    │   │   │   ├── unsupported.rs  (324 lines)  ███████████████░░░░░  0.2%  [code 76%  comm 0%  blank 24%]  pub fn 1  pub impl fn 69  priv impl fn 4  priv impl type 1  pub struct 4  impl 7
+    │   │   │   └── mod.rs  (80 lines)  ███████████████████░  0.0%  [code 88%  comm 5%  blank 8%]  pub fn 1  priv fn 1
+    │   │   ├── hostname/  (107 lines)  ███████████████████░  0.1%
+    │   │   │     pub fn 3
+    │   │   │   ├── unix.rs  (62 lines)  ███████████████████░  0.0%  [code 42%  comm 53%  blank 5%]  pub fn 1
+    │   │   │   ├── windows.rs  (24 lines)  ███████████████████░  0.0%  [code 58%  comm 33%  blank 8%]  pub fn 1
+    │   │   │   ├── mod.rs  (15 lines)  ████████████████████  0.0%  [code 93%  comm 7%  blank 0%]
+    │   │   │   └── unsupported.rs  (6 lines)  █████████████████░░░  0.0%  [code 83%  comm 0%  blank 17%]  pub fn 1
+    │   │   └── mod.rs  (7 lines)  █████████████████░░░  0.0%  [code 57%  comm 29%  blank 14%]
+    │   ├── process/  (6,954 lines)  █████████████████░░░  4.3%
+    │   │     pub fn 17  priv fn 30  pub impl fn 252  priv impl fn 167  closure fn 15  pub impl const 10  priv impl const 1  closure const 19  pub type 4  priv impl type 9  closure type 1  pub struct 48  priv struct 1  priv impl struct 1  closure struct 7  pub enum 7  priv enum 1  closure static 4  impl 150  closure impl 11
+    │   │   ├── unix/  (3,284 lines)  ██████████████████░░  2.0%
+    │   │   │     pub fn 4  priv fn 13  pub impl fn 115  priv impl fn 53  closure fn 11  pub impl const 2  priv impl const 1  closure const 13  pub type 1  priv impl type 3  closure type 1  pub struct 18  closure struct 3  pub enum 3  closure static 2  impl 53  closure impl 4
+    │   │   │   ├── unix.rs  (1,313 lines)  ██████████████████░░  0.8%  [code 74%  comm 15%  blank 11%]  priv fn 1  pub impl fn 18  priv impl fn 22  closure fn 7  priv impl const 1  closure const 9  closure type 1  pub struct 3  closure struct 3  closure static 2  impl 9  closure impl 4
+    │   │   │   ├── common.rs  (693 lines)  ██████████████████░░  0.4%  [code 79%  comm 8%  blank 13%]  pub fn 3  priv fn 2  pub impl fn 43  priv impl fn 13  closure fn 3  pub impl const 2  closure const 4  pub type 1  priv impl type 1  pub struct 4  pub enum 3  impl 15
+    │   │   │   ├── common/  (367 lines)  ██████████████████░░  0.2%
+    │   │   │   │     priv fn 7  pub impl fn 5  priv impl fn 7  closure fn 1  priv impl type 2  pub struct 2  impl 8
+    │   │   │   │   ├── tests.rs  (250 lines)  ██████████████████░░  0.2%  [code 74%  comm 15%  blank 12%]  priv fn 7  closure fn 1
+    │   │   │   │   └── cstring_array.rs  (117 lines)  █████████████████░░░  0.1%  [code 62%  comm 26%  blank 12%]  pub impl fn 5  priv impl fn 7  priv impl type 2  pub struct 2  impl 8
+    │   │   │   ├── fuchsia.rs  (324 lines)  █████████████████░░░  0.2%  [code 72%  comm 16%  blank 13%]  pub impl fn 16  priv impl fn 4  pub struct 3  impl 7
+    │   │   │   ├── vxworks.rs  (281 lines)  ██████████████████░░  0.2%  [code 78%  comm 9%  blank 14%]  pub impl fn 17  priv impl fn 4  pub struct 3  impl 7
+    │   │   │   ├── unsupported/  (120 lines)  █████████████████░░░  0.1%
+    │   │   │   │     priv fn 1  pub impl fn 7  priv impl fn 2  pub struct 1  impl 3
+    │   │   │   │   ├── wait_status.rs  (84 lines)  █████████████████░░░  0.1%  [code 58%  comm 27%  blank 14%]  pub impl fn 7  priv impl fn 2  pub struct 1  impl 3
+    │   │   │   │   └── wait_status/  (36 lines)  ██████████████████░░  0.0%
+    │   │   │   │         priv fn 1
+    │   │   │   │       └── tests.rs  (36 lines)  ██████████████████░░  0.0%  [code 69%  comm 22%  blank 8%]  priv fn 1
+    │   │   │   ├── unsupported.rs  (81 lines)  ███████████████░░░░░  0.1%  [code 72%  comm 7%  blank 21%]  pub fn 1  pub impl fn 9  priv impl fn 1  pub struct 2  impl 4
+    │   │   │   ├── unix/  (76 lines)  █████████████████░░░  0.0%
+    │   │   │   │     priv fn 2
+    │   │   │   │   └── tests.rs  (76 lines)  █████████████████░░░  0.0%  [code 72%  comm 14%  blank 13%]  priv fn 2
+    │   │   │   └── mod.rs  (29 lines)  ██████████████████░░  0.0%  [code 90%  comm 0%  blank 10%]
+    │   │   ├── windows.rs  (986 lines)  ██████████████████░░  0.6%  [code 76%  comm 13%  blank 11%]  pub fn 1  priv fn 9  pub impl fn 34  priv impl fn 27  pub impl const 2  priv impl type 1  pub struct 7  pub enum 1  closure static 1  impl 30
+    │   │   ├── uefi.rs  (940 lines)  █████████████████░░░  0.6%  [code 82%  comm 3%  blank 15%]  pub fn 3  priv fn 2  pub impl fn 37  priv impl fn 37  closure fn 1  pub impl const 2  closure const 4  pub type 1  priv impl type 1  pub struct 6  closure struct 3  pub enum 1  impl 17  closure impl 6
+    │   │   ├── windows/  (834 lines)  ██████████████████░░  0.5%
+    │   │   │     pub fn 3  priv fn 6  pub impl fn 11  priv impl fn 10  closure fn 3  closure const 2  pub struct 2  priv struct 1  priv impl struct 1  closure struct 1  priv enum 1  closure static 1  impl 5  closure impl 1
+    │   │   │   ├── child_pipe.rs  (574 lines)  ███████████████████░  0.4%  [code 59%  comm 33%  blank 8%]  pub fn 3  pub impl fn 11  priv impl fn 9  closure const 1  pub struct 2  priv struct 1  priv impl struct 1  priv enum 1  closure static 1  impl 5
+    │   │   │   └── tests.rs  (260 lines)  ██████████████████░░  0.2%  [code 79%  comm 11%  blank 10%]  priv fn 6  priv impl fn 1  closure fn 3  closure const 1  closure struct 1  closure impl 1
+    │   │   ├── motor.rs  (337 lines)  █████████████████░░░  0.2%  [code 85%  comm 0%  blank 15%]  pub fn 2  pub impl fn 23  priv impl fn 16  pub impl const 2  pub type 1  priv impl type 1  pub struct 6  pub enum 1  impl 18
+    │   │   ├── unsupported.rs  (337 lines)  ████████████████░░░░  0.2%  [code 81%  comm 2%  blank 17%]  pub fn 3  pub impl fn 22  priv impl fn 16  pub impl const 2  pub type 1  priv impl type 1  pub struct 6  pub enum 1  impl 21
+    │   │   ├── env.rs  (146 lines)  █████████████████░░░  0.1%  [code 79%  comm 5%  blank 15%]  pub impl fn 10  priv impl fn 8  priv impl type 2  pub struct 3  impl 6
+    │   │   └── mod.rs  (90 lines)  ██████████████████░░  0.1%  [code 91%  comm 2%  blank 7%]  pub fn 1
+    │   ├── sync/  (4,498 lines)  █████████████████░░░  2.8%
+    │   │     pub fn 5  priv fn 21  pub impl fn 162  priv impl fn 55  closure fn 9  priv const 54  closure const 1  priv type 9  pub struct 33  priv struct 7  closure struct 3  priv enum 1  closure static 1  impl 69  closure impl 6
+    │   │   ├── rwlock/  (1,292 lines)  ██████████████████░░  0.8%
+    │   │   │     priv fn 13  pub impl fn 32  priv impl fn 22  priv const 16  priv type 2  pub struct 4  priv struct 3  impl 12
+    │   │   │   ├── queue.rs  (724 lines)  ███████████████████░  0.5%  [code 48%  comm 43%  blank 10%]  priv fn 5  pub impl fn 8  priv impl fn 13  priv const 9  priv type 2  pub struct 1  priv struct 3  impl 4
+    │   │   │   ├── futex.rs  (359 lines)  ██████████████████░░  0.2%  [code 63%  comm 24%  blank 13%]  priv fn 7  pub impl fn 8  priv impl fn 7  priv const 7  pub struct 1  impl 1
+    │   │   │   ├── solid.rs  (97 lines)  █████████████████░░░  0.1%  [code 78%  comm 7%  blank 14%]  priv fn 1  pub impl fn 8  priv impl fn 2  pub struct 1  impl 4
+    │   │   │   ├── no_threads.rs  (77 lines)  █████████████████░░░  0.0%  [code 86%  comm 1%  blank 13%]  pub impl fn 8  pub struct 1  impl 3
+    │   │   │   └── mod.rs  (35 lines)  ████████████████████  0.0%  [code 100%  comm 0%  blank 0%]
+    │   │   ├── thread_parking/  (943 lines)  ██████████████████░░  0.6%
+    │   │   │     pub impl fn 29  priv impl fn 7  closure fn 9  priv const 20  closure const 1  priv type 4  pub struct 7  closure static 1  impl 13
+    │   │   │   ├── windows7.rs  (277 lines)  ███████████████████░  0.2%  [code 44%  comm 49%  blank 8%]  pub impl fn 4  priv impl fn 1  closure fn 4  priv const 3  closure const 1  pub struct 1  closure static 1  impl 1
+    │   │   │   ├── pthread.rs  (165 lines)  ██████████████████░░  0.1%  [code 59%  comm 28%  blank 13%]  pub impl fn 4  priv impl fn 2  priv const 3  pub struct 1  impl 1
+    │   │   │   ├── darwin.rs  (130 lines)  █████████████████░░░  0.1%  [code 53%  comm 31%  blank 16%]  pub impl fn 4  priv impl fn 1  closure fn 5  priv const 5  priv type 2  pub struct 1  impl 4
+    │   │   │   ├── xous.rs  (110 lines)  ██████████████████░░  0.1%  [code 65%  comm 23%  blank 13%]  pub impl fn 4  priv impl fn 2  priv const 3  pub struct 1  impl 2
+    │   │   │   ├── id.rs  (101 lines)  ██████████████████░░  0.1%  [code 53%  comm 35%  blank 12%]  pub impl fn 5  priv impl fn 1  priv const 3  pub struct 1  impl 3
+    │   │   │   ├── futex.rs  (100 lines)  ███████████████████░  0.1%  [code 44%  comm 49%  blank 7%]  pub impl fn 4  priv const 3  priv type 2  pub struct 1  impl 1
+    │   │   │   ├── mod.rs  (49 lines)  ████████████████████  0.0%  [code 98%  comm 2%  blank 0%]
+    │   │   │   └── unsupported.rs  (11 lines)  ████████████████░░░░  0.0%  [code 82%  comm 0%  blank 18%]  pub impl fn 4  pub struct 1  impl 1
+    │   │   ├── condvar/  (753 lines)  █████████████████░░░  0.5%
+    │   │   │     pub impl fn 41  priv impl fn 8  priv const 1  pub struct 7  closure struct 3  impl 14  closure impl 6
+    │   │   │   ├── itron.rs  (299 lines)  █████████████████░░░  0.2%  [code 69%  comm 16%  blank 15%]  pub impl fn 11  pub struct 1  closure struct 3  impl 3  closure impl 6
+    │   │   │   ├── xous.rs  (148 lines)  █████████████████░░░  0.1%  [code 66%  comm 20%  blank 15%]  pub impl fn 5  priv impl fn 4  priv const 1  pub struct 1  impl 4
+    │   │   │   ├── pthread.rs  (88 lines)  ██████████████████░░  0.1%  [code 66%  comm 23%  blank 11%]  pub impl fn 5  priv impl fn 2  pub struct 1  impl 1
+    │   │   │   ├── futex.rs  (56 lines)  ████████████████░░░░  0.0%  [code 61%  comm 18%  blank 21%]  pub impl fn 5  priv impl fn 1  pub struct 1  impl 1
+    │   │   │   ├── windows7.rs  (49 lines)  █████████████████░░░  0.0%  [code 86%  comm 0%  blank 14%]  pub impl fn 5  pub struct 1  impl 3
+    │   │   │   ├── mod.rs  (44 lines)  ████████████████████  0.0%  [code 100%  comm 0%  blank 0%]
+    │   │   │   ├── sgx.rs  (42 lines)  ████████████████░░░░  0.0%  [code 81%  comm 2%  blank 17%]  pub impl fn 5  priv impl fn 1  pub struct 1  impl 1
+    │   │   │   └── no_threads.rs  (27 lines)  ████████████████░░░░  0.0%  [code 78%  comm 0%  blank 22%]  pub impl fn 5  pub struct 1  impl 1
+    │   │   ├── once/  (709 lines)  ███████████████████░  0.4%
+    │   │   │     pub fn 4  priv fn 3  pub impl fn 23  priv impl fn 4  priv const 12  priv type 1  pub struct 6  priv struct 4  priv enum 1  impl 11
+    │   │   │   ├── queue.rs  (339 lines)  ██████████████████░░  0.2%  [code 56%  comm 35%  blank 9%]  pub fn 2  priv fn 3  pub impl fn 7  priv impl fn 2  priv const 6  priv type 1  pub struct 2  priv struct 2  impl 4
+    │   │   │   ├── futex.rs  (211 lines)  ██████████████████░░  0.1%  [code 75%  comm 14%  blank 11%]  pub fn 2  pub impl fn 7  priv impl fn 1  priv const 6  pub struct 2  priv struct 1  impl 3
+    │   │   │   ├── no_threads.rs  (119 lines)  ██████████████████░░  0.1%  [code 84%  comm 3%  blank 13%]  pub impl fn 9  priv impl fn 1  pub struct 2  priv struct 1  priv enum 1  impl 4
+    │   │   │   └── mod.rs  (40 lines)  ████████████████████  0.0%  [code 78%  comm 20%  blank 2%]
+    │   │   ├── mutex/  (704 lines)  █████████████████░░░  0.4%
+    │   │   │     pub fn 1  priv fn 5  pub impl fn 33  priv impl fn 12  priv const 5  priv type 2  pub struct 8  impl 15
+    │   │   │   ├── fuchsia.rs  (162 lines)  ███████████████████░  0.1%  [code 59%  comm 33%  blank 9%]  priv fn 4  pub impl fn 4  priv impl fn 2  priv const 2  pub struct 1  impl 1
+    │   │   │   ├── xous.rs  (110 lines)  █████████████████░░░  0.1%  [code 57%  comm 29%  blank 14%]  pub impl fn 5  priv impl fn 2  pub struct 1  impl 2
+    │   │   │   ├── futex.rs  (103 lines)  █████████████████░░░  0.1%  [code 65%  comm 19%  blank 16%]  pub impl fn 4  priv impl fn 3  priv const 3  priv type 2  pub struct 1  impl 1
+    │   │   │   ├── pthread.rs  (72 lines)  ██████████████████░░  0.0%  [code 65%  comm 24%  blank 11%]  pub impl fn 4  priv impl fn 2  pub struct 1  impl 2
+    │   │   │   ├── itron.rs  (68 lines)  █████████████████░░░  0.0%  [code 75%  comm 12%  blank 13%]  priv fn 1  pub impl fn 4  priv impl fn 2  pub struct 1  impl 2
+    │   │   │   ├── sgx.rs  (57 lines)  ██████████████████░░  0.0%  [code 70%  comm 19%  blank 11%]  pub impl fn 4  priv impl fn 1  pub struct 1  impl 1
+    │   │   │   ├── windows7.rs  (54 lines)  █████████████████░░░  0.0%  [code 57%  comm 28%  blank 15%]  pub fn 1  pub impl fn 4  pub struct 1  impl 3
+    │   │   │   ├── mod.rs  (47 lines)  ████████████████████  0.0%  [code 100%  comm 0%  blank 0%]
+    │   │   │   └── no_threads.rs  (31 lines)  ████████████████░░░░  0.0%  [code 77%  comm 3%  blank 19%]  pub impl fn 4  pub struct 1  impl 3
+    │   │   ├── once_box.rs  (83 lines)  ██████████████████░░  0.1%  [code 59%  comm 29%  blank 12%]  pub impl fn 4  priv impl fn 2  pub struct 1  impl 4
+    │   │   └── mod.rs  (14 lines)  ███████████████████░  0.0%  [code 93%  comm 0%  blank 7%]
+    │   ├── thread/  (2,359 lines)  ██████████████████░░  1.5%
+    │   │     pub fn 50  priv fn 8  pub impl fn 28  priv impl fn 4  closure fn 20  pub const 13  priv const 7  closure const 5  pub type 1  closure type 1  pub struct 9  priv struct 1  closure struct 4  closure enum 1  closure static 2  impl 23  closure impl 4
+    │   │   ├── unix.rs  (1,036 lines)  ██████████████████░░  0.6%  [code 73%  comm 16%  blank 11%]  pub fn 16  priv fn 4  pub impl fn 4  priv impl fn 1  closure fn 10  pub const 4  closure const 5  pub struct 1  closure enum 1  closure static 1  impl 4
+    │   │   ├── solid.rs  (346 lines)  ██████████████████░░  0.2%  [code 41%  comm 48%  blank 11%]  pub fn 2  priv fn 2  pub impl fn 2  priv impl fn 1  closure fn 1  pub const 1  priv const 6  pub struct 1  priv struct 1  impl 5
+    │   │   ├── windows.rs  (155 lines)  ██████████████████░░  0.1%  [code 68%  comm 20%  blank 12%]  pub fn 6  pub impl fn 4  closure fn 2  pub const 1  pub struct 1  impl 1
+    │   │   ├── mod.rs  (154 lines)  ███████████████████░  0.1%  [code 85%  comm 12%  blank 3%]  pub fn 1
+    │   │   ├── xous.rs  (144 lines)  █████████████████░░░  0.1%  [code 72%  comm 15%  blank 13%]  pub fn 3  pub impl fn 2  closure fn 2  pub const 2  priv const 1  pub struct 1  impl 1
+    │   │   ├── sgx.rs  (130 lines)  ████████████████░░░░  0.1%  [code 69%  comm 12%  blank 19%]  pub fn 3  pub impl fn 7  priv impl fn 1  closure fn 2  pub const 1  closure type 1  pub struct 1  closure struct 4  closure static 1  impl 1  closure impl 4
+    │   │   ├── teeos.rs  (119 lines)  █████████████████░░░  0.1%  [code 71%  comm 15%  blank 13%]  pub fn 2  priv fn 1  pub impl fn 3  priv impl fn 1  closure fn 1  pub const 1  pub struct 1  impl 4
+    │   │   ├── hermit.rs  (92 lines)  █████████████████░░░  0.1%  [code 52%  comm 33%  blank 15%]  pub impl fn 2  closure fn 1  pub const 1  pub type 1  pub struct 1  impl 3
+    │   │   ├── motor.rs  (68 lines)  ████████████████░░░░  0.0%  [code 82%  comm 0%  blank 18%]  pub fn 6  pub impl fn 2  closure fn 1  pub const 1  pub struct 1  impl 3
+    │   │   ├── unsupported.rs  (46 lines)  ████████████████░░░░  0.0%  [code 70%  comm 9%  blank 22%]  pub fn 5  priv fn 1  pub impl fn 2  pub const 1  pub struct 1  impl 1
+    │   │   ├── uefi.rs  (25 lines)  ██████████████████░░  0.0%  [code 80%  comm 8%  blank 12%]  pub fn 2
+    │   │   ├── wasm.rs  (23 lines)  ██████████████████░░  0.0%  [code 70%  comm 22%  blank 9%]  pub fn 1
+    │   │   └── vexos.rs  (21 lines)  ████████████████░░░░  0.0%  [code 81%  comm 0%  blank 19%]  pub fn 3
+    │   ├── io/  (2,140 lines)  ██████████████████░░  1.3%
+    │   │     pub fn 56  priv fn 11  trait fn 1  priv impl fn 5  closure fn 2  pub const 1  closure const 8  priv struct 2  closure struct 1  pub enum 1  priv enum 2  priv trait 1  closure static 4  impl 3
+    │   │   ├── kernel_copy/  (1,137 lines)  █████████████████░░░  0.7%
+    │   │   │     pub fn 1  priv fn 8  trait fn 1  priv impl fn 5  closure fn 1  closure const 5  priv struct 2  pub enum 1  priv enum 2  priv trait 1  impl 3
+    │   │   │   ├── linux.rs  (800 lines)  ██████████████████░░  0.5%  [code 19%  comm 69%  blank 12%]  pub fn 1  priv fn 1  trait fn 1  priv impl fn 5  priv struct 2  priv enum 2  priv trait 1  impl 3
+    │   │   │   ├── linux/  (314 lines)  ██████████████████░░  0.2%
+    │   │   │   │     priv fn 7  closure const 5
+    │   │   │   │   └── tests.rs  (314 lines)  ██████████████████░░  0.2%  [code 78%  comm 8%  blank 15%]  priv fn 7  closure const 5
+    │   │   │   └── mod.rs  (23 lines)  ██████████████████░░  0.0%  [code 91%  comm 0%  blank 9%]  closure fn 1  pub enum 1
+    │   │   ├── error/  (862 lines)  ██████████████████░░  0.5%
+    │   │   │     pub fn 50  priv fn 1  closure fn 1  closure const 3  closure static 4
+    │   │   │   ├── unix.rs  (186 lines)  ██████████████████░░  0.1%  [code 84%  comm 5%  blank 11%]  pub fn 9  closure fn 1  closure const 1  closure static 3
+    │   │   │   ├── windows.rs  (147 lines)  ██████████████████░░  0.1%  [code 84%  comm 7%  blank 9%]  pub fn 4  closure const 1
+    │   │   │   ├── uefi.rs  (104 lines)  ███████████████████░  0.1%  [code 93%  comm 2%  blank 5%]  pub fn 4
+    │   │   │   ├── wasi.rs  (80 lines)  ██████████████████░░  0.0%  [code 90%  comm 0%  blank 10%]  pub fn 5  closure static 1
+    │   │   │   ├── motor.rs  (66 lines)  ██████████████████░░  0.0%  [code 64%  comm 27%  blank 9%]  pub fn 4
+    │   │   │   ├── sgx.rs  (65 lines)  ██████████████████░░  0.0%  [code 91%  comm 2%  blank 8%]  pub fn 4
+    │   │   │   ├── teeos.rs  (64 lines)  ██████████████████░░  0.0%  [code 83%  comm 6%  blank 11%]  pub fn 4
+    │   │   │   ├── mod.rs  (51 lines)  ████████████████████  0.0%  [code 100%  comm 0%  blank 0%]
+    │   │   │   ├── hermit.rs  (35 lines)  ██████████████████░░  0.0%  [code 89%  comm 0%  blank 11%]  pub fn 4
+    │   │   │   ├── solid.rs  (19 lines)  ████████████████░░░░  0.0%  [code 79%  comm 0%  blank 21%]  pub fn 4
+    │   │   │   ├── xous.rs  (17 lines)  ███████████████░░░░░  0.0%  [code 76%  comm 0%  blank 24%]  pub fn 4
+    │   │   │   ├── generic.rs  (15 lines)  ████████████████░░░░  0.0%  [code 80%  comm 0%  blank 20%]  pub fn 4
+    │   │   │   └── windows/  (13 lines)  ███████████████████░  0.0%
+    │   │   │         priv fn 1  closure const 1
+    │   │   │       └── tests.rs  (13 lines)  ███████████████████░  0.0%  [code 85%  comm 8%  blank 8%]  priv fn 1  closure const 1
+    │   │   ├── is_terminal/  (91 lines)  ██████████████████░░  0.1%
+    │   │   │     pub fn 5  priv fn 2  closure struct 1
+    │   │   │   ├── windows.rs  (70 lines)  ██████████████████░░  0.0%  [code 69%  comm 21%  blank 10%]  pub fn 1  priv fn 2  closure struct 1
+    │   │   │   ├── hermit.rs  (6 lines)  █████████████████░░░  0.0%  [code 83%  comm 0%  blank 17%]  pub fn 1
+    │   │   │   ├── isatty.rs  (6 lines)  █████████████████░░░  0.0%  [code 83%  comm 0%  blank 17%]  pub fn 1
+    │   │   │   ├── motor.rs  (6 lines)  █████████████████░░░  0.0%  [code 83%  comm 0%  blank 17%]  pub fn 1
+    │   │   │   └── unsupported.rs  (3 lines)  ████████████████████  0.0%  [code 100%  comm 0%  blank 0%]  pub fn 1
+    │   │   └── mod.rs  (50 lines)  ██████████████████░░  0.0%  [code 84%  comm 6%  blank 10%]  pub const 1
+    │   ├── thread_local/  (2,058 lines)  ██████████████████░░  1.3%
+    │   │     pub fn 25  priv fn 16  trait fn 1  pub impl fn 21  priv impl fn 17  closure fn 17  priv const 3  closure const 4  pub type 6  priv type 1  priv impl type 1  closure type 1  pub struct 10  priv struct 4  priv impl struct 1  closure struct 1  priv enum 3  pub trait 1  priv static 7  closure static 20  impl 22  impl impl 1
+    │   │   ├── key/  (640 lines)  ██████████████████░░  0.4%
+    │   │   │     pub fn 16  priv fn 7  pub impl fn 4  priv impl fn 2  closure fn 5  priv const 3  pub type 5  priv type 1  closure type 1  pub struct 2  priv struct 1  priv static 3  closure static 5  impl 4
+    │   │   │   ├── xous.rs  (223 lines)  █████████████████░░░  0.1%  [code 61%  comm 26%  blank 13%]  pub fn 5  priv fn 4  priv const 1  pub type 2  priv struct 1  priv static 2  closure static 2
+    │   │   │   ├── windows.rs  (201 lines)  ██████████████████░░  0.1%  [code 60%  comm 28%  blank 12%]  pub fn 3  priv fn 1  pub impl fn 2  priv impl fn 1  pub type 1  priv type 1  pub struct 1  priv static 1  impl 3
+    │   │   │   ├── racy.rs  (81 lines)  ██████████████████░░  0.1%  [code 57%  comm 36%  blank 7%]  pub impl fn 2  priv impl fn 1  priv const 2  pub struct 1  impl 1
+    │   │   │   ├── tests.rs  (62 lines)  ████████████████░░░░  0.0%  [code 81%  comm 2%  blank 18%]  priv fn 2  closure fn 1  closure static 3
+    │   │   │   ├── unix.rs  (50 lines)  ████████████████░░░░  0.0%  [code 82%  comm 2%  blank 16%]  pub fn 4  closure fn 4  pub type 1  closure type 1
+    │   │   │   └── sgx.rs  (23 lines)  ████████████████░░░░  0.0%  [code 78%  comm 0%  blank 22%]  pub fn 4  pub type 1
+    │   │   ├── guard/  (341 lines)  █████████████████░░░  0.2%
+    │   │   │     pub fn 5  priv fn 5  priv impl fn 3  closure fn 5  closure const 2  pub type 1  priv struct 1  priv static 3  closure static 5  impl 2
+    │   │   │   ├── windows.rs  (222 lines)  █████████████████░░░  0.1%  [code 51%  comm 33%  blank 15%]  pub fn 1  priv fn 5  priv impl fn 3  pub type 1  priv struct 1  priv static 3  closure static 1  impl 2
+    │   │   │   ├── key.rs  (60 lines)  █████████████████░░░  0.0%  [code 52%  comm 33%  blank 15%]  pub fn 2  closure fn 2  closure const 2  closure static 2
+    │   │   │   ├── apple.rs  (32 lines)  █████████████████░░░  0.0%  [code 66%  comm 19%  blank 16%]  pub fn 1  closure fn 2  closure static 1
+    │   │   │   └── solid.rs  (27 lines)  █████████████████░░░  0.0%  [code 67%  comm 19%  blank 15%]  pub fn 1  closure fn 1  closure static 1
+    │   │   ├── native/  (338 lines)  ██████████████████░░  0.2%
+    │   │   │     priv fn 2  trait fn 1  pub impl fn 7  priv impl fn 4  closure fn 1  closure const 1  pub struct 3  priv enum 2  pub trait 1  closure static 4  impl 5
+    │   │   │   ├── mod.rs  (139 lines)  ██████████████████░░  0.1%  [code 65%  comm 25%  blank 9%]  pub impl fn 3  closure fn 1  closure const 1  pub struct 1  closure static 4  impl 1
+    │   │   │   ├── lazy.rs  (124 lines)  █████████████████░░░  0.1%  [code 61%  comm 27%  blank 11%]  priv fn 1  trait fn 1  pub impl fn 2  priv impl fn 3  pub struct 1  priv enum 1  pub trait 1  impl 3
+    │   │   │   └── eager.rs  (75 lines)  ██████████████████░░  0.0%  [code 60%  comm 29%  blank 11%]  priv fn 1  pub impl fn 2  priv impl fn 1  pub struct 1  priv enum 1  impl 1
+    │   │   ├── os.rs  (271 lines)  █████████████████░░░  0.2%  [code 66%  comm 21%  blank 13%]  pub fn 1  priv fn 1  pub impl fn 5  priv impl fn 6  closure fn 1  priv impl type 1  pub struct 2  priv struct 2  closure static 2  impl 6
+    │   │   ├── mod.rs  (222 lines)  ███████████████████░  0.1%  [code 75%  comm 22%  blank 3%]  priv fn 1  priv impl fn 1  closure fn 2  priv impl struct 1  impl impl 1
+    │   │   ├── no_threads.rs  (150 lines)  █████████████████░░░  0.1%  [code 73%  comm 12%  blank 15%]  pub impl fn 5  priv impl fn 1  closure fn 1  closure const 1  pub struct 3  priv enum 1  closure static 2  impl 5
+    │   │   └── destructors/  (96 lines)  ███████████████████░  0.1%
+    │   │         pub fn 3  closure fn 2  closure struct 1  priv static 1  closure static 2
+    │   │       ├── linux_like.rs  (55 lines)  ██████████████████░░  0.0%  [code 67%  comm 25%  blank 7%]  pub fn 1  closure fn 2  closure struct 1  closure static 2
+    │   │       └── list.rs  (41 lines)  ███████████████████░  0.0%  [code 73%  comm 20%  blank 7%]  pub fn 2  priv static 1
+    │   ├── stdio/  (1,775 lines)  █████████████████░░░  1.1%
+    │   │     pub fn 24  priv fn 20  pub impl fn 30  priv impl fn 99  pub const 14  priv const 2  closure const 3  pub type 8  pub struct 29  priv struct 2  closure struct 3  impl 78
+    │   │   ├── windows.rs  (471 lines)  ██████████████████░░  0.3%  [code 73%  comm 16%  blank 11%]  pub fn 3  priv fn 10  pub impl fn 4  priv impl fn 6  pub const 1  priv const 1  closure const 2  pub struct 3  priv struct 1  impl 8
+    │   │   ├── motor.rs  (229 lines)  █████████████████░░░  0.1%  [code 79%  comm 7%  blank 14%]  pub fn 2  pub impl fn 3  priv impl fn 23  pub const 1  pub struct 3  impl 24
+    │   │   ├── uefi.rs  (223 lines)  ████████████████░░░░  0.1%  [code 77%  comm 6%  blank 17%]  pub fn 2  priv fn 5  pub impl fn 4  priv impl fn 6  pub const 1  pub struct 3  priv struct 1  impl 7
+    │   │   ├── xous.rs  (124 lines)  ██████████████████░░  0.1%  [code 63%  comm 23%  blank 15%]  pub fn 1  pub impl fn 2  priv impl fn 5  pub const 1  pub type 1  pub struct 3  closure struct 3  impl 5
+    │   │   ├── unsupported.rs  (106 lines)  ████████████████░░░░  0.1%  [code 77%  comm 3%  blank 20%]  pub fn 2  pub impl fn 2  priv impl fn 14  pub const 1  pub type 1  pub struct 2  impl 4
+    │   │   ├── sgx.rs  (101 lines)  ████████████████░░░░  0.1%  [code 78%  comm 1%  blank 21%]  pub fn 2  priv fn 1  pub impl fn 3  priv impl fn 12  pub const 1  pub struct 3  impl 6
+    │   │   ├── unix.rs  (100 lines)  ████████████████░░░░  0.1%  [code 80%  comm 0%  blank 20%]  pub fn 2  pub impl fn 3  priv impl fn 12  pub const 1  pub struct 3  impl 6
+    │   │   ├── vexos.rs  (100 lines)  ████████████████░░░░  0.1%  [code 67%  comm 14%  blank 19%]  pub fn 2  pub impl fn 2  priv impl fn 3  pub const 3  pub type 1  pub struct 2  impl 4
+    │   │   ├── trusty.rs  (92 lines)  █████████████████░░░  0.1%  [code 78%  comm 3%  blank 18%]  pub fn 2  priv fn 2  pub impl fn 2  priv impl fn 8  pub const 1  pub type 1  pub struct 2  impl 4
+    │   │   ├── zkvm.rs  (72 lines)  ████████████████░░░░  0.0%  [code 79%  comm 0%  blank 21%]  pub fn 2  pub impl fn 3  priv impl fn 6  pub const 1  pub struct 3  impl 6
+    │   │   ├── teeos.rs  (62 lines)  ████████████████░░░░  0.0%  [code 74%  comm 3%  blank 23%]  pub fn 2  priv fn 1  pub impl fn 1  priv impl fn 2  pub const 1  priv const 1  closure const 1  pub type 2  pub struct 1  impl 2
+    │   │   ├── mod.rs  (52 lines)  ███████████████████░  0.0%  [code 96%  comm 2%  blank 2%]
+    │   │   ├── solid.rs  (37 lines)  ████████████████░░░░  0.0%  [code 78%  comm 0%  blank 22%]  pub fn 2  pub impl fn 1  priv impl fn 2  pub const 1  pub type 2  pub struct 1  impl 2
+    │   │   └── windows/  (6 lines)  █████████████████░░░  0.0%
+    │   │         priv fn 1
+    │   │       └── tests.rs  (6 lines)  █████████████████░░░  0.0%  [code 83%  comm 0%  blank 17%]  priv fn 1
+    │   ├── args/  (1,345 lines)  ██████████████████░░  0.8%
+    │   │     pub fn 18  priv fn 12  pub impl fn 1  priv impl fn 40  closure fn 13  closure const 17  priv type 1  priv impl type 4  pub struct 4  pub enum 1  priv enum 1  priv static 2  closure static 5  impl 21
+    │   │   ├── windows.rs  (410 lines)  ███████████████████░  0.3%  [code 63%  comm 30%  blank 6%]  pub fn 5  priv fn 2  closure const 13  pub enum 1  priv enum 1  closure static 1
+    │   │   ├── unix.rs  (191 lines)  ██████████████████░░  0.1%  [code 49%  comm 40%  blank 10%]  pub fn 2  closure fn 6  closure static 3
+    │   │   ├── uefi.rs  (118 lines)  ██████████████████░░  0.1%  [code 60%  comm 29%  blank 11%]  pub fn 1  priv fn 1  closure const 4
+    │   │   ├── sgx.rs  (111 lines)  █████████████████░░░  0.1%  [code 81%  comm 3%  blank 16%]  pub fn 2  priv impl fn 12  priv type 1  priv impl type 1  pub struct 1  priv static 1  impl 4
+    │   │   ├── common.rs  (101 lines)  █████████████████░░░  0.1%  [code 83%  comm 0%  blank 17%]  pub impl fn 1  priv impl fn 13  priv impl type 1  pub struct 1  impl 7
+    │   │   ├── zkvm.rs  (94 lines)  ████████████████░░░░  0.1%  [code 78%  comm 1%  blank 21%]  pub fn 1  priv fn 1  priv impl fn 10  priv impl type 1  pub struct 1  priv static 1  impl 6
+    │   │   ├── windows/  (91 lines)  ███████████████████░  0.1%
+    │   │   │     priv fn 7
+    │   │   │   └── tests.rs  (91 lines)  ███████████████████░  0.1%  [code 89%  comm 3%  blank 8%]  priv fn 7
+    │   │   ├── mod.rs  (64 lines)  ███████████████████░  0.0%  [code 92%  comm 3%  blank 5%]
+    │   │   ├── wali.rs  (54 lines)  █████████████████░░░  0.0%  [code 78%  comm 6%  blank 17%]  pub fn 2  closure fn 7  closure static 1
+    │   │   ├── unsupported.rs  (42 lines)  ████████████████░░░░  0.0%  [code 81%  comm 0%  blank 19%]  pub fn 1  priv impl fn 5  priv impl type 1  pub struct 1  impl 4
+    │   │   ├── wasip1.rs  (26 lines)  ██████████████████░░  0.0%  [code 81%  comm 8%  blank 12%]  pub fn 1  priv fn 1
+    │   │   ├── xous.rs  (19 lines)  ██████████████████░░  0.0%  [code 89%  comm 0%  blank 11%]  pub fn 1
+    │   │   ├── motor.rs  (13 lines)  ███████████████░░░░░  0.0%  [code 77%  comm 0%  blank 23%]  pub fn 1
+    │   │   └── wasi.rs  (11 lines)  █████████████████░░░  0.0%  [code 73%  comm 9%  blank 18%]  pub fn 1
+    │   ├── fd/  (1,116 lines)  ██████████████████░░  0.7%
+    │   │     priv fn 5  pub impl fn 68  priv impl fn 34  closure fn 6  priv const 1  pub struct 4  impl 32
+    │   │   ├── unix.rs  (699 lines)  ██████████████████░░  0.4%  [code 85%  comm 7%  blank 8%]  priv fn 3  pub impl fn 30  priv impl fn 11  closure fn 6  priv const 1  pub struct 1  impl 9
+    │   │   ├── hermit.rs  (174 lines)  █████████████████░░░  0.1%  [code 81%  comm 3%  blank 16%]  priv fn 1  pub impl fn 16  priv impl fn 8  pub struct 1  impl 9
+    │   │   ├── motor.rs  (123 lines)  ████████████████░░░░  0.1%  [code 79%  comm 2%  blank 20%]  pub impl fn 11  priv impl fn 11  pub struct 1  impl 9
+    │   │   ├── sgx.rs  (85 lines)  ████████████████░░░░  0.1%  [code 79%  comm 1%  blank 20%]  pub impl fn 11  priv impl fn 4  pub struct 1  impl 5
+    │   │   ├── mod.rs  (23 lines)  ███████████████████░  0.0%  [code 83%  comm 9%  blank 9%]
+    │   │   └── unix/  (12 lines)  █████████████████░░░  0.0%
+    │   │         priv fn 1
+    │   │       └── tests.rs  (12 lines)  █████████████████░░░  0.0%  [code 83%  comm 0%  blank 17%]  priv fn 1
+    │   ├── platform_version/  (1,079 lines)  ███████████████████░  0.7%
+    │   │     pub fn 2  priv fn 19  pub impl fn 2  priv impl fn 11  closure fn 5  pub const 3  closure const 1  pub type 13  priv type 1  pub struct 1  priv struct 1  closure static 1  impl 3
+    │   │   ├── darwin/  (1,066 lines)  ███████████████████░  0.7%
+    │   │   │     pub fn 2  priv fn 19  pub impl fn 2  priv impl fn 11  closure fn 5  pub const 3  closure const 1  pub type 13  priv type 1  pub struct 1  priv struct 1  closure static 1  impl 3
+    │   │   │   ├── tests.rs  (379 lines)  ██████████████████░░  0.2%  [code 84%  comm 7%  blank 8%]  priv fn 9  closure fn 2
+    │   │   │   ├── mod.rs  (351 lines)  ██████████████████░░  0.2%  [code 57%  comm 34%  blank 9%]  priv fn 10  priv impl fn 1  priv type 1  priv struct 1  closure static 1  impl 1
+    │   │   │   ├── core_foundation.rs  (180 lines)  ██████████████████░░  0.1%  [code 69%  comm 22%  blank 9%]  pub impl fn 2  priv impl fn 10  closure fn 3  pub const 3  pub type 13  pub struct 1  impl 2
+    │   │   │   └── public_extern.rs  (156 lines)  ██████████████████░░  0.1%  [code 22%  comm 72%  blank 5%]  pub fn 2  closure const 1
+    │   │   └── mod.rs  (13 lines)  █████████████████░░░  0.0%  [code 15%  comm 69%  blank 15%]
+    │   ├── os_str/  (1,075 lines)  ████████████████░░░░  0.7%
+    │   │     priv fn 2  pub impl fn 127  priv impl fn 31  closure fn 1  pub struct 6  impl 33
+    │   │   ├── bytes.rs  (371 lines)  █████████████████░░░  0.2%  [code 75%  comm 8%  blank 17%]  pub impl fn 42  priv impl fn 10  closure fn 1  pub struct 2  impl 11
+    │   │   ├── utf8.rs  (336 lines)  ████████████████░░░░  0.2%  [code 77%  comm 6%  blank 17%]  pub impl fn 43  priv impl fn 11  pub struct 2  impl 11
+    │   │   ├── wtf8.rs  (335 lines)  █████████████████░░░  0.2%  [code 74%  comm 9%  blank 17%]  pub impl fn 42  priv impl fn 10  pub struct 2  impl 11
+    │   │   ├── bytes/  (17 lines)  ████████████████░░░░  0.0%
+    │   │   │     priv fn 2
+    │   │   │   └── tests.rs  (17 lines)  ████████████████░░░░  0.0%  [code 82%  comm 0%  blank 18%]  priv fn 2
+    │   │   └── mod.rs  (16 lines)  ███████████████████░  0.0%  [code 88%  comm 6%  blank 6%]
+    │   ├── alloc/  (1,015 lines)  ██████████████████░░  0.6%
+    │   │     pub fn 2  priv fn 5  priv impl fn 54  closure fn 5  priv const 2  priv struct 4  closure struct 2  priv static 4  closure static 8  impl 14  closure impl 2
+    │   │   ├── windows.rs  (219 lines)  ██████████████████░░  0.1%  [code 39%  comm 50%  blank 11%]  priv fn 3  priv impl fn 4  priv const 1  priv struct 1  impl 1
+    │   │   ├── wasm.rs  (173 lines)  ██████████████████░░  0.1%  [code 31%  comm 60%  blank 9%]  priv impl fn 5  closure fn 2  priv struct 1  closure struct 1  priv static 1  closure static 1  impl 2  closure impl 1
+    │   │   ├── mod.rs  (110 lines)  ███████████████████░  0.1%  [code 90%  comm 5%  blank 5%]  priv fn 1  priv const 1
+    │   │   ├── sgx.rs  (99 lines)  █████████████████░░░  0.1%  [code 68%  comm 16%  blank 16%]  pub fn 2  priv impl fn 11  priv struct 1  priv static 1  closure static 1  impl 2
+    │   │   ├── vexos.rs  (96 lines)  █████████████████░░░  0.1%  [code 65%  comm 19%  blank 17%]  priv impl fn 11  priv struct 1  priv static 1  closure static 3  impl 2
+    │   │   ├── unix.rs  (87 lines)  ███████████████████░  0.1%  [code 71%  comm 23%  blank 6%]  priv impl fn 4  closure fn 2  impl 1
+    │   │   ├── xous.rs  (74 lines)  █████████████████░░░  0.0%  [code 70%  comm 14%  blank 16%]  priv impl fn 5  closure fn 1  closure struct 1  priv static 1  closure static 2  impl 1  closure impl 1
+    │   │   ├── uefi.rs  (49 lines)  ████████████████░░░░  0.0%  [code 59%  comm 22%  blank 18%]  priv impl fn 2  closure static 1  impl 1
+    │   │   ├── solid.rs  (30 lines)  ██████████████████░░  0.0%  [code 90%  comm 0%  blank 10%]  priv impl fn 3  impl 1
+    │   │   ├── motor.rs  (28 lines)  █████████████████░░░  0.0%  [code 71%  comm 14%  blank 14%]  priv impl fn 4  impl 1
+    │   │   ├── hermit.rs  (27 lines)  ██████████████████░░  0.0%  [code 89%  comm 0%  blank 11%]  priv impl fn 3  impl 1
+    │   │   ├── zkvm.rs  (15 lines)  █████████████████░░░  0.0%  [code 80%  comm 7%  blank 13%]  priv impl fn 2  impl 1
+    │   │   └── windows/  (8 lines)  █████████████████░░░  0.0%
+    │   │         priv fn 1
+    │   │       └── tests.rs  (8 lines)  █████████████████░░░  0.0%  [code 75%  comm 12%  blank 12%]  priv fn 1
+    │   ├── paths/  (971 lines)  ██████████████████░░  0.6%
+    │   │     pub fn 54  priv fn 4  priv impl fn 7  closure fn 6  priv const 2  closure const 1  pub type 1  priv impl type 3  pub struct 7  impl 12
+    │   │   ├── unix.rs  (471 lines)  ██████████████████░░  0.3%  [code 87%  comm 3%  blank 10%]  pub fn 23  priv fn 1  priv impl fn 1  closure fn 6  priv const 1  pub type 1  pub struct 1  impl 3
+    │   │   ├── windows.rs  (179 lines)  █████████████████░░░  0.1%  [code 77%  comm 9%  blank 14%]  pub fn 7  priv fn 3  priv impl fn 2  closure const 1  priv impl type 1  pub struct 2  impl 3
+    │   │   ├── uefi.rs  (123 lines)  ████████████████░░░░  0.1%  [code 77%  comm 4%  blank 19%]  pub fn 7  priv impl fn 2  priv const 1  priv impl type 1  pub struct 2  impl 3
+    │   │   ├── mod.rs  (59 lines)  ████████████████████  0.0%  [code 98%  comm 0%  blank 2%]
+    │   │   ├── unsupported.rs  (57 lines)  ████████████████░░░░  0.0%  [code 79%  comm 0%  blank 21%]  pub fn 7  priv impl fn 2  priv impl type 1  pub struct 2  impl 3
+    │   │   ├── wasi.rs  (45 lines)  █████████████████░░░  0.0%  [code 82%  comm 7%  blank 11%]  pub fn 3
+    │   │   ├── motor.rs  (20 lines)  ████████████████░░░░  0.0%  [code 80%  comm 0%  blank 20%]  pub fn 4
+    │   │   ├── hermit.rs  (10 lines)  ████████████████░░░░  0.0%  [code 80%  comm 0%  blank 20%]  pub fn 2
+    │   │   └── sgx.rs  (7 lines)  █████████████████░░░  0.0%  [code 86%  comm 0%  blank 14%]  pub fn 1
+    │   ├── path/  (943 lines)  █████████████████░░░  0.6%
+    │   │     pub fn 32  priv fn 10  pub impl fn 3  priv impl fn 6  closure fn 4  pub const 6  priv const 3  closure const 14  pub struct 1  priv struct 2  impl 3
+    │   │   ├── windows.rs  (256 lines)  ██████████████████░░  0.2%  [code 60%  comm 30%  blank 10%]  pub fn 11  pub impl fn 3  pub const 1  closure const 12  pub struct 1  impl 1
+    │   │   ├── windows_prefix.rs  (182 lines)  █████████████████░░░  0.1%  [code 66%  comm 20%  blank 14%]  pub fn 2  priv fn 2  priv impl fn 6  closure fn 1  priv struct 2  impl 2
+    │   │   ├── windows/  (151 lines)  █████████████████░░░  0.1%
+    │   │   │     priv fn 8  closure fn 1
+    │   │   │   └── tests.rs  (151 lines)  █████████████████░░░  0.1%  [code 76%  comm 10%  blank 14%]  priv fn 8  closure fn 1
+    │   │   ├── uefi.rs  (102 lines)  █████████████████░░░  0.1%  [code 45%  comm 40%  blank 15%]  pub fn 4  pub const 1  priv const 2
+    │   │   ├── cygwin.rs  (88 lines)  █████████████████░░░  0.1%  [code 69%  comm 17%  blank 14%]  pub fn 3  closure fn 1  pub const 1  priv const 1
+    │   │   ├── unix.rs  (66 lines)  █████████████████░░░  0.0%  [code 59%  comm 26%  blank 15%]  pub fn 4  pub const 1
+    │   │   ├── mod.rs  (47 lines)  ███████████████████░  0.0%  [code 91%  comm 4%  blank 4%]  closure fn 1  closure const 2
+    │   │   ├── unsupported_backslash.rs  (26 lines)  ████████████████░░░░  0.0%  [code 73%  comm 4%  blank 23%]  pub fn 4  pub const 1
+    │   │   └── sgx.rs  (25 lines)  ███████████████░░░░░  0.0%  [code 76%  comm 0%  blank 24%]  pub fn 4  pub const 1
+    │   ├── env/  (930 lines)  █████████████████░░░  0.6%
+    │   │     pub fn 47  priv fn 4  pub impl fn 1  priv impl fn 9  closure fn 15  priv type 2  priv impl type 4  pub struct 3  priv struct 1  closure struct 1  priv static 6  closure static 4  impl 11  closure impl 2
+    │   │   ├── unix.rs  (143 lines)  ██████████████████░░  0.1%  [code 65%  comm 24%  blank 11%]  pub fn 8  closure fn 1  closure struct 1  priv static 1  closure static 2  closure impl 2
+    │   │   ├── uefi.rs  (115 lines)  █████████████████░░░  0.1%  [code 76%  comm 8%  blank 17%]  pub fn 4  closure fn 6
+    │   │   ├── windows.rs  (109 lines)  █████████████████░░░  0.1%  [code 81%  comm 6%  blank 13%]  pub fn 4  priv impl fn 4  priv impl type 2  pub struct 1  priv struct 1  impl 4
+    │   │   ├── wasi.rs  (108 lines)  ██████████████████░░  0.1%  [code 80%  comm 9%  blank 11%]  pub fn 4  closure fn 6  closure static 1
+    │   │   ├── solid.rs  (96 lines)  █████████████████░░░  0.1%  [code 76%  comm 11%  blank 12%]  pub fn 5  priv fn 1  closure fn 1  priv static 1  closure static 1
+    │   │   ├── hermit.rs  (72 lines)  █████████████████░░░  0.0%  [code 75%  comm 8%  blank 17%]  pub fn 5  closure fn 1  priv static 1
+    │   │   ├── mod.rs  (62 lines)  ███████████████████░  0.0%  [code 92%  comm 3%  blank 5%]
+    │   │   ├── sgx.rs  (56 lines)  ████████████████░░░░  0.0%  [code 77%  comm 7%  blank 16%]  pub fn 4  priv fn 2  priv type 1  priv static 2
+    │   │   ├── xous.rs  (47 lines)  █████████████████░░░  0.0%  [code 85%  comm 0%  blank 15%]  pub fn 4  priv fn 1  priv type 1  priv static 1
+    │   │   ├── unsupported.rs  (33 lines)  ████████████████░░░░  0.0%  [code 79%  comm 0%  blank 21%]  pub fn 4  priv impl fn 2  priv impl type 1  pub struct 1  impl 2
+    │   │   ├── common.rs  (31 lines)  █████████████████░░░  0.0%  [code 84%  comm 0%  blank 16%]  pub impl fn 1  priv impl fn 3  priv impl type 1  pub struct 1  impl 5
+    │   │   ├── zkvm.rs  (31 lines)  █████████████████░░░  0.0%  [code 68%  comm 16%  blank 16%]  pub fn 1
+    │   │   └── motor.rs  (27 lines)  ████████████████░░░░  0.0%  [code 78%  comm 0%  blank 22%]  pub fn 4
+    │   ├── time/  (928 lines)  ████████████████░░░░  0.6%
+    │   │     priv fn 1  pub impl fn 76  priv impl fn 12  closure fn 6  pub const 8  priv const 2  pub impl const 18  closure const 1  pub struct 17  closure struct 1  closure static 3  impl 28
+    │   │   ├── uefi.rs  (234 lines)  █████████████████░░░  0.1%  [code 79%  comm 5%  blank 16%]  pub impl fn 11  closure fn 5  pub const 1  priv const 1  pub impl const 2  closure const 1  pub struct 2  closure static 3  impl 2
+    │   │   ├── windows.rs  (163 lines)  █████████████████░░░  0.1%  [code 73%  comm 11%  blank 16%]  pub impl fn 8  priv impl fn 9  pub const 1  priv const 1  pub impl const 2  pub struct 2  impl 10
+    │   │   ├── unix.rs  (141 lines)  ████████████████░░░░  0.1%  [code 67%  comm 15%  blank 18%]  pub impl fn 11  priv impl fn 3  closure fn 1  pub const 1  pub impl const 4  pub struct 2  closure struct 1  impl 5
+    │   │   ├── solid.rs  (90 lines)  █████████████████░░░  0.1%  [code 79%  comm 3%  blank 18%]  pub impl fn 9  pub const 1  pub impl const 2  pub struct 2  impl 2
+    │   │   ├── hermit.rs  (64 lines)  ███████████████░░░░░  0.0%  [code 75%  comm 0%  blank 25%]  priv fn 1  pub impl fn 9  pub const 1  pub impl const 2  pub struct 2  impl 2
+    │   │   ├── xous.rs  (61 lines)  ████████████████░░░░  0.0%  [code 79%  comm 0%  blank 21%]  pub impl fn 8  pub const 1  pub impl const 2  pub struct 2  impl 2
+    │   │   ├── mod.rs  (53 lines)  ███████████████████░  0.0%  [code 96%  comm 0%  blank 4%]
+    │   │   ├── sgx.rs  (50 lines)  ███████████████░░░░░  0.0%  [code 74%  comm 0%  blank 26%]  pub impl fn 8  pub const 1  pub impl const 2  pub struct 2  impl 2
+    │   │   ├── unsupported.rs  (49 lines)  ███████████████░░░░░  0.0%  [code 73%  comm 0%  blank 27%]  pub impl fn 8  pub const 1  pub impl const 2  pub struct 2  impl 2
+    │   │   └── vexos.rs  (23 lines)  ████████████████░░░░  0.0%  [code 78%  comm 0%  blank 22%]  pub impl fn 4  pub struct 1  impl 1
+    │   ├── random/  (784 lines)  ███████████████████░  0.5%
+    │   │     pub fn 27  priv fn 5  closure fn 12  priv const 1  closure const 2  closure type 2  priv static 3  closure static 5
+    │   │   ├── linux.rs  (170 lines)  ██████████████████░░  0.1%  [code 51%  comm 42%  blank 6%]  pub fn 2  priv fn 1  closure fn 1  closure static 4
+    │   │   ├── uefi.rs  (158 lines)  █████████████████░░░  0.1%  [code 76%  comm 12%  blank 12%]  pub fn 1  closure fn 6  closure const 2  closure type 2  closure static 1
+    │   │   ├── mod.rs  (132 lines)  ████████████████████  0.1%  [code 95%  comm 4%  blank 1%]  pub fn 1
+    │   │   ├── sgx.rs  (67 lines)  ████████████████░░░░  0.0%  [code 82%  comm 0%  blank 18%]  pub fn 1  priv fn 4  priv const 1
+    │   │   ├── arc4random.rs  (34 lines)  ██████████████████░░  0.0%  [code 59%  comm 32%  blank 9%]  pub fn 1  closure fn 1
+    │   │   ├── vxworks.rs  (25 lines)  █████████████████░░░  0.0%  [code 84%  comm 0%  blank 16%]  pub fn 1  priv static 1
+    │   │   ├── zkvm.rs  (21 lines)  █████████████████░░░  0.0%  [code 86%  comm 0%  blank 14%]  pub fn 1
+    │   │   ├── unix_legacy.rs  (20 lines)  █████████████████░░░  0.0%  [code 50%  comm 35%  blank 15%]  pub fn 1  priv static 1
+    │   │   ├── windows.rs  (20 lines)  ██████████████████░░  0.0%  [code 80%  comm 10%  blank 10%]  pub fn 2
+    │   │   ├── getentropy.rs  (17 lines)  ███████████████████░  0.0%  [code 35%  comm 59%  blank 6%]  pub fn 1
+    │   │   ├── apple.rs  (15 lines)  ██████████████████░░  0.0%  [code 27%  comm 67%  blank 7%]  pub fn 1
+    │   │   ├── unsupported.rs  (15 lines)  ██████████████████░░  0.0%  [code 73%  comm 13%  blank 13%]  pub fn 2
+    │   │   ├── fuchsia.rs  (13 lines)  █████████████████░░░  0.0%  [code 54%  comm 31%  blank 15%]  pub fn 1  closure fn 1
+    │   │   ├── redox.rs  (12 lines)  █████████████████░░░  0.0%  [code 83%  comm 0%  blank 17%]  pub fn 1  priv static 1
+    │   │   ├── wasi.rs  (12 lines)  █████████████████░░░  0.0%  [code 83%  comm 0%  blank 17%]  pub fn 2
+    │   │   ├── espidf.rs  (9 lines)  ████████████████░░░░  0.0%  [code 78%  comm 0%  blank 22%]  pub fn 1  closure fn 1
+    │   │   ├── solid.rs  (8 lines)  ██████████████████░░  0.0%  [code 88%  comm 0%  blank 12%]  pub fn 1
+    │   │   ├── getrandom.rs  (7 lines)  ████████████████████  0.0%  [code 100%  comm 0%  blank 0%]  pub fn 1
+    │   │   ├── hermit.rs  (7 lines)  ████████████████████  0.0%  [code 100%  comm 0%  blank 0%]  pub fn 1
+    │   │   ├── teeos.rs  (7 lines)  █████████████████░░░  0.0%  [code 86%  comm 0%  blank 14%]  pub fn 1  closure fn 1
+    │   │   ├── trusty.rs  (7 lines)  █████████████████░░░  0.0%  [code 86%  comm 0%  blank 14%]  pub fn 1  closure fn 1
+    │   │   ├── wasip1.rs  (5 lines)  ████████████████████  0.0%  [code 100%  comm 0%  blank 0%]  pub fn 1
+    │   │   └── motor.rs  (3 lines)  ████████████████████  0.0%  [code 100%  comm 0%  blank 0%]  pub fn 1
+    │   ├── personality/  (770 lines)  ██████████████████░░  0.5%
+    │   │     pub fn 1  priv fn 7  pub impl fn 4  closure fn 7  pub const 17  priv const 12  priv type 1  pub struct 2  pub enum 1  impl 1
+    │   │   ├── dwarf/  (359 lines)  ██████████████████░░  0.2%
+    │   │   │     pub fn 1  priv fn 5  pub impl fn 4  pub const 17  priv type 1  pub struct 2  pub enum 1  impl 1
+    │   │   │   ├── eh.rs  (271 lines)  ███████████████████░  0.2%  [code 68%  comm 24%  blank 8%]  pub fn 1  priv fn 4  pub const 17  priv type 1  pub struct 1  pub enum 1
+    │   │   │   ├── mod.rs  (69 lines)  █████████████████░░░  0.0%  [code 71%  comm 17%  blank 12%]  pub impl fn 4  pub struct 1  impl 1
+    │   │   │   └── tests.rs  (19 lines)  ███████████████░░░░░  0.0%  [code 74%  comm 0%  blank 26%]  priv fn 1
+    │   │   ├── gcc.rs  (340 lines)  ███████████████████░  0.2%  [code 64%  comm 30%  blank 6%]  priv fn 1  closure fn 6  priv const 12
+    │   │   ├── mod.rs  (50 lines)  ███████████████████░  0.0%  [code 50%  comm 46%  blank 4%]  closure fn 1
+    │   │   └── emcc.rs  (21 lines)  █████████████████░░░  0.0%  [code 57%  comm 29%  blank 14%]  priv fn 1
+    │   ├── env_consts.rs  (426 lines)  ██████████████████░░  0.3%  [code 89%  comm 1%  blank 10%]  closure const 259
+    │   ├── backtrace.rs  (238 lines)  ██████████████████░░  0.1%  [code 77%  comm 13%  blank 9%]  pub fn 6  priv fn 1  pub impl fn 1  priv impl fn 1  pub const 1  priv const 1  closure const 1  pub struct 1  closure struct 1  closure static 1  impl 1  closure impl 1
+    │   ├── helpers/  (231 lines)  ██████████████████░░  0.1%
+    │   │     pub fn 4  priv fn 9  pub impl fn 3  priv impl fn 1  priv const 3  priv impl type 1  pub struct 1  impl 2
+    │   │   ├── tests.rs  (73 lines)  ██████████████████░░  0.0%  [code 89%  comm 0%  blank 11%]  priv fn 7
+    │   │   ├── small_c_string.rs  (60 lines)  █████████████████░░░  0.0%  [code 75%  comm 12%  blank 13%]  pub fn 2  priv fn 2  priv const 3
+    │   │   ├── wstr.rs  (59 lines)  █████████████████░░░  0.0%  [code 61%  comm 27%  blank 12%]  pub impl fn 3  priv impl fn 1  priv impl type 1  pub struct 1  impl 2
+    │   │   └── mod.rs  (39 lines)  █████████████████░░░  0.0%  [code 62%  comm 26%  blank 13%]  pub fn 2
+    │   ├── pipe/  (193 lines)  ████████████████░░░░  0.1%
+    │   │     pub fn 4  pub impl fn 10  priv impl fn 7  pub type 3  pub struct 1  impl 2  closure impl 6
+    │   │   ├── unsupported.rs  (101 lines)  ████████████████░░░░  0.1%  [code 80%  comm 0%  blank 20%]  pub fn 1  pub impl fn 10  priv impl fn 7  pub struct 1  impl 2  closure impl 6
+    │   │   ├── unix.rs  (44 lines)  ██████████████████░░  0.0%  [code 84%  comm 7%  blank 9%]  pub fn 1  pub type 1
+    │   │   ├── mod.rs  (20 lines)  ███████████████████░  0.0%  [code 90%  comm 5%  blank 5%]
+    │   │   ├── windows.rs  (19 lines)  ████████████████░░░░  0.0%  [code 79%  comm 0%  blank 21%]  pub fn 1  pub type 1
+    │   │   └── motor.rs  (9 lines)  ████████████████░░░░  0.0%  [code 78%  comm 0%  blank 22%]  pub fn 1  pub type 1
+    │   ├── exit.rs  (143 lines)  ███████████████████░  0.1%  [code 69%  comm 27%  blank 5%]  pub fn 1  closure fn 2  closure static 1
+    │   ├── cmath.rs  (130 lines)  ██████████████████░░  0.1%  [code 84%  comm 6%  blank 10%]  pub fn 1  closure fn 10
+    │   ├── configure_builtins.rs  (62 lines)  ███████████████████░  0.0%  [code 44%  comm 52%  blank 5%]  closure fn 2  priv static 1
+    │   └── mod.rs  (56 lines)  █████████████████░░░  0.0%  [code 75%  comm 12%  blank 12%]  trait fn 4  pub trait 4
+    ├── os/  (23,466 lines)  ██████████████████░░  14.6%
+    │     pub fn 54  priv fn 58  trait fn 600  pub impl fn 143  priv impl fn 949  closure fn 9  pub const 3  priv const 5  pub impl const 9  closure const 7  pub type 178  priv type 3  trait type 1  priv impl type 23  closure type 134  pub struct 58  priv struct 3  closure struct 23  pub enum 14  priv enum 2  pub trait 60  priv static 1  closure static 7  impl 450  closure impl 18
+    │   ├── unix/  (6,848 lines)  ███████████████████░  4.3%
+    │   │     pub fn 10  priv fn 40  trait fn 65  pub impl fn 89  priv impl fn 143  closure fn 6  priv const 2  closure const 6  pub type 4  priv impl type 7  closure type 10  pub struct 17  priv struct 1  closure struct 5  pub enum 2  priv enum 1  pub trait 8  impl 84  closure impl 2
+    │   │   ├── net/  (4,321 lines)  ██████████████████░░  2.7%
+    │   │   │     pub fn 3  priv fn 34  pub impl fn 89  priv impl fn 55  closure fn 6  priv const 2  closure const 6  priv impl type 7  closure type 4  pub struct 17  priv struct 1  closure struct 5  pub enum 2  priv enum 1  impl 45
+    │   │   │   ├── datagram.rs  (1,013 lines)  ███████████████████░  0.6%  [code 35%  comm 60%  blank 5%]  pub impl fn 28  priv impl fn 9  priv const 1  pub struct 1  impl 9
+    │   │   │   ├── tests.rs  (818 lines)  ████████████████░░░░  0.5%  [code 82%  comm 1%  blank 17%]  priv fn 31  closure fn 3
+    │   │   │   ├── ancillary.rs  (805 lines)  ██████████████████░░  0.5%  [code 63%  comm 26%  blank 11%]  pub fn 2  priv fn 1  pub impl fn 30  priv impl fn 8  priv impl type 4  closure type 3  pub struct 11  priv struct 1  closure struct 3  pub enum 2  impl 10
+    │   │   │   ├── stream.rs  (744 lines)  ███████████████████░  0.5%  [code 41%  comm 53%  blank 6%]  pub impl fn 18  priv impl fn 24  closure const 1  pub struct 1  impl 13
+    │   │   │   ├── listener.rs  (417 lines)  ███████████████████░  0.3%  [code 40%  comm 54%  blank 6%]  pub impl fn 8  priv impl fn 10  closure const 5  priv impl type 3  pub struct 2  impl 10
+    │   │   │   ├── addr.rs  (299 lines)  ███████████████████░  0.2%  [code 54%  comm 38%  blank 8%]  pub fn 1  pub impl fn 5  priv impl fn 4  priv const 1  closure type 1  pub struct 1  closure struct 2  priv enum 1  impl 3
+    │   │   │   ├── ucred.rs  (136 lines)  █████████████████░░░  0.1%  [code 74%  comm 11%  blank 15%]  closure fn 3  pub struct 1
+    │   │   │   ├── mod.rs  (51 lines)  ███████████████████░  0.0%  [code 88%  comm 6%  blank 6%]
+    │   │   │   └── ucred/  (38 lines)  █████████████████░░░  0.0%
+    │   │   │         priv fn 2
+    │   │   │       └── tests.rs  (38 lines)  █████████████████░░░  0.0%  [code 76%  comm 11%  blank 13%]  priv fn 2
+    │   │   ├── fs.rs  (1,220 lines)  ███████████████████░  0.8%  [code 26%  comm 71%  blank 3%]  pub fn 6  trait fn 37  priv impl fn 34  pub trait 7  impl 9
+    │   │   ├── process.rs  (675 lines)  ██████████████████░░  0.4%  [code 47%  comm 43%  blank 10%]  pub fn 1  trait fn 19  priv impl fn 42  closure type 6  impl 24
+    │   │   ├── io/  (238 lines)  ██████████████████░░  0.1%
+    │   │   │     priv fn 3  trait fn 3  priv impl fn 6  impl 1  closure impl 2
+    │   │   │   ├── mod.rs  (229 lines)  ██████████████████░░  0.1%  [code 31%  comm 62%  blank 7%]  priv fn 2  trait fn 3  priv impl fn 6  impl 1  closure impl 2
+    │   │   │   └── tests.rs  (9 lines)  ██████████████████░░  0.0%  [code 56%  comm 33%  blank 11%]  priv fn 1
+    │   │   ├── mod.rs  (127 lines)  ████████████████████  0.1%  [code 69%  comm 28%  blank 4%]
+    │   │   ├── ffi/  (111 lines)  ██████████████████░░  0.1%
+    │   │   │     trait fn 4  priv impl fn 4  impl 4
+    │   │   │   ├── os_str.rs  (69 lines)  ██████████████████░░  0.0%  [code 58%  comm 32%  blank 10%]  trait fn 4  priv impl fn 4  impl 4
+    │   │   │   └── mod.rs  (42 lines)  ██████████████████░░  0.0%  [code 7%  comm 86%  blank 7%]
+    │   │   ├── fs/  (77 lines)  ███████████████░░░░░  0.0%
+    │   │   │     priv fn 3
+    │   │   │   └── tests.rs  (77 lines)  ███████████████░░░░░  0.0%  [code 74%  comm 0%  blank 26%]  priv fn 3
+    │   │   ├── thread.rs  (46 lines)  █████████████████░░░  0.0%  [code 54%  comm 30%  blank 15%]  trait fn 2  priv impl fn 2  pub type 1  pub trait 1  impl 1
+    │   │   └── raw.rs  (33 lines)  █████████████████░░░  0.0%  [code 73%  comm 12%  blank 15%]  pub type 3
+    │   ├── windows/  (4,225 lines)  ██████████████████░░  2.6%
+    │   │     pub fn 4  priv fn 3  trait fn 48  pub impl fn 39  priv impl fn 179  priv const 1  pub impl const 2  pub type 5  priv type 1  priv impl type 6  pub struct 15  priv struct 1  priv enum 1  pub trait 11  impl 175  closure impl 1
+    │   │   ├── io/  (1,520 lines)  ██████████████████░░  0.9%
+    │   │   │     priv fn 3  trait fn 8  pub impl fn 9  priv impl fn 95  pub impl const 2  pub type 2  priv type 1  priv impl type 2  pub struct 8  pub trait 8  impl 110  closure impl 1
+    │   │   │   ├── handle.rs  (700 lines)  ██████████████████░░  0.4%  [code 65%  comm 25%  blank 10%]  trait fn 1  pub impl fn 5  priv impl fn 47  pub impl const 1  priv impl type 2  pub struct 6  pub trait 1  impl 59  closure impl 1
+    │   │   │   ├── socket.rs  (377 lines)  ██████████████████░░  0.2%  [code 74%  comm 15%  blank 11%]  priv fn 1  trait fn 1  pub impl fn 4  priv impl fn 24  pub impl const 1  priv type 1  pub struct 2  pub trait 1  impl 27
+    │   │   │   ├── raw.rs  (354 lines)  ██████████████████░░  0.2%  [code 61%  comm 31%  blank 9%]  priv fn 1  trait fn 6  priv impl fn 24  pub type 2  pub trait 6  impl 24
+    │   │   │   ├── mod.rs  (69 lines)  ███████████████████░  0.0%  [code 16%  comm 78%  blank 6%]
+    │   │   │   └── tests.rs  (20 lines)  ██████████████████░░  0.0%  [code 90%  comm 0%  blank 10%]  priv fn 1
+    │   │   ├── net/  (946 lines)  ███████████████████░  0.6%
+    │   │   │     pub fn 1  pub impl fn 25  priv impl fn 22  priv const 1  priv impl type 3  pub struct 4  priv enum 1  impl 19
+    │   │   │   ├── stream.rs  (423 lines)  ███████████████████░  0.3%  [code 32%  comm 64%  blank 4%]  pub impl fn 12  priv impl fn 13  pub struct 1  impl 10
+    │   │   │   ├── listener.rs  (344 lines)  ███████████████████░  0.2%  [code 28%  comm 67%  blank 5%]  pub impl fn 8  priv impl fn 7  priv impl type 3  pub struct 2  impl 7
+    │   │   │   ├── addr.rs  (173 lines)  ███████████████████░  0.1%  [code 54%  comm 41%  blank 5%]  pub fn 1  pub impl fn 5  priv impl fn 2  priv const 1  pub struct 1  priv enum 1  impl 2
+    │   │   │   └── mod.rs  (6 lines)  ████████████████████  0.0%  [code 100%  comm 0%  blank 0%]
+    │   │   ├── fs.rs  (775 lines)  ███████████████████░  0.5%  [code 25%  comm 69%  blank 6%]  pub fn 3  trait fn 25  priv impl fn 25  pub trait 3  impl 11
+    │   │   ├── process.rs  (718 lines)  ██████████████████░░  0.4%  [code 45%  comm 47%  blank 8%]  trait fn 13  pub impl fn 5  priv impl fn 30  pub struct 2  priv struct 1  impl 26
+    │   │   ├── ffi.rs  (164 lines)  ███████████████████░  0.1%  [code 33%  comm 61%  blank 6%]  trait fn 2  priv impl fn 5  priv impl type 1  pub struct 1  impl 7
+    │   │   ├── mod.rs  (61 lines)  ████████████████████  0.0%  [code 48%  comm 48%  blank 5%]
+    │   │   ├── thread.rs  (25 lines)  █████████████████░░░  0.0%  [code 68%  comm 16%  blank 16%]  priv impl fn 2  impl 2
+    │   │   └── raw.rs  (16 lines)  ████████████████░░░░  0.0%  [code 69%  comm 12%  blank 19%]  pub type 3
+    │   ├── xous/  (1,542 lines)  ██████████████████░░  1.0%
+    │   │     pub fn 26  priv fn 7  pub impl fn 6  priv impl fn 30  closure fn 3  pub impl const 5  closure const 1  priv impl type 8  pub struct 4  closure struct 1  pub enum 12  priv static 1  closure static 4  impl 32  closure impl 1
+    │   │   ├── ffi.rs  (652 lines)  ██████████████████░░  0.4%  [code 83%  comm 7%  blank 10%]  pub fn 19  priv fn 5
+    │   │   ├── ffi/  (459 lines)  ██████████████████░░  0.3%
+    │   │   │     pub impl fn 5  priv impl fn 25  pub impl const 5  priv impl type 8  pub struct 4  pub enum 6  impl 27
+    │   │   │   ├── definitions.rs  (283 lines)  ██████████████████░░  0.2%  [code 89%  comm 2%  blank 8%]  priv impl fn 12  priv impl type 3  pub struct 3  pub enum 6  impl 13
+    │   │   │   └── definitions/  (176 lines)  █████████████████░░░  0.1%
+    │   │   │         pub impl fn 5  priv impl fn 13  pub impl const 5  priv impl type 5  pub struct 1  impl 14
+    │   │   │       └── memoryflags.rs  (176 lines)  █████████████████░░░  0.1%  [code 73%  comm 11%  blank 16%]  pub impl fn 5  priv impl fn 13  pub impl const 5  priv impl type 5  pub struct 1  impl 14
+    │   │   ├── services/  (274 lines)  █████████████████░░░  0.2%
+    │   │   │     pub fn 4  priv fn 1  priv impl fn 5  pub enum 6  closure static 4  impl 5
+    │   │   │   ├── net.rs  (96 lines)  ███████████████████░  0.1%  [code 4%  comm 89%  blank 7%]  pub enum 1
+    │   │   │   ├── log.rs  (77 lines)  ██████████████████░░  0.0%  [code 68%  comm 19%  blank 13%]  pub fn 1  priv fn 1  priv impl fn 2  pub enum 2  closure static 1  impl 2
+    │   │   │   ├── ticktimer.rs  (43 lines)  ██████████████████░░  0.0%  [code 70%  comm 19%  blank 12%]  pub fn 1  priv impl fn 1  pub enum 1  closure static 1  impl 1
+    │   │   │   ├── dns.rs  (29 lines)  ████████████████░░░░  0.0%  [code 76%  comm 7%  blank 17%]  pub fn 1  priv impl fn 1  pub enum 1  closure static 1  impl 1
+    │   │   │   └── systime.rs  (29 lines)  ████████████████░░░░  0.0%  [code 76%  comm 7%  blank 17%]  pub fn 1  priv impl fn 1  pub enum 1  closure static 1  impl 1
+    │   │   ├── services.rs  (139 lines)  █████████████████░░░  0.1%  [code 63%  comm 21%  blank 16%]  pub fn 3  priv fn 1  pub impl fn 1  closure fn 3  closure const 1  closure struct 1  priv static 1  closure impl 1
+    │   │   └── mod.rs  (18 lines)  █████████████████░░░  0.0%  [code 50%  comm 33%  blank 17%]
+    │   ├── fd/  (1,097 lines)  ██████████████████░░  0.7%
+    │   │     priv fn 3  trait fn 4  pub impl fn 4  priv impl fn 65  pub const 3  pub impl const 1  pub type 2  priv type 1  pub struct 2  pub trait 4  impl 64  closure impl 4
+    │   │   ├── owned.rs  (577 lines)  ██████████████████░░  0.4%  [code 68%  comm 22%  blank 10%]  trait fn 1  pub impl fn 4  priv impl fn 40  pub impl const 1  priv type 1  pub struct 2  pub trait 1  impl 42  closure impl 1
+    │   │   ├── raw.rs  (338 lines)  ███████████████████░  0.2%  [code 60%  comm 33%  blank 7%]  trait fn 3  priv impl fn 22  pub type 2  pub trait 3  impl 22
+    │   │   ├── stdio.rs  (53 lines)  ███████████████████░  0.0%  [code 13%  comm 81%  blank 6%]  pub const 3
+    │   │   ├── tests.rs  (52 lines)  █████████████████░░░  0.0%  [code 85%  comm 0%  blank 15%]  priv fn 3
+    │   │   ├── net.rs  (46 lines)  ███████████████████░  0.0%  [code 93%  comm 0%  blank 7%]  priv impl fn 3  closure impl 3
+    │   │   └── mod.rs  (31 lines)  ███████████████░░░░░  0.0%  [code 42%  comm 35%  blank 23%]
+    │   ├── linux/  (1,011 lines)  ███████████████████░  0.6%
+    │   │     trait fn 20  pub impl fn 3  priv impl fn 27  pub type 3  closure type 33  pub struct 1  priv struct 1  closure struct 5  pub trait 1  impl 14
+    │   │   ├── fs.rs  (403 lines)  ████████████████████  0.3%  [code 30%  comm 69%  blank 1%]  trait fn 17  priv impl fn 17  pub trait 1  impl 1
+    │   │   ├── raw.rs  (373 lines)  ███████████████████░  0.2%  [code 93%  comm 2%  blank 6%]  pub type 3  closure type 33  closure struct 5
+    │   │   ├── process.rs  (216 lines)  ██████████████████░░  0.1%  [code 40%  comm 51%  blank 9%]  trait fn 3  pub impl fn 3  priv impl fn 10  pub struct 1  priv struct 1  impl 13
+    │   │   ├── net.rs  (10 lines)  ████████████████░░░░  0.0%  [code 60%  comm 20%  blank 20%]
+    │   │   └── mod.rs  (9 lines)  ████████████████░░░░  0.0%  [code 44%  comm 33%  blank 22%]
+    │   ├── l4re/  (752 lines)  ████████████████████  0.5%
+    │   │     trait fn 17  priv impl fn 17  pub type 3  closure type 33  closure struct 5  pub trait 1  impl 1
+    │   │   ├── fs.rs  (381 lines)  ████████████████████  0.2%  [code 26%  comm 73%  blank 1%]  trait fn 17  priv impl fn 17  pub trait 1  impl 1
+    │   │   ├── raw.rs  (364 lines)  ███████████████████░  0.2%  [code 93%  comm 1%  blank 6%]  pub type 3  closure type 33  closure struct 5
+    │   │   └── mod.rs  (7 lines)  ███████████████░░░░░  0.0%  [code 29%  comm 43%  blank 29%]
+    │   ├── wasi/  (574 lines)  ██████████████████░░  0.4%
+    │   │     pub fn 4  priv fn 2  trait fn 23  priv impl fn 21  pub trait 6  impl 6
+    │   │   ├── fs.rs  (461 lines)  ██████████████████░░  0.3%  [code 55%  comm 35%  blank 10%]  pub fn 4  priv fn 1  trait fn 22  priv impl fn 20  pub trait 5  impl 5
+    │   │   ├── mod.rs  (60 lines)  ███████████████████░  0.0%  [code 33%  comm 60%  blank 7%]
+    │   │   ├── net/  (23 lines)  █████████████████░░░  0.0%
+    │   │   │     trait fn 1  priv impl fn 1  pub trait 1  impl 1
+    │   │   │   └── mod.rs  (23 lines)  █████████████████░░░  0.0%  [code 48%  comm 35%  blank 17%]  trait fn 1  priv impl fn 1  pub trait 1  impl 1
+    │   │   ├── io/  (19 lines)  ███████████████░░░░░  0.0%
+    │   │   │     priv fn 1
+    │   │   │   ├── mod.rs  (10 lines)  ██████████████░░░░░░  0.0%  [code 40%  comm 30%  blank 30%]
+    │   │   │   └── tests.rs  (9 lines)  ██████████████████░░  0.0%  [code 56%  comm 33%  blank 11%]  priv fn 1
+    │   │   └── ffi.rs  (11 lines)  ██████████████░░░░░░  0.0%  [code 36%  comm 36%  blank 27%]
+    │   ├── redox/  (465 lines)  ███████████████████░  0.3%
+    │   │     trait fn 17  priv impl fn 17  pub type 11  pub struct 1  pub trait 1  impl 1
+    │   │   ├── fs.rs  (381 lines)  ███████████████████░  0.2%  [code 27%  comm 72%  blank 1%]  trait fn 17  priv impl fn 17  pub trait 1  impl 1
+    │   │   ├── raw.rs  (78 lines)  ██████████████████░░  0.0%  [code 87%  comm 5%  blank 8%]  pub type 11  pub struct 1
+    │   │   └── mod.rs  (6 lines)  ██████████████░░░░░░  0.0%  [code 33%  comm 33%  blank 33%]
+    │   ├── solid/  (458 lines)  ██████████████████░░  0.3%
+    │   │     trait fn 4  pub impl fn 2  priv impl fn 24  pub impl const 1  pub type 1  priv type 1  pub struct 2  pub trait 4  impl 20  closure impl 7
+    │   │   ├── io.rs  (399 lines)  ██████████████████░░  0.2%  [code 56%  comm 35%  blank 9%]  trait fn 4  pub impl fn 2  priv impl fn 24  pub impl const 1  pub type 1  priv type 1  pub struct 2  pub trait 4  impl 20  closure impl 7
+    │   │   ├── ffi.rs  (41 lines)  ███████████████████░  0.0%  [code 10%  comm 83%  blank 7%]
+    │   │   └── mod.rs  (18 lines)  ██████████████████░░  0.0%  [code 61%  comm 28%  blank 11%]
+    │   ├── rtems/  (411 lines)  ███████████████████░  0.3%
+    │   │     trait fn 16  priv impl fn 16  pub type 9  pub trait 1  impl 1
+    │   │   ├── fs.rs  (374 lines)  ███████████████████░  0.2%  [code 24%  comm 68%  blank 9%]  trait fn 16  priv impl fn 16  pub trait 1  impl 1
+    │   │   ├── raw.rs  (33 lines)  █████████████████░░░  0.0%  [code 73%  comm 12%  blank 15%]  pub type 9
+    │   │   └── mod.rs  (4 lines)  ████████████████████  0.0%  [code 50%  comm 50%  blank 0%]
+    │   ├── fuchsia/  (395 lines)  ███████████████████░  0.2%
+    │   │     trait fn 16  priv impl fn 16  pub type 3  closure type 27  closure struct 4  pub trait 1  impl 1
+    │   │   ├── raw.rs  (294 lines)  ██████████████████░░  0.2%  [code 92%  comm 1%  blank 6%]  pub type 3  closure type 27  closure struct 4
+    │   │   ├── fs.rs  (95 lines)  ████████████████████  0.1%  [code 93%  comm 4%  blank 3%]  trait fn 16  priv impl fn 16  pub trait 1  impl 1
+    │   │   └── mod.rs  (6 lines)  ██████████████░░░░░░  0.0%  [code 33%  comm 33%  blank 33%]
+    │   ├── hurd/  (388 lines)  ████████████████████  0.2%
+    │   │     trait fn 16  priv impl fn 16  pub type 9  pub trait 1  impl 1
+    │   │   ├── fs.rs  (348 lines)  ████████████████████  0.2%  [code 25%  comm 74%  blank 1%]  trait fn 16  priv impl fn 16  pub trait 1  impl 1
+    │   │   ├── raw.rs  (33 lines)  █████████████████░░░  0.0%  [code 76%  comm 12%  blank 12%]  pub type 9
+    │   │   └── mod.rs  (7 lines)  ███████████████░░░░░  0.0%  [code 29%  comm 43%  blank 29%]
+    │   ├── android/  (363 lines)  ██████████████████░░  0.2%
+    │   │     trait fn 17  priv impl fn 17  pub type 1  closure type 24  closure struct 3  pub trait 1  impl 1
+    │   │   ├── raw.rs  (230 lines)  ██████████████████░░  0.1%  [code 89%  comm 2%  blank 10%]  pub type 1  closure type 24  closure struct 3
+    │   │   ├── fs.rs  (116 lines)  ████████████████████  0.1%  [code 88%  comm 9%  blank 3%]  trait fn 17  priv impl fn 17  pub trait 1  impl 1
+    │   │   ├── net.rs  (10 lines)  ████████████████░░░░  0.0%  [code 60%  comm 20%  blank 20%]
+    │   │   └── mod.rs  (7 lines)  ███████████████░░░░░  0.0%  [code 43%  comm 29%  blank 29%]
+    │   ├── aix/  (362 lines)  ███████████████████░  0.2%
+    │   │     trait fn 16  priv impl fn 16  pub trait 1  impl 1
+    │   │   ├── fs.rs  (348 lines)  ████████████████████  0.2%  [code 25%  comm 74%  blank 1%]  trait fn 16  priv impl fn 16  pub trait 1  impl 1
+    │   │   ├── raw.rs  (8 lines)  ███████████████░░░░░  0.0%  [code 50%  comm 25%  blank 25%]
+    │   │   └── mod.rs  (6 lines)  ██████████████░░░░░░  0.0%  [code 33%  comm 33%  blank 33%]
+    │   ├── net/  (348 lines)  ██████████████████░░  0.2%
+    │   │     priv fn 2  trait fn 8  priv impl fn 8  impl 6
+    │   │   ├── linux_ext/  (335 lines)  ██████████████████░░  0.2%
+    │   │   │     priv fn 2  trait fn 8  priv impl fn 8  impl 6
+    │   │   │   ├── tcp.rs  (130 lines)  ██████████████████░░  0.1%  [code 26%  comm 67%  blank 7%]  trait fn 4  priv impl fn 4  impl 2
+    │   │   │   ├── addr.rs  (69 lines)  ███████████████████░  0.0%  [code 14%  comm 81%  blank 4%]  trait fn 2  impl 1
+    │   │   │   ├── socket.rs  (65 lines)  ██████████████████░░  0.0%  [code 43%  comm 46%  blank 11%]  trait fn 2  priv impl fn 4  impl 3
+    │   │   │   ├── tests.rs  (56 lines)  █████████████████░░░  0.0%  [code 86%  comm 0%  blank 14%]  priv fn 2
+    │   │   │   └── mod.rs  (15 lines)  ██████████████░░░░░░  0.0%  [code 53%  comm 13%  blank 33%]
+    │   │   └── mod.rs  (13 lines)  ███████████████████░  0.0%  [code 69%  comm 23%  blank 8%]
+    │   ├── freebsd/  (326 lines)  ██████████████████░░  0.2%
+    │   │     trait fn 26  priv impl fn 30  pub type 10  pub struct 1  pub trait 1  impl 4
+    │   │   ├── fs.rs  (143 lines)  ████████████████████  0.1%  [code 89%  comm 8%  blank 3%]  trait fn 22  priv impl fn 22  pub trait 1  impl 1
+    │   │   ├── net.rs  (90 lines)  █████████████████░░░  0.1%  [code 50%  comm 34%  blank 16%]  trait fn 4  priv impl fn 8  impl 3
+    │   │   ├── raw.rs  (86 lines)  ███████████████████░  0.1%  [code 90%  comm 5%  blank 6%]  pub type 10  pub struct 1
+    │   │   └── mod.rs  (7 lines)  ███████████████░░░░░  0.0%  [code 43%  comm 29%  blank 29%]
+    │   ├── fortanix_sgx/  (320 lines)  █████████████████░░░  0.2%
+    │   │     pub fn 2  trait fn 3  priv impl fn 6  priv const 2  trait type 1  priv impl type 2  pub struct 5  pub trait 3  impl 6
+    │   │   ├── io.rs  (151 lines)  ██████████████████░░  0.1%  [code 56%  comm 34%  blank 10%]  trait fn 3  priv impl fn 6  trait type 1  priv impl type 2  pub struct 2  pub trait 3  impl 6
+    │   │   ├── arch.rs  (81 lines)  █████████████████░░░  0.1%  [code 65%  comm 20%  blank 15%]  pub fn 2  priv const 2  pub struct 3
+    │   │   ├── mod.rs  (47 lines)  █████████████████░░░  0.0%  [code 53%  comm 32%  blank 15%]
+    │   │   └── ffi.rs  (41 lines)  ███████████████████░  0.0%  [code 10%  comm 83%  blank 7%]
+    │   ├── netbsd/  (316 lines)  ██████████████████░░  0.2%
+    │   │     trait fn 25  priv impl fn 29  pub type 10  pub struct 1  pub trait 1  impl 4
+    │   │   ├── fs.rs  (136 lines)  ███████████████████░  0.1%  [code 90%  comm 7%  blank 3%]  trait fn 21  priv impl fn 21  pub trait 1  impl 1
+    │   │   ├── net.rs  (90 lines)  █████████████████░░░  0.1%  [code 50%  comm 34%  blank 16%]  trait fn 4  priv impl fn 8  impl 3
+    │   │   ├── raw.rs  (83 lines)  ███████████████████░  0.1%  [code 89%  comm 5%  blank 6%]  pub type 10  pub struct 1
+    │   │   └── mod.rs  (7 lines)  ███████████████░░░░░  0.0%  [code 43%  comm 29%  blank 29%]
+    │   ├── darwin/  (282 lines)  ███████████████████░  0.2%
+    │   │     trait fn 24  priv impl fn 24  pub type 9  pub struct 1  pub trait 1  impl 3
+    │   │   ├── fs.rs  (171 lines)  ███████████████████░  0.1%  [code 87%  comm 9%  blank 4%]  trait fn 24  priv impl fn 24  pub trait 1  impl 3
+    │   │   ├── raw.rs  (73 lines)  ███████████████████░  0.0%  [code 95%  comm 1%  blank 4%]  pub type 9  pub struct 1
+    │   │   ├── mod.rs  (25 lines)  █████████████████░░░  0.0%  [code 12%  comm 76%  blank 12%]
+    │   │   └── objc.rs  (13 lines)  █████████████████░░░  0.0%  [code 15%  comm 69%  blank 15%]
+    │   ├── solaris/  (248 lines)  ██████████████████░░  0.2%
+    │   │     trait fn 19  priv impl fn 21  pub type 10  pub struct 1  pub trait 1  impl 4
+    │   │   ├── fs.rs  (116 lines)  ████████████████████  0.1%  [code 88%  comm 9%  blank 3%]  trait fn 17  priv impl fn 17  pub trait 1  impl 1
+    │   │   ├── raw.rs  (76 lines)  ███████████████████░  0.0%  [code 88%  comm 5%  blank 7%]  pub type 10  pub struct 1
+    │   │   ├── net.rs  (49 lines)  ████████████████░░░░  0.0%  [code 57%  comm 27%  blank 16%]  trait fn 2  priv impl fn 4  impl 3
+    │   │   └── mod.rs  (7 lines)  ███████████████░░░░░  0.0%  [code 43%  comm 29%  blank 29%]
+    │   ├── illumos/  (245 lines)  ██████████████████░░  0.2%
+    │   │     trait fn 19  priv impl fn 21  pub type 10  pub struct 1  pub trait 1  impl 4
+    │   │   ├── fs.rs  (115 lines)  ████████████████████  0.1%  [code 88%  comm 9%  blank 3%]  trait fn 17  priv impl fn 17  pub trait 1  impl 1
+    │   │   ├── raw.rs  (74 lines)  ███████████████████░  0.0%  [code 88%  comm 5%  blank 7%]  pub type 10  pub struct 1
+    │   │   ├── net.rs  (49 lines)  ████████████████░░░░  0.0%  [code 57%  comm 27%  blank 16%]  trait fn 2  priv impl fn 4  impl 3
+    │   │   └── mod.rs  (7 lines)  ███████████████░░░░░  0.0%  [code 43%  comm 29%  blank 29%]
+    │   ├── openbsd/  (223 lines)  ███████████████████░  0.1%
+    │   │     trait fn 21  priv impl fn 21  pub type 10  pub struct 1  pub trait 1  impl 1
+    │   │   ├── fs.rs  (136 lines)  ███████████████████░  0.1%  [code 90%  comm 7%  blank 3%]  trait fn 21  priv impl fn 21  pub trait 1  impl 1
+    │   │   ├── raw.rs  (81 lines)  ███████████████████░  0.1%  [code 89%  comm 5%  blank 6%]  pub type 10  pub struct 1
+    │   │   └── mod.rs  (6 lines)  ██████████████░░░░░░  0.0%  [code 33%  comm 33%  blank 33%]
+    │   ├── dragonfly/  (220 lines)  ███████████████████░  0.1%
+    │   │     trait fn 20  priv impl fn 20  pub type 10  pub struct 1  pub trait 1  impl 1
+    │   │   ├── fs.rs  (131 lines)  ████████████████████  0.1%  [code 89%  comm 8%  blank 3%]  trait fn 20  priv impl fn 20  pub trait 1  impl 1
+    │   │   ├── raw.rs  (83 lines)  ███████████████████░  0.1%  [code 89%  comm 5%  blank 6%]  pub type 10  pub struct 1
+    │   │   └── mod.rs  (6 lines)  ██████████████░░░░░░  0.0%  [code 33%  comm 33%  blank 33%]
+    │   ├── haiku/  (211 lines)  ███████████████████░  0.1%
+    │   │     trait fn 19  priv impl fn 19  pub type 9  pub struct 1  pub trait 1  impl 1
+    │   │   ├── fs.rs  (126 lines)  ████████████████████  0.1%  [code 89%  comm 8%  blank 3%]  trait fn 19  priv impl fn 19  pub trait 1  impl 1
+    │   │   ├── raw.rs  (79 lines)  ██████████████████░░  0.0%  [code 87%  comm 6%  blank 6%]  pub type 9  pub struct 1
+    │   │   └── mod.rs  (6 lines)  ██████████████░░░░░░  0.0%  [code 33%  comm 33%  blank 33%]
+    │   ├── emscripten/  (200 lines)  ███████████████████░  0.1%
+    │   │     trait fn 17  priv impl fn 17  pub type 9  pub struct 1  pub trait 1  impl 1
+    │   │   ├── fs.rs  (116 lines)  ████████████████████  0.1%  [code 88%  comm 9%  blank 3%]  trait fn 17  priv impl fn 17  pub trait 1  impl 1
+    │   │   ├── raw.rs  (78 lines)  ██████████████████░░  0.0%  [code 87%  comm 5%  blank 8%]  pub type 9  pub struct 1
+    │   │   └── mod.rs  (6 lines)  ██████████████░░░░░░  0.0%  [code 33%  comm 33%  blank 33%]
+    │   ├── mod.rs  (198 lines)  ███████████████████░  0.1%  [code 84%  comm 9%  blank 7%]
+    │   ├── espidf/  (191 lines)  ███████████████████░  0.1%
+    │   │     trait fn 18  priv impl fn 18  pub type 9  pub struct 1  pub trait 1  impl 1
+    │   │   ├── fs.rs  (116 lines)  ████████████████████  0.1%  [code 93%  comm 3%  blank 3%]  trait fn 18  priv impl fn 18  pub trait 1  impl 1
+    │   │   ├── raw.rs  (69 lines)  ██████████████████░░  0.0%  [code 86%  comm 4%  blank 10%]  pub type 9  pub struct 1
+    │   │   └── mod.rs  (6 lines)  ██████████████░░░░░░  0.0%  [code 33%  comm 33%  blank 33%]
+    │   ├── horizon/  (173 lines)  ██████████████████░░  0.1%
+    │   │     trait fn 16  priv impl fn 16  pub type 9  pub struct 1  pub trait 1  impl 1
+    │   │   ├── fs.rs  (95 lines)  ████████████████████  0.1%  [code 93%  comm 4%  blank 3%]  trait fn 16  priv impl fn 16  pub trait 1  impl 1
+    │   │   ├── raw.rs  (71 lines)  ██████████████████░░  0.0%  [code 85%  comm 6%  blank 10%]  pub type 9  pub struct 1
+    │   │   └── mod.rs  (7 lines)  ███████████████░░░░░  0.0%  [code 29%  comm 43%  blank 29%]
+    │   ├── vxworks/  (146 lines)  ███████████████████░  0.1%
+    │   │     trait fn 17  priv impl fn 23  pub type 1  pub trait 1  impl 1
+    │   │   ├── fs.rs  (129 lines)  ███████████████████░  0.1%  [code 95%  comm 2%  blank 2%]  trait fn 17  priv impl fn 23  pub trait 1  impl 1
+    │   │   ├── raw.rs  (10 lines)  ██████████████░░░░░░  0.0%  [code 50%  comm 20%  blank 30%]  pub type 1
+    │   │   └── mod.rs  (7 lines)  ███████████████░░░░░  0.0%  [code 29%  comm 43%  blank 29%]
+    │   ├── nto/  (136 lines)  ███████████████████░  0.1%
+    │   │     trait fn 16  priv impl fn 16  pub type 3  closure type 6  pub trait 1  impl 1
+    │   │   ├── fs.rs  (92 lines)  ███████████████████░  0.1%  [code 96%  comm 1%  blank 3%]  trait fn 16  priv impl fn 16  pub trait 1  impl 1
+    │   │   ├── raw.rs  (40 lines)  ██████████████████░░  0.0%  [code 78%  comm 8%  blank 15%]  pub type 3  closure type 6
+    │   │   └── mod.rs  (4 lines)  ███████████████░░░░░  0.0%  [code 50%  comm 25%  blank 25%]
+    │   ├── vita/  (135 lines)  ███████████████████░  0.1%
+    │   │     trait fn 16  priv impl fn 16  pub type 9  pub trait 1  impl 1
+    │   │   ├── fs.rs  (95 lines)  ████████████████████  0.1%  [code 93%  comm 4%  blank 3%]  trait fn 16  priv impl fn 16  pub trait 1  impl 1
+    │   │   ├── raw.rs  (33 lines)  █████████████████░░░  0.0%  [code 73%  comm 12%  blank 15%]  pub type 9
+    │   │   └── mod.rs  (7 lines)  ███████████████░░░░░  0.0%  [code 29%  comm 43%  blank 29%]
+    │   ├── nuttx/  (129 lines)  ███████████████████░  0.1%
+    │   │     trait fn 16  priv impl fn 16  pub type 9  pub trait 1  impl 1
+    │   │   ├── fs.rs  (92 lines)  ███████████████████░  0.1%  [code 96%  comm 1%  blank 3%]  trait fn 16  priv impl fn 16  pub trait 1  impl 1
+    │   │   ├── raw.rs  (33 lines)  █████████████████░░░  0.0%  [code 73%  comm 12%  blank 15%]  pub type 9
+    │   │   └── mod.rs  (4 lines)  ████████████████████  0.0%  [code 50%  comm 50%  blank 0%]
+    │   ├── cygwin/  (128 lines)  ███████████████████░  0.1%
+    │   │     trait fn 18  priv impl fn 18  pub trait 1  impl 1
+    │   │   ├── fs.rs  (102 lines)  ████████████████████  0.1%  [code 96%  comm 4%  blank 0%]  trait fn 18  priv impl fn 18  pub trait 1  impl 1
+    │   │   ├── net.rs  (17 lines)  ██████████████████░░  0.0%  [code 35%  comm 53%  blank 12%]
+    │   │   ├── mod.rs  (5 lines)  ████████████████████  0.0%  [code 60%  comm 40%  blank 0%]
+    │   │   └── raw.rs  (4 lines)  ███████████████░░░░░  0.0%  [code 50%  comm 25%  blank 25%]
+    │   ├── uefi/  (118 lines)  ██████████████████░░  0.1%
+    │   │     pub fn 7  closure static 3
+    │   │   ├── env.rs  (109 lines)  ██████████████████░░  0.1%  [code 54%  comm 35%  blank 11%]  pub fn 7  closure static 3
+    │   │   └── mod.rs  (9 lines)  ████████████████░░░░  0.0%  [code 33%  comm 44%  blank 22%]
+    │   ├── hermit/  (109 lines)  ██████████████████░░  0.1%
+    │   │     priv impl fn 3  closure impl 3
+    │   │   ├── io/  (49 lines)  ██████████████████░░  0.0%
+    │   │   │     priv impl fn 3  closure impl 3
+    │   │   │   ├── net.rs  (45 lines)  ███████████████████░  0.0%  [code 93%  comm 0%  blank 7%]  priv impl fn 3  closure impl 3
+    │   │   │   └── mod.rs  (4 lines)  ███████████████░░░░░  0.0%  [code 50%  comm 25%  blank 25%]
+    │   │   ├── ffi.rs  (41 lines)  ███████████████████░  0.0%  [code 10%  comm 83%  blank 7%]
+    │   │   └── mod.rs  (19 lines)  █████████████████░░░  0.0%  [code 58%  comm 26%  blank 16%]
+    │   ├── motor/  (63 lines)  █████████████████░░░  0.0%
+    │   │     pub fn 1  trait fn 3  priv impl fn 3  impl 6
+    │   │   ├── ffi.rs  (41 lines)  ██████████████████░░  0.0%  [code 49%  comm 39%  blank 12%]  trait fn 2  priv impl fn 2  impl 4
+    │   │   ├── process.rs  (14 lines)  ████████████████░░░░  0.0%  [code 64%  comm 14%  blank 21%]  trait fn 1  priv impl fn 1  impl 2
+    │   │   └── mod.rs  (8 lines)  ██████████████░░░░░░  0.0%  [code 62%  comm 12%  blank 25%]  pub fn 1
+    │   ├── raw/  (43 lines)  ████████████████░░░░  0.0%
+    │   │     priv fn 1  closure type 1
+    │   │   ├── mod.rs  (26 lines)  █████████████████░░░  0.0%  [code 77%  comm 8%  blank 15%]  closure type 1
+    │   │   └── tests.rs  (17 lines)  ████████████████░░░░  0.0%  [code 76%  comm 6%  blank 18%]  priv fn 1
+    │   ├── ios/  (27 lines)  ██████████████████░░  0.0%
+    │   │   └── mod.rs  (27 lines)  ██████████████████░░  0.0%  [code 78%  comm 11%  blank 11%]
+    │   ├── macos/  (27 lines)  ██████████████████░░  0.0%
+    │   │   └── mod.rs  (27 lines)  ██████████████████░░  0.0%  [code 78%  comm 11%  blank 11%]
+    │   ├── trusty/  (7 lines)  ███████████████░░░░░  0.0%
+    │   │   ├── io/  (4 lines)  ███████████████░░░░░  0.0%
+    │   │   │   └── mod.rs  (4 lines)  ███████████████░░░░░  0.0%  [code 50%  comm 25%  blank 25%]
+    │   │   └── mod.rs  (3 lines)  ██████████████░░░░░░  0.0%  [code 33%  comm 33%  blank 33%]
+    │   └── wasip2/  (6 lines)  █████████████████░░░  0.0%
+    │       └── mod.rs  (6 lines)  █████████████████░░░  0.0%  [code 0%  comm 83%  blank 17%]
+    ├── sync/  (13,357 lines)  ███████████████████░  8.3%
+    │     pub fn 11  priv fn 2  pub impl fn 247  priv impl fn 196  closure fn 2  pub const 1  priv const 10  pub type 3  priv impl type 31  pub struct 62  priv struct 9  closure struct 3  pub enum 9  priv enum 2  closure static 1  impl 292  closure impl 5
+    │   ├── mpmc/  (3,781 lines)  ██████████████████░░  2.4%
+    │   │     pub fn 4  priv fn 1  pub impl fn 90  priv impl fn 46  priv const 8  priv impl type 10  pub struct 21  priv struct 8  pub enum 2  priv enum 2  closure static 1  impl 56
+    │   │   ├── mod.rs  (1,444 lines)  ███████████████████░  0.9%  [code 25%  comm 70%  blank 4%]  pub fn 2  pub impl fn 22  priv impl fn 11  priv impl type 7  pub struct 5  priv enum 2  impl 23
+    │   │   ├── list.rs  (668 lines)  █████████████████░░░  0.4%  [code 65%  comm 22%  blank 13%]  pub impl fn 14  priv impl fn 9  priv const 7  pub struct 2  priv struct 3  impl 5
+    │   │   ├── array.rs  (569 lines)  █████████████████░░░  0.4%  [code 61%  comm 26%  blank 13%]  pub impl fn 14  priv impl fn 4  pub struct 2  priv struct 1  impl 2
+    │   │   ├── zero.rs  (325 lines)  █████████████████░░░  0.2%  [code 70%  comm 16%  blank 14%]  pub impl fn 13  priv impl fn 5  pub struct 2  priv struct 2  impl 4
+    │   │   ├── waker.rs  (209 lines)  ██████████████████░░  0.1%  [code 68%  comm 20%  blank 12%]  pub fn 1  pub impl fn 12  priv impl fn 2  pub struct 3  impl 4
+    │   │   ├── context.rs  (159 lines)  ██████████████████░░  0.1%  [code 70%  comm 19%  blank 11%]  pub impl fn 6  priv impl fn 2  pub struct 1  priv struct 1  closure static 1  impl 1
+    │   │   ├── utils.rs  (137 lines)  ███████████████████░  0.1%  [code 58%  comm 34%  blank 9%]  pub impl fn 4  priv impl fn 2  priv const 1  priv impl type 1  pub struct 2  impl 4
+    │   │   ├── counter.rs  (136 lines)  █████████████████░░░  0.1%  [code 64%  comm 18%  blank 18%]  pub fn 1  pub impl fn 4  priv impl fn 6  priv impl type 2  pub struct 2  priv struct 1  impl 6
+    │   │   ├── select.rs  (71 lines)  ██████████████████░░  0.0%  [code 65%  comm 24%  blank 11%]  pub impl fn 1  priv impl fn 2  pub struct 2  pub enum 1  impl 3
+    │   │   ├── error.rs  (49 lines)  █████████████████░░░  0.0%  [code 67%  comm 20%  blank 12%]  priv impl fn 3  pub enum 1  impl 4
+    │   │   └── tests.rs  (14 lines)  ██████████████████░░  0.0%  [code 86%  comm 7%  blank 7%]  priv fn 1
+    │   ├── poison/  (2,730 lines)  ███████████████████░  1.7%
+    │   │     pub fn 2  pub impl fn 45  priv impl fn 39  priv impl type 6  pub struct 9  impl 64
+    │   │   ├── rwlock.rs  (1,274 lines)  ███████████████████░  0.8%  [code 39%  comm 56%  blank 5%]  pub impl fn 22  priv impl fn 23  priv impl type 4  pub struct 5  impl 37
+    │   │   ├── mutex.rs  (946 lines)  ███████████████████░  0.6%  [code 35%  comm 61%  blank 4%]  pub fn 2  pub impl fn 15  priv impl fn 14  priv impl type 2  pub struct 3  impl 24
+    │   │   └── condvar.rs  (510 lines)  ███████████████████░  0.3%  [code 22%  comm 76%  blank 2%]  pub impl fn 8  priv impl fn 2  pub struct 1  impl 3
+    │   ├── nonpoison/  (2,233 lines)  ███████████████████░  1.4%
+    │   │     pub fn 1  pub impl fn 43  priv impl fn 39  priv impl type 6  pub struct 9  impl 64
+    │   │   ├── rwlock.rs  (1,140 lines)  ███████████████████░  0.7%  [code 39%  comm 55%  blank 6%]  pub impl fn 22  priv impl fn 23  priv impl type 4  pub struct 5  impl 37
+    │   │   ├── mutex.rs  (649 lines)  ███████████████████░  0.4%  [code 41%  comm 53%  blank 6%]  pub fn 1  pub impl fn 14  priv impl fn 14  priv impl type 2  pub struct 3  impl 24
+    │   │   └── condvar.rs  (444 lines)  ████████████████████  0.3%  [code 19%  comm 78%  blank 3%]  pub impl fn 7  priv impl fn 2  pub struct 1  impl 3
+    │   ├── mpsc.rs  (1,269 lines)  ███████████████████░  0.8%  [code 24%  comm 71%  blank 6%]  pub fn 2  pub impl fn 12  priv impl fn 20  priv impl type 7  pub struct 8  pub enum 3  impl 35
+    │   ├── once_lock.rs  (709 lines)  ███████████████████░  0.4%  [code 35%  comm 61%  blank 5%]  pub impl fn 12  priv impl fn 11  priv const 1  pub struct 1  impl 11
+    │   ├── oneshot.rs  (466 lines)  ██████████████████░░  0.3%  [code 27%  comm 67%  blank 6%]  pub fn 1  pub impl fn 5  priv impl fn 8  pub struct 2  pub enum 2  impl 14
+    │   ├── reentrant_lock.rs  (432 lines)  ██████████████████░░  0.3%  [code 47%  comm 46%  blank 8%]  pub impl fn 6  priv impl fn 14  closure fn 1  priv impl type 1  pub struct 2  closure struct 2  impl 15  closure impl 4
+    │   ├── lazy_lock.rs  (427 lines)  ███████████████████░  0.3%  [code 41%  comm 54%  blank 5%]  priv fn 1  pub impl fn 6  priv impl fn 7  closure fn 1  priv const 1  priv impl type 1  pub struct 1  closure struct 1  impl 10  closure impl 1
+    │   ├── once.rs  (402 lines)  ███████████████████░  0.3%  [code 29%  comm 65%  blank 5%]  pub impl fn 11  priv impl fn 2  pub const 1  pub struct 2  pub enum 1  impl 6
+    │   ├── poison.rs  (389 lines)  ███████████████████░  0.2%  [code 48%  comm 44%  blank 8%]  pub fn 1  pub impl fn 13  priv impl fn 6  pub type 2  pub struct 3  pub enum 1  impl 9
+    │   ├── mod.rs  (307 lines)  ███████████████████░  0.2%  [code 20%  comm 75%  blank 6%]  pub impl fn 1  pub struct 1  impl 1
+    │   ├── barrier.rs  (167 lines)  ███████████████████░  0.1%  [code 38%  comm 56%  blank 5%]  pub impl fn 3  priv impl fn 2  pub struct 2  priv struct 1  impl 5
+    │   └── nonpoison.rs  (45 lines)  █████████████████░░░  0.0%  [code 67%  comm 18%  blank 16%]  priv impl fn 2  pub type 1  pub struct 1  impl 2
+    ├── io/  (12,992 lines)  ██████████████████░░  8.1%
+    │     pub fn 22  priv fn 184  trait fn 44  pub impl fn 85  priv impl fn 494  closure fn 4  priv const 6  pub impl const 7  closure const 14  pub type 1  priv type 2  trait type 1  priv impl type 6  pub struct 23  priv struct 17  closure struct 15  pub enum 1  priv enum 2  closure enum 2  pub trait 5  priv trait 6  priv static 2  closure static 5  impl 171  closure impl 21
+    │   ├── buffered/  (3,256 lines)  █████████████████░░░  2.0%
+    │   │     priv fn 43  pub impl fn 51  priv impl fn 76  closure fn 1  pub struct 8  priv struct 2  closure struct 7  priv enum 1  closure enum 1  closure static 1  impl 35  closure impl 11
+    │   │   ├── tests.rs  (1,087 lines)  █████████████████░░░  0.7%  [code 73%  comm 12%  blank 15%]  priv fn 43  priv impl fn 19  closure fn 1  pub struct 1  priv struct 2  closure struct 6  priv enum 1  closure enum 1  closure static 1  impl 3  closure impl 9
+    │   │   ├── bufwriter.rs  (694 lines)  ██████████████████░░  0.4%  [code 45%  comm 47%  blank 9%]  pub impl fn 14  priv impl fn 19  pub struct 2  closure struct 1  impl 10  closure impl 2
+    │   │   ├── bufreader.rs  (593 lines)  ██████████████████░░  0.4%  [code 42%  comm 51%  blank 7%]  pub impl fn 13  priv impl fn 17  pub struct 1  impl 11
+    │   │   ├── linewritershim.rs  (297 lines)  ██████████████████░░  0.2%  [code 42%  comm 48%  blank 10%]  pub impl fn 1  priv impl fn 9  pub struct 1  impl 2
+    │   │   ├── linewriter.rs  (235 lines)  ███████████████████░  0.1%  [code 30%  comm 64%  blank 6%]  pub impl fn 5  priv impl fn 8  pub struct 1  impl 4
+    │   │   ├── mod.rs  (189 lines)  ███████████████████░  0.1%  [code 29%  comm 63%  blank 7%]  pub impl fn 4  priv impl fn 4  pub struct 1  impl 4
+    │   │   └── bufreader/  (161 lines)  █████████████████░░░  0.1%
+    │   │         pub impl fn 14  pub struct 1  impl 1
+    │   │       └── buffer.rs  (161 lines)  █████████████████░░░  0.1%  [code 63%  comm 22%  blank 14%]  pub impl fn 14  pub struct 1  impl 1
+    │   ├── mod.rs  (2,843 lines)  ███████████████████░  1.8%  [code 30%  comm 65%  blank 5%]  pub fn 11  priv fn 4  trait fn 38  priv impl fn 35  closure fn 1  priv const 1  closure const 1  priv impl type 3  pub struct 3  priv struct 1  closure struct 1  pub enum 1  pub trait 5  priv trait 2  impl 16  closure impl 1
+    │   ├── stdio.rs  (1,288 lines)  ███████████████████░  0.8%  [code 48%  comm 44%  blank 8%]  pub fn 9  priv fn 6  trait fn 1  pub impl fn 6  priv impl fn 98  priv type 1  pub struct 6  priv struct 3  priv static 2  closure static 3  impl 33  closure impl 1
+    │   ├── tests.rs  (846 lines)  █████████████████░░░  0.5%  [code 80%  comm 4%  blank 17%]  priv fn 46  priv impl fn 15  priv struct 4  closure struct 5  impl 5  closure impl 6
+    │   ├── impls.rs  (837 lines)  █████████████████░░░  0.5%  [code 80%  comm 5%  blank 15%]  priv impl fn 114  impl 19
+    │   ├── error.rs  (762 lines)  ███████████████████░  0.5%  [code 36%  comm 59%  blank 5%]  priv fn 1  pub impl fn 12  priv impl fn 9  closure fn 1  pub impl const 7  closure const 1  pub type 1  pub struct 2  priv struct 1  priv enum 1  impl 9
+    │   ├── error/  (589 lines)  ██████████████████░░  0.4%
+    │   │     priv fn 10  pub impl fn 14  priv impl fn 4  priv const 5  closure const 5  priv type 1  pub struct 2  priv struct 2  closure struct 1  closure static 1  impl 9  closure impl 2
+    │   │   ├── repr_bitpacked.rs  (348 lines)  ███████████████████░  0.2%  [code 39%  comm 55%  blank 7%]  priv fn 1  pub impl fn 7  priv impl fn 1  priv const 5  closure const 2  pub struct 1  impl 4
+    │   │   ├── tests.rs  (191 lines)  █████████████████░░░  0.1%  [code 80%  comm 6%  blank 15%]  priv fn 9  priv impl fn 3  closure const 3  priv struct 2  closure struct 1  closure static 1  impl 4  closure impl 2
+    │   │   └── repr_unpacked.rs  (50 lines)  ██████████████████░░  0.0%  [code 86%  comm 6%  blank 8%]  pub impl fn 7  priv type 1  pub struct 1  impl 1
+    │   ├── cursor/  (567 lines)  ██████████████████░░  0.4%
+    │   │     priv fn 35  closure const 3  closure struct 1
+    │   │   └── tests.rs  (567 lines)  ██████████████████░░  0.4%  [code 90%  comm 0%  blank 10%]  priv fn 35  closure const 3  closure struct 1
+    │   ├── cursor.rs  (501 lines)  █████████████████░░░  0.3%  [code 77%  comm 10%  blank 13%]  priv fn 8  priv impl fn 43  impl 8
+    │   ├── util.rs  (331 lines)  ████████████████░░░░  0.2%  [code 81%  comm 2%  blank 17%]  priv impl fn 56  impl 10
+    │   ├── copy.rs  (296 lines)  █████████████████░░░  0.2%  [code 61%  comm 26%  blank 13%]  pub fn 1  priv fn 2  trait fn 4  priv impl fn 14  priv trait 2  impl 7
+    │   ├── pipe.rs  (289 lines)  ███████████████████░  0.2%  [code 40%  comm 55%  blank 4%]  pub fn 1  pub impl fn 2  priv impl fn 22  pub struct 2  impl 10
+    │   ├── util/  (185 lines)  █████████████████░░░  0.1%
+    │   │     priv fn 8  priv impl fn 2  closure const 3  priv struct 2  impl 2
+    │   │   └── tests.rs  (185 lines)  █████████████████░░░  0.1%  [code 85%  comm 1%  blank 14%]  priv fn 8  priv impl fn 2  closure const 3  priv struct 2  impl 2
+    │   ├── stdio/  (166 lines)  ███████████████████░  0.1%
+    │   │     priv fn 10  trait fn 1  priv impl fn 3  trait type 1  priv impl type 3  closure enum 1  priv trait 2  impl 6
+    │   │   └── tests.rs  (166 lines)  ███████████████████░  0.1%  [code 90%  comm 5%  blank 5%]  priv fn 10  trait fn 1  priv impl fn 3  trait type 1  priv impl type 3  closure enum 1  priv trait 2  impl 6
+    │   ├── copy/  (148 lines)  █████████████████░░░  0.1%
+    │   │     priv fn 6  priv impl fn 3  closure fn 1  closure const 1  priv struct 2  impl 2
+    │   │   └── tests.rs  (148 lines)  █████████████████░░░  0.1%  [code 85%  comm 1%  blank 14%]  priv fn 6  priv impl fn 3  closure fn 1  closure const 1  priv struct 2  impl 2
+    │   ├── impls/  (57 lines)  █████████████████░░░  0.0%
+    │   │     priv fn 4
+    │   │   └── tests.rs  (57 lines)  █████████████████░░░  0.0%  [code 86%  comm 0%  blank 14%]  priv fn 4
+    │   ├── pipe/  (17 lines)  ███████████████░░░░░  0.0%
+    │   │     priv fn 1
+    │   │   └── tests.rs  (17 lines)  ███████████████░░░░░  0.0%  [code 76%  comm 0%  blank 24%]  priv fn 1
+    │   └── prelude.rs  (14 lines)  █████████████████░░░  0.0%  [code 14%  comm 71%  blank 14%]
+    ├── collections/  (7,668 lines)  ███████████████████░  4.8%
+    │     pub fn 1  priv fn 72  trait fn 1  pub impl fn 104  priv impl fn 165  closure fn 31  priv const 2  closure const 6  priv impl type 34  closure type 2  pub struct 25  priv struct 1  closure struct 7  pub enum 2  closure trait 1  closure static 10  impl 140  closure impl 10
+    │   ├── hash/  (7,209 lines)  ██████████████████░░  4.5%
+    │   │     pub fn 1  priv fn 72  trait fn 1  pub impl fn 104  priv impl fn 165  closure fn 31  priv const 2  closure const 6  priv impl type 34  closure type 2  pub struct 25  priv struct 1  closure struct 7  pub enum 2  closure trait 1  closure static 10  impl 140  closure impl 10
+    │   │   ├── map.rs  (3,063 lines)  ███████████████████░  1.9%  [code 42%  comm 53%  blank 5%]  pub fn 1  priv fn 2  pub impl fn 59  priv impl fn 87  closure fn 12  priv const 1  priv impl type 17  pub struct 14  pub enum 1  impl 78
+    │   │   ├── set.rs  (2,554 lines)  ███████████████████░  1.6%  [code 43%  comm 52%  blank 5%]  priv fn 2  pub impl fn 45  priv impl fn 66  closure fn 9  priv const 1  priv impl type 16  pub struct 11  pub enum 1  impl 59
+    │   │   ├── map/  (1,059 lines)  ████████████████░░░░  0.7%
+    │   │   │     priv fn 45  trait fn 1  priv impl fn 8  closure fn 10  closure const 4  priv impl type 1  closure type 1  priv struct 1  closure struct 4  closure trait 1  closure static 6  impl 3  closure impl 5
+    │   │   │   └── tests.rs  (1,059 lines)  ████████████████░░░░  0.7%  [code 80%  comm 2%  blank 18%]  priv fn 45  trait fn 1  priv impl fn 8  closure fn 10  closure const 4  priv impl type 1  closure type 1  priv struct 1  closure struct 4  closure trait 1  closure static 6  impl 3  closure impl 5
+    │   │   ├── set/  (529 lines)  ████████████████░░░░  0.3%
+    │   │   │     priv fn 23  priv impl fn 4  closure const 2  closure type 1  closure struct 3  closure static 4  closure impl 5
+    │   │   │   └── tests.rs  (529 lines)  ████████████████░░░░  0.3%  [code 81%  comm 1%  blank 18%]  priv fn 23  priv impl fn 4  closure const 2  closure type 1  closure struct 3  closure static 4  closure impl 5
+    │   │   └── mod.rs  (4 lines)  ███████████████░░░░░  0.0%  [code 50%  comm 25%  blank 25%]
+    │   └── mod.rs  (459 lines)  ████████████████████  0.3%  [code 9%  comm 90%  blank 1%]
+    ├── num/  (4,630 lines)  ███████████████████░  2.9%
+    │     pub impl fn 139  impl 4
+    │   ├── f32.rs  (1,273 lines)  ███████████████████░  0.8%  [code 26%  comm 70%  blank 3%]  pub impl fn 41  impl 1
+    │   ├── f64.rs  (1,273 lines)  ███████████████████░  0.8%  [code 26%  comm 70%  blank 3%]  pub impl fn 41  impl 1
+    │   ├── f128.rs  (1,047 lines)  ███████████████████░  0.7%  [code 21%  comm 76%  blank 3%]  pub impl fn 29  impl 1
+    │   ├── f16.rs  (1,009 lines)  ███████████████████░  0.6%  [code 21%  comm 76%  blank 3%]  pub impl fn 28  impl 1
+    │   └── mod.rs  (28 lines)  ██████████████████░░  0.0%  [code 71%  comm 21%  blank 7%]
+    ├── thread/  (4,244 lines)  ███████████████████░  2.6%
+    │     pub fn 21  priv fn 37  pub impl fn 47  priv impl fn 19  closure fn 18  priv const 3  pub impl const 1  closure const 5  pub type 1  closure type 3  pub struct 12  priv struct 5  closure struct 3  closure static 18  impl 33  closure impl 3
+    │   ├── local.rs  (815 lines)  ███████████████████░  0.5%  [code 35%  comm 59%  blank 6%]  priv fn 1  pub impl fn 12  priv impl fn 4  pub impl const 1  pub struct 2  impl 7
+    │   ├── functions.rs  (696 lines)  ███████████████████░  0.4%  [code 11%  comm 87%  blank 2%]  pub fn 10  priv impl fn 1  priv struct 1  impl 1
+    │   ├── tests.rs  (427 lines)  █████████████████░░░  0.3%  [code 82%  comm 5%  blank 13%]  priv fn 33  priv impl fn 1  closure fn 3  closure const 1  closure type 3  closure struct 2  closure static 1  closure impl 1
+    │   ├── scoped.rs  (358 lines)  ███████████████████░  0.2%  [code 36%  comm 59%  blank 5%]  pub fn 1  pub impl fn 7  priv impl fn 3  pub struct 3  impl 6
+    │   ├── current.rs  (332 lines)  ██████████████████░░  0.2%  [code 63%  comm 27%  blank 10%]  pub fn 7  priv fn 2  closure fn 9  priv const 3  closure const 4  closure static 9
+    │   ├── thread.rs  (326 lines)  ██████████████████░░  0.2%  [code 36%  comm 57%  blank 6%]  pub impl fn 11  priv impl fn 3  pub struct 1  priv struct 1  closure struct 1  impl 3  closure impl 2
+    │   ├── mod.rs  (268 lines)  ███████████████████░  0.2%  [code 22%  comm 74%  blank 3%]  priv fn 1  closure fn 1  pub type 1
+    │   ├── builder.rs  (263 lines)  ███████████████████░  0.2%  [code 20%  comm 77%  blank 3%]  pub impl fn 6  pub struct 1  impl 1
+    │   ├── lifecycle.rs  (244 lines)  ██████████████████░░  0.2%  [code 58%  comm 31%  blank 11%]  pub fn 1  pub impl fn 4  priv impl fn 3  pub struct 2  priv struct 1  closure static 1  impl 6
+    │   ├── join_handle.rs  (186 lines)  ████████████████████  0.1%  [code 23%  comm 73%  blank 4%]  pub impl fn 3  priv impl fn 3  pub struct 1  impl 6
+    │   ├── spawnhook.rs  (153 lines)  ███████████████████░  0.1%  [code 44%  comm 51%  blank 5%]  pub fn 2  pub impl fn 1  priv impl fn 1  pub struct 1  priv struct 2  closure static 1  impl 2
+    │   ├── id.rs  (120 lines)  ██████████████████░░  0.1%  [code 56%  comm 35%  blank 9%]  pub impl fn 3  closure fn 1  pub struct 1  closure static 3  impl 1
+    │   └── main_thread.rs  (56 lines)  ██████████████████░░  0.0%  [code 59%  comm 29%  blank 12%]  closure fn 4  closure static 3
+    ├── path.rs  (4,143 lines)  ███████████████████░  2.6%  [code 44%  comm 48%  blank 7%]  pub fn 2  priv fn 6  pub impl fn 76  priv impl fn 124  closure fn 1  pub const 4  priv const 3  priv impl type 10  pub struct 9  closure struct 2  pub enum 2  priv enum 1  impl 95  closure impl 10
+    ├── net/  (4,023 lines)  ██████████████████░░  2.5%
+    │     pub fn 5  priv fn 73  trait fn 1  pub impl fn 64  priv impl fn 42  closure fn 8  pub const 2  closure const 3  trait type 1  priv impl type 14  pub struct 5  pub enum 1  pub trait 1  impl 35
+    │   ├── tcp.rs  (1,134 lines)  ███████████████████░  0.7%  [code 27%  comm 68%  blank 6%]  pub impl fn 33  priv impl fn 26  priv impl type 2  pub struct 4  impl 18
+    │   ├── tcp/  (952 lines)  █████████████████░░░  0.6%
+    │   │     priv fn 39  closure fn 6  closure const 2
+    │   │   └── tests.rs  (952 lines)  █████████████████░░░  0.6%  [code 82%  comm 3%  blank 15%]  priv fn 39  closure fn 6  closure const 2
+    │   ├── udp.rs  (856 lines)  ███████████████████░  0.5%  [code 20%  comm 76%  blank 4%]  pub impl fn 31  priv impl fn 4  pub struct 1  impl 5
+    │   ├── udp/  (370 lines)  ████████████████░░░░  0.2%
+    │   │     priv fn 17
+    │   │   └── tests.rs  (370 lines)  ████████████████░░░░  0.2%  [code 81%  comm 1%  blank 17%]  priv fn 17
+    │   ├── socket_addr/  (306 lines)  █████████████████░░░  0.2%
+    │   │     priv fn 16  closure fn 2  closure const 1
+    │   │   └── tests.rs  (306 lines)  █████████████████░░░  0.2%  [code 75%  comm 9%  blank 15%]  priv fn 16  closure fn 2  closure const 1
+    │   ├── socket_addr.rs  (255 lines)  ███████████████████░  0.2%  [code 44%  comm 49%  blank 8%]  trait fn 1  priv impl fn 12  trait type 1  priv impl type 12  pub trait 1  impl 12
+    │   ├── mod.rs  (72 lines)  ███████████████████░  0.0%  [code 43%  comm 50%  blank 7%]  pub enum 1
+    │   ├── test.rs  (38 lines)  █████████████████░░░  0.0%  [code 76%  comm 8%  blank 16%]  pub fn 4  pub const 2
+    │   ├── hostname.rs  (22 lines)  ████████████████████  0.0%  [code 23%  comm 73%  blank 5%]  pub fn 1
+    │   ├── ip_addr.rs  (10 lines)  ██████████████████░░  0.0%  [code 80%  comm 10%  blank 10%]
+    │   └── ip_addr/  (8 lines)  ██████████████████░░  0.0%
+    │         priv fn 1
+    │       └── tests.rs  (8 lines)  ██████████████████░░  0.0%  [code 88%  comm 0%  blank 12%]  priv fn 1
+    ├── fs.rs  (3,503 lines)  ████████████████████  2.2%  [code 23%  comm 73%  blank 4%]  pub fn 22  priv fn 1  pub impl fn 54  priv impl fn 55  closure fn 3  priv impl type 1  pub struct 10  pub enum 1  impl 43
+    ├── keyword_docs.rs  (2,770 lines)  ████████████████████  1.7%  [code 3%  comm 96%  blank 1%]
+    ├── process.rs  (2,722 lines)  ███████████████████░  1.7%  [code 28%  comm 66%  blank 5%]  pub fn 3  trait fn 1  pub impl fn 38  priv impl fn 72  pub impl const 2  priv impl type 2  pub struct 13  pub trait 1  impl 63
+    ├── fs/  (2,561 lines)  █████████████████░░░  1.6%
+    │     pub fn 1  priv fn 102  priv impl fn 1  closure fn 2  closure const 4  closure struct 1  closure impl 1
+    │   └── tests.rs  (2,561 lines)  █████████████████░░░  1.6%  [code 81%  comm 7%  blank 12%]  pub fn 1  priv fn 102  priv impl fn 1  closure fn 2  closure const 4  closure struct 1  closure impl 1
+    ├── ffi/  (2,532 lines)  ██████████████████░░  1.6%
+    │     priv fn 30  trait fn 2  pub impl fn 39  priv impl fn 87  closure fn 1  priv const 1  priv impl type 6  pub struct 3  closure trait 2  impl 69  closure impl 8
+    │   ├── os_str.rs  (1,898 lines)  ██████████████████░░  1.2%  [code 47%  comm 45%  blank 7%]  trait fn 2  pub impl fn 39  priv impl fn 87  priv const 1  priv impl type 6  pub struct 3  closure trait 2  impl 69  closure impl 8
+    │   ├── os_str/  (413 lines)  █████████████████░░░  0.3%
+    │   │     priv fn 30  closure fn 1
+    │   │   └── tests.rs  (413 lines)  █████████████████░░░  0.3%  [code 79%  comm 3%  blank 18%]  priv fn 30  closure fn 1
+    │   ├── mod.rs  (207 lines)  ████████████████████  0.1%  [code 20%  comm 78%  blank 2%]
+    │   └── c_str.rs  (14 lines)  ██████████████████░░  0.0%  [code 86%  comm 7%  blank 7%]
+    ├── env.rs  (1,165 lines)  ███████████████████░  0.7%  [code 30%  comm 64%  blank 6%]  pub fn 15  priv impl fn 31  closure fn 1  closure const 8  priv impl type 5  pub struct 6  pub enum 1  impl 22
+    ├── panicking.rs  (883 lines)  ██████████████████░░  0.6%  [code 56%  comm 34%  blank 10%]  pub fn 9  priv fn 7  priv impl fn 15  closure fn 18  closure const 1  closure struct 4  priv enum 1  closure enum 2  pub static 1  priv static 1  closure static 3  impl 1  closure impl 9
+    ├── time.rs  (863 lines)  ███████████████████░  0.5%  [code 24%  comm 71%  blank 5%]  pub impl fn 17  priv impl fn 14  pub const 1  pub impl const 3  priv impl type 5  pub struct 3  impl 18
+    ├── lib.rs  (808 lines)  ████████████████████  0.5%  [code 38%  comm 58%  blank 5%]  closure trait 1
+    ├── process/  (669 lines)  ██████████████████░░  0.4%
+    │     pub fn 4  priv fn 33  closure fn 1  closure const 1
+    │   └── tests.rs  (669 lines)  ██████████████████░░  0.4%  [code 87%  comm 3%  blank 10%]  pub fn 4  priv fn 33  closure fn 1  closure const 1
+    ├── error.rs  (562 lines)  ███████████████████░  0.4%  [code 22%  comm 73%  blank 4%]  pub impl fn 3  priv impl fn 7  pub struct 1  priv struct 1  impl 7
+    ├── panic.rs  (534 lines)  ███████████████████░  0.3%  [code 39%  comm 55%  blank 6%]  pub fn 6  pub impl fn 7  priv impl fn 3  pub type 1  pub struct 1  pub enum 1  priv static 1  impl 10
+    ├── alloc.rs  (490 lines)  ██████████████████░░  0.3%  [code 46%  comm 46%  blank 8%]  pub fn 3  priv fn 1  priv impl fn 8  closure fn 4  pub struct 1  priv static 1  closure static 1  impl 2
+    ├── backtrace.rs  (478 lines)  ██████████████████░░  0.3%  [code 59%  comm 32%  blank 9%]  priv fn 1  pub impl fn 5  priv impl fn 8  closure fn 2  closure type 1  pub struct 2  priv struct 2  pub enum 1  priv enum 3  closure static 1  impl 8
+    ├── macros.rs  (460 lines)  ████████████████████  0.3%  [code 13%  comm 85%  blank 2%]  closure const 1
+    ├── prelude/  (382 lines)  ██████████████████░░  0.2%
+    │   ├── mod.rs  (192 lines)  ███████████████████░  0.1%  [code 24%  comm 68%  blank 7%]
+    │   └── v1.rs  (190 lines)  ██████████████████░░  0.1%  [code 73%  comm 14%  blank 13%]
+    ├── hash/  (250 lines)  ███████████████████░  0.2%
+    │     pub impl fn 2  priv impl fn 7  priv const 1  priv impl type 1  pub struct 2  impl 6
+    │   ├── random.rs  (159 lines)  ██████████████████░░  0.1%  [code 52%  comm 40%  blank 9%]  pub impl fn 2  priv impl fn 7  priv const 1  priv impl type 1  pub struct 2  impl 6
+    │   └── mod.rs  (91 lines)  ███████████████████░  0.1%  [code 5%  comm 91%  blank 3%]
+    ├── rt.rs  (211 lines)  ██████████████████░░  0.1%  [code 57%  comm 35%  blank 9%]  pub fn 2  priv fn 5  closure static 1
+    ├── ascii.rs  (210 lines)  ██████████████████░░  0.1%  [code 36%  comm 53%  blank 11%]  trait fn 6  closure fn 6  trait type 1  priv impl type 4  pub trait 1  impl 4
+    ├── random.rs  (99 lines)  ███████████████████░  0.1%  [code 17%  comm 78%  blank 5%]  pub fn 1  priv impl fn 1  pub struct 1  impl 1
+    ├── backtrace/  (98 lines)  ██████████████████░░  0.1%
+    │     priv fn 4  closure fn 1
+    │   └── tests.rs  (98 lines)  ██████████████████░░  0.1%  [code 88%  comm 1%  blank 11%]  priv fn 4  closure fn 1
+    ├── macros/  (67 lines)  █████████████████░░░  0.0%
+    │     priv fn 3  priv impl fn 3  closure fn 1  closure struct 4  closure impl 3
+    │   └── tests.rs  (67 lines)  █████████████████░░░  0.0%  [code 60%  comm 27%  blank 13%]  priv fn 3  priv impl fn 3  closure fn 1  closure struct 4  closure impl 3
+    ├── test_helpers.rs  (65 lines)  ██████████████████░░  0.0%  [code 65%  comm 25%  blank 11%]  pub fn 2  pub impl fn 2  priv impl fn 1  pub struct 1  impl 2
+    ├── bstr.rs  (4 lines)  ███████████████░░░░░  0.0%  [code 50%  comm 25%  blank 25%]
+    ├── lib.miri.rs  (4 lines)  ████████████████████  0.0%  [code 50%  comm 50%  blank 0%]
+    └── pat.rs  (3 lines)  ██████████████░░░░░░  0.0%  [code 33%  comm 33%  blank 33%]
+
+────────────────────────────────────────────────────────────
+  Summary
+────────────────────────────────────────────────────────────
+  Files scanned               665
+  Total lines             145,831 (160,409)
+    ↳ Code                 89,982  56.1%
+    ↳ Comments             55,849  34.8%
+    ↳ Blank                14,578  9.1%
+────────────────────────────────────────────────────────────
+  Symbols (whole tree)
+────────────────────────────────────────────────────────────
+  fn          9,444
+      ↳ open       pub 925  priv 916
+      ↳ trait         683
+      ↳ impl       pub 3,108  priv 3,289
+      ↳ closure       523
+  const       3,269
+      ↳ open       pub 2,604  priv 149
+      ↳ trait           3
+      ↳ impl       pub 78  priv 11
+      ↳ closure       424
+  type          726
+      ↳ open       pub 345  priv 23
+      ↳ trait           6
+      ↳ impl       priv 199
+      ↳ closure       153
+  struct        853
+      ↳ open       pub 666  priv 82
+      ↳ impl       priv 3
+      ↳ closure       102
+  enum           75
+      ↳ open       pub 47  priv 21
+      ↳ closure         7
+  trait         105
+      ↳ open       pub 91  priv 9
+      ↳ closure         5
+  static        179
+      ↳ open       pub 1  priv 41
+      ↳ closure       137
+  impl        2,630
+      ↳ open        2,492
+      ↳ impl            2
+      ↳ closure       136
+────────────────────────────────────────────────────────────
