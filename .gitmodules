@@ -1,0 +1,60 @@
+[submodule "extensions/mirl_extensions"]
+	path = extensions/mirl_extensions
+	url = https://github.com/Miner3D-Gamer/mirl_extensions.git
+[submodule "buffer/mirl_buffer_interpolation"]
+	path = buffer/mirl_buffer_interpolation
+	url = https://github.com/Miner3D-Gamer/mirl_buffer_interpolation.git
+[submodule "codec/mirl_values"]
+	path = codec/mirl_values
+	url = https://github.com/Miner3D-Gamer/mirl_values.git
+[submodule "extensions/mirl_extensions_core"]
+	path = extensions/mirl_extensions_core
+	url = https://github.com/Miner3D-Gamer/mirl_extensions_core.git
+[submodule "math/mirl_geometry"]
+	path = math/mirl_geometry
+	url = https://github.com/Miner3D-Gamer/mirl_geometry.git
+[submodule "platform/windowing/mirl_windowing_minifb"]
+	path = platform/windowing/mirl_windowing_minifb
+	url = https://github.com/Miner3D-Gamer/mirl_windowing_minifb.git
+[submodule "graphics/mirl_gui"]
+	path = graphics/mirl_gui
+	url = https://github.com/Miner3D-Gamer/mirl_gui.git
+[submodule "platform/windowing/mirl_windowing_console"]
+	path = platform/windowing/mirl_windowing_console
+	url = https://github.com/Miner3D-Gamer/mirl_windowing_console.git
+[submodule "codec/mirl_codec_info"]
+	path = codec/mirl_codec_info
+	url = https://github.com/Miner3D-Gamer/mirl_codec_info.git
+[submodule "mirl_collections"]
+	path = mirl_collections
+	url = https://github.com/Miner3D-Gamer/mirl_collections.git
+[submodule "graphics/mirl_rendering"]
+	path = graphics/mirl_rendering
+	url = https://github.com/Miner3D-Gamer/mirl_rendering.git
+[submodule "mirl_std_exposed"]
+	path = mirl_std_exposed
+	url = https://github.com/Miner3D-Gamer/mirl_std_exposed.git
+[submodule "platform/mirl_terminal"]
+	path = platform/mirl_terminal
+	url = https://github.com/Miner3D-Gamer/mirl_terminal.git
+[submodule "platform/windowing/mirl_windowing_glfw"]
+	path = platform/windowing/mirl_windowing_glfw
+	url = https://github.com/Miner3D-Gamer/mirl_windowing_glfw.git
+[submodule "helper/mirl_build_tools"]
+	path = helper/mirl_build_tools
+	url = https://github.com/Miner3D-Gamer/mirl_build_tools.git
+[submodule "extensions/mirl_extensions_math"]
+	path = extensions/mirl_extensions_math
+	url = https://github.com/Miner3D-Gamer/mirl_extensions_math.git
+[submodule "platform/mirl_audio"]
+	path = platform/mirl_audio
+	url = https://github.com/Miner3D-Gamer/mirl_audio.git
+[submodule "extensions/mirl_extensions_conversion"]
+	path = extensions/mirl_extensions_conversion
+	url = https://github.com/Miner3D-Gamer/mirl_extensions_conversion.git
+[submodule "platform/mirl_system"]
+	path = platform/mirl_system
+	url = https://github.com/Miner3D-Gamer/mirl_system.git
+[submodule "buffer/mirl_buffer"]
+	path = buffer/mirl_buffer
+	url = https://github.com/Miner3D-Gamer/mirl_buffer.git
