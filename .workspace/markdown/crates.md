@@ -1,4 +1,4 @@
-# **Mirl**
+# **[Mirl](https://github.com/Miner3D-Gamer/mirl)**
 
 <sub>Miner's Rust Libs (Mrl didn't sound that good)</sub>
 
