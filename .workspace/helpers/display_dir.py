@@ -6,7 +6,7 @@ EXCLUDE_HIDDEN = True
 
 print("digraph {")
 
-node_ids = {}
+node_ids: dict[str, int] = {}
 next_id = 0
 
 
@@ -26,7 +26,7 @@ for root, dirs, files in os.walk("."):
         rel = os.path.basename(os.getcwd()) or "."
 
     node_ids[root] = next_id
-    print(f'    {next_id} [label="{rel}" shape=box]')
+    print(f'    {next_id} [label="{rel.replace('\\', '/')}" shape=box]')
     next_id += 1
 
 for root, dirs, files in os.walk("."):

@@ -37,3 +37,17 @@ The crates contained here vary in purpose so it is better to better to inspect t
 - [`no_std` support](.workspace/markdown/common_concerns.md#no_std-support)
 
 ---
+
+<details>
+<summary>
+Click here to view the mirl connection graph
+</summary>
+
+The crates under mirl and their relation (simplified):
+<img title="Mirl Dependency Web" alt="Mirl Dependency Web" src="./.workspace/evolution/mirl_connection_graph_6_s.svg">
+
+The crates under mirl and their relation (including compile time & proc macro dependencies):
+
+<img title="Mirl Dependency Web" alt="Mirl Dependency Web" src="./.workspace/evolution/mirl_connection_graph_6_a.svg">
+
+</details>
