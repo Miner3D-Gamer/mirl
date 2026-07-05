@@ -1,11 +1,9 @@
 [patch.crates-io]
-mirl = { path = "../mirl/deprecated/mirl_crate" }
 mirl_buffer = { path = "../mirl/buffer/mirl_buffer" }
 mirl_buffer_interpolation = { path = "../mirl/buffer/mirl_buffer_interpolation" }
 mirl_build_tools = { path = "../mirl/helper/mirl_build_tools" }
 mirl_codec_info = { path = "../mirl/codec/mirl_codec_info" }
 mirl_collections = { path = "../mirl/mirl_collections" }
-mirl_core = { path = "../mirl/deprecated/mirl_core" }
 mirl_derive = { path = "../mirl/helper/mirl_derive" }
 mirl_extensions = { path = "../mirl/extensions/mirl_extensions" }
 mirl_extensions_core = { path = "../mirl/extensions/mirl_extensions_core" }

@@ -15,6 +15,12 @@ Create:
 - Improve the `RawCursor` to `.ico` formatting experience
 - Check if glfw backend renderers red and blue color channels are swapped
 - Check if all `README.md` are up to date quality wise
+- Linux support for `mirl_system`
+
+## New Crates
+
+- Clipboard support?
+- Sound support?
 
 ## Testing
 

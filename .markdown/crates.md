@@ -236,19 +236,7 @@ This crate publicly contains private functions(/structs/enums) from std/core
 
 All functionality will be extracted from these crates. Then they will be deleted. No crate should depend on them.
 
-#### • [Mirl Consts]()
-
-Most values here could just exist in in a [Extensions](#extensions) crates.
-
-This lib is unreleased and will soon be consumed by [Mirl Extensions](https://github.com/Miner3D-Gamer/mirl_extensions) or [Mirl Extensions Math](https://github.com/Miner3D-Gamer/mirl_extensions_math) (10% Done. Only time and byte related consts exist. Needs to be expanded.)
-
-#### • [Mirl](https://github.com/Miner3D-Gamer/mirl)
-
-The old kitchen sink. A crate with objects I don't know where else to put (50% Done. This lib will dissolve into others when logically possible)
-
-#### • [Mirl Core](https://github.com/Miner3D-Gamer/mirl_core)
-
-Similar to [mirl](https://github.com/Miner3D-Gamer/mirl), a kitchen sink. Whereas mirl pulls from all other crates here, the other crates pull from here (40% This lib will dissolve into others when logically possible)
+All deprecated crates have been removed. These were `mirl`, `mirl_core`, and `mirl_consts`
 
 ---
 
