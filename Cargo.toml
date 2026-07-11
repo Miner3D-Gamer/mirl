@@ -27,6 +27,7 @@ members = [
     "platform/windowing/mirl_windowing_core",
     "platform/windowing/mirl_windowing_glfw",
     "platform/windowing/mirl_windowing_minifb",
+    "mirl_unsorted_horrors",
 ]
 resolver = "3"
 

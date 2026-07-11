@@ -40,15 +40,15 @@ and inside `build.rs`:
 ```rust
 //! Check [`mirl_build_tools::setup`] for documentation
 fn main() {
-    mirl_build_tools::setup((bool) is nightly required?)
+    mirl_build_tools::setup()
 }
 ```
 
 This setup function does the following:
 
-- Ensure the user is using nightly if required
+- Ensure the user is using nightly if it detects that nightly is required (by searching for the use of the "feature" keyword)
 - Ensures `miri` flag is set when `miri` is used and a `miri` flag exist, same goes for `test`
-- Adds `{name}_present` to env so it can be used in `#[cfg({name}_present)]`
+- Adds `CRATE_PRESENT_{crate_name.to_uppercase()}` to the compile time flags so it can be used in `#[cfg(CRATE_PRESENT_{crate_name.to_uppercase()})]`
 
 </details>
 

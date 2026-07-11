@@ -1,33 +1,6 @@
 [submodule "codec/mirl_values_core"]
 	path = codec/mirl_values_core
 	url = https://github.com/Miner3D-Gamer/mirl_values_core.git
-[submodule "deprecated/buffer/mirl_buffer"]
-	path = deprecated/buffer/mirl_buffer
-	url = https://github.com/Miner3D-Gamer/mirl_buffer.git
-[submodule "deprecated/codec/mirl_codec_info"]
-	path = deprecated/codec/mirl_codec_info
-	url = https://github.com/Miner3D-Gamer/mirl_codec_info.git
-[submodule "deprecated/extensions/mirl_extensions"]
-	path = deprecated/extensions/mirl_extensions
-	url = https://github.com/Miner3D-Gamer/mirl_extensions.git
-[submodule "deprecated/graphics/mirl_graphics"]
-	path = deprecated/graphics/mirl_graphics
-	url = https://github.com/Miner3D-Gamer/mirl_graphics.git
-[submodule "deprecated/helper/mirl_build_tools"]
-	path = deprecated/helper/mirl_build_tools
-	url = https://github.com/Miner3D-Gamer/mirl_build_tools.git
-[submodule "deprecated/math/mirl_geometry"]
-	path = deprecated/math/mirl_geometry
-	url = https://github.com/Miner3D-Gamer/mirl_geometry.git
-[submodule "deprecated/mirl_collections"]
-	path = deprecated/mirl_collections
-	url = https://github.com/Miner3D-Gamer/mirl_collections.git
-[submodule "deprecated/mirl_std_exposed"]
-	path = deprecated/mirl_std_exposed
-	url = https://github.com/Miner3D-Gamer/mirl_std_exposed.git
-[submodule "deprecated/platform/mirl_audio"]
-	path = deprecated/platform/mirl_audio
-	url = https://github.com/Miner3D-Gamer/mirl_audio.git
 [submodule "graphics/mirl_graphics"]
 	path = graphics/mirl_graphics
 	url = https://github.com/Miner3D-Gamer/mirl_graphics.git
@@ -43,3 +16,6 @@
 [submodule "platform/windowing/mirl_windowing_core"]
 	path = platform/windowing/mirl_windowing_core
 	url = https://github.com/Miner3D-Gamer/mirl_windowing_core.git
+[submodule "mirl_unsorted_horrors"]
+	path = mirl_unsorted_horrors
+	url = https://github.com/Miner3D-Gamer/mirl_unsorted_horrors.git

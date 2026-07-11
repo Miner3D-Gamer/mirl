@@ -25,4 +25,4 @@ mirl_terminal = { path = "../mirl/platform/mirl_terminal" }
 mirl_std_exposed = { path = "../mirl/mirl_std_exposed" }
 mirl_gui = { path = "../mirl/graphics/mirl_gui" }
 mirl_rendering = { path = "../mirl/graphics/mirl_rendering" }
-# dear_mirl_gui = { path = "../dear_mirl_gui" }
+mirl_unsorted_horrors = { path = "../mirl/mirl_unsorted_horrors" }

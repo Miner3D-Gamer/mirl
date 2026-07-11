@@ -97,36 +97,34 @@ def main():
 
     # --- add missing ---
     for path in sorted(to_add):
+        if is_tracked_in_index(path):
+            print(
+                f"SKIP {path}: already tracked in git as plain files (not a submodule). "
+                f"If you actually want this converted to a submodule, first run "
+                f"`git rm -r --cached {path}` (this only untracks it, doesn't delete "
+                f"the files), then re-run this script."
+            )
+            continue
+
         repo_url = f"https://github.com/{GITHUB_ORG}/{os.path.basename(path)}.git"
-
-        # # If the directory already has files but ISN'T a submodule yet,
-        # # `git submodule add` will refuse. That's a real conflict —
-        # # don't silently blow the directory away. Flag it instead.
-        # if os.path.isdir(path) and os.listdir(path):
-        #     print(
-        #         f"SKIP {path}: directory exists with content but isn't a "
-        #         f"registered submodule. Resolve manually (is this meant to "
-        #         f"be a plain workspace member, not a submodule?)."
-        #     )
-        #     continue
-
         run(["git", "submodule", "add", repo_url, path])
 
-    # --- remove deleted ---
     for path in sorted(to_remove):
         ok = run(["git", "submodule", "deinit", "-f", path])
         if not ok:
             print(f"Aborting removal of {path}: deinit failed, leaving it intact.")
             continue
-        # ok = run(["git", "rm", "-f", path])
-        # if not ok:
-        #     print(f"WARNING: git rm failed for {path}; submodule metadata may be "
-        #           f"partially deinitialized. Check `git status` / .git/modules.")
-        #     continue
-        # if not DRY_RUN and os.path.isdir(path):
-        #     shutil.rmtree(path)
-        # elif DRY_RUN:
-        #     print(f"DRY: shutil.rmtree({path})")
+
+
+def is_tracked_in_index(path):
+    """True if git already tracks files under this path (as plain files, not a submodule)."""
+    result = subprocess.run(
+        ["git", "ls-files", path],
+        cwd=WORKSPACE_ROOT,
+        capture_output=True,
+        text=True,
+    )
+    return bool(result.stdout.strip())
 
 
 if __name__ == "__main__":
