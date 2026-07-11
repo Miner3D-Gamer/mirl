@@ -1,0 +1,513 @@
+<svg width="2186pt" height="436pt" viewBox="0.00 0.00 2186.00 436.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 432)">
+<polygon fill="white" stroke="none" points="-4,4 -4,-432 2182,-432 2182,4 -4,4"/>
+<g id="clust1" class="cluster">
+<title>cluster_platform</title>
+<polygon fill="none" stroke="lightgray" points="8,-64 8,-420 890,-420 890,-64 8,-64"/>
+<text xml:space="preserve" text-anchor="middle" x="449" y="-403.4" font-family="Times,serif" font-size="14.00">platform</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_windowing</title>
+<polygon fill="none" stroke="lightgray" points="176,-148.8 176,-387.2 703,-387.2 703,-148.8 176,-148.8"/>
+<text xml:space="preserve" text-anchor="middle" x="439.5" y="-370.6" font-family="Times,serif" font-size="14.00">windowing</text>
+</g>
+<g id="clust3" class="cluster">
+<title>cluster_buffer</title>
+<polygon fill="none" stroke="lightgray" points="908,-64 908,-140.8 1182,-140.8 1182,-64 908,-64"/>
+<text xml:space="preserve" text-anchor="middle" x="1045" y="-124.2" font-family="Times,serif" font-size="14.00">buffer</text>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_helper</title>
+<polygon fill="none" stroke="lightgray" points="1713,-310.4 1713,-387.2 1938,-387.2 1938,-310.4 1713,-310.4"/>
+<text xml:space="preserve" text-anchor="middle" x="1825.5" y="-370.6" font-family="Times,serif" font-size="14.00">helper</text>
+</g>
+<g id="clust5" class="cluster">
+<title>cluster_codec</title>
+<polygon fill="none" stroke="lightgray" points="1760,-64 1760,-225.6 2016,-225.6 2016,-64 1760,-64"/>
+<text xml:space="preserve" text-anchor="middle" x="1888" y="-209" font-family="Times,serif" font-size="14.00">codec</text>
+</g>
+<g id="clust6" class="cluster">
+<title>cluster_extensions</title>
+<polygon fill="none" stroke="lightgray" points="1244,-64 1244,-387.2 1474,-387.2 1474,-64 1244,-64"/>
+<text xml:space="preserve" text-anchor="middle" x="1359" y="-370.6" font-family="Times,serif" font-size="14.00">extensions</text>
+</g>
+<g id="clust7" class="cluster">
+<title>cluster_math</title>
+<polygon fill="none" stroke="lightgray" points="2024,-64 2024,-225.6 2170,-225.6 2170,-64 2024,-64"/>
+<text xml:space="preserve" text-anchor="middle" x="2097" y="-209" font-family="Times,serif" font-size="14.00">math</text>
+</g>
+<g id="clust8" class="cluster">
+<title>cluster_graphics</title>
+<polygon fill="none" stroke="lightgray" points="898,-148.8 898,-302.4 1090,-302.4 1090,-148.8 898,-148.8"/>
+<text xml:space="preserve" text-anchor="middle" x="994" y="-285.8" font-family="Times,serif" font-size="14.00">graphics</text>
+</g>
+<!-- mirl_audio -->
+<g id="node1" class="node">
+<title>mirl_audio</title>
+<polygon fill="none" stroke="black" points="788.72,-354.4 711.28,-354.4 711.28,-318.4 788.72,-318.4 788.72,-354.4"/>
+<text xml:space="preserve" text-anchor="middle" x="750" y="-332.2" font-family="Times,serif" font-size="14.00">mirl_audio</text>
+</g>
+<!-- mirl_input -->
+<g id="node2" class="node">
+<title>mirl_input</title>
+<polygon fill="none" stroke="black" points="881.56,-354.4 806.44,-354.4 806.44,-318.4 881.56,-318.4 881.56,-354.4"/>
+<text xml:space="preserve" text-anchor="middle" x="844" y="-332.2" font-family="Times,serif" font-size="14.00">mirl_input</text>
+</g>
+<!-- mirl_buffer -->
+<g id="node10" class="node">
+<title>mirl_buffer</title>
+<polygon fill="none" stroke="black" points="996.27,-108 915.73,-108 915.73,-72 996.27,-72 996.27,-108"/>
+<text xml:space="preserve" text-anchor="middle" x="956" y="-85.8" font-family="Times,serif" font-size="14.00">mirl_buffer</text>
+</g>
+<!-- mirl_input&#45;&gt;mirl_buffer -->
+<g id="edge27" class="edge">
+<title>mirl_input-&gt;mirl_buffer</title>
+<path fill="none" stroke="black" d="M881.98,-333.68C954.77,-330 1108.19,-320.19 1124,-302.4 1169.36,-251.38 1170.62,-198.66 1124,-148.8 1114.95,-139.12 1017.04,-146.33 1005,-140.8 993.3,-135.43 982.89,-125.96 974.7,-116.71"/>
+<polygon fill="black" stroke="black" points="977.58,-114.7 968.52,-109.21 972.18,-119.16 977.58,-114.7"/>
+</g>
+<!-- mirl_system -->
+<g id="node3" class="node">
+<title>mirl_system</title>
+<polygon fill="none" stroke="black" points="101.61,-108 16.39,-108 16.39,-72 101.61,-72 101.61,-108"/>
+<text xml:space="preserve" text-anchor="middle" x="59" y="-85.8" font-family="Times,serif" font-size="14.00">mirl_system</text>
+</g>
+<!-- mirl_system&#45;&gt;mirl_buffer -->
+<g id="edge30" class="edge">
+<title>mirl_system-&gt;mirl_buffer</title>
+<path fill="none" stroke="black" d="M101.92,-90C369.42,-90 636.92,-90 904.42,-90"/>
+<polygon fill="black" stroke="black" points="904.03,-93.5 914.03,-90 904.03,-86.5 904.03,-93.5"/>
+</g>
+<!-- mirl_terminal -->
+<g id="node4" class="node">
+<title>mirl_terminal</title>
+<polygon fill="none" stroke="black" points="168.49,-192.8 75.51,-192.8 75.51,-156.8 168.49,-156.8 168.49,-192.8"/>
+<text xml:space="preserve" text-anchor="middle" x="122" y="-170.6" font-family="Times,serif" font-size="14.00">mirl_terminal</text>
+</g>
+<!-- mirl_windowing -->
+<g id="node5" class="node">
+<title>mirl_windowing</title>
+<polygon fill="none" stroke="black" points="495.67,-354.4 386.33,-354.4 386.33,-318.4 495.67,-318.4 495.67,-354.4"/>
+<text xml:space="preserve" text-anchor="middle" x="441" y="-332.2" font-family="Times,serif" font-size="14.00">mirl_windowing</text>
+</g>
+<!-- mirl_windowing_console -->
+<g id="node6" class="node">
+<title>mirl_windowing_console</title>
+<polygon fill="none" stroke="black" points="694.55,-269.6 535.45,-269.6 535.45,-233.6 694.55,-233.6 694.55,-269.6"/>
+<text xml:space="preserve" text-anchor="middle" x="615" y="-247.4" font-family="Times,serif" font-size="14.00">mirl_windowing_console</text>
+</g>
+<!-- mirl_windowing&#45;&gt;mirl_windowing_console -->
+<g id="edge35" class="edge">
+<title>mirl_windowing-&gt;mirl_windowing_console</title>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M480.43,-317.97C486.92,-315.31 493.61,-312.69 500,-310.4 511.78,-306.17 515.48,-307.29 527,-302.4 544.5,-294.97 562.94,-284.92 578.39,-275.79"/>
+<polygon fill="black" stroke="black" points="580.01,-278.9 586.78,-270.74 576.4,-272.9 580.01,-278.9"/>
+</g>
+<!-- mirl_windowing_core -->
+<g id="node7" class="node">
+<title>mirl_windowing_core</title>
+<polygon fill="none" stroke="black" points="511.21,-192.8 370.79,-192.8 370.79,-156.8 511.21,-156.8 511.21,-192.8"/>
+<text xml:space="preserve" text-anchor="middle" x="441" y="-170.6" font-family="Times,serif" font-size="14.00">mirl_windowing_core</text>
+</g>
+<!-- mirl_windowing&#45;&gt;mirl_windowing_core -->
+<g id="edge34" class="edge">
+<title>mirl_windowing-&gt;mirl_windowing_core</title>
+<path fill="none" stroke="black" d="M385.96,-336.08C321.17,-335.55 219.29,-330.17 195,-302.4 174.87,-279.39 173.89,-255.72 195,-233.6 208.21,-219.76 348.84,-231.61 367,-225.6 383.44,-220.16 399.65,-209.97 412.68,-200.21"/>
+<polygon fill="black" stroke="black" points="414.65,-203.11 420.37,-194.2 410.34,-197.6 414.65,-203.11"/>
+</g>
+<!-- mirl_windowing_glfw -->
+<g id="node8" class="node">
+<title>mirl_windowing_glfw</title>
+<polygon fill="none" stroke="black" points="346,-269.6 204,-269.6 204,-233.6 346,-233.6 346,-269.6"/>
+<text xml:space="preserve" text-anchor="middle" x="275" y="-247.4" font-family="Times,serif" font-size="14.00">mirl_windowing_glfw</text>
+</g>
+<!-- mirl_windowing&#45;&gt;mirl_windowing_glfw -->
+<g id="edge36" class="edge">
+<title>mirl_windowing-&gt;mirl_windowing_glfw</title>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M390.74,-317.96C378.83,-313.32 366.31,-308.03 355,-302.4 339.68,-294.78 323.52,-285.07 309.77,-276.25"/>
+<polygon fill="black" stroke="black" points="311.78,-273.39 301.49,-270.86 307.96,-279.25 311.78,-273.39"/>
+</g>
+<!-- mirl_windowing_minifb -->
+<g id="node9" class="node">
+<title>mirl_windowing_minifb</title>
+<polygon fill="none" stroke="black" points="517.83,-269.6 364.17,-269.6 364.17,-233.6 517.83,-233.6 517.83,-269.6"/>
+<text xml:space="preserve" text-anchor="middle" x="441" y="-247.4" font-family="Times,serif" font-size="14.00">mirl_windowing_minifb</text>
+</g>
+<!-- mirl_windowing&#45;&gt;mirl_windowing_minifb -->
+<g id="edge37" class="edge">
+<title>mirl_windowing-&gt;mirl_windowing_minifb</title>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M441,-318.24C441,-307.55 441,-293.52 441,-281.17"/>
+<polygon fill="black" stroke="black" points="444.5,-281.53 441,-271.53 437.5,-281.53 444.5,-281.53"/>
+</g>
+<!-- mirl_windowing&#45;&gt;mirl_buffer -->
+<g id="edge33" class="edge">
+<title>mirl_windowing-&gt;mirl_buffer</title>
+<path fill="none" stroke="black" d="M475.84,-318.03C483.62,-314.9 491.94,-312.09 500,-310.4 516.15,-307.01 1082.41,-314.15 1094,-302.4 1117.97,-278.1 1117.03,-173.99 1094,-148.8 1080.6,-134.14 1022.95,-149.29 1005,-140.8 993.65,-135.44 983.47,-126.27 975.37,-117.25"/>
+<polygon fill="black" stroke="black" points="978.06,-115.02 968.96,-109.59 972.69,-119.51 978.06,-115.02"/>
+</g>
+<!-- mirl_windowing_console&#45;&gt;mirl_system -->
+<g id="edge40" class="edge">
+<title>mirl_windowing_console-&gt;mirl_system</title>
+<path fill="none" stroke="black" d="M534.99,-234.53C532.3,-234.19 529.63,-233.87 527,-233.6 514.29,-232.27 76.22,-234.44 67,-225.6 52.38,-211.58 53.87,-154.98 56.37,-119.8"/>
+<polygon fill="black" stroke="black" points="59.86,-120.1 57.16,-109.86 52.88,-119.55 59.86,-120.1"/>
+</g>
+<!-- mirl_windowing_console&#45;&gt;mirl_terminal -->
+<g id="edge41" class="edge">
+<title>mirl_windowing_console-&gt;mirl_terminal</title>
+<path fill="none" stroke="black" d="M534.99,-234.55C532.3,-234.2 529.63,-233.88 527,-233.6 507.38,-231.5 190.15,-233.34 172,-225.6 160.04,-220.5 149.41,-211.08 141.06,-201.79"/>
+<polygon fill="black" stroke="black" points="143.84,-199.66 134.75,-194.23 138.47,-204.15 143.84,-199.66"/>
+</g>
+<!-- mirl_windowing_console&#45;&gt;mirl_windowing_core -->
+<g id="edge42" class="edge">
+<title>mirl_windowing_console-&gt;mirl_windowing_core</title>
+<path fill="none" stroke="black" d="M574.64,-233.25C550.03,-222.67 518.33,-209.04 491.99,-197.72"/>
+<polygon fill="black" stroke="black" points="493.4,-194.52 482.83,-193.78 490.63,-200.95 493.4,-194.52"/>
+</g>
+<!-- mirl_windowing_console&#45;&gt;mirl_buffer -->
+<g id="edge38" class="edge">
+<title>mirl_windowing_console-&gt;mirl_buffer</title>
+<path fill="none" stroke="black" d="M695.04,-244.44C716.52,-240.74 739.25,-234.88 759,-225.6 806.59,-203.24 801.45,-171.25 849,-148.8 867.37,-140.13 875.5,-149.2 894,-140.8 907.36,-134.73 920.31,-125.12 930.89,-115.96"/>
+<polygon fill="black" stroke="black" points="932.99,-118.77 938.05,-109.47 928.29,-113.59 932.99,-118.77"/>
+</g>
+<!-- mirl_buffer_interpolation -->
+<g id="node11" class="node">
+<title>mirl_buffer_interpolation</title>
+<polygon fill="none" stroke="black" points="1173.53,-108 1014.47,-108 1014.47,-72 1173.53,-72 1173.53,-108"/>
+<text xml:space="preserve" text-anchor="middle" x="1094" y="-85.8" font-family="Times,serif" font-size="14.00">mirl_buffer_interpolation</text>
+</g>
+<!-- mirl_windowing_console&#45;&gt;mirl_buffer_interpolation -->
+<g id="edge39" class="edge">
+<title>mirl_windowing_console-&gt;mirl_buffer_interpolation</title>
+<path fill="none" stroke="black" d="M694.82,-246.12C742.03,-242.45 796.65,-236.09 818,-225.6 861.1,-204.43 850.38,-168.87 894,-148.8 916.47,-138.46 981.31,-147.9 1005,-140.8 1024.52,-134.95 1044.48,-124.29 1060.54,-114.33"/>
+<polygon fill="black" stroke="black" points="1062.19,-117.43 1068.72,-109.09 1058.41,-111.54 1062.19,-117.43"/>
+</g>
+<!-- mirl_windowing_core&#45;&gt;mirl_system -->
+<g id="edge44" class="edge">
+<title>mirl_windowing_core-&gt;mirl_system</title>
+<path fill="none" stroke="black" d="M392.73,-156.41C384.22,-153.65 375.4,-150.99 367,-148.8 279.17,-125.84 174.98,-108.26 113.07,-98.79"/>
+<polygon fill="black" stroke="black" points="113.93,-95.38 103.52,-97.35 112.88,-102.3 113.93,-95.38"/>
+</g>
+<!-- mirl_windowing_core&#45;&gt;mirl_buffer -->
+<g id="edge43" class="edge">
+<title>mirl_windowing_core-&gt;mirl_buffer</title>
+<path fill="none" stroke="black" d="M511.59,-163.14C548.81,-157.93 595.28,-152.1 637,-148.8 665.48,-146.55 867.2,-150.7 894,-140.8 908.16,-135.57 921.54,-125.71 932.22,-116.15"/>
+<polygon fill="black" stroke="black" points="934.57,-118.74 939.42,-109.32 929.75,-113.66 934.57,-118.74"/>
+</g>
+<!-- mirl_windowing_glfw&#45;&gt;mirl_system -->
+<g id="edge46" class="edge">
+<title>mirl_windowing_glfw-&gt;mirl_system</title>
+<path fill="none" stroke="black" d="M203.54,-248.03C136.02,-244.85 43.4,-238.23 32,-225.6 5.43,-196.16 24.8,-148.13 41.62,-118.11"/>
+<polygon fill="black" stroke="black" points="44.57,-120.01 46.62,-109.61 38.54,-116.46 44.57,-120.01"/>
+</g>
+<!-- mirl_windowing_glfw&#45;&gt;mirl_windowing_core -->
+<g id="edge47" class="edge">
+<title>mirl_windowing_glfw-&gt;mirl_windowing_core</title>
+<path fill="none" stroke="black" d="M346.15,-233.79C353.31,-231.35 360.38,-228.63 367,-225.6 382.04,-218.72 397.41,-208.92 410.21,-199.83"/>
+<polygon fill="black" stroke="black" points="412.23,-202.69 418.24,-193.96 408.1,-197.04 412.23,-202.69"/>
+</g>
+<!-- mirl_windowing_glfw&#45;&gt;mirl_buffer -->
+<g id="edge45" class="edge">
+<title>mirl_windowing_glfw-&gt;mirl_buffer</title>
+<path fill="none" stroke="black" d="M346.43,-234.83C349.32,-234.38 352.18,-233.97 355,-233.6 391.41,-228.88 484.6,-235.31 520,-225.6 590.33,-206.31 594.54,-167.62 665,-148.8 714.2,-135.66 846.27,-158.54 894,-140.8 908.15,-135.54 921.53,-125.68 932.21,-116.12"/>
+<polygon fill="black" stroke="black" points="934.56,-118.72 939.41,-109.3 929.74,-113.64 934.56,-118.72"/>
+</g>
+<!-- mirl_windowing_minifb&#45;&gt;mirl_system -->
+<g id="edge49" class="edge">
+<title>mirl_windowing_minifb-&gt;mirl_system</title>
+<path fill="none" stroke="black" d="M363.74,-234.69C360.8,-234.29 357.87,-233.92 355,-233.6 338.26,-231.74 63.75,-237.66 52,-225.6 24.81,-197.68 35.96,-149.12 47.07,-118.59"/>
+<polygon fill="black" stroke="black" points="50.19,-120.23 50.55,-109.64 43.67,-117.7 50.19,-120.23"/>
+</g>
+<!-- mirl_windowing_minifb&#45;&gt;mirl_windowing_core -->
+<g id="edge50" class="edge">
+<title>mirl_windowing_minifb-&gt;mirl_windowing_core</title>
+<path fill="none" stroke="black" d="M441,-233.25C441,-224.66 441,-214.07 441,-204.32"/>
+<polygon fill="black" stroke="black" points="444.5,-204.57 441,-194.57 437.5,-204.57 444.5,-204.57"/>
+</g>
+<!-- mirl_windowing_minifb&#45;&gt;mirl_buffer -->
+<g id="edge48" class="edge">
+<title>mirl_windowing_minifb-&gt;mirl_buffer</title>
+<path fill="none" stroke="black" d="M518.29,-234.67C520.89,-234.28 523.46,-233.93 526,-233.6 556.69,-229.67 636.17,-236.82 665,-225.6 715.27,-206.03 708.74,-168.41 759,-148.8 814.99,-126.95 837.92,-162.42 894,-140.8 908.09,-135.37 921.46,-125.49 932.15,-115.95"/>
+<polygon fill="black" stroke="black" points="934.47,-118.57 939.35,-109.16 929.67,-113.47 934.47,-118.57"/>
+</g>
+<!-- mirl_extensions_math -->
+<g id="node20" class="node">
+<title>mirl_extensions_math</title>
+<polygon fill="none" stroke="black" points="1393.21,-269.6 1252.79,-269.6 1252.79,-233.6 1393.21,-233.6 1393.21,-269.6"/>
+<text xml:space="preserve" text-anchor="middle" x="1323" y="-247.4" font-family="Times,serif" font-size="14.00">mirl_extensions_math</text>
+</g>
+<!-- mirl_buffer_interpolation&#45;&gt;mirl_extensions_math -->
+<g id="edge1" class="edge">
+<title>mirl_buffer_interpolation-&gt;mirl_extensions_math</title>
+<path fill="none" stroke="black" d="M1137.98,-108.39C1158.54,-118.07 1182.32,-131.65 1200,-148.8 1228.4,-176.34 1214.13,-200.86 1245,-225.6 1245.67,-226.13 1246.34,-226.66 1247.03,-227.17"/>
+<polygon fill="black" stroke="black" points="1244.92,-229.97 1255.23,-232.4 1248.68,-224.07 1244.92,-229.97"/>
+</g>
+<!-- mirl_build_tools -->
+<g id="node12" class="node">
+<title>mirl_build_tools</title>
+<polygon fill="none" stroke="black" points="1830.67,-354.4 1721.33,-354.4 1721.33,-318.4 1830.67,-318.4 1830.67,-354.4"/>
+<text xml:space="preserve" text-anchor="middle" x="1776" y="-332.2" font-family="Times,serif" font-size="14.00">mirl_build_tools</text>
+</g>
+<!-- mirl_derive -->
+<g id="node13" class="node">
+<title>mirl_derive</title>
+<polygon fill="none" stroke="#0000ee" points="1929.66,-354.4 1848.34,-354.4 1848.34,-318.4 1929.66,-318.4 1929.66,-354.4"/>
+<text xml:space="preserve" text-anchor="middle" x="1889" y="-332.2" font-family="Times,serif" font-size="14.00">mirl_derive</text>
+</g>
+<!-- mirl_codec_info -->
+<g id="node14" class="node">
+<title>mirl_codec_info</title>
+<polygon fill="none" stroke="black" points="2008.26,-192.8 1899.74,-192.8 1899.74,-156.8 2008.26,-156.8 2008.26,-192.8"/>
+<text xml:space="preserve" text-anchor="middle" x="1954" y="-170.6" font-family="Times,serif" font-size="14.00">mirl_codec_info</text>
+</g>
+<!-- mirl_values -->
+<g id="node15" class="node">
+<title>mirl_values</title>
+<polygon fill="none" stroke="black" points="1926.05,-108 1843.95,-108 1843.95,-72 1926.05,-72 1926.05,-108"/>
+<text xml:space="preserve" text-anchor="middle" x="1885" y="-85.8" font-family="Times,serif" font-size="14.00">mirl_values</text>
+</g>
+<!-- mirl_codec_info&#45;&gt;mirl_values -->
+<g id="edge4" class="edge">
+<title>mirl_codec_info-&gt;mirl_values</title>
+<path fill="none" stroke="black" d="M1939.7,-156.64C1930.15,-145.17 1917.39,-129.87 1906.61,-116.93"/>
+<polygon fill="black" stroke="black" points="1909.58,-115.02 1900.48,-109.58 1904.2,-119.5 1909.58,-115.02"/>
+</g>
+<!-- mirl_geometry_core -->
+<g id="node22" class="node">
+<title>mirl_geometry_core</title>
+<polygon fill="none" stroke="black" points="2162.15,-108 2031.85,-108 2031.85,-72 2162.15,-72 2162.15,-108"/>
+<text xml:space="preserve" text-anchor="middle" x="2097" y="-85.8" font-family="Times,serif" font-size="14.00">mirl_geometry_core</text>
+</g>
+<!-- mirl_codec_info&#45;&gt;mirl_geometry_core -->
+<g id="edge2" class="edge">
+<title>mirl_codec_info-&gt;mirl_geometry_core</title>
+<path fill="none" stroke="black" d="M1990.69,-156.35C2000.34,-151.52 2010.66,-146.14 2020,-140.8 2034.1,-132.75 2049.19,-123.21 2062.24,-114.64"/>
+<polygon fill="black" stroke="black" points="2064.11,-117.6 2070.51,-109.16 2060.24,-111.77 2064.11,-117.6"/>
+</g>
+<!-- mirl_std_exposed -->
+<g id="node27" class="node">
+<title>mirl_std_exposed</title>
+<polygon fill="none" stroke="black" points="1754.77,-36 1639.23,-36 1639.23,0 1754.77,0 1754.77,-36"/>
+<text xml:space="preserve" text-anchor="middle" x="1697" y="-13.8" font-family="Times,serif" font-size="14.00">mirl_std_exposed</text>
+</g>
+<!-- mirl_codec_info&#45;&gt;mirl_std_exposed -->
+<g id="edge3" class="edge">
+<title>mirl_codec_info-&gt;mirl_std_exposed</title>
+<path fill="none" stroke="black" d="M1956.47,-156.67C1958.9,-132.53 1959.3,-88.68 1935,-64 1911.91,-40.55 1828.1,-28.95 1766.44,-23.48"/>
+<polygon fill="black" stroke="black" points="1766.97,-20.01 1756.71,-22.66 1766.38,-26.99 1766.97,-20.01"/>
+</g>
+<!-- mirl_values_core -->
+<g id="node16" class="node">
+<title>mirl_values_core</title>
+<polygon fill="none" stroke="black" points="1881.59,-192.8 1768.41,-192.8 1768.41,-156.8 1881.59,-156.8 1881.59,-192.8"/>
+<text xml:space="preserve" text-anchor="middle" x="1825" y="-170.6" font-family="Times,serif" font-size="14.00">mirl_values_core</text>
+</g>
+<!-- mirl_extensions_core -->
+<g id="node19" class="node">
+<title>mirl_extensions_core</title>
+<polygon fill="none" stroke="black" points="1466.26,-108 1329.74,-108 1329.74,-72 1466.26,-72 1466.26,-108"/>
+<text xml:space="preserve" text-anchor="middle" x="1398" y="-85.8" font-family="Times,serif" font-size="14.00">mirl_extensions_core</text>
+</g>
+<!-- mirl_values_core&#45;&gt;mirl_extensions_core -->
+<g id="edge32" class="edge">
+<title>mirl_values_core-&gt;mirl_extensions_core</title>
+<path fill="none" stroke="black" d="M1782.81,-156.37C1774.99,-153.55 1766.81,-150.88 1759,-148.8 1663.91,-123.46 1551.59,-107.61 1477.79,-99.06"/>
+<polygon fill="black" stroke="black" points="1478.57,-95.62 1468.24,-97.97 1477.77,-102.58 1478.57,-95.62"/>
+</g>
+<!-- mirl_extensions -->
+<g id="node17" class="node">
+<title>mirl_extensions</title>
+<polygon fill="none" stroke="black" points="1464.72,-354.4 1359.28,-354.4 1359.28,-318.4 1464.72,-318.4 1464.72,-354.4"/>
+<text xml:space="preserve" text-anchor="middle" x="1412" y="-332.2" font-family="Times,serif" font-size="14.00">mirl_extensions</text>
+</g>
+<!-- mirl_extensions&#45;&gt;mirl_input -->
+<g id="edge13" class="edge">
+<title>mirl_extensions-&gt;mirl_input</title>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M1358.95,-336.4C1203.69,-336.4 1048.43,-336.4 893.17,-336.4"/>
+<polygon fill="black" stroke="black" points="893.51,-332.9 883.51,-336.4 893.51,-339.9 893.51,-332.9"/>
+</g>
+<!-- mirl_extensions&#45;&gt;mirl_buffer -->
+<g id="edge7" class="edge">
+<title>mirl_extensions-&gt;mirl_buffer</title>
+<path fill="none" stroke="black" d="M1359.2,-329.83C1317.07,-324.51 1262.21,-315.39 1244,-302.4 1227.94,-290.94 1171.82,-159.1 1155,-148.8 1126.53,-131.37 1035.43,-154.51 1005,-140.8 993.27,-135.51 982.84,-126.05 974.66,-116.79"/>
+<polygon fill="black" stroke="black" points="977.54,-114.79 968.49,-109.28 972.13,-119.23 977.54,-114.79"/>
+</g>
+<!-- mirl_extensions&#45;&gt;mirl_values_core -->
+<g id="edge14" class="edge">
+<title>mirl_extensions-&gt;mirl_values_core</title>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M1464.91,-326.81C1495.88,-321.17 1535.56,-312.9 1570,-302.4 1656.73,-275.96 1680.14,-270.35 1759,-225.6 1771.78,-218.35 1784.89,-208.94 1796.02,-200.25"/>
+<polygon fill="black" stroke="black" points="1798.05,-203.11 1803.67,-194.13 1793.68,-197.64 1798.05,-203.11"/>
+</g>
+<!-- mirl_extensions_conversion -->
+<g id="node18" class="node">
+<title>mirl_extensions_conversion</title>
+<polygon fill="none" stroke="black" points="1445.93,-192.8 1272.07,-192.8 1272.07,-156.8 1445.93,-156.8 1445.93,-192.8"/>
+<text xml:space="preserve" text-anchor="middle" x="1359" y="-170.6" font-family="Times,serif" font-size="14.00">mirl_extensions_conversion</text>
+</g>
+<!-- mirl_extensions&#45;&gt;mirl_extensions_conversion -->
+<g id="edge9" class="edge">
+<title>mirl_extensions-&gt;mirl_extensions_conversion</title>
+<path fill="none" stroke="black" d="M1413.06,-318.19C1413.72,-297.41 1412.88,-261.76 1402,-233.6 1397.6,-222.23 1390.32,-211.13 1382.98,-201.75"/>
+<polygon fill="black" stroke="black" points="1385.78,-199.64 1376.7,-194.17 1380.38,-204.1 1385.78,-199.64"/>
+</g>
+<!-- mirl_extensions&#45;&gt;mirl_extensions_core -->
+<g id="edge10" class="edge">
+<title>mirl_extensions-&gt;mirl_extensions_core</title>
+<path fill="none" stroke="black" d="M1422.8,-318.11C1442.35,-284.47 1479.41,-208.32 1455,-148.8 1449.87,-136.29 1440.59,-125.05 1430.98,-115.87"/>
+<polygon fill="black" stroke="black" points="1433.47,-113.4 1423.68,-109.36 1428.81,-118.63 1433.47,-113.4"/>
+</g>
+<!-- mirl_extensions&#45;&gt;mirl_extensions_math -->
+<g id="edge11" class="edge">
+<title>mirl_extensions-&gt;mirl_extensions_math</title>
+<path fill="none" stroke="black" d="M1393.56,-318.24C1380.99,-306.55 1364.15,-290.88 1350.07,-277.78"/>
+<polygon fill="black" stroke="black" points="1352.54,-275.3 1342.83,-271.05 1347.77,-280.42 1352.54,-275.3"/>
+</g>
+<!-- mirl_extensions&#45;&gt;mirl_geometry_core -->
+<g id="edge12" class="edge">
+<title>mirl_extensions-&gt;mirl_geometry_core</title>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M1465.03,-331.39C1625.4,-318.71 2097.04,-277.31 2141,-225.6 2163.11,-199.59 2151.91,-181.14 2141,-148.8 2137.13,-137.33 2129.98,-126.33 2122.54,-117.07"/>
+<polygon fill="black" stroke="black" points="2125.28,-114.89 2116.12,-109.58 2119.97,-119.45 2125.28,-114.89"/>
+</g>
+<!-- mirl_collections -->
+<g id="node26" class="node">
+<title>mirl_collections</title>
+<polygon fill="none" stroke="black" points="1750.49,-192.8 1643.51,-192.8 1643.51,-156.8 1750.49,-156.8 1750.49,-192.8"/>
+<text xml:space="preserve" text-anchor="middle" x="1697" y="-170.6" font-family="Times,serif" font-size="14.00">mirl_collections</text>
+</g>
+<!-- mirl_extensions&#45;&gt;mirl_collections -->
+<g id="edge8" class="edge">
+<title>mirl_extensions-&gt;mirl_collections</title>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M1454.15,-317.96C1500.12,-298.2 1575.12,-263.73 1635,-225.6 1646.71,-218.14 1658.78,-208.86 1669.13,-200.34"/>
+<polygon fill="black" stroke="black" points="1671.17,-203.2 1676.57,-194.08 1666.66,-197.84 1671.17,-203.2"/>
+</g>
+<!-- mirl_extensions_conversion&#45;&gt;mirl_buffer -->
+<g id="edge15" class="edge">
+<title>mirl_extensions_conversion-&gt;mirl_buffer</title>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M1271.76,-158.23C1248.51,-154.59 1223.36,-151.11 1200,-148.8 1178.42,-146.67 1024.82,-149.59 1005,-140.8 993.24,-135.59 982.81,-126.14 974.63,-116.87"/>
+<polygon fill="black" stroke="black" points="977.51,-114.86 968.46,-109.34 972.09,-119.29 977.51,-114.86"/>
+</g>
+<!-- mirl_extensions_conversion&#45;&gt;mirl_values_core -->
+<g id="edge17" class="edge">
+<title>mirl_extensions_conversion-&gt;mirl_values_core</title>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M1390.92,-193.21C1415.47,-206.25 1450.72,-222.63 1484,-229.6 1498.46,-232.63 1735.54,-232.67 1750,-229.6 1769.15,-225.54 1787.01,-213 1800.49,-200.94"/>
+<polygon fill="black" stroke="black" points="1802.73,-203.64 1807.58,-194.23 1797.92,-198.56 1802.73,-203.64"/>
+</g>
+<!-- mirl_extensions_conversion&#45;&gt;mirl_extensions_core -->
+<g id="edge16" class="edge">
+<title>mirl_extensions_conversion-&gt;mirl_extensions_core</title>
+<path fill="none" stroke="black" d="M1367.08,-156.64C1372.22,-145.73 1379,-131.34 1384.9,-118.81"/>
+<polygon fill="black" stroke="black" points="1388.06,-120.33 1389.15,-109.79 1381.72,-117.34 1388.06,-120.33"/>
+</g>
+<!-- mirl_extensions_core&#45;&gt;mirl_std_exposed -->
+<g id="edge18" class="edge">
+<title>mirl_extensions_core-&gt;mirl_std_exposed</title>
+<path fill="none" stroke="black" d="M1466.6,-72.94C1514.9,-61.63 1579.33,-46.55 1627.78,-35.21"/>
+<polygon fill="black" stroke="black" points="1628.38,-38.66 1637.32,-32.97 1626.78,-31.84 1628.38,-38.66"/>
+</g>
+<!-- mirl_extensions_math&#45;&gt;mirl_extensions_conversion -->
+<g id="edge19" class="edge">
+<title>mirl_extensions_math-&gt;mirl_extensions_conversion</title>
+<path fill="none" stroke="black" d="M1331.35,-233.25C1335.62,-224.38 1340.92,-213.36 1345.73,-203.36"/>
+<polygon fill="black" stroke="black" points="1348.86,-204.95 1350.04,-194.42 1342.55,-201.91 1348.86,-204.95"/>
+</g>
+<!-- mirl_extensions_math&#45;&gt;mirl_extensions_core -->
+<g id="edge20" class="edge">
+<title>mirl_extensions_math-&gt;mirl_extensions_core</title>
+<path fill="none" stroke="black" d="M1269.67,-233.14C1267.14,-230.92 1264.88,-228.42 1263,-225.6 1244.07,-197.2 1244.2,-177.29 1263,-148.8 1275.91,-129.23 1296.96,-116.26 1318.64,-107.68"/>
+<polygon fill="black" stroke="black" points="1319.68,-111.03 1327.88,-104.32 1317.29,-104.45 1319.68,-111.03"/>
+</g>
+<!-- mirl_geometry -->
+<g id="node21" class="node">
+<title>mirl_geometry</title>
+<polygon fill="none" stroke="black" points="2131.6,-192.8 2032.4,-192.8 2032.4,-156.8 2131.6,-156.8 2131.6,-192.8"/>
+<text xml:space="preserve" text-anchor="middle" x="2082" y="-170.6" font-family="Times,serif" font-size="14.00">mirl_geometry</text>
+</g>
+<!-- mirl_geometry&#45;&gt;mirl_geometry_core -->
+<g id="edge21" class="edge">
+<title>mirl_geometry-&gt;mirl_geometry_core</title>
+<path fill="none" stroke="black" d="M2085.11,-156.64C2087.05,-145.95 2089.59,-131.92 2091.82,-119.57"/>
+<polygon fill="black" stroke="black" points="2095.24,-120.37 2093.57,-109.91 2088.35,-119.12 2095.24,-120.37"/>
+</g>
+<!-- mirl_graphics -->
+<g id="node23" class="node">
+<title>mirl_graphics</title>
+<polygon fill="none" stroke="black" points="1081.88,-269.6 988.12,-269.6 988.12,-233.6 1081.88,-233.6 1081.88,-269.6"/>
+<text xml:space="preserve" text-anchor="middle" x="1035" y="-247.4" font-family="Times,serif" font-size="14.00">mirl_graphics</text>
+</g>
+<!-- mirl_graphics&#45;&gt;mirl_buffer -->
+<g id="edge22" class="edge">
+<title>mirl_graphics-&gt;mirl_buffer</title>
+<path fill="none" stroke="black" d="M1041.04,-233.44C1047.6,-211.4 1054.83,-173.11 1036,-148.8 1027.29,-137.55 1017.33,-147.91 1005,-140.8 994.28,-134.62 984.33,-125.46 976.23,-116.67"/>
+<polygon fill="black" stroke="black" points="978.99,-114.52 969.78,-109.28 973.71,-119.12 978.99,-114.52"/>
+</g>
+<!-- mirl_graphics&#45;&gt;mirl_collections -->
+<g id="edge23" class="edge">
+<title>mirl_graphics-&gt;mirl_collections</title>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M1082.17,-245.85C1123.68,-241.86 1185.79,-236.39 1240,-233.6 1261.92,-232.47 1614.37,-233.09 1635,-225.6 1649.19,-220.44 1662.58,-210.6 1673.25,-201.02"/>
+<polygon fill="black" stroke="black" points="1675.6,-203.61 1680.44,-194.19 1670.78,-198.54 1675.6,-203.61"/>
+</g>
+<!-- mirl_gui -->
+<g id="node24" class="node">
+<title>mirl_gui</title>
+<polygon fill="none" stroke="black" points="970.11,-269.6 905.89,-269.6 905.89,-233.6 970.11,-233.6 970.11,-269.6"/>
+<text xml:space="preserve" text-anchor="middle" x="938" y="-247.4" font-family="Times,serif" font-size="14.00">mirl_gui</text>
+</g>
+<!-- mirl_gui&#45;&gt;mirl_windowing_core -->
+<g id="edge26" class="edge">
+<title>mirl_gui-&gt;mirl_windowing_core</title>
+<path fill="none" stroke="black" d="M905.39,-245.69C828.56,-234.13 634.27,-204.89 522.86,-188.12"/>
+<polygon fill="black" stroke="black" points="523.59,-184.69 513.18,-186.66 522.54,-191.61 523.59,-184.69"/>
+</g>
+<!-- mirl_gui&#45;&gt;mirl_buffer -->
+<g id="edge24" class="edge">
+<title>mirl_gui-&gt;mirl_buffer</title>
+<path fill="none" stroke="black" d="M970.48,-236.53C973.34,-235.48 976.21,-234.48 979,-233.6 994.63,-228.66 1004.74,-238.39 1015,-225.6 1036.36,-198.97 1029.79,-179.56 1015,-148.8 1012.53,-143.67 1009.23,-144.61 1005,-140.8 996.45,-133.08 987.49,-124.23 979.61,-116.16"/>
+<polygon fill="black" stroke="black" points="982.36,-113.96 972.91,-109.19 977.32,-118.82 982.36,-113.96"/>
+</g>
+<!-- mirl_rendering -->
+<g id="node25" class="node">
+<title>mirl_rendering</title>
+<polygon fill="none" stroke="black" points="1005.99,-192.8 906.01,-192.8 906.01,-156.8 1005.99,-156.8 1005.99,-192.8"/>
+<text xml:space="preserve" text-anchor="middle" x="956" y="-170.6" font-family="Times,serif" font-size="14.00">mirl_rendering</text>
+</g>
+<!-- mirl_gui&#45;&gt;mirl_rendering -->
+<g id="edge25" class="edge">
+<title>mirl_gui-&gt;mirl_rendering</title>
+<path fill="none" stroke="black" d="M942.17,-233.25C944.26,-224.57 946.85,-213.83 949.21,-204"/>
+<polygon fill="black" stroke="black" points="952.56,-205.07 951.49,-194.53 945.75,-203.43 952.56,-205.07"/>
+</g>
+<!-- mirl_rendering&#45;&gt;mirl_buffer -->
+<g id="edge28" class="edge">
+<title>mirl_rendering-&gt;mirl_buffer</title>
+<path fill="none" stroke="black" d="M956,-156.64C956,-145.95 956,-131.92 956,-119.57"/>
+<polygon fill="black" stroke="black" points="959.5,-119.93 956,-109.93 952.5,-119.93 959.5,-119.93"/>
+</g>
+<!-- mirl_rendering&#45;&gt;mirl_buffer_interpolation -->
+<g id="edge29" class="edge">
+<title>mirl_rendering-&gt;mirl_buffer_interpolation</title>
+<path fill="none" stroke="black" d="M984.93,-156.44C1005.35,-144.19 1032.95,-127.63 1055.27,-114.24"/>
+<polygon fill="black" stroke="black" points="1057.04,-117.26 1063.81,-109.11 1053.44,-111.26 1057.04,-117.26"/>
+</g>
+<!-- mirl_collections&#45;&gt;mirl_extensions_core -->
+<g id="edge5" class="edge">
+<title>mirl_collections-&gt;mirl_extensions_core</title>
+<path fill="none" stroke="black" d="M1656.28,-156.42C1649.25,-153.69 1641.96,-151.04 1635,-148.8 1583.41,-132.2 1524.19,-117.76 1477.85,-107.46"/>
+<polygon fill="black" stroke="black" points="1478.66,-104.05 1468.14,-105.32 1477.15,-110.89 1478.66,-104.05"/>
+</g>
+<!-- mirl_collections&#45;&gt;mirl_std_exposed -->
+<g id="edge6" class="edge">
+<title>mirl_collections-&gt;mirl_std_exposed</title>
+<path fill="none" stroke="black" d="M1697,-156.34C1697,-129.84 1697,-79.18 1697,-47.35"/>
+<polygon fill="black" stroke="black" points="1700.5,-47.67 1697,-37.67 1693.5,-47.67 1700.5,-47.67"/>
+</g>
+<!-- mirl_unsorted_horrors -->
+<g id="node28" class="node">
+<title>mirl_unsorted_horrors</title>
+<polygon fill="none" stroke="black" points="1625.99,-192.8 1484.01,-192.8 1484.01,-156.8 1625.99,-156.8 1625.99,-192.8"/>
+<text xml:space="preserve" text-anchor="middle" x="1555" y="-170.6" font-family="Times,serif" font-size="14.00">mirl_unsorted_horrors</text>
+</g>
+<!-- mirl_unsorted_horrors&#45;&gt;mirl_extensions_core -->
+<g id="edge31" class="edge">
+<title>mirl_unsorted_horrors-&gt;mirl_extensions_core</title>
+<path fill="none" stroke="black" d="M1522.09,-156.44C1498.62,-144.06 1466.82,-127.3 1441.3,-113.83"/>
+<polygon fill="black" stroke="black" points="1442.96,-110.75 1432.48,-109.18 1439.69,-116.94 1442.96,-110.75"/>
+</g>
+</g>
+</svg>
