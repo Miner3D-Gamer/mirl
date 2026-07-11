@@ -44,10 +44,10 @@ Click here to view the mirl connection graph
 </summary>
 
 The crates under mirl and their relation (simplified):
-<img title="Mirl Dependency Web" alt="Mirl Dependency Web" src="./.workspace/evolution/mirl_connection_graph_5_s.svg">
+<img title="Mirl Dependency Web" alt="Mirl Dependency Web" src="./.workspace/evolution/mirl_connection_graph_7_s.svg">
 
 The crates under mirl and their relation (including compile time & proc macro dependencies):
 
-<img title="Mirl Dependency Web" alt="Mirl Dependency Web" src="./.workspace/evolution/mirl_connection_graph_5_a.svg">
+<img title="Mirl Dependency Web" alt="Mirl Dependency Web" src="./.workspace/evolution/mirl_connection_graph_7_a.svg">
 
 </details>
