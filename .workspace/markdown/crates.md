@@ -242,4 +242,4 @@ All deprecated crates have been removed. These were `mirl`, `mirl_core`, and `mi
 
 ---
 
-None of the libs inexplicitly panic or cause UB, the done-meter is a rough estimation of how close they are to their "true potential" (without being extended by other crates), none will ever really be at a true 100% because perfection doesn't exist.
+None of the libs inexplicitly panic or cause UB, the done-meter is a rough estimation of how satisfied I am with their current state, none will ever really be at a true 100% because perfection doesn't exist.

@@ -1,5 +1,4 @@
 
-Scanning C:\Users\Astro\.rustup\toolchains\nightly-x86_64-pc-windows-msvc\lib\rustlib\src\rust\library\std\src for .rs files…
 Excluding: .git, .vscode, build.rs, target
 
   (160,409 lines)  ██████████████████░░
