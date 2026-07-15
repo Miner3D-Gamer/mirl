@@ -131,70 +131,70 @@ impl U1 {
 }
 
 // Bitwise and arithmetic traits
-impl const core::ops::Not for U1 {
+const impl core::ops::Not for U1 {
     type Output = Self;
     fn not(self) -> Self {
         Self::from_u8_trunc(!self.value())
     }
 }
 
-impl const core::ops::BitAnd for U1 {
+const impl core::ops::BitAnd for U1 {
     type Output = Self;
     fn bitand(self, rhs: Self) -> Self {
         Self::from_u8_trunc(self.value() & rhs.value())
     }
 }
 
-impl const core::ops::BitOr for U1 {
+const impl core::ops::BitOr for U1 {
     type Output = Self;
     fn bitor(self, rhs: Self) -> Self {
         Self::from_u8_trunc(self.value() | rhs.value())
     }
 }
 
-impl const core::ops::BitXor for U1 {
+const impl core::ops::BitXor for U1 {
     type Output = Self;
     fn bitxor(self, rhs: Self) -> Self {
         Self::from_u8_trunc(self.value() ^ rhs.value())
     }
 }
 
-impl const core::ops::Shl<usize> for U1 {
+const impl core::ops::Shl<usize> for U1 {
     type Output = Self;
     fn shl(self, rhs: usize) -> Self {
         Self::from_u8_trunc(self.value() << rhs)
     }
 }
 
-impl const core::ops::Shr<usize> for U1 {
+const impl core::ops::Shr<usize> for U1 {
     type Output = Self;
     fn shr(self, rhs: usize) -> Self {
         Self::from_u8_trunc(self.value() >> rhs)
     }
 }
 
-impl const core::ops::Add for U1 {
+const impl core::ops::Add for U1 {
     type Output = Self;
     fn add(self, rhs: Self) -> Self {
         self.wrapping_add(rhs)
     }
 }
 
-impl const core::ops::Sub for U1 {
+const impl core::ops::Sub for U1 {
     type Output = Self;
     fn sub(self, rhs: Self) -> Self {
         self.wrapping_sub(rhs)
     }
 }
 
-impl const core::ops::Mul for U1 {
+const impl core::ops::Mul for U1 {
     type Output = Self;
     fn mul(self, rhs: Self) -> Self {
         Self::from_u8_trunc(self.value().wrapping_mul(rhs.value()))
     }
 }
 
-impl const core::ops::Div for U1 {
+const impl core::ops::Div for U1 {
     type Output = Self;
     fn div(self, rhs: Self) -> Self {
         Self::from_u8_trunc(self.value().wrapping_div(rhs.value()))
@@ -202,7 +202,7 @@ impl const core::ops::Div for U1 {
 }
 
 // Direct conversion between U1 and bool
-impl const From<bool> for U1 {
+const impl From<bool> for U1 {
     fn from(val: bool) -> Self {
         Self {
             b0: val,
@@ -210,7 +210,7 @@ impl const From<bool> for U1 {
     }
 }
 
-impl const From<U1> for bool {
+const impl From<U1> for bool {
     fn from(val: U1) -> Self {
         val.b0
     }
@@ -277,7 +277,7 @@ impl_u1_conversion!(u8, u16, u32, u64, u128, usize);
 impl_u1_conversion!(i8, i16, i32, i64, i128, isize);
 impl_u1_float_conversion!(f32, f64);
 
-impl const core::ops::Rem for U1 {
+const impl core::ops::Rem for U1 {
     type Output = Self;
 
     fn rem(self, rhs: Self) -> Self::Output {

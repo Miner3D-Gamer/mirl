@@ -140,70 +140,70 @@ impl U2 {
 }
 
 // Bitwise and arithmetic traits
-impl const core::ops::Not for U2 {
+const impl core::ops::Not for U2 {
     type Output = Self;
     fn not(self) -> Self {
         Self::from_u8_trunc(!self.value())
     }
 }
 
-impl const core::ops::BitAnd for U2 {
+const impl core::ops::BitAnd for U2 {
     type Output = Self;
     fn bitand(self, rhs: Self) -> Self {
         Self::from_u8_trunc(self.value() & rhs.value())
     }
 }
 
-impl const core::ops::BitOr for U2 {
+const impl core::ops::BitOr for U2 {
     type Output = Self;
     fn bitor(self, rhs: Self) -> Self {
         Self::from_u8_trunc(self.value() | rhs.value())
     }
 }
 
-impl const core::ops::BitXor for U2 {
+const impl core::ops::BitXor for U2 {
     type Output = Self;
     fn bitxor(self, rhs: Self) -> Self {
         Self::from_u8_trunc(self.value() ^ rhs.value())
     }
 }
 
-impl const core::ops::Shl<usize> for U2 {
+const impl core::ops::Shl<usize> for U2 {
     type Output = Self;
     fn shl(self, rhs: usize) -> Self {
         Self::from_u8_trunc(self.value() << rhs)
     }
 }
 
-impl const core::ops::Shr<usize> for U2 {
+const impl core::ops::Shr<usize> for U2 {
     type Output = Self;
     fn shr(self, rhs: usize) -> Self {
         Self::from_u8_trunc(self.value() >> rhs)
     }
 }
 
-impl const core::ops::Add for U2 {
+const impl core::ops::Add for U2 {
     type Output = Self;
     fn add(self, rhs: Self) -> Self {
         self.wrapping_add(rhs)
     }
 }
 
-impl const core::ops::Sub for U2 {
+const impl core::ops::Sub for U2 {
     type Output = Self;
     fn sub(self, rhs: Self) -> Self {
         self.wrapping_sub(rhs)
     }
 }
 
-impl const core::ops::Mul for U2 {
+const impl core::ops::Mul for U2 {
     type Output = Self;
     fn mul(self, rhs: Self) -> Self {
         Self::from_u8_trunc(self.value().wrapping_mul(rhs.value()))
     }
 }
 
-impl const core::ops::Div for U2 {
+const impl core::ops::Div for U2 {
     type Output = Self;
     fn div(self, rhs: Self) -> Self {
         Self::from_u8_trunc(self.value().wrapping_div(rhs.value()))
