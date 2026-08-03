@@ -128,7 +128,7 @@ A library containing `Buffer`, `ConstBuffer`, and a few traits. Without any depe
 
 A helper library for [Mirl Buffer](https://github.com/Miner3D-Gamer/mirl_buffer) which adds proper resizing using several algorithms to choose from.
 
-(6s0% Done. Seamless integration with `Buffer` needs to be added.)
+(60% Done. Seamless integration with `Buffer` needs to be added.)
 
 #### • [Mirl Graphics](https://github.com/Miner3D-Gamer/mirl_graphics)
 
@@ -152,18 +152,24 @@ Crates relating to codecs/formatting
 
 #### • [Mirl Codec Info](https://github.com/Miner3D-Gamer/mirl_codec_info)
 
-When codec parsers parse codecs, they keep the value but discard where it actually came from (65% Done, parsing and marshalling support for more formats)
+When codec parsers parse codecs, they keep the value but discard where it actually came from
+
+(65% Done, parsing and marshalling support for more formats)
 
 #### • [Mirl Values](https://github.com/Miner3D-Gamer/mirl_values)
 
-Every codec parser/marshaller has their own value type (serde_json, toml, yaml, json5, ...) which are all incompatible with one another. So here is a Value enum that tries to unify them. (90% Done, more codec crates could be supported)
+Every codec parser/marshaller has their own value type (serde_json, toml, yaml, json5, ...) which are all incompatible with one another. So here is a Value enum that tries to unify them.
+
+(90% Done, more codec crates could be supported)
 
 <details>
 <summary>Core crates</summary>
 
 #### • [Mirl Values Core](https://github.com/Miner3D-Gamer/mirl_values_core)
 
-A crate solely housing Simple and Container Wrappers. Alone it's almost useless, use [Mirl Values](https://github.com/Miner3D-Gamer/mirl_values) for actual functionality. (90% Done, more codec creates could be supported)
+A crate solely housing Simple and Container Wrappers. Alone it's almost useless, use [Mirl Values](https://github.com/Miner3D-Gamer/mirl_values) for actual functionality.
+
+(90% Done, more codec creates could be supported)
 
 ## </details>
 
@@ -202,11 +208,21 @@ Crates to help with development
 
 #### • [Mirl Derive](https://github.com/Miner3D-Gamer/mirl_derive)
 
-Less duplicate code when deriving other crates. Doesn't use nightly. (85% Done. More crates could be supported)
+Less duplicate code when deriving other crates. Doesn't use nightly.
+
+(85% Done. More crates could be supported)
 
 #### • [Mirl Build Tools](https://github.com/Miner3D-Gamer/mirl_build_tools)
 
-A compile time library currently only used to pretty print a warning page into the console when someone tries to use a mirl crate on stable rust. This crate does not require nightly. (99% Done. Nothing obvious can be improved.)
+This compile time library crate does a lot but does not require nightly.
+
+- Automatic nightly detection: Warns user with proper error screen instead of compile errors that the `feature` keyword can only be used in nightly
+- Warns user when they a crate has a `miri` or `test` flag which has not been activated when using `miri` or `test`
+- Checks that feature flags include the feature flag of dependencies when they have the same name
+- Adds functions to better deal with `cargo.toml` and `cargo.lock`
+- Other mics stuff
+
+(90% Done. Dependency collector, automatic feature activation based on imported crates, and automatic prelude extension based on imported crates could be added.)
 
 ---
 
@@ -216,7 +232,9 @@ A compile time library currently only used to pretty print a warning page into t
 
 #### • [Mirl Collections](https://github.com/Miner3D-Gamer/mirl_collections)
 
-A library containing type wrappers with extra functionality, most notably a `BinaryData` struct for file contents (plugin extendible) (75% Done. `NonEmptyVec` needs a rewrite to be more performant.)
+A library containing type wrappers with extra functionality, most notably a `BinaryData` struct for file contents (plugin extendible)
+
+(75% Done. `NonEmptyVec` needs a rewrite to be more performant.)
 
 #### • [Mirl Terminal](https://github.com/Miner3D-Gamer/mirl_terminal)
 
