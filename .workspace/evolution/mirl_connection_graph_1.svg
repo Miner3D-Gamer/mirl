@@ -59,7 +59,7 @@
 <g id="node15" class="node">
 <title>14</title>
 <polygon fill="none" stroke="#00cd00" points="992.66,-36 911.34,-36 911.34,0 992.66,0 992.66,-36"/>
-<text xml:space="preserve" text-anchor="middle" x="952" y="-13.8" font-family="Times,serif" font-size="14.00">mirl_derive</text>
+<text xml:space="preserve" text-anchor="middle" x="952" y="-13.8" font-family="Times,serif" font-size="14.00">mirl_macros</text>
 </g>
 <!-- 0&#45;&gt;14 -->
 <g id="edge3" class="edge">

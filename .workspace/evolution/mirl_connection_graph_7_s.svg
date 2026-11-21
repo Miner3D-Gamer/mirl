@@ -245,11 +245,11 @@
 <polygon fill="none" stroke="black" points="1830.67,-354.4 1721.33,-354.4 1721.33,-318.4 1830.67,-318.4 1830.67,-354.4"/>
 <text xml:space="preserve" text-anchor="middle" x="1776" y="-332.2" font-family="Times,serif" font-size="14.00">mirl_build_tools</text>
 </g>
-<!-- mirl_derive -->
+<!-- mirl_macros -->
 <g id="node13" class="node">
-<title>mirl_derive</title>
+<title>mirl_macros</title>
 <polygon fill="none" stroke="#0000ee" points="1929.66,-354.4 1848.34,-354.4 1848.34,-318.4 1929.66,-318.4 1929.66,-354.4"/>
-<text xml:space="preserve" text-anchor="middle" x="1889" y="-332.2" font-family="Times,serif" font-size="14.00">mirl_derive</text>
+<text xml:space="preserve" text-anchor="middle" x="1889" y="-332.2" font-family="Times,serif" font-size="14.00">mirl_macros</text>
 </g>
 <!-- mirl_codec_info -->
 <g id="node14" class="node">

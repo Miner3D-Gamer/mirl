@@ -3,7 +3,7 @@
 #![allow(clippy::cast_sign_loss)]
 
 
-#[cfg_attr(feature = "mirl_derive", mirl_derive::derive_all)]
+#[mirl_macros::derive_all]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 /// U1 - Just a fancy bool honestly
 pub struct U1 {

@@ -12,8 +12,9 @@ members = [
     "graphics/mirl_graphics",
     "graphics/mirl_gui",
     "graphics/mirl_rendering",
+    "graphics/mirl_rendering_core",
     "helper/mirl_build_tools",
-    "helper/mirl_derive",
+    "helper/mirl_macros",
     "math/mirl_geometry",
     "math/mirl_geometry_core",
     "mirl_collections",
@@ -28,21 +29,27 @@ members = [
     "platform/windowing/mirl_windowing_core",
     "platform/windowing/mirl_windowing_glfw",
     "platform/windowing/mirl_windowing_minifb",
+    "helper/mirl_metadata",
+    "helper/mirl_nightly_check",
+    "helper/mirl_build_tools_core",
+    "helper/mirl_macros_lite",
+    "helper/mirl_macros_core",
+    "math/mirl_narrowed_floats",
 ]
 resolver = "3"
+
+readme = "README.md"
+repository = "https://github.com/Miner3D-Gamer/mirl"
 
 [workspace.metadata.workspaces]
 independent = true
 
-[workspace.package]
-readme = "README.md"
-repository = "https://github.com/Miner3D-Gamer/mirl"
-edition = "2024"
-license = "MIT"
-authors = ["Miner3D"]
 
-[workspace.dependencies]
-mirl_build_tools = { version = "0.0.0-alpha" }
+[workspace.package]
+license = "MIT OR Apache-2.0"
+authors = ["Miner3D"]
+rust-version = "1.101"
+maintenance = { status = "actively-developed" }
 
 [workspace.lints.rust]
 missing_docs = { level = "warn", priority = 1 }
@@ -53,6 +60,10 @@ trivial_numeric_casts = { level = "warn", priority = 1 }
 unreachable_pub = { level = "warn", priority = 1 }
 internal_features = { level = "allow", priority = 2 }
 future_incompatible = { level = "allow", priority = 2 }          # We'll get to it when we'll to it! You implement the functionality first and I'll react accordingly
+
+[workspace.lints.cargo]
+unused_dependencies = { level = "allow", priority = 2 }
+
 
 [workspace.lints.clippy]
 pedantic = { level = "warn", priority = 0 }
@@ -73,3 +84,36 @@ fn_params_excessive_bools = { level = "allow", priority = 1 }
 pub_underscore_fields = { level = "allow", priority = 1 }
 used_underscore_items = { level = "allow", priority = 1 }
 used_underscore_binding = { level = "allow", priority = 1 }
+
+
+[profile.speed]
+inherits = "release"
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+panic = "abort"
+strip = "symbols"
+debug = false
+incremental = false
+
+
+[workspace.profile.min-size]
+inherits = "release"
+opt-level = "z"
+lto = "fat"
+codegen-units = 1
+panic = "abort"
+strip = "symbols"
+debug = false
+incremental = false
+
+
+[workspace.profile.dev-release]
+inherits = "release"
+opt-level = 3
+lto = "thin"
+codegen-units = 16
+panic = "unwind"
+strip = false
+debug = 2
+incremental = true

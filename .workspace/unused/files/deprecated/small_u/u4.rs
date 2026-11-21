@@ -8,7 +8,7 @@ use super::U2;
 use crate::*;
 use crate::math::{One, Zero};
 
-#[cfg_attr(feature = "mirl_derive", mirl_derive::derive_all)]
+#[mirl_macros::derive_all]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Default)]
 /// A custom u4
 #[allow(missing_docs)]

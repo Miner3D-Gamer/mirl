@@ -1,4 +1,8 @@
-## Internal Mirl Guidelines
+{"path": "./docs"}
+
+TODO: Check every crate for outdated details
+
+# Internal [Mirl] Guidelines
 
 To reduce chaos and set a quality baseline, there are guidelines every mirl lib needs to follow.
 
@@ -10,7 +14,7 @@ DO IMPROVE!
 <details>
 <summary>
 
-## Cargo.toml
+## ⮤ Cargo.toml
 
 </summary>
 
@@ -19,8 +23,10 @@ Crates should be explicitly referencing the workspace in these aspects:
 ```toml
 [package]
 rust-version.workspace = true
-edition.workspace = true # 2024
+edition = "2024" # 2024
 license.workspace = true
+maintenance.workspace = true
+readme = "README.md"
 
 [lints]
 workspace = true
@@ -55,7 +61,7 @@ This setup function does the following:
 <details>
 <summary>
 
-## Supported crates/flags
+## ⮤ Supported crates/flags
 
 </summary>
 
@@ -90,7 +96,7 @@ When defining the version of a crate, using any prefix like ">=" is not allowed.
 <details>
 <summary>
 
-## README.md documentation
+## ⮤ README.md documentation
 
 </summary>
 
@@ -112,7 +118,7 @@ Text under titles are normal unless otherwise specified.
 <details>
 <summary>
 
-### Flags
+### ⮤ Flags
 
 </summary>
 
@@ -153,6 +159,6 @@ Text under titles are normal unless otherwise specified.
 
 Use `cargo sort` to format the `Cargo.toml` (`cargo binstall sort`)
 
-Use `cargo stale` to detect outdated libs (`cargo binstall sort`)
+Use `cargo stale` to detect outdated libs (`cargo binstall stale`)
 
 </details>

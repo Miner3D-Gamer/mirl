@@ -10,7 +10,7 @@ pub const trait RawMouseInputTrait {
     fn get_delta(&self) -> (i32, i32);
 }
 
-#[cfg_attr(feature = "mirl_derive", mirl_derive::derive_all)]
+#[mirl_macros::derive_all]
 /// Represents mouse movement delta values
 #[derive(Debug, Clone, Copy, Default)]
 #[cfg_attr(feature = "c_compatible", repr(C))]

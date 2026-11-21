@@ -23,7 +23,7 @@
 <g id="node11" class="node">
 <title>10</title>
 <polygon fill="none" stroke="#00cd00" points="1145.66,-36 1064.34,-36 1064.34,0 1145.66,0 1145.66,-36"/>
-<text xml:space="preserve" text-anchor="middle" x="1105" y="-13.8" font-family="Times,serif" font-size="14.00">mirl_derive</text>
+<text xml:space="preserve" text-anchor="middle" x="1105" y="-13.8" font-family="Times,serif" font-size="14.00">mirl_macros</text>
 </g>
 <!-- 0&#45;&gt;10 -->
 <g id="edge2" class="edge">

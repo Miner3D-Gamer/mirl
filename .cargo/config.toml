@@ -2,9 +2,14 @@
 mirl_buffer = { path = "../mirl/buffer/mirl_buffer" }
 mirl_buffer_interpolation = { path = "../mirl/buffer/mirl_buffer_interpolation" }
 mirl_build_tools = { path = "../mirl/helper/mirl_build_tools" }
+mirl_build_tools_core = { path = "../mirl/helper/mirl_build_tools_core" }
+mirl_nightly_check = { path = "../mirl/helper/mirl_nightly_check" }
+mirl_metadata = { path = "../mirl/helper/mirl_metadata" }
+mirl_macros_lite = { path = "../mirl/helper/mirl_macros_lite" }
+mirl_macros_core = { path = "../mirl/helper/mirl_macros_core" }
 mirl_codec_info = { path = "../mirl/codec/mirl_codec_info" }
 mirl_collections = { path = "../mirl/mirl_collections" }
-mirl_derive = { path = "../mirl/helper/mirl_derive" }
+mirl_macros = { path = "../mirl/helper/mirl_macros" }
 mirl_extensions = { path = "../mirl/extensions/mirl_extensions" }
 mirl_extensions_core = { path = "../mirl/extensions/mirl_extensions_core" }
 mirl_extensions_math = { path = "../mirl/extensions/mirl_extensions_math" }
@@ -25,4 +30,6 @@ mirl_terminal = { path = "../mirl/platform/mirl_terminal" }
 mirl_std_exposed = { path = "../mirl/mirl_std_exposed" }
 mirl_gui = { path = "../mirl/graphics/mirl_gui" }
 mirl_rendering = { path = "../mirl/graphics/mirl_rendering" }
+mirl_rendering_core = { path = "../mirl/graphics/mirl_rendering_core" }
 mirl_unsorted_horrors = { path = "../mirl/mirl_unsorted_horrors" }
+mirl_narrowed_floats = { path = "../mirl/math/mirl_narrowed_floats" }

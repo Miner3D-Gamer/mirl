@@ -61,11 +61,11 @@
 <polygon fill="none" stroke="black" points="1365.54,-349.6 1256.2,-349.6 1256.2,-313.6 1365.54,-313.6 1365.54,-349.6"/>
 <text xml:space="preserve" text-anchor="middle" x="1310.87" y="-327.4" font-family="Times,serif" font-size="14.00">mirl_build_tools</text>
 </g>
-<!-- mirl_derive -->
+<!-- mirl_macros -->
 <g id="node4" class="node">
-<title>mirl_derive</title>
+<title>mirl_macros</title>
 <polygon fill="none" stroke="#00cd00" points="1464.53,-349.6 1383.22,-349.6 1383.22,-313.6 1464.53,-313.6 1464.53,-349.6"/>
-<text xml:space="preserve" text-anchor="middle" x="1423.87" y="-327.4" font-family="Times,serif" font-size="14.00">mirl_derive</text>
+<text xml:space="preserve" text-anchor="middle" x="1423.87" y="-327.4" font-family="Times,serif" font-size="14.00">mirl_macros</text>
 </g>
 <!-- mirl_codec_info -->
 <g id="node5" class="node">

@@ -8,7 +8,7 @@ use super::U4;
 use crate::*;
 use crate::math::{One, Zero};
 
-#[cfg_attr(feature = "mirl_derive", mirl_derive::derive_all)]
+#[mirl_macros::derive_all]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default)]
 /// A u2... yeah
 pub struct U2 {
@@ -323,9 +323,9 @@ impl num_traits::Num for U2 {
 }
 
 impl One for U2 {
-    const one(): Self = Self::from_u8_trunc(1);
+    const one: Self = Self::from_u8_trunc(1);
 }
 
 impl Zero for U2 {
-    const zero(): Self = Self::from_u8_trunc(0);
+    const zero: Self = Self::from_u8_trunc(0);
 }
