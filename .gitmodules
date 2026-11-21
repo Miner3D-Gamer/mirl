@@ -86,9 +86,9 @@
 	path = graphics/mirl_graphics
 	url = https://github.com/Miner3D-Gamer/mirl_graphics.git
 
-[submodule "helper/mirl_derive"]
-	path = helper/mirl_derive
-	url = https://github.com/Miner3D-Gamer/mirl_derive.git
+[submodule "helper/mirl_macros"]
+	path = helper/mirl_macros
+	url = https://github.com/Miner3D-Gamer/mirl_macros.git
 
 [submodule "math/mirl_geometry_core"]
 	path = math/mirl_geometry_core
@@ -105,3 +105,27 @@
 [submodule "mirl_unsorted_horrors"]
 	path = mirl_unsorted_horrors
 	url = https://github.com/Miner3D-Gamer/mirl_unsorted_horrors.git
+[submodule "platform/windowing/mirl_windowing"]
+	path = platform/windowing/mirl_windowing
+	url = https://github.com/Miner3D-Gamer/mirl_windowing.git
+[submodule "graphics/mirl_rendering_core"]
+	path = graphics/mirl_rendering_core
+	url = https://github.com/Miner3D-Gamer/mirl_rendering_core.git
+[submodule "helper/mirl_build_tools_core"]
+	path = helper/mirl_build_tools_core
+	url = https://github.com/Miner3D-Gamer/mirl_build_tools_core.git
+[submodule "helper/mirl_macros_core"]
+	path = helper/mirl_macros_core
+	url = https://github.com/Miner3D-Gamer/mirl_macros_core.git
+[submodule "helper/mirl_macros_lite"]
+	path = helper/mirl_macros_lite
+	url = https://github.com/Miner3D-Gamer/mirl_macros_lite.git
+[submodule "helper/mirl_metadata"]
+	path = helper/mirl_metadata
+	url = https://github.com/Miner3D-Gamer/mirl_metadata.git
+[submodule "helper/mirl_nightly_check"]
+	path = helper/mirl_nightly_check
+	url = https://github.com/Miner3D-Gamer/mirl_nightly_check.git
+[submodule "math/mirl_narrowed_floats"]
+	path = math/mirl_narrowed_floats
+	url = https://github.com/Miner3D-Gamer/mirl_narrowed_floats.git
